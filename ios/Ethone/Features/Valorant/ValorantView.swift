@@ -167,7 +167,7 @@ struct ValorantView: View {
             } placeholder: {
                 Image(systemName: "shield").font(.largeTitle).foregroundStyle(.tertiary)
             }
-            .frame(width: 58, height: 58)
+            .frame(width: 67, height: 67)
             Text(title.uppercased())
                 .font(.subheadline.weight(.heavy))
                 .foregroundStyle(Color(hex: 0xF5D78E))

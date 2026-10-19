@@ -325,11 +325,11 @@ struct EvalWeaponLoadoutView: View {
                 let chroma = loadout.chroma(gun?["ChromaID"]?.stringValue)
                 let skin = loadout.skin(gun?["SkinID"]?.stringValue)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(weapon.displayName).font(.system(size: 18, weight: .semibold)).foregroundStyle(LUI.secondary).padding(.leading, 4)
+                    Text(weapon.displayName).font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.secondary).padding(.leading, 4)
                     NavigationLink { EvalSkinPickerView(weapon: weapon) } label: {
                         HStack {
                             if let level = gun?["CharmLevelID"]?.stringValue {
-                                remote("https://media.valorant-api.com/buddylevels/\(level.lowercased())/displayicon.png").frame(width: 46, height: 46)
+                                remote("https://media.valorant-api.com/buddylevels/\(level.lowercased())/displayicon.png").frame(width: 53, height: 53)
                             }
                             remote(chroma?.fullRender ?? skin?.image).frame(height: 80).frame(maxWidth: .infinity)
                             Image(systemName: "chevron.right").foregroundStyle(LUI.secondary)
@@ -368,7 +368,7 @@ struct EvalSkinPickerView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             remote(skin.image).frame(height: 64).frame(maxWidth: .infinity)
                             HStack {
-                                Text(skin.displayName).font(.system(size: 18)).foregroundStyle(.white)
+                                Text(skin.displayName).font(.system(size: 21)).foregroundStyle(.white)
                                 Spacer()
                                 if skin.uuid.lowercased() == equipped { Image(systemName: "checkmark.circle.fill").foregroundStyle(LUI.accent) }
                             }
@@ -410,7 +410,7 @@ struct EvalSkinEquipSheet: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
                                 ForEach(chromas, id: \.uuid) { c in
-                                    remote(c.swatch ?? c.displayIcon).frame(width: 44, height: 44).clipShape(Circle())
+                                    remote(c.swatch ?? c.displayIcon).frame(width: 51, height: 51).clipShape(Circle())
                                         .overlay(Circle().strokeBorder(.white, lineWidth: (chroma ?? chromas.first) == c ? 2 : 0))
                                         .onTapGesture { chroma = c }
                                 }
@@ -467,10 +467,10 @@ struct EvalSkinEquipSheet: View {
             if let b {
                 remote("https://media.valorant-api.com/buddylevels/\(b.levelID)/displayicon.png").padding(8)
             } else {
-                Image(systemName: "nosign").font(.system(size: 22)).foregroundStyle(LUI.secondary)
+                Image(systemName: "nosign").font(.system(size: 25)).foregroundStyle(LUI.secondary)
             }
         }
-        .frame(width: 60, height: 60)
+        .frame(width: 69, height: 69)
         .background(LUI.card, in: .rect(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(LUI.accent, lineWidth: selected ? 2 : 0))
         .onTapGesture { buddy = b; buddyChosen = true }
@@ -494,7 +494,7 @@ struct EvalTitlePickerView: View {
                         Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
                     } label: {
                         HStack {
-                            Text(title.titleText ?? "").font(.system(size: 17)).foregroundStyle(.white)
+                            Text(title.titleText ?? "").font(.system(size: 20)).foregroundStyle(.white)
                             Spacer()
                             if title.uuid.lowercased() == current { Image(systemName: "checkmark").foregroundStyle(LUI.accent) }
                         }
@@ -552,10 +552,10 @@ struct EvalSprayLoadoutView: View {
                     let spray = loadout.catalog.sprays.first { $0.uuid.lowercased() == id }
                     Button { slot = i } label: {
                         HStack(spacing: 14) {
-                            remote(spray?.fullTransparentIcon ?? spray?.displayIcon).frame(width: 56, height: 56)
+                            remote(spray?.fullTransparentIcon ?? spray?.displayIcon).frame(width: 64, height: 64)
                             VStack(alignment: .leading) {
-                                Text(i < slotNames.count ? slotNames[i] : "Emplacement \(i + 1)").font(.system(size: 13)).foregroundStyle(LUI.secondary)
-                                Text(spray?.displayName ?? "Aucun").font(.system(size: 17)).foregroundStyle(.white)
+                                Text(i < slotNames.count ? slotNames[i] : "Emplacement \(i + 1)").font(.system(size: 15)).foregroundStyle(LUI.secondary)
+                                Text(spray?.displayName ?? "Aucun").font(.system(size: 20)).foregroundStyle(.white)
                             }
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(LUI.secondary)
@@ -631,19 +631,19 @@ struct EvalAppearanceProfilesView: View {
     var body: some View {
         let loadout = model.valorant.loadout
         LoadoutScreen(title: "Profils d'apparences", trailing: AnyView(Button { name = ""; naming = true } label: {
-            Circle().fill(LUI.card).frame(width: 44, height: 44)
-                .overlay(Image(systemName: "plus").font(.system(size: 18, weight: .semibold)).foregroundStyle(LUI.accent))
+            Circle().fill(LUI.card).frame(width: 51, height: 51)
+                .overlay(Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.accent))
         }.buttonStyle(.plain))) {
             Text("Enregistrez votre équipement complet (skins, porte-bonheur, sprays, carte, titre) et réappliquez-le en un toucher.")
-                .font(.system(size: 15)).foregroundStyle(LUI.secondary)
+                .font(.system(size: 17)).foregroundStyle(LUI.secondary)
             if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary) }
             ForEach(loadout.profiles) { profile in
                 Button { toApply = profile } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(profile.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            Text(profile.name).font(.system(size: 21, weight: .semibold)).foregroundStyle(.white)
                             Text(profile.createdAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))
-                                .font(.system(size: 13)).foregroundStyle(LUI.secondary)
+                                .font(.system(size: 15)).foregroundStyle(LUI.secondary)
                         }
                         Spacer()
                         Image(systemName: "arrow.up.right").foregroundStyle(LUI.accent)

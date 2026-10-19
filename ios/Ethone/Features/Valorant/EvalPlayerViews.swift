@@ -38,8 +38,8 @@ struct EvalPlayerProfileView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(Color(hex: 0xFD5B68))
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Voir les statistiques").font(.system(size: 16, weight: .bold)).foregroundStyle(.white)
-                                Text("Taux de victoire, K/D et plus").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                                Text("Voir les statistiques").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                                Text("Taux de victoire, K/D et plus").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                             }
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(Color(hex: 0x8E8E93))
@@ -77,12 +77,12 @@ struct EvalPlayerProfileView: View {
     private var header: some View {
         HStack {
             Button { dismiss() } label: {
-                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
-                    .overlay(Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white))
+                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white))
             }
             .buttonStyle(.plain)
             Spacer()
-            Text(player?.name ?? name).font(.system(size: 19, weight: .bold)).foregroundStyle(.white).lineLimit(1)
+            Text(player?.name ?? name).font(.system(size: 22, weight: .bold)).foregroundStyle(.white).lineLimit(1)
             Spacer()
             Menu {
                 if let player {
@@ -97,8 +97,8 @@ struct EvalPlayerProfileView: View {
                     ShareLink(item: "\(player.name)#\(player.tag)") { Label("Partager le Riot ID", systemImage: "square.and.arrow.up") }
                 }
             } label: {
-                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
-                    .overlay(Image(systemName: "ellipsis").font(.system(size: 17, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
+                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "ellipsis").font(.system(size: 20, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
             }
         }
         .padding(.top, 4)
@@ -116,7 +116,7 @@ struct EvalPlayerProfileView: View {
                 Spacer()
                 if p.level > 0 { Text("Niveau \(p.level)").foregroundStyle(Color(hex: 0x8E8E93)) }
             }
-            .font(.system(size: 17, weight: .semibold))
+            .font(.system(size: 20, weight: .semibold))
             .padding(16)
             AsyncImage(url: p.bannerURL) { $0.image?.resizable().scaledToFill() }
                 .frame(height: 100).frame(maxWidth: .infinity).clipped()
@@ -134,7 +134,7 @@ struct EvalPlayerProfileView: View {
 
     private func rankColumn(title: String, tier: Int, subtitle: String, badge: String?) -> some View {
         VStack(spacing: 6) {
-            Text(title).font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text(title).font(.system(size: 13, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
             Group {
                 if tier > 0 {
                     AsyncImage(url: ValorantProfile.tierIcon(tier)) { $0.image?.resizable().scaledToFit() }
@@ -142,13 +142,13 @@ struct EvalPlayerProfileView: View {
                     Image(systemName: "questionmark.circle.fill").resizable().scaledToFit().foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
-            .frame(width: 64, height: 64)
+            .frame(width: 74, height: 74)
             Text(tier > 0 ? EvalRanks.name(tier).uppercased() : "NON CLASSÉ")
-                .font(.system(size: 16, weight: .heavy))
+                .font(.system(size: 18, weight: .heavy))
                 .foregroundStyle(tier > 0 ? Color(hex: EvalRanks.color(tier)) : .white)
-            Text(subtitle).font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text(subtitle).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
             if let badge {
-                Text(badge).font(.system(size: 14, weight: .bold))
+                Text(badge).font(.system(size: 16, weight: .bold))
                     .foregroundStyle(tier == 27 ? Color.black.opacity(0.8) : .white)
                     .padding(.horizontal, 16).padding(.vertical, 6)
                     .background(Color(hex: EvalRanks.color(tier)), in: .capsule)
@@ -160,7 +160,7 @@ struct EvalPlayerProfileView: View {
     private func careerCard(_ p: ValorantStore.PlayerSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Résumé de carrière").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                Text("Résumé de carrière").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
                 Spacer()
                 Text("\(p.mmr.seasons.count) \(p.mmr.seasons.count > 1 ? "Actes" : "Acte")").foregroundStyle(Color(hex: 0x8E8E93))
             }
@@ -168,26 +168,26 @@ struct EvalPlayerProfileView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(season.winRate.formatted(.percent.precision(.fractionLength(1)).locale(Locale(identifier: "fr_FR"))))
-                            .font(.system(size: 24, weight: .heavy)).foregroundStyle(Color(hex: 0x2DD4BF))
-                        Text("Taux de victoire").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                            .font(.system(size: 28, weight: .heavy)).foregroundStyle(Color(hex: 0x2DD4BF))
+                        Text("Taux de victoire").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("\(season.wins) / \(season.games)").font(.system(size: 24, weight: .heavy).monospacedDigit()).foregroundStyle(.white)
-                        Text("Victoires / Parties").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                        Text("\(season.wins) / \(season.games)").font(.system(size: 28, weight: .heavy).monospacedDigit()).foregroundStyle(.white)
+                        Text("Victoires / Parties").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
             } else {
-                Text("Aucune partie classée pendant l’acte en cours.").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("Aucune partie classée pendant l’acte en cours.").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             let recent = Array(p.mmr.seasons.suffix(3).reversed())
             if !recent.isEmpty {
                 HStack {
                     ForEach(recent) { s in
                         VStack(spacing: 6) {
-                            AsyncImage(url: ValorantProfile.tierIcon(s.endTier)) { $0.image?.resizable().scaledToFit() }.frame(width: 34, height: 34)
+                            AsyncImage(url: ValorantProfile.tierIcon(s.endTier)) { $0.image?.resizable().scaledToFit() }.frame(width: 39, height: 39)
                             Text(store.actName(s.season).isEmpty ? s.short.uppercased() : store.actName(s.season))
-                                .font(.system(size: 10, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).lineLimit(1)
+                                .font(.system(size: 12, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).lineLimit(1)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -200,9 +200,9 @@ struct EvalPlayerProfileView: View {
 
     private var matchesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Matchs").font(.system(size: 18, weight: .bold)).foregroundStyle(.white).padding(.leading, 4)
+            Text("Matchs").font(.system(size: 21, weight: .bold)).foregroundStyle(.white).padding(.leading, 4)
             if summaries.isEmpty {
-                Text("Aucune partie enregistrée pour ce joueur.").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
+                Text("Aucune partie enregistrée pour ce joueur.").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
             }
             ForEach(summaries) { match in
                 Button { selectedMatch = match } label: { EvalCompactMatchRow(match: match) }.buttonStyle(.plain)
@@ -218,22 +218,22 @@ struct EvalCompactMatchRow: View {
     var body: some View {
         HStack(spacing: 12) {
             AsyncImage(url: match.myPlayer?.agentIconURL) { $0.image?.resizable().scaledToFill() }
-                .frame(width: 46, height: 46).clipShape(.rect(cornerRadius: 10))
+                .frame(width: 53, height: 53).clipShape(.rect(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 3) {
-                Text("\(match.map) · \(EvalProfileView.modeName(match.mode))").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                Text("\(match.map) · \(EvalProfileView.modeName(match.mode))").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
                 if let date = match.startedAt {
                     Text(date.formatted(.dateTime.day(.twoDigits).month(.twoDigits).hour().minute().locale(Locale(identifier: "fr_FR"))))
-                        .font(.system(size: 12)).foregroundStyle(Color(hex: 0x8E8E93))
+                        .font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
                 Text("\(match.teamRounds) — \(match.opponentRounds)")
-                    .font(.system(size: 15, weight: .bold).monospacedDigit())
+                    .font(.system(size: 17, weight: .bold).monospacedDigit())
                     .foregroundStyle(match.won ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
-                Text("\(match.kills) / \(match.deaths) / \(match.assists)").font(.system(size: 12).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(match.kills) / \(match.deaths) / \(match.assists)").font(.system(size: 14).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
             }
-            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+            Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(14)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 18))
@@ -259,7 +259,7 @@ struct EvalShopHistoryView: View {
                 ForEach(store.shopHistory) { day in
                     VStack(alignment: .leading, spacing: 10) {
                         Text(day.day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "fr_FR"))).capitalized)
-                            .font(.system(size: 16, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
+                            .font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
                         ForEach(day.offers) { offer in EvalDailyOfferCard(offer: offer) }
                     }
                 }
@@ -293,8 +293,8 @@ struct EvalWishlistView: View {
                     HStack(spacing: 14) {
                         AsyncImage(url: URL(string: item.icon)) { $0.image?.resizable().scaledToFit() }.frame(width: 110, height: 44)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(item.name).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
-                            if inShop { Text("Dans votre boutique aujourd’hui").font(.system(size: 13, weight: .semibold)).foregroundStyle(Color(hex: 0x35C26B)) }
+                            Text(item.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            if inShop { Text("Dans votre boutique aujourd’hui").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x35C26B)) }
                         }
                         Spacer()
                         Button { store.toggleWish(id: item.id, name: item.name, icon: item.icon) } label: {

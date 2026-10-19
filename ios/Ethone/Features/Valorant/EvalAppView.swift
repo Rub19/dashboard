@@ -29,15 +29,15 @@ struct EvalLockedView: View {
             Spacer()
 
             Image(systemName: "lock.fill")
-                .font(.system(size: 40, weight: .medium))
+                .font(.system(size: 46, weight: .medium))
                 .foregroundStyle(.gray)
 
             Text(title)
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(.white)
 
             Text(message)
-                .font(.system(size: 19, weight: .regular))
+                .font(.system(size: 22, weight: .regular))
                 .foregroundStyle(.gray)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 340)
@@ -183,6 +183,7 @@ struct EvalAppView: View {
         .toolbar(.hidden, for: .navigationBar)
         .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .ethoneScreen()
+        .dynamicTypeSize(.xLarge)
         .navigationDestination(item: $selectedMatch) { match in
             ValorantMatchDetailView(match: match)
         }
@@ -198,9 +199,9 @@ struct EvalAppView: View {
                     } label: {
                         VStack(spacing: 3) {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+                                .font(.system(size: 25, weight: isSelected ? .semibold : .regular))
                             Text(tab.rawValue)
-                                .font(.system(size: 12, weight: isSelected ? .semibold : .medium))
+                                .font(.system(size: 14, weight: isSelected ? .semibold : .medium))
                         }
                         .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.primary)
                         .frame(maxWidth: .infinity)
@@ -379,9 +380,9 @@ struct EvalProfileView: View {
                 dismiss()
             } label: {
                 Image(systemName: "desktopcomputer")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color(hex: 0xFD5B68))
-                    .frame(width: 44, height: 44)
+                    .frame(width: 51, height: 51)
                     .background(Color(hex: 0x161618), in: .circle)
             }
             .buttonStyle(.plain)
@@ -399,10 +400,10 @@ struct EvalProfileView: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "line.3.horizontal")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                     Image(systemName: "ellipsis")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(.white)
                 }
                 .padding(.horizontal, 16)
@@ -417,7 +418,7 @@ struct EvalProfileView: View {
     private var disconnectedProfileCard: some View {
         VStack(spacing: 18) {
             Image(systemName: "person.crop.circle.badge.exclamationmark")
-                .font(.system(size: 44))
+                .font(.system(size: 51))
                 .foregroundStyle(Theme.danger)
 
             VStack(spacing: 6) {
@@ -465,17 +466,17 @@ struct EvalProfileView: View {
             HStack {
                 HStack(spacing: 0) {
                     Text(profile.handle.split(separator: "#").first.map(String.init) ?? profile.handle)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(.white)
                     if let tag = profile.handle.split(separator: "#").dropFirst().first {
                         Text("#\(tag)")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
                 Spacer()
                 Text(store.equipmentTitle)
-                    .font(.system(size: 14, weight: .medium, design: .monospaced))
+                    .font(.system(size: 16, weight: .medium, design: .monospaced))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
             .padding(.horizontal, 16)
@@ -507,7 +508,7 @@ struct EvalProfileView: View {
                     VStack(spacing: 6) {
                         if !profile.actName.isEmpty {
                             Text(profile.actName)
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                                 .tracking(0.6)
                         }
@@ -528,7 +529,7 @@ struct EvalProfileView: View {
                                 AsyncImage(url: rankIconURL) { phase in
                                     switch phase {
                                     case .success(let image):
-                                        image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                        image.resizable().scaledToFit().frame(width: 60, height: 60)
                                     default:
                                         ProgressView().tint(.secondary)
                                     }
@@ -537,18 +538,18 @@ struct EvalProfileView: View {
                         }
 
                         Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
-                            .font(.system(size: 16, weight: .heavy))
+                            .font(.system(size: 18, weight: .heavy))
                             .foregroundStyle(Color(hex: EvalRanks.color(profile.tier)))
 
                         if profile.rr > 0 {
                             Text("\(profile.rr) SC")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
 
                         if let leaderboardRank = profile.leaderboardRank {
                             Text("Rang \(leaderboardRank)")
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.system(size: 17, weight: .bold))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 18)
                                 .padding(.vertical, 7)
@@ -567,7 +568,7 @@ struct EvalProfileView: View {
                         VStack(spacing: 6) {
                             if !store.actName(store.mmr.peakSeason).isEmpty {
                                 Text(store.actName(store.mmr.peakSeason))
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .font(.system(size: 13, weight: .semibold))
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                                     .tracking(0.6)
                             }
@@ -577,7 +578,7 @@ struct EvalProfileView: View {
                                     AsyncImage(url: peakIconURL) { phase in
                                         switch phase {
                                         case .success(let image):
-                                            image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                            image.resizable().scaledToFit().frame(width: 60, height: 60)
                                         default:
                                             ProgressView().tint(.secondary)
                                         }
@@ -587,18 +588,18 @@ struct EvalProfileView: View {
                             .frame(height: 76)
 
                             Text(profile.peakRank.isEmpty ? "RANG INDISPONIBLE" : profile.peakRank.uppercased())
-                                .font(.system(size: 16, weight: .heavy))
+                                .font(.system(size: 18, weight: .heavy))
                                 .foregroundStyle(Color(hex: EvalRanks.color(profile.peakTier)))
 
                             Text("Plus haut rang atteint")
-                                .font(.system(size: 13))
+                                .font(.system(size: 15))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                                 .lineLimit(1)
                         }
                         .frame(maxWidth: .infinity)
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                             .padding(.trailing, 4)
                     }
@@ -620,7 +621,7 @@ struct EvalProfileView: View {
             )
 
             Image(systemName: "sparkles")
-                .font(.system(size: 72))
+                .font(.system(size: 83))
                 .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.12))
                 .offset(x: 180, y: -10)
         }
@@ -630,7 +631,7 @@ struct EvalProfileView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Résumé de carrière")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 21, weight: .bold))
                     .foregroundStyle(.white)
                 Spacer()
                 NavigationLink {
@@ -638,9 +639,9 @@ struct EvalProfileView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Text("\(store.mmr.seasons.count) \(store.mmr.seasons.count > 1 ? "Actes" : "Acte")")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.system(size: 17, weight: .medium))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                     }
                     .foregroundStyle(Color(hex: 0x8E8E93))
                 }
@@ -651,7 +652,7 @@ struct EvalProfileView: View {
                 HStack {
                     Spacer()
                     Text(profile.actName)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .tracking(0.6)
                     Spacer()
@@ -662,10 +663,10 @@ struct EvalProfileView: View {
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(season.winRate.formatted(.percent.precision(.fractionLength(1)).locale(Locale(identifier: "fr_FR"))))
-                        .font(.system(size: 24, weight: .heavy).monospacedDigit())
+                        .font(.system(size: 28, weight: .heavy).monospacedDigit())
                         .foregroundStyle(Color(hex: 0x2DD4BF))
                     Text("Taux de victoire")
-                        .font(.system(size: 13))
+                        .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -673,14 +674,14 @@ struct EvalProfileView: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     HStack(spacing: 2) {
                         Text("\(season.wins)")
-                            .font(.system(size: 24, weight: .heavy).monospacedDigit())
+                            .font(.system(size: 28, weight: .heavy).monospacedDigit())
                             .foregroundStyle(Color(hex: 0x22C55E))
                         Text("/ \(season.games)")
-                            .font(.system(size: 24, weight: .heavy).monospacedDigit())
+                            .font(.system(size: 28, weight: .heavy).monospacedDigit())
                             .foregroundStyle(.white)
                     }
                     Text("Victoires / Parties")
-                        .font(.system(size: 13))
+                        .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -710,26 +711,26 @@ struct EvalProfileView: View {
             ZStack {
                 Circle()
                     .fill(color.opacity(0.18))
-                    .frame(width: 48, height: 48)
+                    .frame(width: 55, height: 55)
 
                 if let tier, let url = ValorantProfile.tierIcon(tier) {
                     AsyncImage(url: url) { phase in
                         if let img = phase.image {
-                            img.resizable().scaledToFit().frame(width: 28, height: 28)
+                            img.resizable().scaledToFit().frame(width: 32, height: 32)
                         } else {
                             Image(systemName: icon)
-                                .font(.system(size: 20))
+                                .font(.system(size: 23))
                                 .foregroundStyle(color)
                         }
                     }
                 } else {
                     Image(systemName: icon)
-                        .font(.system(size: 20))
+                        .font(.system(size: 23))
                         .foregroundStyle(color)
                 }
             }
             Text(name)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .frame(maxWidth: .infinity)
@@ -739,16 +740,16 @@ struct EvalProfileView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: "archivebox.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 23))
                     .foregroundStyle(Color(hex: 0xFD5B68))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Récap de session")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(.white)
 
                     Text("\(sessionDayText)\n\(recentSessionMatches.count) \(recentSessionMatches.count > 1 ? "parties" : "partie") · \(sessionDeltaText)")
-                        .font(.system(size: 13))
+                        .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
@@ -767,16 +768,16 @@ struct EvalProfileView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 14) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 20))
+                        .font(.system(size: 23))
                         .foregroundStyle(Color(hex: 0xFD5B68))
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Voir les statistiques")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
 
                         Text("Win rate, K/D & more")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -791,7 +792,7 @@ struct EvalProfileView: View {
     private var matchesListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Matchs")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 21, weight: .bold))
                 .foregroundStyle(.white)
                 .padding(.top, 4)
 
@@ -810,13 +811,13 @@ struct EvalProfileView: View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Image(systemName: "cube.transparent")
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(.white.opacity(0.8))
                 Image(systemName: "desktopcomputer")
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(.white.opacity(0.8))
                 Text(Self.modeName(match.mode))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
                 Spacer()
             }
@@ -826,7 +827,7 @@ struct EvalProfileView: View {
             HStack {
                 if let startedAt = match.startedAt {
                     Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()).replacingOccurrences(of: "/", with: "/").replacingOccurrences(of: " ", with: " · "))
-                        .font(.system(size: 12))
+                        .font(.system(size: 14))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 Spacer()
@@ -861,12 +862,12 @@ struct EvalProfileView: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text(match.agent)
-                            .font(.system(size: 17, weight: .bold))
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(.white)
 
                         HStack(spacing: 6) {
                             Text(match.map)
-                                .font(.system(size: 11, weight: .medium))
+                                .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.8))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
@@ -874,7 +875,7 @@ struct EvalProfileView: View {
 
                             if let mvp = Self.mvpLabel(match) {
                                 Text(mvp)
-                                    .font(.system(size: 11, weight: .bold))
+                                    .font(.system(size: 13, weight: .bold))
                                     .foregroundStyle(Color(hex: 0xF5D78E))
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
@@ -887,7 +888,7 @@ struct EvalProfileView: View {
                     Spacer()
 
                     Text(match.won ? "VICTOIRE" : "DÉFAITE")
-                        .font(.system(size: 13, weight: .heavy))
+                        .font(.system(size: 15, weight: .heavy))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
@@ -900,21 +901,21 @@ struct EvalProfileView: View {
 
             HStack(spacing: 0) {
                 Label("\(match.kills) / \(match.deaths) / \(match.assists)", systemImage: "scope")
-                    .font(.system(size: 14, weight: .medium).monospacedDigit())
+                    .font(.system(size: 16, weight: .medium).monospacedDigit())
                 Spacer()
                 Label(match.scoreValue.map(String.init) ?? "—", systemImage: "chart.bar.fill")
-                    .font(.system(size: 14, weight: .medium).monospacedDigit())
+                    .font(.system(size: 16, weight: .medium).monospacedDigit())
                 Spacer()
                 HStack(spacing: 6) {
                     if let change = store.mmr.history.first(where: { $0.match.lowercased() == match.id.lowercased() })?.change {
                         Text(change >= 0 ? "+\(change)" : "\(change)")
-                            .font(.system(size: 13, weight: .bold).monospacedDigit())
+                            .font(.system(size: 15, weight: .bold).monospacedDigit())
                             .foregroundStyle(change >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
                     }
                     Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
-                        .font(.system(size: 14, weight: .medium).monospacedDigit())
+                        .font(.system(size: 16, weight: .medium).monospacedDigit())
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
@@ -1055,16 +1056,16 @@ struct EvalCareerSummaryView: View {
         HStack {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 51, height: 51)
                     .background(Color(hex: 0x161618), in: .circle)
             }
             .buttonStyle(.plain)
             Spacer()
             Text("Résumé de carrière").font(.headline.weight(.bold)).foregroundStyle(.white)
             Spacer()
-            Color.clear.frame(width: 44, height: 44)
+            Color.clear.frame(width: 51, height: 51)
         }
         .padding(.top, 4)
     }
@@ -1078,7 +1079,7 @@ struct EvalCareerSummaryView: View {
                         withAnimation(Motion.snap) { selectedQueue = queue }
                     } label: {
                         Text(queue)
-                            .font(.system(size: 15, weight: selected ? .bold : .medium))
+                            .font(.system(size: 17, weight: selected ? .bold : .medium))
                             .foregroundStyle(selected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 10)
@@ -1093,10 +1094,10 @@ struct EvalCareerSummaryView: View {
     private var actHeader: some View {
         HStack {
             Text(profile.actName.isEmpty ? "Acte en cours" : profile.actName)
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(.white)
             Spacer()
-            Text("Actuel").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text("Actuel").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(18)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -1104,10 +1105,10 @@ struct EvalCareerSummaryView: View {
 
     private func emptyCard(_ message: String) -> some View {
         VStack(spacing: 14) {
-            Image(systemName: "desktopcomputer").font(.system(size: 40)).foregroundStyle(Color(hex: 0x8E8E93))
-            Text("Aucune partie jouée").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+            Image(systemName: "desktopcomputer").font(.system(size: 46)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text("Aucune partie jouée").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
             Text(message)
-                .font(.system(size: 14))
+                .font(.system(size: 16))
                 .foregroundStyle(Color(hex: 0x8E8E93))
                 .multilineTextAlignment(.center)
         }
@@ -1126,17 +1127,17 @@ struct EvalCareerSummaryView: View {
 
     private var rankAndPerformanceCard: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Rang").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+            Text("Rang").font(.system(size: 18, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
             HStack(spacing: 0) {
                 VStack(spacing: 8) {
                     tierImage(mmr.tier, size: 96)
                     Text(EvalRanks.name(mmr.tier).uppercased())
-                        .font(.system(size: 17, weight: .heavy))
+                        .font(.system(size: 20, weight: .heavy))
                         .foregroundStyle(Color(hex: EvalRanks.color(mmr.tier)))
-                    Text("\(mmr.rr) SC").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                    Text("\(mmr.rr) SC").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
                     if mmr.leaderboardRank > 0 {
                         Text("Rang \(mmr.leaderboardRank)")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 7)
@@ -1152,7 +1153,7 @@ struct EvalCareerSummaryView: View {
                 Button { showPeak = true } label: {
                     VStack(spacing: 10) {
                         tierImage(mmr.peakTier, size: 96)
-                        Text("Appuyer pour agrandir").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                        Text("Appuyer pour agrandir").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -1162,7 +1163,7 @@ struct EvalCareerSummaryView: View {
             .background(Color(hex: 0x222226), in: .rect(cornerRadius: 18))
 
             if let season = currentSeason {
-                Text("Performance").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("Performance").font(.system(size: 18, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 ratioCard(wins: season.wins, total: season.games)
             }
         }
@@ -1175,9 +1176,9 @@ struct EvalCareerSummaryView: View {
         let games = mmr.seasons.reduce(0) { $0 + $1.games }
         return VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Statistiques de tous les temps").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("Statistiques de tous les temps").font(.system(size: 18, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
-                Text("\(mmr.seasons.count) \(mmr.seasons.count > 1 ? "Actes" : "Acte")").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(mmr.seasons.count) \(mmr.seasons.count > 1 ? "Actes" : "Acte")").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             ratioCard(wins: wins, total: games)
         }
@@ -1188,23 +1189,23 @@ struct EvalCareerSummaryView: View {
     private var previousActsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Actes précédents").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("Actes précédents").font(.system(size: 18, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
-                Text("\(previousSeasons.count)").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(previousSeasons.count)").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             VStack(spacing: 8) {
                 ForEach(previousSeasons) { season in
                     HStack(spacing: 12) {
                         tierImage(season.endTier, size: 32)
                         Text(store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season))
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(.white)
                         Spacer()
                         Text(percent(season.winRate))
-                            .font(.system(size: 15, weight: .bold).monospacedDigit())
+                            .font(.system(size: 17, weight: .bold).monospacedDigit())
                             .foregroundStyle(season.winRate >= 0.5 ? Color(hex: 0x35C26B) : .white)
                         Text("\(season.wins)/\(season.games)")
-                            .font(.system(size: 13).monospacedDigit())
+                            .font(.system(size: 15).monospacedDigit())
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
@@ -1221,9 +1222,9 @@ struct EvalCareerSummaryView: View {
         let wins = queueMatches.filter(\.won).count
         return VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Parties enregistrées").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("Parties enregistrées").font(.system(size: 18, weight: .bold)).foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
-                Text("\(queueMatches.count)").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text("\(queueMatches.count)").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             ratioCard(wins: wins, total: queueMatches.count)
         }
@@ -1240,8 +1241,8 @@ struct EvalCareerSummaryView: View {
         let color = rate >= 0.5 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68)
         return HStack(spacing: 0) {
             VStack(spacing: 4) {
-                Text(percent(rate)).font(.system(size: 26, weight: .heavy).monospacedDigit()).foregroundStyle(color)
-                Text("Taux de victoire").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text(percent(rate)).font(.system(size: 30, weight: .heavy).monospacedDigit()).foregroundStyle(color)
+                Text("Taux de victoire").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             .frame(maxWidth: .infinity)
             Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
@@ -1250,8 +1251,8 @@ struct EvalCareerSummaryView: View {
                     Text("\(wins)").foregroundStyle(color)
                     Text(" / \(total)").foregroundStyle(.white)
                 }
-                .font(.system(size: 26, weight: .heavy).monospacedDigit())
-                Text("Victoires / Parties").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+                .font(.system(size: 30, weight: .heavy).monospacedDigit())
+                Text("Victoires / Parties").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             .frame(maxWidth: .infinity)
         }
@@ -1339,11 +1340,11 @@ struct EvalDailyOfferCard: View {
                     Spacer()
                     if wished {
                         Image(systemName: "heart.fill")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                     }
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color(hex: offer.colorHex))
                         .padding(14)
                 }
@@ -1366,7 +1367,7 @@ struct EvalDailyOfferCard: View {
 
             HStack {
                 Text(offer.name)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.system(size: 17, weight: .bold))
                     .foregroundStyle(Color(hex: offer.colorHex))
                     .lineLimit(2)
 
@@ -1374,7 +1375,7 @@ struct EvalDailyOfferCard: View {
 
                 HStack(spacing: 5) {
                     Text("\(offer.price)")
-                        .font(.system(size: 15, weight: .heavy).monospacedDigit())
+                        .font(.system(size: 17, weight: .heavy).monospacedDigit())
                         .foregroundStyle(Color(hex: offer.colorHex))
 
                     VPIconView(size: 14, color: Color(hex: offer.colorHex))
@@ -1417,8 +1418,8 @@ struct EvalFeaturedBundleCard: View {
                 if bundle.isOwned {
                     Circle()
                         .fill(Color.white.opacity(0.85))
-                        .frame(width: 34, height: 34)
-                        .overlay(Image(systemName: "checkmark").font(.system(size: 16, weight: .bold)).foregroundStyle(Color.black))
+                        .frame(width: 39, height: 39)
+                        .overlay(Image(systemName: "checkmark").font(.system(size: 18, weight: .bold)).foregroundStyle(Color.black))
                 }
             }
             .clipShape(.rect(cornerRadius: Theme.cardRadius))
@@ -1497,7 +1498,7 @@ struct EvalAccessoryBundleCard: View {
                         AsyncImage(url: URL(string: item.imageURL)) { phase in
                             switch phase {
                             case .success(let image):
-                                image.resizable().interpolation(.high).scaledToFit().frame(width: 40, height: 40)
+                                image.resizable().interpolation(.high).scaledToFit().frame(width: 46, height: 46)
                             default:
                                 Color.clear
                             }
@@ -1570,10 +1571,10 @@ struct SprayWheelView: View {
             ZStack {
                 Circle()
                     .fill(Color(hex: 0x13151C))
-                    .frame(width: 52, height: 52)
+                    .frame(width: 60, height: 60)
                 Circle()
                     .strokeBorder(Color.white.opacity(0.35), lineWidth: 2)
-                    .frame(width: 48, height: 48)
+                    .frame(width: 55, height: 55)
             }
 
             sprayItem(url: topSprayURL, size: 56)
@@ -1610,7 +1611,7 @@ struct SprayWheelView: View {
                 }
             } else {
                 Image(systemName: "plus")
-                    .font(.system(size: 15, weight: .light))
+                    .font(.system(size: 17, weight: .light))
                     .foregroundStyle(Color.white.opacity(0.18))
                     .frame(width: size, height: size)
             }
@@ -1627,21 +1628,21 @@ struct EvalWalletBar: View {
 
             HStack(spacing: 6) {
                 Text("\(wallet.vp.formatted())")
-                    .font(.system(size: 14, weight: .bold).monospacedDigit())
+                    .font(.system(size: 16, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 VPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.rp.formatted())")
-                    .font(.system(size: 14, weight: .bold).monospacedDigit())
+                    .font(.system(size: 16, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 RPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.kc.formatted())")
-                    .font(.system(size: 14, weight: .bold).monospacedDigit())
+                    .font(.system(size: 16, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
                 KCIconView(size: 14)
             }
@@ -1752,7 +1753,7 @@ struct EvalGameView: View {
                                 HStack(spacing: 6) {
                                     Circle()
                                         .fill(Color(hex: 0x22C55E))
-                                        .frame(width: 8, height: 8)
+                                        .frame(width: 9, height: 9)
                                     Text(party.state)
                                         .font(.caption.weight(.bold))
                                         .foregroundStyle(Color(hex: 0x22C55E))
@@ -1782,18 +1783,18 @@ struct EvalGameView: View {
                                         ZStack(alignment: .bottomTrailing) {
                                             AsyncImage(url: URL(string: member.cardURL ?? "")) { phase in
                                                 if let image = phase.image {
-                                                    image.resizable().scaledToFill().frame(width: 38, height: 38).clipShape(.rect(cornerRadius: 10))
+                                                    image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 10))
                                                 } else {
                                                     RoundedRectangle(cornerRadius: 10)
                                                         .fill(Color(hex: 0x1A1C24))
-                                                        .frame(width: 38, height: 38)
-                                                        .overlay(Image(systemName: "person.fill").font(.system(size: 14)).foregroundStyle(.secondary))
+                                                        .frame(width: 44, height: 44)
+                                                        .overlay(Image(systemName: "person.fill").font(.system(size: 16)).foregroundStyle(.secondary))
                                                 }
                                             }
 
                                             Circle()
                                                 .fill(Color(hex: 0x22C55E))
-                                                .frame(width: 10, height: 10)
+                                                .frame(width: 12, height: 12)
                                                 .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
                                         }
 
@@ -1809,7 +1810,7 @@ struct EvalGameView: View {
 
                                                 if member.isLeader {
                                                     Image(systemName: "crown.fill")
-                                                        .font(.system(size: 11))
+                                                        .font(.system(size: 13))
                                                         .foregroundStyle(Color(hex: 0xF59E0B))
                                                 }
                                             }
@@ -1830,7 +1831,7 @@ struct EvalGameView: View {
                         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
                     } else {
                         Text("Il n'y a actuellement aucun groupe!")
-                            .font(.system(size: 15))
+                            .font(.system(size: 17))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 24)
@@ -1848,7 +1849,7 @@ struct EvalGameView: View {
                             }
                         } label: {
                             Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 16, weight: .bold))
                                 .foregroundStyle(Color(hex: 0xFD5B68))
                         }
                         .buttonStyle(.plain)
@@ -1883,7 +1884,7 @@ struct EvalGameView: View {
                             }
                         } label: {
                             Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 16, weight: .bold))
                                 .foregroundStyle(Color(hex: 0xFD5B68))
                         }
                         .buttonStyle(.plain)
@@ -1911,10 +1912,10 @@ struct EvalGameView: View {
 
                                 Circle()
                                     .fill(Color.white.opacity(0.92))
-                                    .frame(width: 28, height: 28)
+                                    .frame(width: 32, height: 32)
                                     .overlay(
                                         Image(systemName: "pencil")
-                                            .font(.system(size: 12, weight: .bold))
+                                            .font(.system(size: 14, weight: .bold))
                                             .foregroundStyle(Color.black)
                                     )
                                     .padding(10)
@@ -2018,18 +2019,18 @@ struct EvalGameView: View {
             } label: {
                 HStack {
                     Text("Accessoires")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 6) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.accessoriesEnd, now: ctx.date)) }
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -2042,15 +2043,15 @@ struct EvalGameView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text("Offres quotidiennes")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 23, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.offersEnd, now: ctx.date)) }
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -2060,7 +2061,7 @@ struct EvalGameView: View {
                 let wished = store.storeOffers.filter { store.isWished($0.id) }
                 if !wished.isEmpty {
                     Label("\(wished.map(\.name).joined(separator: ", ")) \(wished.count > 1 ? "sont" : "est") dans votre boutique !", systemImage: "heart.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                         .padding(.horizontal, 4)
                 }
@@ -2077,18 +2078,18 @@ struct EvalGameView: View {
                 NavigationLink { EvalWishlistView() } label: {
                 HStack {
                     Image(systemName: "heart")
-                        .font(.system(size: 16))
+                        .font(.system(size: 18))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                         .frame(width: 24)
                     Text("Liste de souhaits")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(.white)
                     Spacer()
                     Text("\(store.wishlistCount)")
-                        .font(.system(size: 15))
+                        .font(.system(size: 17))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .padding(.horizontal, 16)
@@ -2104,18 +2105,18 @@ struct EvalGameView: View {
                 } label: {
                     HStack {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 16))
+                            .font(.system(size: 18))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                             .frame(width: 24)
                         Text("Historique de la boutique")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundStyle(.white)
                         Spacer()
                         Text("\(store.storeHistoryCount)")
-                            .font(.system(size: 15))
+                            .font(.system(size: 17))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
@@ -2130,12 +2131,12 @@ struct EvalGameView: View {
     private var equipPrivacyRow: some View {
         HStack(spacing: 12) {
             Image(systemName: "hand.raised.fill")
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text("Paramètres de confidentialité")
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
@@ -2151,7 +2152,7 @@ struct EvalGameView: View {
             .foregroundStyle(Color(hex: 0x8E8E93))
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(.horizontal, 16)
@@ -2161,24 +2162,24 @@ struct EvalGameView: View {
     private func equipNavRow(icon: String, title: String, value: String? = nil) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text(title)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let value {
                 Text(value)
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(.horizontal, 16)
@@ -2192,12 +2193,12 @@ struct EvalGameView: View {
         } label: {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                    .font(.system(size: 16, weight: isSelected ? .bold : .medium))
                     .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
 
                 if hasChevron {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
                 }
             }
@@ -2229,7 +2230,7 @@ struct EvalGameView: View {
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.system(size: 13, weight: .bold))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                             .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
 
@@ -2260,15 +2261,15 @@ struct EvalGameView: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     Text("Checkpoints journaliers")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.dailyEnd, now: ctx.date)) }
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -2279,11 +2280,11 @@ struct EvalGameView: View {
                         Circle()
                             .strokeBorder(done ? Color(hex: 0x22C55E) : Color.white.opacity(0.18), lineWidth: 2)
                             .background(Circle().fill(done ? Color(hex: 0x22C55E).opacity(0.35) : Color.white.opacity(0.06)))
-                            .frame(width: 26, height: 26)
+                            .frame(width: 30, height: 30)
                             .overlay(
                                 Circle()
                                     .strokeBorder(Color.white.opacity(0.12), lineWidth: 1.5)
-                                    .frame(width: 14, height: 14)
+                                    .frame(width: 16, height: 16)
                             )
 
                         if i < 3 {
@@ -2303,15 +2304,15 @@ struct EvalGameView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text("Missions hebdomadaires")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.weeklyMissionsEnd, now: ctx.date)) }
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "clock")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -2320,10 +2321,10 @@ struct EvalGameView: View {
                 if !store.activeMissions.isEmpty && pending.isEmpty {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle")
-                            .font(.system(size: 16))
+                            .font(.system(size: 18))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Text("Vous avez terminé toutes les missions disponibles.")
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.top, 2)
@@ -2331,13 +2332,13 @@ struct EvalGameView: View {
                 ForEach(pending) { mission in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text(mission.title).font(.system(size: 14, weight: .medium)).foregroundStyle(.white)
+                            Text(mission.title).font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
                             Spacer()
-                            Text("+\(mission.xp.formatted()) XP").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                            Text("+\(mission.xp.formatted()) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         ProgressView(value: Double(min(mission.progress, mission.target)), total: Double(max(1, mission.target)))
                             .tint(Color(hex: 0xFD5B68))
-                        Text("\(mission.progress.formatted()) / \(mission.target.formatted())").font(.system(size: 12)).foregroundStyle(Color(hex: 0x8E8E93))
+                        Text("\(mission.progress.formatted()) / \(mission.target.formatted())").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.top, 4)
                 }
@@ -2350,15 +2351,15 @@ struct EvalGameView: View {
             } label: {
                 HStack {
                     Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.system(size: 17, weight: .medium))
                         .foregroundStyle(.white)
                     Spacer()
                     HStack(spacing: 4) {
                         Text("+\(store.missionsReserveXP.formatted()) XP")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -2376,11 +2377,11 @@ struct EvalGameView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(store.battlepassTitle)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
 
                         Text("Niveau \(store.battlepassCurrentLevel)")
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
 
@@ -2391,9 +2392,9 @@ struct EvalGameView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Text("Détails")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(.system(size: 16, weight: .semibold))
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 13, weight: .semibold))
                         }
                         .foregroundStyle(Color(hex: 0xFD5B68))
                     }
@@ -2412,11 +2413,11 @@ struct EvalGameView: View {
 
                 HStack {
                     Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
-                        .font(.system(size: 12).monospacedDigit())
+                        .font(.system(size: 14).monospacedDigit())
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Spacer()
                     Text("\(store.battlepassCompletionPercent)% terminé")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                 }
             }
@@ -2430,25 +2431,25 @@ struct EvalGameView: View {
         VStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Niveau de compte")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
 
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
                             .fill(Color(hex: 0xFD5B68).opacity(0.18))
-                            .frame(width: 44, height: 44)
+                            .frame(width: 51, height: 51)
                         Image(systemName: "shield.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Niveau \(store.profile?.level ?? 0)")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
                         Text("Points d'expérience cumulés")
-                            .font(.system(size: 13))
+                            .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     Spacer()
@@ -2483,18 +2484,18 @@ struct EvalBattlepassDetailSheet: View {
         ZStack {
             Circle()
                 .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
-                .frame(width: 52, height: 52)
+                .frame(width: 60, height: 60)
 
             if store.isConfigured {
                 Circle()
                     .trim(from: 0, to: CGFloat(store.battlepassCompletionPercent) / 100.0)
                     .stroke(Theme.danger, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-                    .frame(width: 52, height: 52)
+                    .frame(width: 60, height: 60)
             }
 
             Text(store.battlepassLevels.isEmpty ? "—" : "\(store.battlepassCompletionPercent)%")
-                .font(.system(size: 12, weight: .bold))
+                .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(.white)
         }
     }
@@ -2603,7 +2604,7 @@ struct EvalBattlepassDetailSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -2662,23 +2663,23 @@ struct EvalBattlepassDetailSheet: View {
                 if isCompleted {
                     Circle()
                         .fill(Theme.danger.opacity(0.2))
-                        .frame(width: 32, height: 32)
+                        .frame(width: 37, height: 37)
                     Image(systemName: "checkmark")
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Theme.danger)
                 } else if isCurrent {
                     Circle()
                         .strokeBorder(Theme.danger, lineWidth: 2)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 37, height: 37)
                     Text("\(level.level)")
-                        .font(.system(size: 12, weight: .heavy))
+                        .font(.system(size: 14, weight: .heavy))
                         .foregroundStyle(.white)
                 } else {
                     Circle()
                         .fill(Color.white.opacity(0.06))
-                        .frame(width: 32, height: 32)
+                        .frame(width: 37, height: 37)
                     Text("\(level.level)")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -2691,20 +2692,20 @@ struct EvalBattlepassDetailSheet: View {
                             .resizable()
                             .interpolation(.high)
                             .scaledToFit()
-                            .frame(width: 44, height: 44)
+                            .frame(width: 51, height: 51)
                     default:
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.white.opacity(0.04))
-                            .frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "gift.fill").font(.system(size: 16)).foregroundStyle(.secondary))
+                            .frame(width: 51, height: 51)
+                            .overlay(Image(systemName: "gift.fill").font(.system(size: 18)).foregroundStyle(.secondary))
                     }
                 }
-                .frame(width: 44, height: 44)
+                .frame(width: 51, height: 51)
             } else {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.white.opacity(0.04))
-                    .frame(width: 44, height: 44)
-                    .overlay(Image(systemName: "gift.fill").font(.system(size: 16)).foregroundStyle(.secondary))
+                    .frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "gift.fill").font(.system(size: 18)).foregroundStyle(.secondary))
             }
 
             VStack(alignment: .leading, spacing: 3) {
@@ -2716,7 +2717,7 @@ struct EvalBattlepassDetailSheet: View {
 
                     if level.isFree {
                         Text("GRATUIT")
-                            .font(.system(size: 9, weight: .black))
+                            .font(.system(size: 10, weight: .black))
                             .foregroundStyle(Color(hex: 0xF59E0B))
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
@@ -2803,10 +2804,10 @@ struct EvalUpcomingMissionsSheet: View {
                                     ZStack {
                                         Circle()
                                             .fill(Color.white.opacity(0.06))
-                                            .frame(width: 34, height: 34)
+                                            .frame(width: 39, height: 39)
 
                                         Image(systemName: "calendar.badge.clock")
-                                            .font(.system(size: 14))
+                                            .font(.system(size: 16))
                                             .foregroundStyle(Theme.danger)
                                     }
 
@@ -2856,7 +2857,7 @@ struct EvalUpcomingMissionsSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -2993,7 +2994,7 @@ struct EvalHubView: View {
     private func hubGroupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(Color(hex: 0x8E8E93))
                 .padding(.leading, 6)
 
@@ -3007,24 +3008,24 @@ struct EvalHubView: View {
     private func hubRowView(icon: String, title: String, badge: String? = nil) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text(title)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let badge {
                 Text(badge)
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(.horizontal, 16)
@@ -3077,7 +3078,7 @@ struct EvalFriendsView: View {
 
                     if store.isConfigured && !store.friends.isEmpty {
                         HStack(spacing: 10) {
-                            Image(systemName: "magnifyingglass").font(.system(size: 18, weight: .medium))
+                            Image(systemName: "magnifyingglass").font(.system(size: 21, weight: .medium))
                             TextField("Rechercher des amis", text: $searchQuery)
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
@@ -3204,10 +3205,10 @@ struct EvalFriendsView: View {
                 } label: {
                     Circle()
                         .fill(Color.white.opacity(0.08))
-                        .frame(width: 38, height: 38)
+                        .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 16, weight: .bold))
                                 .foregroundStyle(.white)
                         )
                 }
@@ -3218,10 +3219,10 @@ struct EvalFriendsView: View {
                 } label: {
                     Circle()
                         .fill(Color.white.opacity(0.08))
-                        .frame(width: 38, height: 38)
+                        .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "person.crop.circle.badge.clock")
-                                .font(.system(size: 15))
+                                .font(.system(size: 17))
                                 .foregroundStyle(Theme.danger)
                         )
                 }
@@ -3242,10 +3243,10 @@ struct EvalFriendsView: View {
                 } label: {
                     Circle()
                         .fill(Color.white.opacity(0.08))
-                        .frame(width: 38, height: 38)
+                        .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "ellipsis")
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.system(size: 17, weight: .bold))
                                 .foregroundStyle(Theme.danger)
                         )
                 }
@@ -3258,10 +3259,10 @@ struct EvalFriendsView: View {
                 } label: {
                     Circle()
                         .fill(Color.white.opacity(0.08))
-                        .frame(width: 38, height: 38)
+                        .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "person.crop.circle.badge.plus")
-                                .font(.system(size: 15))
+                                .font(.system(size: 17))
                                 .foregroundStyle(Theme.danger)
                         )
                 }
@@ -3282,25 +3283,25 @@ struct EvalFriendsView: View {
                                 .resizable()
                                 .interpolation(.high)
                                 .scaledToFill()
-                                .frame(width: 44, height: 44)
+                                .frame(width: 51, height: 51)
                                 .clipShape(.rect(cornerRadius: 12))
                         default:
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color(hex: 0x1A1C24))
-                                .frame(width: 44, height: 44)
+                                .frame(width: 51, height: 51)
                                 .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                         }
                     }
                 } else {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color(hex: 0x1A1C24))
-                        .frame(width: 44, height: 44)
+                        .frame(width: 51, height: 51)
                         .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                 }
 
                 Circle()
                     .fill(Color(hex: 0x8E8E93))
-                    .frame(width: 13, height: 13)
+                    .frame(width: 15, height: 15)
                     .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
@@ -3331,7 +3332,7 @@ struct EvalFriendsView: View {
     private var disconnectedConnectCard: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.2.badge.gearshape.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 46))
                 .foregroundStyle(Theme.danger)
 
             VStack(spacing: 6) {
@@ -3367,7 +3368,7 @@ struct EvalFriendsView: View {
     private var emptyFriendsCard: some View {
         VStack(spacing: 14) {
             Image(systemName: "person.2.slash")
-                .font(.system(size: 40))
+                .font(.system(size: 46))
                 .foregroundStyle(.secondary)
 
             Text("Aucun ami sur ce compte")
@@ -3427,7 +3428,7 @@ struct EvalFriendCard: View {
                 HStack {
                     Spacer()
                     Image(systemName: "crown")
-                        .font(.system(size: 44, weight: .light))
+                        .font(.system(size: 51, weight: .light))
                         .foregroundStyle(Color.white.opacity(0.04))
                         .offset(x: -60)
                     Spacer()
@@ -3440,11 +3441,11 @@ struct EvalFriendCard: View {
                         AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
                             switch phase {
                             case .success(let image):
-                                image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                                image.resizable().scaledToFill().frame(width: 51, height: 51).clipShape(.rect(cornerRadius: 12))
                             default:
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color(hex: 0x1A1C24))
-                                    .frame(width: 44, height: 44)
+                                    .frame(width: 51, height: 51)
                                     .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                             }
                         }
@@ -3452,14 +3453,14 @@ struct EvalFriendCard: View {
                         if friend.isInGame {
                             Circle()
                                 .fill(Color(hex: 0xFD4556))
-                                .frame(width: 13, height: 13)
-                                .overlay(Rectangle().fill(Color.white).frame(width: 6, height: 1.8))
+                                .frame(width: 15, height: 15)
+                                .overlay(Rectangle().fill(Color.white).frame(width: 7, height: 2))
                                 .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                                 .offset(x: 2, y: 2)
                         } else if friend.isOnline {
                             Circle()
                                 .fill(Color(hex: 0x22C55E))
-                                .frame(width: 13, height: 13)
+                                .frame(width: 15, height: 15)
                                 .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
                                 .offset(x: 2, y: 2)
                         }
@@ -3522,21 +3523,21 @@ struct EvalFriendCard: View {
                                     image
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(width: 32, height: 32)
+                                        .frame(width: 37, height: 37)
                                 } else {
                                     Image(systemName: "rhombus.fill")
-                                        .font(.system(size: 20))
+                                        .font(.system(size: 23))
                                         .foregroundStyle(tierRingColor(tier: friend.tierNumber))
                                 }
                             }
                         } else {
                             Image(systemName: "rhombus.fill")
-                                .font(.system(size: 20))
+                                .font(.system(size: 23))
                                 .foregroundStyle(tierRingColor(tier: friend.tierNumber))
                         }
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -3572,11 +3573,11 @@ struct EvalOfflineFriendCard: View {
                 AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
                     switch phase {
                     case .success(let image):
-                        image.resizable().scaledToFill().frame(width: 44, height: 44).clipShape(.rect(cornerRadius: 12))
+                        image.resizable().scaledToFill().frame(width: 51, height: 51).clipShape(.rect(cornerRadius: 12))
                     default:
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color(hex: 0x1A1C24))
-                            .frame(width: 44, height: 44)
+                            .frame(width: 51, height: 51)
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
                 }
@@ -3584,7 +3585,7 @@ struct EvalOfflineFriendCard: View {
 
                 Circle()
                     .fill(Color(hex: 0x64748B))
-                    .frame(width: 11, height: 11)
+                    .frame(width: 13, height: 13)
                     .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
@@ -3612,17 +3613,17 @@ struct EvalOfflineFriendCard: View {
                     AsyncImage(url: friend.rankIconURL) { phase in
                         switch phase {
                         case .success(let image):
-                            image.resizable().scaledToFit().frame(width: 28, height: 28).opacity(0.8)
+                            image.resizable().scaledToFit().frame(width: 32, height: 32).opacity(0.8)
                         default:
                             Image(systemName: "shield.fill")
-                                .font(.system(size: 18))
+                                .font(.system(size: 21))
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
         }
@@ -3728,8 +3729,8 @@ struct EvalFriendSettingsSheet: View {
                 } label: {
                     Circle()
                         .fill(Color.white.opacity(0.08))
-                        .frame(width: 32, height: 32)
-                        .overlay(Image(systemName: "xmark").font(.system(size: 13, weight: .bold)).foregroundStyle(.secondary))
+                        .frame(width: 37, height: 37)
+                        .overlay(Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundStyle(.secondary))
                 }
             }
             .padding(.top, 14)
@@ -3738,7 +3739,7 @@ struct EvalFriendSettingsSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 12) {
                         Image(systemName: "person.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .foregroundStyle(Theme.danger)
 
                         Text("Ouvrir le profil directement")
@@ -3764,7 +3765,7 @@ struct EvalFriendSettingsSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 12) {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .foregroundStyle(Theme.danger)
 
                         Text("Trier les joueurs hors ligne par dernière connexion")
@@ -3810,8 +3811,8 @@ struct EvalFriendHistoryView: View {
                     } label: {
                         Circle()
                             .fill(Color.white.opacity(0.08))
-                            .frame(width: 38, height: 38)
-                            .overlay(Image(systemName: "chevron.left").font(.system(size: 14, weight: .bold)).foregroundStyle(.white))
+                            .frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "chevron.left").font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
                     }
                     .buttonStyle(PressScaleStyle())
 
@@ -3839,7 +3840,7 @@ struct EvalFriendHistoryView: View {
                                         .foregroundStyle(.secondary)
                                 }
                             }
-                            .font(.system(size: 20))
+                            .font(.system(size: 23))
                             .frame(width: 24)
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -3859,7 +3860,7 @@ struct EvalFriendHistoryView: View {
                             Spacer()
 
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(.secondary)
                         }
                         .padding(.horizontal, 14)
@@ -3900,11 +3901,11 @@ struct EvalFriendDetailSheet: View {
                 AsyncImage(url: URL(string: friend.avatarURL ?? "")) { phase in
                     switch phase {
                     case .success(let image):
-                        image.resizable().scaledToFill().frame(width: 54, height: 54).clipShape(.rect(cornerRadius: 14))
+                        image.resizable().scaledToFill().frame(width: 62, height: 62).clipShape(.rect(cornerRadius: 14))
                     default:
                         RoundedRectangle(cornerRadius: 14)
                             .fill(Color(hex: 0x1A1C24))
-                            .frame(width: 54, height: 54)
+                            .frame(width: 62, height: 62)
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
                 }
@@ -3941,7 +3942,7 @@ struct EvalFriendDetailSheet: View {
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "person.fill.xmark")
-                            .font(.system(size: 15))
+                            .font(.system(size: 17))
                             .foregroundStyle(Theme.danger)
                             .frame(width: 22)
 
@@ -3979,7 +3980,7 @@ struct EvalFriendDetailSheet: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: icon)
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Theme.danger)
                     .frame(width: 22)
 
@@ -4027,19 +4028,19 @@ struct EvalSettingsView: View {
                                             Color(hex: 0x1A1C24).overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                                         }
                                     }
-                                    .frame(width: 44, height: 44)
+                                    .frame(width: 51, height: 51)
                                     .clipShape(.rect(cornerRadius: 10))
                                     VStack(alignment: .leading, spacing: 2) {
                                         let parts = handle.split(separator: "#", maxSplits: 1).map(String.init)
                                         (Text(parts.first ?? handle).foregroundStyle(.white) + Text(parts.count > 1 ? "#\(parts[1])" : "").foregroundStyle(.secondary))
-                                            .font(.system(size: 17, weight: .semibold))
+                                            .font(.system(size: 20, weight: .semibold))
                                         if active, let level = store.profile?.level, level > 0 {
                                             Text("Niveau \(level)").font(.caption).foregroundStyle(.secondary)
                                         }
                                     }
                                     Spacer()
                                     if active, let tier = store.profile?.tier, tier > 0 {
-                                        AsyncImage(url: ValorantProfile.tierIcon(tier)) { $0.image?.resizable().scaledToFit() }.frame(width: 34, height: 34)
+                                        AsyncImage(url: ValorantProfile.tierIcon(tier)) { $0.image?.resizable().scaledToFit() }.frame(width: 39, height: 39)
                                     }
                                 }
                                 .padding(16)
@@ -4057,14 +4058,14 @@ struct EvalSettingsView: View {
                         } label: {
                             HStack(spacing: 10) {
                                 Image(systemName: "plus")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(Color(hex: 0xFD5B68))
                                 Text("Ajouter un compte")
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.system(size: 18, weight: .medium))
                                     .foregroundStyle(.white)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
+                                    .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                             }
                             .padding(16)
@@ -4074,7 +4075,7 @@ struct EvalSettingsView: View {
                     .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
                     Text("Touchez un compte pour l’afficher. Appuyez longuement pour le retirer.")
-                        .font(.system(size: 13))
+                        .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
                 }
@@ -4082,24 +4083,24 @@ struct EvalSettingsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 12) {
                         Image(systemName: "desktopcomputer")
-                            .font(.system(size: 18))
+                            .font(.system(size: 21))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                         Text(selectedPlatform)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(.white)
                         Spacer()
                         Button("Modifier") {
                             selectedPlatform = selectedPlatform == "PC" ? "Console" : "PC"
                             store.leaderboardPlatform = selectedPlatform == "PC" ? "pc" : "console"
                         }
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
                     }
                     .padding(16)
                     .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
                     Text("Sélectionnez la plateforme sur laquelle vous jouez. Vous pouvez consulter les données des autres plateformes en utilisant le sélecteur de plateforme sur n'importe quel profil.")
-                        .font(.system(size: 13))
+                        .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
                 }
@@ -4128,11 +4129,11 @@ struct EvalSettingsView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "sun.max")
-                            .font(.system(size: 16))
+                            .font(.system(size: 18))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                             .frame(width: 24)
                         Text("Thème")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundStyle(.white)
                         Spacer()
                         Picker("Thème", selection: $selectedTheme) {
@@ -4162,17 +4163,17 @@ struct EvalSettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "square.and.pencil")
-                                .font(.system(size: 16))
+                                .font(.system(size: 18))
                                 .foregroundStyle(Color(hex: 0xFD5B68))
                                 .frame(width: 24)
                             Text("Couleur d'accentuation")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Circle()
                                 .strokeBorder(Color(hex: 0xFD5B68), lineWidth: 3)
                                 .background(Circle().fill(Color(hex: 0xFD5B68).opacity(0.4)))
-                                .frame(width: 22, height: 22)
+                                .frame(width: 25, height: 25)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
@@ -4185,15 +4186,15 @@ struct EvalSettingsView: View {
                     NavigationLink { EvalAboutView() } label: {
                     HStack(spacing: 14) {
                         Image(systemName: "info.circle")
-                            .font(.system(size: 16))
+                            .font(.system(size: 18))
                             .foregroundStyle(Color(hex: 0xFD5B68))
                             .frame(width: 24)
                         Text("À propos")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundStyle(.white)
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.horizontal, 16)
@@ -4207,15 +4208,15 @@ struct EvalSettingsView: View {
                     Link(destination: URL(string: "https://discord.gg/ethone")!) {
                         HStack(spacing: 14) {
                             Image(systemName: "bubble.left.and.bubble.right.fill")
-                                .font(.system(size: 16))
+                                .font(.system(size: 18))
                                 .foregroundStyle(Color(hex: 0xFD5B68))
                                 .frame(width: 24)
                             Text("Serveur Discord")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Image(systemName: "arrow.up.right")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .padding(.horizontal, 16)
@@ -4227,15 +4228,15 @@ struct EvalSettingsView: View {
                     NavigationLink { EvalFAQView() } label: {
                         HStack(spacing: 14) {
                             Image(systemName: "questionmark.circle")
-                                .font(.system(size: 16))
+                                .font(.system(size: 18))
                                 .foregroundStyle(Color(hex: 0xFD5B68))
                                 .frame(width: 24)
                             Text("FAQ")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundStyle(.white)
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .padding(.horizontal, 16)
@@ -4270,24 +4271,24 @@ struct EvalSettingsView: View {
     private func settingsNavRow(icon: String, title: String, detail: String? = nil) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundStyle(Color(hex: 0xFD5B68))
                 .frame(width: 24)
 
             Text(title)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(.white)
 
             Spacer()
 
             if let detail {
                 Text(detail)
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(.horizontal, 16)
@@ -4341,16 +4342,16 @@ struct EvalRiotAccountRow: View {
                 if riot.isLinked { confirmSignOut = true } else { showingLogin = true }
             } label: {
                 HStack(spacing: 14) {
-                    Image(systemName: "gamecontroller.fill").font(.system(size: 18)).foregroundStyle(Color(hex: 0xFD5B68)).frame(width: 28)
+                    Image(systemName: "gamecontroller.fill").font(.system(size: 21)).foregroundStyle(Color(hex: 0xFD5B68)).frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(riot.isLinked ? "Compte Riot connecté" : "Connecter mon compte Riot")
-                            .font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
+                            .font(.system(size: 18, weight: .medium)).foregroundStyle(.white)
                         if let creds = riot.credentials {
-                            Text("\(creds.gameName)#\(creds.tagLine) · \(creds.region.uppercased())").font(.system(size: 13)).foregroundStyle(Color(hex: 0x8E8E93))
+                            Text("\(creds.gameName)#\(creds.tagLine) · \(creds.region.uppercased())").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
                     }
                     Spacer()
-                    Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 15)).foregroundStyle(Color(hex: 0xFD5B68))
+                    Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 17)).foregroundStyle(Color(hex: 0xFD5B68))
                 }
                 .padding(16)
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))

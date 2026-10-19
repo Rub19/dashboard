@@ -141,16 +141,16 @@ struct EvalPurchaseHistoryView: View {
         VStack(spacing: 0) {
             HStack {
                 Button { dismiss() } label: {
-                    Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
-                        .overlay(Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white))
+                    Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                        .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white))
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Text("Historique des achats").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                Text("Historique des achats").font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
                 Spacer()
                 Button { capturing = true } label: {
-                    Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
-                        .overlay(Image(systemName: "arrow.clockwise").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white))
+                    Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                        .overlay(Image(systemName: "arrow.clockwise").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white))
                 }
                 .buttonStyle(.plain)
                 .opacity(history == nil ? 0 : 1)
@@ -181,7 +181,7 @@ struct EvalPurchaseHistoryView: View {
                 .frame(maxHeight: .infinity)
                 Button { capturing = true } label: {
                     Text("Charger depuis Riot")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -222,12 +222,12 @@ struct EvalPurchaseHistoryView: View {
         let list = history.payments
         let totals = Dictionary(grouping: list, by: { $0.currency ?? "" }).mapValues { $0.reduce(0) { $0 + $1.value } }
         VStack(alignment: .leading, spacing: 6) {
-            Text("Total dépensé").font(.system(size: 14, weight: .medium)).foregroundStyle(.white.opacity(0.6))
+            Text("Total dépensé").font(.system(size: 16, weight: .medium)).foregroundStyle(.white.opacity(0.6))
             ForEach(totals.keys.sorted(), id: \.self) { code in
                 Text(totals[code, default: 0].formatted(.currency(code: code)))
-                    .font(.system(size: 28, weight: .bold).monospacedDigit()).foregroundStyle(.white)
+                    .font(.system(size: 32, weight: .bold).monospacedDigit()).foregroundStyle(.white)
             }
-            Text("\(list.count) paiements").font(.system(size: 13)).foregroundStyle(.white.opacity(0.5))
+            Text("\(list.count) paiements").font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
@@ -239,18 +239,18 @@ struct EvalPurchaseHistoryView: View {
         ForEach(Array(list.enumerated()), id: \.offset) { _, payment in
             HStack(spacing: 12) {
                 Image(systemName: "creditcard.fill")
-                    .font(.system(size: 16))
+                    .font(.system(size: 18))
                     .foregroundStyle(Color(hex: 0xFD5B68))
-                    .frame(width: 40, height: 40)
+                    .frame(width: 46, height: 46)
                     .background(Color(hex: 0xFD5B68).opacity(0.15), in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(payment.methodName).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                    Text(payment.methodName).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
                     Text("\(payment.game) · \(payment.date?.formatted(date: .abbreviated, time: .shortened) ?? "—")")
-                        .font(.system(size: 13)).foregroundStyle(.white.opacity(0.5))
+                        .font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
                 }
                 Spacer()
                 Text(payment.value.formatted(.currency(code: payment.currency ?? "USD")))
-                    .font(.system(size: 16, weight: .bold).monospacedDigit()).foregroundStyle(.white)
+                    .font(.system(size: 18, weight: .bold).monospacedDigit()).foregroundStyle(.white)
             }
             .padding(14)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 18))
@@ -270,17 +270,17 @@ struct EvalPurchaseHistoryView: View {
                 AsyncImage(url: EvalCurrency.icon(row.type)) { image in
                     image.resizable().scaledToFit()
                 } placeholder: { Color.clear }
-                .frame(width: 26, height: 26)
-                .frame(width: 40, height: 40)
+                .frame(width: 30, height: 30)
+                .frame(width: 46, height: 46)
                 .background(Color.white.opacity(0.06), in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(EvalCurrency.name(row.type)).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                    Text(EvalCurrency.name(row.type)).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
                     Text(row.date?.formatted(date: .abbreviated, time: .shortened) ?? "—")
-                        .font(.system(size: 13)).foregroundStyle(.white.opacity(0.5))
+                        .font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
                 }
                 Spacer()
                 Text(row.amount >= 0 ? "+\(row.amount.formatted())" : row.amount.formatted())
-                    .font(.system(size: 16, weight: .bold).monospacedDigit())
+                    .font(.system(size: 18, weight: .bold).monospacedDigit())
                     .foregroundStyle(row.amount >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
             }
             .padding(14)

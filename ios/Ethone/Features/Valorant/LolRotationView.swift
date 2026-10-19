@@ -85,7 +85,7 @@ struct LolRotationView: View {
                         default: Image(systemName: "person.crop.square").foregroundStyle(.secondary)
                         }
                     }
-                    .frame(width: 56, height: 56)
+                    .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     Text(champion.name).font(.caption.weight(.semibold)).lineLimit(1)
                 }

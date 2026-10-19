@@ -45,7 +45,7 @@ struct ValorantStoreView: View {
                         Image(systemName: "arrow.clockwise")
                             .font(.headline.weight(.semibold))
                             .foregroundStyle(Theme.danger)
-                            .frame(width: 44, height: 44)
+                            .frame(width: 51, height: 51)
                             .glassEffect(.regular.interactive(), in: .circle)
                     }
                     .buttonStyle(.plain)
@@ -131,7 +131,7 @@ struct ValorantStoreView: View {
             if loaded && bundles.isEmpty && errorMessage == nil {
                     VStack(spacing: 10) {
                         Image(systemName: "bag")
-                            .font(.system(size: 32))
+                            .font(.system(size: 37))
                             .foregroundStyle(.secondary)
                         Text("Aucune offre disponible")
                             .font(.headline)

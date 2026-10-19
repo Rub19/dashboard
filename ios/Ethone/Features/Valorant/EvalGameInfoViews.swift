@@ -209,10 +209,10 @@ struct EvalMapsView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -227,7 +227,7 @@ struct EvalMapsView: View {
             Spacer()
 
             Color.clear
-                .frame(width: 38, height: 38)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
@@ -277,7 +277,7 @@ struct EvalMapsView: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
@@ -641,10 +641,10 @@ struct EvalAgentsView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -659,7 +659,7 @@ struct EvalAgentsView: View {
             Spacer()
 
             Color.clear
-                .frame(width: 38, height: 38)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
@@ -674,10 +674,10 @@ struct EvalAgentsView: View {
                             .resizable()
                             .renderingMode(.template)
                             .scaledToFit()
-                            .frame(width: 18, height: 18)
+                            .frame(width: 21, height: 21)
                     } else {
                         Image(systemName: "circle.grid.cross")
-                            .font(.system(size: 14))
+                            .font(.system(size: 16))
                     }
                 }
                 .foregroundStyle(.secondary)
@@ -724,7 +724,7 @@ struct EvalAgentsView: View {
                         .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                 }
             }
-            .frame(width: 44, height: 44)
+            .frame(width: 51, height: 51)
             .clipShape(.rect(cornerRadius: 12))
 
             Text(agent.displayName)
@@ -734,7 +734,7 @@ struct EvalAgentsView: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
@@ -813,10 +813,10 @@ struct EvalAgentDetailView: View {
             } label: {
                 Circle()
                     .fill(Color(hex: 0x222224))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -831,7 +831,7 @@ struct EvalAgentDetailView: View {
             Spacer()
 
             Color.clear
-                .frame(width: 38, height: 38)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -880,14 +880,14 @@ struct EvalAgentDetailView: View {
                             img.resizable()
                                 .renderingMode(.template)
                                 .scaledToFit()
-                                .frame(width: 22, height: 22)
+                                .frame(width: 25, height: 25)
                                 .foregroundStyle(.white)
                         }
                     }
                 }
 
                 Text(roleFrenchName(agent.role?.displayName ?? ""))
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 23, weight: .bold))
                     .foregroundStyle(.white)
             }
 
@@ -895,7 +895,7 @@ struct EvalAgentDetailView: View {
                 .overlay(Color.white.opacity(0.08))
 
             Text(agent.description)
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(Color(hex: 0xA0A0A5))
                 .lineSpacing(4)
                 .multilineTextAlignment(.leading)
@@ -916,12 +916,12 @@ struct EvalAgentDetailView: View {
                         ZStack {
                             Circle()
                                 .fill(Color(hex: 0x222226))
-                                .frame(width: 56, height: 56)
+                                .frame(width: 64, height: 64)
 
                             if isSelected {
                                 Circle()
                                     .stroke(Color(hex: 0xFD5B68), lineWidth: 2.5)
-                                    .frame(width: 56, height: 56)
+                                    .frame(width: 64, height: 64)
                             }
 
                             if let icon = ability.displayIcon, let url = URL(string: icon) {
@@ -930,7 +930,7 @@ struct EvalAgentDetailView: View {
                                         img.resizable()
                                             .renderingMode(.template)
                                             .scaledToFit()
-                                            .frame(width: 28, height: 28)
+                                            .frame(width: 32, height: 32)
                                             .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.45))
                                     }
                                 }
@@ -944,12 +944,12 @@ struct EvalAgentDetailView: View {
 
             if let ability = activeAbility {
                 Text(ability.displayName)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 23, weight: .bold))
                     .foregroundStyle(.white)
                     .padding(.top, 4)
 
                 Text(ability.description)
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Color(hex: 0xA0A0A5))
                     .lineSpacing(4)
                     .multilineTextAlignment(.leading)
@@ -1210,10 +1210,10 @@ struct EvalWeaponsView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -1228,7 +1228,7 @@ struct EvalWeaponsView: View {
             Spacer()
 
             Color.clear
-                .frame(width: 38, height: 38)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
@@ -1258,7 +1258,7 @@ struct EvalWeaponsView: View {
     private func weaponRow(weapon: ValorantWeaponItem) -> some View {
         HStack(spacing: 12) {
             Text(weapon.displayName)
-                .font(.system(size: 17, weight: .bold))
+                .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.white)
 
             Spacer()
@@ -1277,7 +1277,7 @@ struct EvalWeaponsView: View {
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(Color.white.opacity(0.3))
         }
         .padding(.horizontal, 16)
@@ -1306,7 +1306,7 @@ struct EvalWeaponDetailView: View {
                         generalCard
 
                         Text("Statistiques des armes")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 23, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 4)
@@ -1330,10 +1330,10 @@ struct EvalWeaponDetailView: View {
             } label: {
                 Circle()
                     .fill(Color(hex: 0x222224))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -1348,7 +1348,7 @@ struct EvalWeaponDetailView: View {
             Spacer()
 
             Color.clear
-                .frame(width: 38, height: 38)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -1364,7 +1364,7 @@ struct EvalWeaponDetailView: View {
                             .frame(height: 120)
                     } else {
                         Image(systemName: "scope")
-                            .font(.system(size: 40))
+                            .font(.system(size: 46))
                             .foregroundStyle(.secondary)
                             .frame(height: 120)
                     }
@@ -1386,15 +1386,15 @@ struct EvalWeaponDetailView: View {
                 NavigationLink { EvalWeaponSkinsView(weapon: weapon) } label: {
                 HStack {
                     Text("Skins")
-                        .font(.system(size: 15))
+                        .font(.system(size: 17))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Spacer()
                     HStack(spacing: 6) {
                         Text("\(weapon.skins.count)")
-                            .font(.system(size: 15))
+                            .font(.system(size: 17))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -1427,7 +1427,7 @@ struct EvalWeaponDetailView: View {
                         let end = Int(range.rangeEndMeters ?? 0)
                         HStack(alignment: .top) {
                             Text("Dégâts \(start) – \(end)m")
-                                .font(.system(size: 15))
+                                .font(.system(size: 17))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
 
                             Spacer()
@@ -1446,7 +1446,7 @@ struct EvalWeaponDetailView: View {
                                     Text(formatFrenchNumber(range.legDamage)).foregroundStyle(.white).fontWeight(.medium)
                                 }
                             }
-                            .font(.system(size: 15))
+                            .font(.system(size: 17))
                         }
                         .padding(.vertical, 14)
 
@@ -1469,7 +1469,7 @@ struct EvalWeaponDetailView: View {
                 }
             } else {
                 Text("Arme sans statistiques de tir.")
-                    .font(.system(size: 15))
+                    .font(.system(size: 17))
                     .foregroundStyle(Color(hex: 0x8E8E93))
                     .padding(.vertical, 14)
             }
@@ -1481,11 +1481,11 @@ struct EvalWeaponDetailView: View {
     private func infoRow(title: String, value: String) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(Color(hex: 0x8E8E93))
             Spacer()
             Text(value)
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(.white)
         }
         .padding(.vertical, 14)
@@ -1604,10 +1604,10 @@ struct EvalPlayersSearchView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -1626,10 +1626,10 @@ struct EvalPlayersSearchView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "ellipsis")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(Color(hex: 0xFD4556))
                     )
             }
@@ -1642,7 +1642,7 @@ struct EvalPlayersSearchView: View {
     private var searchField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(.secondary)
 
             TextField("Rechercher RiotID#Tag", text: $searchQuery)
@@ -1665,7 +1665,7 @@ struct EvalPlayersSearchView: View {
                     searchError = nil
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
+                        .font(.system(size: 17))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -1699,7 +1699,7 @@ struct EvalPlayersSearchView: View {
             circularRankBadge(tier: player.tier, showClock: false)
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
@@ -1731,7 +1731,7 @@ struct EvalPlayersSearchView: View {
             circularRankBadge(tier: player.tier, showClock: true)
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
@@ -1758,7 +1758,7 @@ struct EvalPlayersSearchView: View {
                     .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
             }
         }
-        .frame(width: 44, height: 44)
+        .frame(width: 51, height: 51)
         .clipShape(.rect(cornerRadius: 12))
     }
 
@@ -1766,7 +1766,7 @@ struct EvalPlayersSearchView: View {
         ZStack(alignment: .bottomTrailing) {
             Circle()
                 .fill(Color(hex: 0x141820))
-                .frame(width: 34, height: 34)
+                .frame(width: 39, height: 39)
                 .overlay(
                     Circle()
                         .strokeBorder(tierRingColor(tier: tier), lineWidth: 2)
@@ -1779,13 +1779,13 @@ struct EvalPlayersSearchView: View {
                                     image.resizable().scaledToFit().padding(4)
                                 } else {
                                     Image(systemName: "rhombus.fill")
-                                        .font(.system(size: 14))
+                                        .font(.system(size: 16))
                                         .foregroundStyle(tierRingColor(tier: tier))
                                 }
                             }
                         } else {
                             Image(systemName: "rhombus.fill")
-                                .font(.system(size: 14))
+                                .font(.system(size: 16))
                                 .foregroundStyle(tierRingColor(tier: tier))
                         }
                     }
@@ -1794,10 +1794,10 @@ struct EvalPlayersSearchView: View {
             if showClock {
                 Circle()
                     .fill(Color.black)
-                    .frame(width: 13, height: 13)
+                    .frame(width: 15, height: 15)
                     .overlay(
                         Image(systemName: "clock.fill")
-                            .font(.system(size: 7, weight: .bold))
+                            .font(.system(size: 8, weight: .bold))
                             .foregroundStyle(.white)
                     )
                     .offset(x: 2, y: 2)
@@ -1839,7 +1839,7 @@ struct EvalPlayersSearchView: View {
         VStack(spacing: 16) {
             HStack(spacing: 14) {
                 playerAvatar(player: player)
-                    .frame(width: 54, height: 54)
+                    .frame(width: 62, height: 62)
                     .clipShape(.rect(cornerRadius: 14))
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -1858,7 +1858,7 @@ struct EvalPlayersSearchView: View {
                     store.toggleBookmark(player: player)
                 } label: {
                     Image(systemName: store.bookmarkedPlayers.contains(where: { $0.id == player.id }) ? "bookmark.fill" : "bookmark")
-                        .font(.system(size: 20))
+                        .font(.system(size: 23))
                         .foregroundStyle(Color(hex: 0xFD4556))
                 }
                 .buttonStyle(PressScaleStyle())
@@ -1935,10 +1935,10 @@ struct EvalNameHistoryView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -1957,10 +1957,10 @@ struct EvalNameHistoryView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(Color(hex: 0xFD4556))
                     )
             }
@@ -1984,7 +1984,7 @@ struct EvalNameHistoryView: View {
 
                 HStack(spacing: 5) {
                     Image(systemName: "clock.arrow.circlepath")
-                        .font(.system(size: 11))
+                        .font(.system(size: 13))
                         .foregroundStyle(.secondary)
                     Text(change.previousHandle)
                         .font(.caption)
@@ -2001,7 +2001,7 @@ struct EvalNameHistoryView: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
@@ -2134,7 +2134,7 @@ struct EvalLeaderboardView: View {
                                 } label: {
                                     HStack(spacing: 6) {
                                         Image(systemName: "display")
-                                            .font(.system(size: 14))
+                                            .font(.system(size: 16))
                                         Text(regionDisplayName)
                                             .font(.subheadline.weight(.semibold))
                                     }
@@ -2172,10 +2172,10 @@ struct EvalLeaderboardView: View {
             } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                     )
             }
@@ -2192,10 +2192,10 @@ struct EvalLeaderboardView: View {
             Button { showingFilters = true } label: {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "line.3.horizontal.decrease")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(Color(hex: 0xFD4556))
                     )
             }
@@ -2209,7 +2209,7 @@ struct EvalLeaderboardView: View {
     private var searchField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15))
+                .font(.system(size: 17))
                 .foregroundStyle(.secondary)
 
             TextField("Rechercher des joueurs...", text: $searchQuery)
@@ -2223,7 +2223,7 @@ struct EvalLeaderboardView: View {
                     searchQuery = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
+                        .font(.system(size: 17))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -2252,7 +2252,7 @@ struct EvalLeaderboardView: View {
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
                 }
-                .frame(width: 44, height: 44)
+                .frame(width: 51, height: 51)
                 .clipShape(.rect(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -2284,17 +2284,17 @@ struct EvalLeaderboardView: View {
                 if let url = ValorantProfile.tierIcon(myTier) {
                     AsyncImage(url: url) { phase in
                         if let image = phase.image {
-                            image.resizable().scaledToFit().frame(width: 28, height: 28)
+                            image.resizable().scaledToFit().frame(width: 32, height: 32)
                         } else {
                             Image(systemName: "shield.fill")
-                                .font(.system(size: 20))
+                                .font(.system(size: 23))
                                 .foregroundStyle(Color(hex: 0xF5D78E))
                         }
                     }
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
@@ -2303,7 +2303,7 @@ struct EvalLeaderboardView: View {
             HStack {
                 Spacer()
                 Text(myRankWatermark)
-                    .font(.system(size: 48, weight: .black))
+                    .font(.system(size: 55, weight: .black))
                     .foregroundStyle(Color.white.opacity(0.06))
                     .padding(.trailing, 100)
             }
@@ -2352,7 +2352,7 @@ struct EvalLeaderboardView: View {
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
                 }
-                .frame(width: 44, height: 44)
+                .frame(width: 51, height: 51)
                 .clipShape(.rect(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -2386,17 +2386,17 @@ struct EvalLeaderboardView: View {
                 if let url = ValorantProfile.tierIcon(player.tier) {
                     AsyncImage(url: url) { phase in
                         if let image = phase.image {
-                            image.resizable().scaledToFit().frame(width: 28, height: 28)
+                            image.resizable().scaledToFit().frame(width: 32, height: 32)
                         } else {
                             Image(systemName: "shield.fill")
-                                .font(.system(size: 20))
+                                .font(.system(size: 23))
                                 .foregroundStyle(Color(hex: 0xF5D78E))
                         }
                     }
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
@@ -2416,19 +2416,19 @@ struct EvalLeaderboardView: View {
             switch rank {
             case 1:
                 Text("1")
-                    .font(.system(size: 46, weight: .black))
+                    .font(.system(size: 53, weight: .black))
                     .foregroundStyle(Color(hex: 0xF5D78E).opacity(0.18))
             case 2:
                 Text("2")
-                    .font(.system(size: 46, weight: .black))
+                    .font(.system(size: 53, weight: .black))
                     .foregroundStyle(Color.white.opacity(0.06))
             case 3:
                 Text("3")
-                    .font(.system(size: 46, weight: .black))
+                    .font(.system(size: 53, weight: .black))
                     .foregroundStyle(Color(hex: 0xCD7F32).opacity(0.18))
             default:
                 Text("\(rank)")
-                    .font(.system(size: 46, weight: .black))
+                    .font(.system(size: 53, weight: .black))
                     .foregroundStyle(Color.white.opacity(0.05))
             }
         }
@@ -2459,20 +2459,20 @@ struct EvalPlayerSettingsView: View {
             VStack(alignment: .leading, spacing: 18) {
                 HStack {
                     Button { dismiss() } label: {
-                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white))
+                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                            .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white))
                     }
                     .buttonStyle(.plain)
                     Spacer()
-                    Text("Snapshots").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                    Text("Snapshots").font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Button {
                         if store.riot.isLinked { newName = ""; naming = true } else { showingLogin = true }
                     } label: {
-                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
+                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
                             .overlay(Group {
                                 if working { ProgressView().tint(Color(hex: 0xFD5B68)) } else {
-                                    Image(systemName: "plus").font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                                    Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
                                 }
                             })
                     }
@@ -2482,13 +2482,13 @@ struct EvalPlayerSettingsView: View {
                 .padding(.top, 4)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Image(systemName: "slider.horizontal.below.square.and.square.filled").font(.system(size: 36)).foregroundStyle(Color(hex: 0xFD5B68))
-                    Text("Snapshot des paramètres du joueur").font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
+                    Image(systemName: "slider.horizontal.below.square.and.square.filled").font(.system(size: 41)).foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("Snapshot des paramètres du joueur").font(.system(size: 25, weight: .bold)).foregroundStyle(.white)
                     Text("Enregistrer les paramètres en jeu du compte Riot connecté sous forme d’instantané, puis les appliquer à n’importe quel compte ultérieurement.")
-                        .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
+                        .font(.system(size: 18)).foregroundStyle(Color(hex: 0x8E8E93))
                     if !store.riot.isLinked {
                         Button("Connecter mon compte Riot") { showingLogin = true }
-                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
                     }
                 }
                 .padding(20)
@@ -2496,25 +2496,25 @@ struct EvalPlayerSettingsView: View {
                 .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 22))
 
                 if let message {
-                    Text(message).font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
+                    Text(message).font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
                 }
 
                 ForEach(store.snapshots) { snap in
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(snap.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            Text(snap.name).font(.system(size: 21, weight: .semibold)).foregroundStyle(.white)
                             HStack(spacing: 6) {
                                 Text(snap.account)
                                 Text("·")
                                 Text(snap.usedAt.map { "Utilisé \($0.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))" }
                                      ?? "Créé \(snap.createdAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))")
                             }
-                            .font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93)).lineLimit(1)
+                            .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).lineLimit(1)
                         }
                         Spacer()
                         Button { toApply = snap } label: {
-                            Circle().fill(Color(hex: 0xFD5B68).opacity(0.25)).frame(width: 36, height: 36)
-                                .overlay(Image(systemName: "arrow.up.right").font(.system(size: 15, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
+                            Circle().fill(Color(hex: 0xFD5B68).opacity(0.25)).frame(width: 41, height: 41)
+                                .overlay(Image(systemName: "arrow.up.right").font(.system(size: 17, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
                         }
                         .buttonStyle(.plain)
                         .disabled(!store.riot.isLinked || working)

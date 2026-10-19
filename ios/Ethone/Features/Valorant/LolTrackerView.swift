@@ -68,7 +68,7 @@ struct LolTrackerView: View {
                         AsyncImage(url: profile.avatarURL) { phase in
                             if let image = phase.image { image.resizable().scaledToFit() } else { Image(systemName: "person.crop.square").foregroundStyle(.secondary) }
                         }
-                        .frame(width: 56, height: 56)
+                        .frame(width: 64, height: 64)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         VStack(alignment: .leading, spacing: 3) {
                             Text(profile.handle).font(.headline)
@@ -98,7 +98,7 @@ struct LolTrackerView: View {
                             AsyncImage(url: match.icon) { phase in
                                 if let image = phase.image { image.resizable().scaledToFit() } else { Image(systemName: "shield.lefthalf.filled").foregroundStyle(.secondary) }
                             }
-                            .frame(width: 44, height: 44)
+                            .frame(width: 51, height: 51)
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(match.champion).font(.subheadline.weight(.semibold))

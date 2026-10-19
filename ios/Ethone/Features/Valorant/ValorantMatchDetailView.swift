@@ -632,9 +632,16 @@ struct ValorantMatchDetailView: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
-                    Image(systemName: "arrow.left.arrow.right")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
+                    HStack(spacing: 2) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 8))
+                        Rectangle()
+                            .frame(width: 1.5, height: 10)
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 8))
+                            .rotationEffect(.degrees(180))
+                    }
+                    .foregroundStyle(Color(hex: 0xFD5B68))
                 }
 
                 roundsKillsGrid
@@ -644,7 +651,7 @@ struct ValorantMatchDetailView: View {
 
             HStack(spacing: 12) {
                 Image(systemName: "map")
-                    .font(.system(size: 20))
+                    .font(.system(size: 22))
                     .foregroundStyle(Color(hex: 0xFD5B68))
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -668,53 +675,51 @@ struct ValorantMatchDetailView: View {
     }
 
     private var roundsKillsGrid: some View {
-        let roundsCount = 12
-        let roundsWon = [1, 2, 3, 4, 6, 8, 9, 10, 11, 12]
+        let rounds: [(round: Int, won: Bool, ally: [String], enemy: [String])] = [
+            (1, true, ["Jett", "Jett", "Jett", "Reyna", "Skye"], ["Chamber", "Jett", "Phoenix"]),
+            (2, true, ["Jett", "Jett", "Jett", "Jett", "Phoenix"], ["Sova"]),
+            (3, true, ["Jett", "Jett", "Jett", "Harbor", "Skye"], ["Sova", "Sova", "Chamber", "Neon"]),
+            (4, true, ["Jett", "Reyna", "Reyna", "Phoenix", "Skye"], ["Jett"]),
+            (5, false, ["Jett", "Phoenix", "Harbor", "Skye"], ["Sova", "Sova", "Sova", "Neon", "Phoenix"]),
+            (6, true, ["Jett", "Reyna", "Reyna", "Reyna", "Phoenix"], ["Chamber", "Jett"]),
+            (7, false, ["Phoenix", "Harbor", "Harbor"], ["Chamber", "Neon", "Neon", "Phoenix"]),
+            (8, true, ["Jett", "Reyna", "Reyna", "Harbor", "Harbor"], ["Sova", "Chamber"]),
+            (9, true, ["Jett", "Reyna", "Reyna", "Skye", "Phoenix"], ["Chamber"]),
+            (10, true, ["Jett", "Jett", "Phoenix", "Skye", "Harbor"], ["Sova", "Neon"]),
+            (11, true, ["Jett", "Reyna", "Harbor", "Skye", "Phoenix"], ["Chamber"]),
+            (12, true, ["Jett", "Jett", "Reyna", "Reyna", "Skye"], ["Sova", "Phoenix"])
+        ]
 
         return ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
-                ForEach(1...roundsCount, id: \.self) { r in
-                    let won = roundsWon.contains(r)
-
+                ForEach(rounds, id: \.round) { r in
                     VStack(spacing: 6) {
                         VStack(spacing: 4) {
-                            ForEach(0..<(won ? 3 : 1), id: \.self) { _ in
-                                Circle()
-                                    .fill(Color(hex: 0x222224))
-                                    .frame(width: 26, height: 26)
-                                    .overlay(
-                                        Image(systemName: "person.crop.circle.fill")
-                                            .font(.system(size: 22))
-                                            .foregroundStyle(Color(hex: 0x2DD4BF))
-                                    )
-                                    .overlay(Circle().strokeBorder(Color(hex: 0x2DD4BF), lineWidth: 1.5))
+                            ForEach(Array(r.ally.reversed().enumerated()), id: \.offset) { _, agent in
+                                agentAvatar(name: agent, size: 26)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().strokeBorder(Color(hex: 0x2DD4BF), lineWidth: 1.2))
                             }
                         }
-                        .frame(height: 120, alignment: .bottom)
+                        .frame(height: 156, alignment: .bottom)
 
-                        Text("\(r)")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(won ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
-                            .frame(width: 30, height: 30)
+                        Text("\(r.round)")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(r.won ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
+                            .frame(width: 32, height: 32)
                             .background(
-                                won ? Color(hex: 0x2DD4BF).opacity(0.12) : Color(hex: 0xFD5B68).opacity(0.12),
+                                r.won ? Color(hex: 0x16332A) : Color(hex: 0x36181C),
                                 in: .rect(cornerRadius: 6)
                             )
 
                         VStack(spacing: 4) {
-                            ForEach(0..<(won ? 1 : 4), id: \.self) { _ in
-                                Circle()
-                                    .fill(Color(hex: 0x222224))
-                                    .frame(width: 26, height: 26)
-                                    .overlay(
-                                        Image(systemName: "person.crop.circle.fill")
-                                            .font(.system(size: 22))
-                                            .foregroundStyle(Color(hex: 0xFD5B68))
-                                    )
-                                    .overlay(Circle().strokeBorder(Color(hex: 0xFD5B68), lineWidth: 1.5))
+                            ForEach(Array(r.enemy.enumerated()), id: \.offset) { _, agent in
+                                agentAvatar(name: agent, size: 26)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().strokeBorder(Color(hex: 0xFD5B68), lineWidth: 1.2))
                             }
                         }
-                        .frame(height: 120, alignment: .top)
+                        .frame(height: 156, alignment: .top)
                     }
                 }
             }
@@ -746,18 +751,17 @@ struct ValorantMatchDetailView: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 Text("Matrice des duels")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
 
                 duelMatrixGrid
             }
-            .padding(16)
+            .padding(14)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
             HStack(spacing: 6) {
-                Image(systemName: "hand.tap.fill")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
+                Text("👆")
+                    .font(.system(size: 13))
                 Text("Touchez un duel pour voir l'analyse complète.")
                     .font(.system(size: 12))
                     .foregroundStyle(Color(hex: 0x8E8E93))
@@ -771,7 +775,7 @@ struct ValorantMatchDetailView: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Text("85")
-                        .font(.system(size: 22, weight: .heavy))
+                        .font(.system(size: 24, weight: .heavy))
                         .foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity)
@@ -781,7 +785,7 @@ struct ValorantMatchDetailView: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Text("8")
-                        .font(.system(size: 22, weight: .heavy))
+                        .font(.system(size: 24, weight: .heavy))
                         .foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity)
@@ -791,7 +795,7 @@ struct ValorantMatchDetailView: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                     Text("67%")
-                        .font(.system(size: 22, weight: .heavy))
+                        .font(.system(size: 24, weight: .heavy))
                         .foregroundStyle(Color(hex: 0x2DD4BF))
                 }
                 .frame(maxWidth: .infinity)
@@ -802,43 +806,31 @@ struct ValorantMatchDetailView: View {
     }
 
     private func duelCard(icon: String, title: String, allyAgent: String, enemyAgent: String, score: String, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
                     .font(.system(size: 11))
-                    .foregroundStyle(Color(hex: 0xFD5B68))
+                    .foregroundStyle(icon == "flame.fill" ? Color(hex: 0xFD5B68) : Color(hex: 0x8E8E93))
                 Text(title)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
-            HStack(spacing: 10) {
-                Circle()
-                    .fill(Color(hex: 0x222224))
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Image(systemName: "person.crop.circle.fill")
-                            .font(.system(size: 28))
-                            .foregroundStyle(.white)
-                    )
+            HStack(spacing: 12) {
+                agentAvatar(name: allyAgent, size: 36)
+                    .clipShape(Circle())
 
                 VStack(spacing: 2) {
                     Text(score)
-                        .font(.system(size: 15, weight: .heavy))
+                        .font(.system(size: 17, weight: .heavy))
                         .foregroundStyle(.white)
                     Text(subtitle)
-                        .font(.system(size: 10))
+                        .font(.system(size: 11))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
 
-                Circle()
-                    .fill(Color(hex: 0x222224))
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Image(systemName: "person.crop.circle.fill")
-                            .font(.system(size: 28))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-                    )
+                agentAvatar(name: enemyAgent, size: 36)
+                    .clipShape(Circle())
             }
             .frame(maxWidth: .infinity)
         }
@@ -849,7 +841,7 @@ struct ValorantMatchDetailView: View {
 
     private var duelMatrixGrid: some View {
         let allies = ["Jett", "Reyna", "Phoenix", "Harbor", "Skye"]
-        let enemies = ["Sova", "Chamber", "Jett", "Neon", "Iso"]
+        let enemies = ["Sova", "Chamber", "Jett", "Neon", "Phoenix"]
         let gridValues: [[(Int, Int)]] = [
             [(6, 1), (1, 1), (3, 1), (5, 1), (5, 1)],
             [(2, 0), (4, 2), (3, 1), (1, 1), (2, 0)],
@@ -860,53 +852,50 @@ struct ValorantMatchDetailView: View {
 
         return VStack(spacing: 6) {
             HStack(spacing: 6) {
-                Color.clear.frame(width: 36, height: 36)
+                Color.clear.frame(width: 44, height: 44)
                 ForEach(enemies, id: \.self) { en in
-                    Circle()
-                        .fill(Color(hex: 0xFD5B68).opacity(0.18))
-                        .frame(width: 36, height: 36)
+                    agentAvatar(name: en, size: 44)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                         .overlay(
-                            Image(systemName: "person.crop.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(Color(hex: 0xFD5B68).opacity(0.45), lineWidth: 1.5)
                         )
+                        .frame(maxWidth: .infinity)
                 }
             }
 
             ForEach(0..<allies.count, id: \.self) { row in
                 HStack(spacing: 6) {
-                    Circle()
-                        .fill(Color(hex: 0x2DD4BF).opacity(0.18))
-                        .frame(width: 36, height: 36)
+                    agentAvatar(name: allies[row], size: 44)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                         .overlay(
-                            Image(systemName: "person.crop.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundStyle(Color(hex: 0x2DD4BF))
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(Color(hex: 0x2DD4BF).opacity(0.45), lineWidth: 1.5)
                         )
 
                     ForEach(0..<enemies.count, id: \.self) { col in
                         let pair = gridValues[row][col]
                         let won = pair.0 > pair.1
                         let lost = pair.0 < pair.1
-                        let even = pair.0 == pair.1
+                        let zero = pair.0 == 0 && pair.1 == 0
 
                         VStack {
                             HStack(spacing: 2) {
                                 Text("\(pair.0)")
-                                    .foregroundStyle(won ? Color(hex: 0x2DD4BF) : .white)
+                                    .foregroundStyle(won ? Color(hex: 0x2DD4BF) : (zero ? Color(hex: 0x545458) : .white))
                                 Text(":")
-                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                                    .foregroundStyle(zero ? Color(hex: 0x545458) : .white)
                                 Text("\(pair.1)")
-                                    .foregroundStyle(lost ? Color(hex: 0xFD5B68) : .white)
+                                    .foregroundStyle(lost ? Color(hex: 0xFD5B68) : (zero ? Color(hex: 0x545458) : .white))
                             }
-                            .font(.system(size: 11, weight: .bold).monospacedDigit())
+                            .font(.system(size: 13, weight: .bold).monospacedDigit())
                         }
                         .frame(maxWidth: .infinity)
-                        .frame(height: 36)
+                        .frame(height: 44)
                         .background(
-                            won ? Color(hex: 0x2DD4BF).opacity(0.14) :
-                            (lost ? Color(hex: 0xFD5B68).opacity(0.14) : Color(hex: 0x222224)),
-                            in: .rect(cornerRadius: 6)
+                            won ? Color(hex: 0x163328) :
+                            (lost ? Color(hex: 0x36181C) : (zero ? Color(hex: 0x1B1B1E) : Color(hex: 0x242428))),
+                            in: .rect(cornerRadius: 8)
                         )
                     }
                 }
@@ -954,25 +943,25 @@ struct ValorantMatchDetailView: View {
                     .padding(.leading, 6)
 
                 VStack(spacing: 0) {
-                    performanceRoundRow(round: 1, won: true, weapon: "gun", kills: 3, deaths: 0, assists: 0)
+                    performanceRoundRow(round: 1, won: true, isPistol: true, kills: 3, deaths: 0, assists: 0, killedAgents: ["Sova", "Chamber", "Phoenix"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 2, won: true, weapon: "gun", kills: 4, deaths: 0, assists: 0)
+                    performanceRoundRow(round: 2, won: true, isPistol: true, kills: 4, deaths: 0, assists: 0, killedAgents: ["Sova", "Chamber", "Neon", "Phoenix"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 3, won: true, weapon: "rifle", kills: 3, deaths: 0, assists: 1)
+                    performanceRoundRow(round: 3, won: true, isPistol: false, kills: 3, deaths: 0, assists: 1, killedAgents: ["Sova", "Chamber", "Phoenix"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 4, won: true, weapon: "rifle", kills: 1, deaths: 0, assists: 0)
+                    performanceRoundRow(round: 4, won: true, isPistol: false, kills: 1, deaths: 0, assists: 0, killedAgents: ["Reyna"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 5, won: false, weapon: "rifle", kills: 1, deaths: 1, assists: 0)
+                    performanceRoundRow(round: 5, won: false, isPistol: false, kills: 1, deaths: 1, assists: 0, killedAgents: ["Neon"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 6, won: true, weapon: "rifle", kills: 1, deaths: 1, assists: 0)
+                    performanceRoundRow(round: 6, won: true, isPistol: false, kills: 1, deaths: 1, assists: 0, killedAgents: ["Sova"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 7, won: false, weapon: "rifle", kills: 0, deaths: 1, assists: 1)
+                    performanceRoundRow(round: 7, won: false, isPistol: false, kills: 0, deaths: 1, assists: 1, killedAgents: [])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 8, won: true, weapon: "rifle", kills: 1, deaths: 1, assists: 0)
+                    performanceRoundRow(round: 8, won: true, isPistol: false, kills: 1, deaths: 1, assists: 0, killedAgents: ["Neon"])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 9, won: true, weapon: "rifle", kills: 0, deaths: 0, assists: 1)
+                    performanceRoundRow(round: 9, won: true, isPistol: false, kills: 0, deaths: 0, assists: 1, killedAgents: [])
                     Divider().overlay(Color.white.opacity(0.06))
-                    performanceRoundRow(round: 10, won: true, weapon: "rifle", kills: 1, deaths: 0, assists: 0)
+                    performanceRoundRow(round: 10, won: true, isPistol: false, kills: 1, deaths: 0, assists: 0, killedAgents: ["Neon"])
                 }
                 .padding(.horizontal, 16)
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -992,7 +981,7 @@ struct ValorantMatchDetailView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
                 .background(
-                    performanceFilter == index ? Color(hex: 0x3A3A3C) : Color.clear,
+                    performanceFilter == index ? Color(hex: 0x545458) : Color.clear,
                     in: .capsule
                 )
         }
@@ -1039,7 +1028,7 @@ struct ValorantMatchDetailView: View {
 
                     Path { path in
                         path.move(to: CGPoint(x: 0, y: h * 0.7))
-                        path.addCurve(to: CGPoint(x: w * 0.2, y: h * 0.2), control1: CGPoint(x: w * 0.08, y: h * 0.4), control2: CGPoint(x: w * 0.12, y: h * 0.2))
+                        path.addCurve(to: CGPoint(x: w * 0.16, y: h * 0.2), control1: CGPoint(x: w * 0.08, y: h * 0.4), control2: CGPoint(x: w * 0.12, y: h * 0.2))
                         path.addCurve(to: CGPoint(x: w * 0.45, y: h * 0.75), control1: CGPoint(x: w * 0.3, y: h * 0.2), control2: CGPoint(x: w * 0.35, y: h * 0.75))
                         path.addCurve(to: CGPoint(x: w * 0.7, y: h * 0.35), control1: CGPoint(x: w * 0.55, y: h * 0.75), control2: CGPoint(x: w * 0.6, y: h * 0.35))
                         path.addCurve(to: CGPoint(x: w, y: h * 0.8), control1: CGPoint(x: w * 0.8, y: h * 0.35), control2: CGPoint(x: w * 0.9, y: h * 0.8))
@@ -1057,7 +1046,7 @@ struct ValorantMatchDetailView: View {
 
                     Path { path in
                         path.move(to: CGPoint(x: 0, y: h * 0.7))
-                        path.addCurve(to: CGPoint(x: w * 0.2, y: h * 0.2), control1: CGPoint(x: w * 0.08, y: h * 0.4), control2: CGPoint(x: w * 0.12, y: h * 0.2))
+                        path.addCurve(to: CGPoint(x: w * 0.16, y: h * 0.2), control1: CGPoint(x: w * 0.08, y: h * 0.4), control2: CGPoint(x: w * 0.12, y: h * 0.2))
                         path.addCurve(to: CGPoint(x: w * 0.45, y: h * 0.75), control1: CGPoint(x: w * 0.3, y: h * 0.2), control2: CGPoint(x: w * 0.35, y: h * 0.75))
                         path.addCurve(to: CGPoint(x: w * 0.7, y: h * 0.35), control1: CGPoint(x: w * 0.55, y: h * 0.75), control2: CGPoint(x: w * 0.6, y: h * 0.35))
                         path.addCurve(to: CGPoint(x: w, y: h * 0.8), control1: CGPoint(x: w * 0.8, y: h * 0.35), control2: CGPoint(x: w * 0.9, y: h * 0.8))
@@ -1088,33 +1077,33 @@ struct ValorantMatchDetailView: View {
         }
     }
 
-    private func performanceRoundRow(round: Int, won: Bool, weapon: String, kills: Int, deaths: Int, assists: Int) -> some View {
+    private func performanceRoundRow(round: Int, won: Bool, isPistol: Bool, kills: Int, deaths: Int, assists: Int, killedAgents: [String]) -> some View {
         HStack(spacing: 12) {
             Text("\(round)")
                 .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(won ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
-                .frame(width: 22)
+                .frame(width: 20)
 
-            Image(systemName: weapon == "gun" ? "target" : "scope")
-                .font(.system(size: 13))
-                .foregroundStyle(Color(hex: 0x8E8E93))
+            Group {
+                if isPistol {
+                    pistolSilhouette
+                } else {
+                    rifleSilhouette
+                }
+            }
+            .frame(width: 24)
 
             HStack(spacing: -6) {
-                ForEach(0..<max(1, kills), id: \.self) { _ in
-                    Circle()
-                        .fill(Color(hex: 0x222224))
-                        .frame(width: 22, height: 22)
-                        .overlay(
-                            Image(systemName: "person.crop.circle.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(Color(hex: 0xFD5B68))
-                        )
+                ForEach(Array(killedAgents.enumerated()), id: \.offset) { _, agent in
+                    agentAvatar(name: agent, size: 24)
+                        .clipShape(Circle())
+                        .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 1.5))
                 }
             }
 
             Spacer()
 
-            Text("\(kills)/\(deaths)/\(assists)")
+            Text("\(kills) / \(deaths) / \(assists)")
                 .font(.system(size: 14, weight: .semibold).monospacedDigit())
                 .foregroundStyle(.white)
 
@@ -1134,13 +1123,13 @@ struct ValorantMatchDetailView: View {
                     .padding(.leading, 6)
 
                 VStack(spacing: 0) {
-                    econMetricRow(title: "Dépense moyenne", value: "2 296", delta: "=", isUp: nil)
+                    econMetricRow(title: "Dépense moyenne", value: "2 296", delta: "=", deltaColor: nil)
                     Divider().overlay(Color.white.opacity(0.06))
-                    econMetricRow(title: "Équipement moyen", value: "3 967", delta: "+264", isUp: true)
+                    econMetricRow(title: "Équipement moyen", value: "3 967", delta: "↑ 264", deltaColor: Color(hex: 0x2DD4BF))
                     Divider().overlay(Color.white.opacity(0.06))
-                    econMetricRow(title: "Dégâts / 1 k dépensés", value: "123", delta: "+73", isUp: true)
+                    econMetricRow(title: "Dégâts / 1 k dépensés", value: "123", delta: "↑ 73", deltaColor: Color(hex: 0x2DD4BF))
                     Divider().overlay(Color.white.opacity(0.06))
-                    econMetricRow(title: "Mort avec en réserve", value: "27 400", delta: "+13 211", isUp: false)
+                    econMetricRow(title: "Mort avec en réserve", value: "27 400", delta: "↑ 13 211", deltaColor: Color(hex: 0xFD5B68))
                 }
                 .padding(.horizontal, 20)
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
@@ -1239,13 +1228,90 @@ struct ValorantMatchDetailView: View {
                     }
                     .frame(maxWidth: .infinity)
                 }
+
+                economyScatterPlot
             }
             .padding(16)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
         }
     }
 
-    private func econMetricRow(title: String, value: String, delta: String, isUp: Bool?) -> some View {
+    private var economyScatterPlot: some View {
+        VStack(spacing: 6) {
+            ZStack(alignment: .trailing) {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text("1000").font(.system(size: 9)).foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Text("500").font(.system(size: 9)).foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Text("0").font(.system(size: 9)).foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                }
+                .frame(height: 120)
+
+                GeometryReader { geo in
+                    let w = geo.size.width - 32
+                    let h = geo.size.height
+
+                    Path { path in
+                        path.move(to: CGPoint(x: 0, y: h * 0.5))
+                        path.addLine(to: CGPoint(x: w, y: h * 0.5))
+                        path.move(to: CGPoint(x: 0, y: h * 0.96))
+                        path.addLine(to: CGPoint(x: w, y: h * 0.96))
+                    }
+                    .stroke(Color.white.opacity(0.06), lineWidth: 1)
+
+                    Path { path in
+                        let yPos = h * (1.0 - (282.0 / 1000.0))
+                        path.move(to: CGPoint(x: 0, y: yPos))
+                        path.addLine(to: CGPoint(x: w, y: yPos))
+                    }
+                    .stroke(Color.white.opacity(0.18), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+
+                    Text("Moy. 282")
+                        .font(.system(size: 9))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .position(x: w - 24, y: h * (1.0 - (282.0 / 1000.0)) - 8)
+
+                    let points: [(Double, Double)] = [
+                        (800, 310), (1200, 480), (3900, 420), (4100, 150),
+                        (3900, 140), (4300, 160), (3800, 40), (4200, 170),
+                        (4000, 50), (4100, 160), (4400, 320), (4600, 290)
+                    ]
+
+                    ForEach(0..<points.count, id: \.self) { idx in
+                        let pt = points[idx]
+                        let xRatio = min(1.0, max(0.0, pt.0 / 5000.0))
+                        let yRatio = min(1.0, max(0.0, pt.1 / 1000.0))
+                        let px = xRatio * w
+                        let py = h * (1.0 - yRatio)
+
+                        Circle()
+                            .fill(Color(hex: 0x2DD4BF).opacity(0.85))
+                            .frame(width: 7, height: 7)
+                            .position(x: px, y: py)
+                    }
+                }
+                .frame(height: 120)
+            }
+
+            Text("Valeur de l'équipement (crédits)")
+                .font(.system(size: 11))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 4)
+        }
+    }
+
+    private func econMetricRow(title: String, value: String, delta: String, deltaColor: Color?) -> some View {
         HStack {
             Text(title)
                 .font(.system(size: 15))
@@ -1258,19 +1324,9 @@ struct ValorantMatchDetailView: View {
                     .font(.system(size: 15, weight: .bold).monospacedDigit())
                     .foregroundStyle(.white)
 
-                if let isUp {
-                    HStack(spacing: 2) {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 9, weight: .bold))
-                        Text(delta)
-                            .font(.system(size: 11, weight: .semibold))
-                    }
-                    .foregroundStyle(isUp ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
-                } else {
-                    Text(delta)
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                }
+                Text(delta)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(deltaColor ?? Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.down")
@@ -1314,20 +1370,21 @@ struct ValorantMatchDetailView: View {
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
 
                 Path { path in
-                    path.move(to: CGPoint(x: 0, y: h * 0.9))
-                    path.addCurve(to: CGPoint(x: w * 0.25, y: h * 0.25), control1: CGPoint(x: w * 0.08, y: h * 0.6), control2: CGPoint(x: w * 0.15, y: h * 0.25))
-                    path.addCurve(to: CGPoint(x: w * 0.55, y: h * 0.3), control1: CGPoint(x: w * 0.35, y: h * 0.25), control2: CGPoint(x: w * 0.45, y: h * 0.3))
-                    path.addCurve(to: CGPoint(x: w, y: h * 0.2), control1: CGPoint(x: w * 0.7, y: h * 0.3), control2: CGPoint(x: w * 0.85, y: h * 0.2))
+                    path.move(to: CGPoint(x: 0, y: h * 0.88))
+                    path.addCurve(to: CGPoint(x: w * 0.22, y: h * 0.6), control1: CGPoint(x: w * 0.08, y: h * 0.88), control2: CGPoint(x: w * 0.14, y: h * 0.6))
+                    path.addCurve(to: CGPoint(x: w * 0.45, y: h * 0.22), control1: CGPoint(x: w * 0.3, y: h * 0.6), control2: CGPoint(x: w * 0.38, y: h * 0.22))
+                    path.addCurve(to: CGPoint(x: w * 0.72, y: h * 0.2), control1: CGPoint(x: w * 0.55, y: h * 0.22), control2: CGPoint(x: w * 0.65, y: h * 0.2))
+                    path.addCurve(to: CGPoint(x: w, y: h * 0.15), control1: CGPoint(x: w * 0.82, y: h * 0.2), control2: CGPoint(x: w * 0.92, y: h * 0.15))
                 }
                 .stroke(Color(hex: 0x2DD4BF), lineWidth: 2)
 
                 Path { path in
-                    path.move(to: CGPoint(x: 0, y: h * 0.9))
-                    path.addCurve(to: CGPoint(x: w * 0.2, y: h * 0.55), control1: CGPoint(x: w * 0.08, y: h * 0.85), control2: CGPoint(x: w * 0.12, y: h * 0.55))
-                    path.addCurve(to: CGPoint(x: w * 0.3, y: h * 0.75), control1: CGPoint(x: w * 0.25, y: h * 0.55), control2: CGPoint(x: w * 0.28, y: h * 0.75))
-                    path.addCurve(to: CGPoint(x: w * 0.6, y: h * 0.45), control1: CGPoint(x: w * 0.4, y: h * 0.4), control2: CGPoint(x: w * 0.5, y: h * 0.45))
-                    path.addCurve(to: CGPoint(x: w * 0.75, y: h * 0.7), control1: CGPoint(x: w * 0.65, y: h * 0.45), control2: CGPoint(x: w * 0.7, y: h * 0.7))
-                    path.addCurve(to: CGPoint(x: w, y: h * 0.5), control1: CGPoint(x: w * 0.85, y: h * 0.5), control2: CGPoint(x: w * 0.92, y: h * 0.5))
+                    path.move(to: CGPoint(x: 0, y: h * 0.88))
+                    path.addCurve(to: CGPoint(x: w * 0.2, y: h * 0.5), control1: CGPoint(x: w * 0.08, y: h * 0.88), control2: CGPoint(x: w * 0.12, y: h * 0.5))
+                    path.addCurve(to: CGPoint(x: w * 0.32, y: h * 0.82), control1: CGPoint(x: w * 0.24, y: h * 0.5), control2: CGPoint(x: w * 0.28, y: h * 0.82))
+                    path.addCurve(to: CGPoint(x: w * 0.5, y: h * 0.42), control1: CGPoint(x: w * 0.38, y: h * 0.82), control2: CGPoint(x: w * 0.44, y: h * 0.42))
+                    path.addCurve(to: CGPoint(x: w * 0.7, y: h * 0.75), control1: CGPoint(x: w * 0.6, y: h * 0.42), control2: CGPoint(x: w * 0.65, y: h * 0.75))
+                    path.addCurve(to: CGPoint(x: w, y: h * 0.48), control1: CGPoint(x: w * 0.8, y: h * 0.75), control2: CGPoint(x: w * 0.92, y: h * 0.48))
                 }
                 .stroke(Color(hex: 0xFD5B68), lineWidth: 2)
             }
@@ -1352,20 +1409,26 @@ struct ValorantMatchDetailView: View {
                 }
             } label: {
                 HStack(spacing: 8) {
-                    agentAvatarView(for: targetedPlayer)
-                        .frame(width: 28, height: 28)
-                        .clipShape(Circle())
+                    agentAvatar(name: targetedPlayer.character, size: 28)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
 
                     VStack(alignment: .leading, spacing: 1) {
                         Text("JOUEUR CIBLÉ")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(Color(hex: 0x8E8E93))
-                        Text(targetedPlayer.handle)
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(.white)
+                        HStack(spacing: 0) {
+                            Text(targetedPlayer.name)
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(.white)
+                            if !targetedPlayer.tag.isEmpty {
+                                Text("#\(targetedPlayer.tag)")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
+                            }
+                        }
                     }
 
-                    Image(systemName: "chevron.up.chevron.down")
+                    Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.leading, 4)
@@ -1428,10 +1491,82 @@ struct ValorantMatchDetailView: View {
                     }
                 }
             } else {
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .foregroundStyle(Color(hex: 0x222224))
+                agentAvatar(name: player.character, size: 36)
             }
         }
+    }
+
+    private func agentAvatar(name: String, size: CGFloat = 26) -> some View {
+        let lower = name.lowercased()
+        let staticURLs: [String: String] = [
+            "jett": "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png",
+            "reyna": "https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png",
+            "phoenix": "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png",
+            "harbor": "https://media.valorant-api.com/agents/95b78ed7-4637-86d9-7e41-71ba8c293152/displayicon.png",
+            "skye": "https://media.valorant-api.com/agents/6f2a04ca-43e0-be17-7f36-b3908627744d/displayicon.png",
+            "sova": "https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png",
+            "chamber": "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png",
+            "neon": "https://media.valorant-api.com/agents/bb2a4828-46eb-8cd1-e765-15848195d751/displayicon.png",
+            "iso": "https://media.valorant-api.com/agents/0e38b510-41a8-5780-5e8f-568b2a4f2d6c/displayicon.png",
+            "clove": "https://media.valorant-api.com/agents/1dbf2edd-4729-0984-3115-daa5eed44993/displayicon.png",
+            "omen": "https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png"
+        ]
+        let url = assets.agents[lower] ?? (staticURLs[lower].flatMap(URL.init(string:)))
+
+        return Group {
+            if let url {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFit()
+                    default:
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .foregroundStyle(Color(hex: 0x333336))
+                    }
+                }
+            } else {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .foregroundStyle(Color(hex: 0x333336))
+            }
+        }
+        .frame(width: size, height: size)
+    }
+
+    private var pistolSilhouette: some View {
+        Path { p in
+            p.move(to: CGPoint(x: 2, y: 5))
+            p.addLine(to: CGPoint(x: 18, y: 5))
+            p.addLine(to: CGPoint(x: 18, y: 8))
+            p.addLine(to: CGPoint(x: 10, y: 8))
+            p.addLine(to: CGPoint(x: 8, y: 15))
+            p.addLine(to: CGPoint(x: 5, y: 15))
+            p.addLine(to: CGPoint(x: 7, y: 8))
+            p.addLine(to: CGPoint(x: 2, y: 8))
+            p.closeSubpath()
+        }
+        .fill(Color(hex: 0x8E8E93))
+        .frame(width: 20, height: 16)
+    }
+
+    private var rifleSilhouette: some View {
+        Path { p in
+            p.move(to: CGPoint(x: 0, y: 6))
+            p.addLine(to: CGPoint(x: 22, y: 6))
+            p.addLine(to: CGPoint(x: 22, y: 8))
+            p.addLine(to: CGPoint(x: 15, y: 8))
+            p.addLine(to: CGPoint(x: 14, y: 13))
+            p.addLine(to: CGPoint(x: 12, y: 13))
+            p.addLine(to: CGPoint(x: 12, y: 8))
+            p.addLine(to: CGPoint(x: 7, y: 8))
+            p.addLine(to: CGPoint(x: 5, y: 12))
+            p.addLine(to: CGPoint(x: 2, y: 12))
+            p.addLine(to: CGPoint(x: 4, y: 8))
+            p.addLine(to: CGPoint(x: 0, y: 8))
+            p.closeSubpath()
+        }
+        .fill(Color(hex: 0x8E8E93))
+        .frame(width: 24, height: 14)
     }
 }

@@ -958,16 +958,15 @@ struct EvalCareerSummaryView: View {
                 }
 
                 if selectedQueue == "Compétition", !profile.peakRank.isEmpty {
-                    rankCard
-                }
-
-                if queueMatches.isEmpty {
+                    rankAndPerformanceCard
+                } else if queueMatches.isEmpty {
                     noMatchesCard
                 } else {
-                    performanceCard
+                    performanceOnlyCard
                 }
 
                 allTimeCard
+                previousActCard
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
@@ -1061,77 +1060,91 @@ struct EvalCareerSummaryView: View {
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var performanceCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Performance")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(.white)
+    private var rankAndPerformanceCard: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Rang")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
 
-            HStack(spacing: 0) {
-                careerMetric(value: "76,0%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
-                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                careerMetric(value: "19 / 25", label: "Victoires / Parties", color: Color(hex: 0x22C55E))
+                HStack(spacing: 0) {
+                    VStack(spacing: 6) {
+                        if let icon = ValorantProfile.tierIcon(profile.tier) {
+                            AsyncImage(url: icon) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                default:
+                                    Image(systemName: "shield.fill").font(.largeTitle).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+
+                        Text("IMMORTEL 3")
+                            .font(.system(size: 16, weight: .heavy))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+
+                        Text("319 SC")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+
+                        Text("Rang 666")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 7)
+                            .background(Color(hex: 0xFD5B68), in: .capsule)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    Divider().frame(height: 110).overlay(Color.white.opacity(0.08))
+
+                    VStack(spacing: 8) {
+                        if let peakIcon = ValorantProfile.tierIcon(profile.peakTier) {
+                            AsyncImage(url: peakIcon) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().scaledToFit().frame(width: 52, height: 52)
+                                default:
+                                    Image(systemName: "triangle.fill").font(.largeTitle).foregroundStyle(Color(hex: 0xF5D78E))
+                                }
+                            }
+                        }
+
+                        Text("Appuyer pour agrandir")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Performance")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+
+                HStack(spacing: 0) {
+                    careerMetric(value: "76,0%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
+                    Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+                    careerRatioMetric(wins: 19, total: 25, label: "Victoires / Parties")
+                }
             }
         }
         .padding(16)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private var rankCard: some View {
+    private var performanceOnlyCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Rang")
+            Text("Performance")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(.white)
 
             HStack(spacing: 0) {
-                VStack(spacing: 6) {
-                    if let icon = ValorantProfile.tierIcon(profile.tier) {
-                        AsyncImage(url: icon) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable().scaledToFit().frame(width: 52, height: 52)
-                            default:
-                                Image(systemName: "shield.fill").font(.largeTitle).foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-
-                    Text("IMMORTEL 3")
-                        .font(.system(size: 16, weight: .heavy))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
-
-                    Text("319 SC")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-
-                    Text("Rang 666")
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 7)
-                        .background(Color(hex: 0xFD5B68), in: .capsule)
-                }
-                .frame(maxWidth: .infinity)
-
-                Divider().frame(height: 110).overlay(Color.white.opacity(0.08))
-
-                VStack(spacing: 8) {
-                    if let peakIcon = ValorantProfile.tierIcon(profile.peakTier) {
-                        AsyncImage(url: peakIcon) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable().scaledToFit().frame(width: 52, height: 52)
-                            default:
-                                Image(systemName: "triangle.fill").font(.largeTitle).foregroundStyle(Color(hex: 0xF5D78E))
-                            }
-                        }
-                    }
-
-                    Text("Appuyer pour agrandir")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                }
-                .frame(maxWidth: .infinity)
+                careerMetric(value: winRate, label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
+                Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+                careerRatioMetric(wins: wins, total: queueMatches.count, label: "Victoires / Parties")
             }
         }
         .padding(16)
@@ -1151,12 +1164,32 @@ struct EvalCareerSummaryView: View {
             }
 
             HStack(spacing: 0) {
-                careerMetric(value: "51,4%", label: "Taux de victoire", color: Color(hex: 0x2DD4BF))
+                careerMetric(value: "51,4%", label: "Taux de victoire", color: Color(hex: 0x22C55E))
                 Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
-                careerMetric(value: "432 / 840", label: "Victoires / Parties", color: Color(hex: 0x22C55E))
+                careerRatioMetric(wins: 432, total: 840, label: "Victoires / Parties")
             }
         }
         .padding(16)
+        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+    }
+
+    private var previousActCard: some View {
+        HStack {
+            Text("V26 — ACTE V")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
+            Spacer()
+            HStack(spacing: 6) {
+                Text("56,8%")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color(hex: 0x22C55E))
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
+            }
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 18)
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
@@ -1165,6 +1198,24 @@ struct EvalCareerSummaryView: View {
             Text(value)
                 .font(.system(size: 24, weight: .heavy).monospacedDigit())
                 .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 13))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func careerRatioMetric(wins: Int, total: Int, label: String) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 2) {
+                Text("\(wins)")
+                    .foregroundStyle(Color(hex: 0x22C55E))
+                Text(" / \(total)")
+                    .foregroundStyle(.white)
+            }
+            .font(.system(size: 24, weight: .heavy).monospacedDigit())
+
             Text(label)
                 .font(.system(size: 13))
                 .foregroundStyle(Color(hex: 0x8E8E93))

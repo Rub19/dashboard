@@ -487,7 +487,7 @@ final class ValorantStore {
     // MARK: Compteurs de réglages (par compte Riot)
 
     var userBookmarksCount: Int { bookmarkedPlayers.count }
-    var playerSettingsCount: Int { setting("playerSettingsCount") }
+    var playerSettingsCount: Int { snapshots.count }
     var appearanceProfilesCount: Int { setting("appearanceProfilesCount") }
     var favoritePresetsCount: Int { setting("favoritePresetsCount") }
 
@@ -549,6 +549,10 @@ final class ValorantStore {
         self.api = api
         nameStorage = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         tag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
+        if !nameStorage.isEmpty, !tag.isEmpty, !savedAccounts.contains("\(nameStorage)#\(tag)") {
+            savedAccounts.append("\(nameStorage)#\(tag)")
+            UserDefaults.standard.set(savedAccounts, forKey: Self.accountsKey)
+        }
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
         syncAccountData()
     }
@@ -584,9 +588,33 @@ final class ValorantStore {
         }
     }
 
+    // MARK: Comptes suivis
+
+    private static let accountsKey = "ethone.valorant.accounts"
+    private(set) var savedAccounts: [String] = UserDefaults.standard.stringArray(forKey: "ethone.valorant.accounts") ?? []
+
+    func switchAccount(_ handle: String) {
+        let parts = handle.split(separator: "#", maxSplits: 1).map(String.init)
+        guard parts.count == 2 else { return }
+        save(name: parts[0], tag: parts[1], apiKey: apiKey)
+        Task { await refresh() }
+    }
+
+    func removeAccount(_ handle: String) {
+        savedAccounts.removeAll { $0 == handle }
+        UserDefaults.standard.set(savedAccounts, forKey: Self.accountsKey)
+        guard handle == "\(nameStorage)#\(tag)" else { return }
+        if let next = savedAccounts.first { switchAccount(next) } else { disconnect() }
+    }
+
     func save(name: String, tag: String, apiKey: String) {
         nameStorage = name.trimmingCharacters(in: .whitespaces)
         self.tag = tag.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "#", with: "")
+        let handle = "\(nameStorage)#\(self.tag)"
+        if !nameStorage.isEmpty, !self.tag.isEmpty, !savedAccounts.contains(handle) {
+            savedAccounts.append(handle)
+            UserDefaults.standard.set(savedAccounts, forKey: Self.accountsKey)
+        }
         self.apiKey = apiKey.trimmingCharacters(in: .whitespaces)
         UserDefaults.standard.set(nameStorage, forKey: Self.nameKey)
         UserDefaults.standard.set(self.tag, forKey: Self.tagKey)
@@ -636,6 +664,7 @@ final class ValorantStore {
         await loadActs()
         await loadSeasonGoal()
         await loadShopData()
+        await loadSnapshots()
         await syncAndLoadMatches()
         await loadLeaderboard()
         await loadUpcomingMissions()
@@ -759,6 +788,52 @@ final class ValorantStore {
     }
 
     func isFriend(puuid: String) -> Bool { friendRecords.contains { $0.puuid == puuid } }
+
+    // MARK: Snapshots des paramètres en jeu
+
+    struct SettingsSnapshot: Codable, Identifiable, Hashable {
+        let id: UUID
+        var name: String
+        let account: String
+        let data: String
+        let createdAt: Date
+        var usedAt: Date?
+    }
+
+    private(set) var snapshots: [SettingsSnapshot] = []
+
+    /// Rangées dans une ligne Supabase commune à tous les comptes suivis.
+    private var snapshotCache: ValorantPersonalCache { ValorantPersonalCache(api: api, accountName: "_snapshots", accountTag: "_") }
+
+    func loadSnapshots() async {
+        guard let r = await snapshotCache.read("snapshots", ttl: .infinity) else { return }
+        snapshots = ValorantPersonalCache.decode([SettingsSnapshot].self, from: r.payload) ?? []
+    }
+
+    private func saveSnapshots() {
+        guard let payload = ValorantPersonalCache.encode(snapshots) else { return }
+        let cache = snapshotCache
+        Task { await cache.save(payload, key: "snapshots") }
+    }
+
+    func createSnapshot(name: String) async throws {
+        let data = try await riot.playerSettings()
+        let creds = riot.credentials
+        let account = creds.map { "\($0.gameName)#\($0.tagLine)" } ?? "\(nameStorage)#\(tag)"
+        snapshots.insert(SettingsSnapshot(id: UUID(), name: name, account: account, data: data, createdAt: Date(), usedAt: nil), at: 0)
+        saveSnapshots()
+    }
+
+    func applySnapshot(_ snapshot: SettingsSnapshot) async throws {
+        try await riot.applyPlayerSettings(snapshot.data)
+        if let i = snapshots.firstIndex(where: { $0.id == snapshot.id }) { snapshots[i].usedAt = Date() }
+        saveSnapshots()
+    }
+
+    func deleteSnapshot(_ snapshot: SettingsSnapshot) {
+        snapshots.removeAll { $0.id == snapshot.id }
+        saveSnapshots()
+    }
 
     // MARK: Historique de la boutique et liste de souhaits
 

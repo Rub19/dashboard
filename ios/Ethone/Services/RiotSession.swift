@@ -35,7 +35,14 @@ struct RiotLoginView: UIViewRepresentable {
         config.websiteDataStore = .default()
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
-        view.load(URLRequest(url: RiotAuthURL.authorize))
+        if UserDefaults.standard.bool(forKey: "eval.clearWebLoginOnOpen") {
+            Task { @MainActor in
+                await RiotWebData.clear()
+                view.load(URLRequest(url: RiotAuthURL.authorize))
+            }
+        } else {
+            view.load(URLRequest(url: RiotAuthURL.authorize))
+        }
         return view
     }
 
@@ -146,9 +153,7 @@ final class RiotSession {
     func signOut() async {
         credentials = nil
         Keychain.remove(Self.keychainKey)
-        let store = WKWebsiteDataStore.default()
-        let records = await store.dataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes())
-        await store.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records.filter { $0.displayName.contains("riotgames") })
+        await RiotWebData.clear()
     }
 
     private func persist() {
@@ -235,6 +240,25 @@ final class RiotSession {
     }
 
     enum GameHost { case pd, glz }
+
+    // MARK: Paramètres en jeu (Snapshots)
+
+    private struct Preference: Codable { let type: String; let data: String }
+    private static let preferencesURL = "https://playerpreferences.riotgames.com/playerPref/v3"
+
+    /// Paramètres VALORANT du compte connecté (blob opaque, réappliqué tel quel).
+    func playerSettings() async throws -> String {
+        guard let creds = await validCredentials() else { throw RiotError.http(401) }
+        let pref: Preference = try await send("\(Self.preferencesURL)/getPreference/Ares.PlayerSettings", bearer: creds.accessToken)
+        return pref.data
+    }
+
+    /// Remplace les paramètres en jeu du compte connecté par ceux d'une snapshot.
+    func applyPlayerSettings(_ data: String) async throws {
+        guard let creds = await validCredentials() else { throw RiotError.http(401) }
+        let body = Self.json(Preference(type: "Ares.PlayerSettings", data: data))
+        let _: Preference = try await send("\(Self.preferencesURL)/savePreference", method: "PUT", body: body, bearer: creds.accessToken)
+    }
 }
 
 // MARK: - Données de jeu
@@ -477,5 +501,15 @@ enum EvalCountdown {
         let d = s / 86400, h = (s % 86400) / 3600, m = (s % 3600) / 60, sec = s % 60
         let clock = "\(h):\(String(format: "%02d", m)):\(String(format: "%02d", sec))"
         return d > 0 ? "\(d)j \(clock)" : clock
+    }
+}
+
+/// Cookies et stockage web de la page de connexion Riot.
+@MainActor
+enum RiotWebData {
+    static func clear() async {
+        let store = WKWebsiteDataStore.default()
+        let records = await store.dataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes())
+        await store.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records.filter { $0.displayName.contains("riotgames") })
     }
 }

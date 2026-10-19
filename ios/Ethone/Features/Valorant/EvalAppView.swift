@@ -3972,34 +3972,41 @@ struct EvalSettingsView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(spacing: 0) {
-                        HStack(spacing: 12) {
-                            ZStack(alignment: .bottomTrailing) {
-                                Circle()
-                                    .fill(Color(hex: 0x1A1C24))
-                                    .frame(width: 40, height: 40)
-                                    .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
-
-                                Circle()
-                                    .fill(Color(hex: 0x22C55E))
-                                    .frame(width: 10, height: 10)
-                                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 1.5))
+                        ForEach(store.savedAccounts, id: \.self) { handle in
+                            let active = handle == "\(store.playerName)#\(store.tag)"
+                            Button { if !active { store.switchAccount(handle) } } label: {
+                                HStack(spacing: 12) {
+                                    Group {
+                                        if active, let url = store.profile?.cardURL {
+                                            AsyncImage(url: url) { $0.image?.resizable().scaledToFill() }
+                                        } else {
+                                            Color(hex: 0x1A1C24).overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                                        }
+                                    }
+                                    .frame(width: 44, height: 44)
+                                    .clipShape(.rect(cornerRadius: 10))
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        let parts = handle.split(separator: "#", maxSplits: 1).map(String.init)
+                                        (Text(parts.first ?? handle).foregroundStyle(.white) + Text(parts.count > 1 ? "#\(parts[1])" : "").foregroundStyle(.secondary))
+                                            .font(.system(size: 17, weight: .semibold))
+                                        if active, let level = store.profile?.level, level > 0 {
+                                            Text("Niveau \(level)").font(.caption).foregroundStyle(.secondary)
+                                        }
+                                    }
+                                    Spacer()
+                                    if active, let tier = store.profile?.tier, tier > 0 {
+                                        AsyncImage(url: ValorantProfile.tierIcon(tier)) { $0.image?.resizable().scaledToFit() }.frame(width: 34, height: 34)
+                                    }
+                                }
+                                .padding(16)
+                                .contentShape(.rect)
                             }
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(store.playerName)#\(store.tag)")
-                                    .font(.subheadline.weight(.heavy))
-                                    .foregroundStyle(.white)
-
-                                Text("Compte principal")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button("Retirer ce compte", systemImage: "trash", role: .destructive) { store.removeAccount(handle) }
                             }
-
-                            Spacer()
+                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 16)
                         }
-                        .padding(16)
-
-                        Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 68)
 
                         Button {
                             showingAccountSheet = true
@@ -4022,7 +4029,7 @@ struct EvalSettingsView: View {
                     }
                     .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
-                    Text("Glissez vers la gauche sur un compte pour vous déconnecter et le retirer.")
+                    Text("Touchez un compte pour l’afficher. Appuyez longuement pour le retirer.")
                         .font(.system(size: 13))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
@@ -4039,6 +4046,7 @@ struct EvalSettingsView: View {
                         Spacer()
                         Button("Modifier") {
                             selectedPlatform = selectedPlatform == "PC" ? "Console" : "PC"
+                            store.leaderboardPlatform = selectedPlatform == "PC" ? "pc" : "console"
                         }
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color(hex: 0xFD5B68))
@@ -4051,39 +4059,6 @@ struct EvalSettingsView: View {
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)
                 }
-
-                VStack(spacing: 0) {
-                    HStack(spacing: 14) {
-                        Image(systemName: "pawprint.fill")
-                            .font(.system(size: 16))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-                            .frame(width: 24)
-
-                        Text("Gérer VALPAW+")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-
-                        Spacer()
-                    }
-                    .padding(16)
-
-                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
-
-                    HStack(spacing: 14) {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 16))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-                            .frame(width: 24)
-
-                        Text("Restaurer les achats")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Color(hex: 0xFD5B68))
-
-                        Spacer()
-                    }
-                    .padding(16)
-                }
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
                 EvalRiotAccountRow()
 
@@ -4163,6 +4138,7 @@ struct EvalSettingsView: View {
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
                 VStack(spacing: 0) {
+                    NavigationLink { EvalAboutView() } label: {
                     HStack(spacing: 14) {
                         Image(systemName: "info.circle")
                             .font(.system(size: 16))
@@ -4178,6 +4154,9 @@ struct EvalSettingsView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
+                    .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
 
                     Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
 
@@ -4198,6 +4177,28 @@ struct EvalSettingsView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
                     }
+
+                    Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+
+                    NavigationLink { EvalFAQView() } label: {
+                        HStack(spacing: 14) {
+                            Image(systemName: "questionmark.circle")
+                                .font(.system(size: 16))
+                                .foregroundStyle(Color(hex: 0xFD5B68))
+                                .frame(width: 24)
+                            Text("FAQ")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
             }

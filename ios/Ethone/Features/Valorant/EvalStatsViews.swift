@@ -1471,6 +1471,8 @@ struct EvalAdvancedSettingsView: View {
                     VStack(spacing: 0) {
                         NavigationLink { EvalInterfaceSettingsView() } label: { EvalSettingsRow(icon: "rectangle.on.rectangle", title: "Paramètres de l'interface") }.buttonStyle(.plain)
                         Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 56)
+                        NavigationLink { EvalWebLoginDataView() } label: { EvalSettingsRow(icon: "person.badge.key", title: "Paramètres de connexion") }.buttonStyle(.plain)
+                        Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 56)
                         NavigationLink { EvalStorageView() } label: { EvalSettingsRow(icon: "gearshape.2", title: "Paramètres systèmes") }.buttonStyle(.plain)
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))

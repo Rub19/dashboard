@@ -2440,425 +2440,172 @@ struct EvalLeaderboardView: View {
         }
     }
 }
+/// Snapshots des paramètres en jeu (sensibilité, viseur, touches…) du compte Riot connecté :
+/// copie sauvegardée dans Supabase, réappliquable sur n'importe quel compte Riot connecté.
 struct EvalPlayerSettingsView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var naming = false
+    @State private var newName = ""
+    @State private var working = false
+    @State private var message: String?
+    @State private var toApply: ValorantStore.SettingsSnapshot?
+    @State private var showingLogin = false
+
     private var store: ValorantStore { model.valorant }
 
-    @State private var dpi = ""
-    @State private var sens = ""
-    @State private var crosshairCode = ""
-    @State private var didSave = false
-
-    private var snapshotKey: String {
-        "ethone.valorant.\(store.playerName)#\(store.tag).playerSnapshot"
-    }
-
     var body: some View {
-        ZStack {
-            Theme.bg.ignoresSafeArea()
-
-            ScrollView {
-                VStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Sensibilité de la souris")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
-
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("DPI")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                TextField("DPI", text: $dpi)
-                                    .keyboardType(.numberPad)
-                                    .font(.headline.weight(.bold))
-                                    .foregroundStyle(.white)
-                            }
-
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 2) {
-                                Text("Sensibilité en jeu")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                TextField("Sensibilité", text: $sens)
-                                    .keyboardType(.decimalPad)
-                                    .font(.headline.weight(.bold))
-                                    .foregroundStyle(.white)
-                                    .multilineTextAlignment(.trailing)
-                            }
-                        }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                HStack {
+                    Button { dismiss() } label: {
+                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
+                            .overlay(Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white))
                     }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Code du réticule (Crosshair)")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
-
-                        TextField("Collez votre code de réticule", text: $crosshairCode, axis: .vertical)
-                            .font(.caption.monospaced())
-                            .foregroundStyle(.white)
-                            .padding(10)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 10))
-
-                        if !crosshairCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            Button {
-                                UIPasteboard.general.string = crosshairCode
-                            } label: {
-                                HStack {
-                                    Image(systemName: "doc.on.doc.fill")
-                                    Text("Copier le code de réticule")
-                                }
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.white)
-                                .padding(.vertical, 8)
-                                .frame(maxWidth: .infinity)
-                                .background(Theme.danger, in: .capsule)
-                            }
-                            .buttonStyle(PressScaleStyle())
-                        }
-                    }
-                    .padding(14)
-                    .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-
-                    Button {
-                        let snapshot: [String: String] = [
-                            "dpi": dpi,
-                            "sens": sens,
-                            "crosshair": crosshairCode
-                        ]
-                        UserDefaults.standard.set(snapshot, forKey: snapshotKey)
-                        didSave = true
-                    } label: {
-                        Label(didSave ? "Snapshot enregistré" : "Enregistrer le snapshot", systemImage: didSave ? "checkmark.circle.fill" : "square.and.arrow.down")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Theme.danger, in: .capsule)
-                    }
-                    .buttonStyle(PressScaleStyle())
-                }
-                .padding(16)
-            }
-        }
-        .navigationTitle("Paramètres du joueur")
-        .navigationBarTitleDisplayMode(.inline)
-        .task {
-            guard let snapshot = UserDefaults.standard.dictionary(forKey: snapshotKey) as? [String: String] else { return }
-            dpi = snapshot["dpi"] ?? ""
-            sens = snapshot["sens"] ?? ""
-            crosshairCode = snapshot["crosshair"] ?? ""
-            didSave = true
-        }
-    }
-}
-
-
-struct EvalPurchaseHistoryView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedTab: Int = 0
-    @State private var isLoading: Bool = false
-
-    private struct PaymentRecord: Identifiable {
-        let id = UUID()
-        let vp: String
-        let price: String
-        let date: String
-        let method: String
-    }
-
-    private struct TransactionRecord: Identifiable {
-        let id = UUID()
-        let name: String
-        let cost: String
-        let date: String
-        let category: String
-    }
-
-    // Riot ne fournit pas l'historique d'achats hors client : rien à afficher.
-    private let payments: [PaymentRecord] = []
-    private let transactions: [TransactionRecord] = []
-
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                topBar
-
-                segmentedPicker
-                    .padding(.horizontal, 16)
-                    .padding(.top, 6)
-                    .padding(.bottom, 16)
-
-                if isLoading {
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .tint(Color(hex: 0xFD5B68))
-                            .scaleEffect(1.2)
-                        Text("Chargement de votre historique d’achats...")
-                            .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 140)
+                    .buttonStyle(.plain)
                     Spacer()
-                } else {
-                    ScrollView {
-                        VStack(spacing: 20) {
-                            if selectedTab == 0 {
-                                paymentsSection
-                            } else {
-                                transactionsSection
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 40)
+                    Text("Snapshots").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                    Spacer()
+                    Button {
+                        if store.riot.isLinked { newName = ""; naming = true } else { showingLogin = true }
+                    } label: {
+                        Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
+                            .overlay(Group {
+                                if working { ProgressView().tint(Color(hex: 0xFD5B68)) } else {
+                                    Image(systemName: "plus").font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                                }
+                            })
                     }
-                    .scrollIndicators(.hidden)
+                    .buttonStyle(.plain)
+                    .disabled(working)
+                }
+                .padding(.top, 4)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Image(systemName: "slider.horizontal.below.square.and.square.filled").font(.system(size: 36)).foregroundStyle(Color(hex: 0xFD5B68))
+                    Text("Snapshot des paramètres du joueur").font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
+                    Text("Enregistrer les paramètres en jeu du compte Riot connecté sous forme d’instantané, puis les appliquer à n’importe quel compte ultérieurement.")
+                        .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
+                    if !store.riot.isLinked {
+                        Button("Connecter mon compte Riot") { showingLogin = true }
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0xFD5B68))
+                    }
+                }
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 22))
+
+                if let message {
+                    Text(message).font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
+                }
+
+                ForEach(store.snapshots) { snap in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(snap.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            HStack(spacing: 6) {
+                                Text(snap.account)
+                                Text("·")
+                                Text(snap.usedAt.map { "Utilisé \($0.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))" }
+                                     ?? "Créé \(snap.createdAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))")
+                            }
+                            .font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93)).lineLimit(1)
+                        }
+                        Spacer()
+                        Button { toApply = snap } label: {
+                            Circle().fill(Color(hex: 0xFD5B68).opacity(0.25)).frame(width: 36, height: 36)
+                                .overlay(Image(systemName: "arrow.up.right").font(.system(size: 15, weight: .bold)).foregroundStyle(Color(hex: 0xFD5B68)))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!store.riot.isLinked || working)
+                    }
+                    .padding(18)
+                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 20))
+                    .contextMenu {
+                        Button("Supprimer", systemImage: "trash", role: .destructive) { store.deleteSnapshot(snap) }
+                    }
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 110)
         }
+        .scrollIndicators(.hidden)
+        .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-
-    }
-
-    private var topBar: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Circle()
-                    .fill(Color(hex: 0x222224))
-                    .frame(width: 38, height: 38)
-                    .overlay(
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(.white)
-                    )
-            }
-            .buttonStyle(PressScaleStyle())
-
-            Spacer()
-
-            Text("Historique des achats")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Color.clear
-                .frame(width: 38, height: 38)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-    }
-
-    private var segmentedPicker: some View {
-        HStack(spacing: 0) {
-            Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    selectedTab = 0
-                }
-            } label: {
-                Text("Paiements")
-                    .font(.system(size: 14, weight: selectedTab == 0 ? .semibold : .regular))
-                    .foregroundStyle(selectedTab == 0 ? .white : Color(hex: 0x8E8E93))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        selectedTab == 0 ? Color(hex: 0x3A3A3C) : Color.clear,
-                        in: .capsule
-                    )
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    selectedTab = 1
-                }
-            } label: {
-                Text("Transactions")
-                    .font(.system(size: 14, weight: selectedTab == 1 ? .semibold : .regular))
-                    .foregroundStyle(selectedTab == 1 ? .white : Color(hex: 0x8E8E93))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        selectedTab == 1 ? Color(hex: 0x3A3A3C) : Color.clear,
-                        in: .capsule
-                    )
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(4)
-        .background(Color(hex: 0x161618), in: .capsule)
-    }
-
-    private var paymentsSection: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 0) {
-                HStack {
-                    Text("Total dépensé")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Spacer()
-                    Text("—")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .padding(.vertical, 14)
-
-                Divider().overlay(Color.white.opacity(0.06))
-
-                HStack {
-                    Text("Points Valorant obtenus")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Spacer()
-                    Text("—")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
-                }
-                .padding(.vertical, 14)
-            }
-            .padding(.horizontal, 20)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("HISTORIQUE DES RECHARGES")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
-                    .padding(.leading, 6)
-
-                VStack(spacing: 0) {
-                    ForEach(Array(payments.enumerated()), id: \.element.id) { index, item in
-                        HStack(spacing: 12) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color(hex: 0xFD5B68).opacity(0.15))
-                                    .frame(width: 38, height: 38)
-                                Image(systemName: "creditcard.fill")
-                                    .font(.system(size: 15))
-                                    .foregroundStyle(Color(hex: 0xFD5B68))
-                            }
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(item.vp)
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                Text(item.date)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: 0x8E8E93))
-                            }
-
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 3) {
-                                Text(item.price)
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(.white)
-                                Text(item.method)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: 0x8E8E93))
-                            }
-                        }
-                        .padding(.vertical, 14)
-
-                        if index < payments.count - 1 {
-                            Divider().overlay(Color.white.opacity(0.06))
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .task { await store.loadSnapshots() }
+        .alert("Nommer la Snapshot", isPresented: $naming) {
+            TextField("Titre", text: $newName)
+            Button("Annuler", role: .cancel) {}
+            Button("Sauvegarder") {
+                let name = newName.trimmingCharacters(in: .whitespaces)
+                Task { await run(success: "Snapshot enregistrée.") { try await store.createSnapshot(name: name.isEmpty ? "Snapshot" : name) } }
             }
         }
+        .confirmationDialog(applyTitle, isPresented: Binding(get: { toApply != nil }, set: { if !$0 { toApply = nil } }), titleVisibility: .visible) {
+            Button("Appliquer", role: .destructive) {
+                guard let snap = toApply else { return }
+                Task { await run(success: "Paramètres appliqués. Relancez VALORANT pour les voir.") { try await store.applySnapshot(snap) } }
+            }
+        } message: {
+            Text("Les paramètres en jeu actuels de ce compte seront remplacés.")
+        }
+        .sheet(isPresented: $showingLogin) { EvalRiotLoginSheet() }
     }
 
-    private var transactionsSection: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 0) {
-                HStack {
-                    Text("Objets déverrouillés")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Spacer()
-                    Text("\(transactions.count) articles")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .padding(.vertical, 14)
+    private var applyTitle: String {
+        let target = store.riot.credentials.map { "\($0.gameName)#\($0.tagLine)" } ?? "ce compte"
+        return "Appliquer « \(toApply?.name ?? "") » à \(target) ?"
+    }
 
-                Divider().overlay(Color.white.opacity(0.06))
-
-                HStack {
-                    Text("Total VP investis")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Spacer()
-                    Text("—")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Color(hex: 0xFD5B68))
-                }
-                .padding(.vertical, 14)
-            }
-            .padding(.horizontal, 20)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("ACHATS DANS LA BOUTIQUE")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
-                    .padding(.leading, 6)
-
-                VStack(spacing: 0) {
-                    ForEach(Array(transactions.enumerated()), id: \.element.id) { index, item in
-                        HStack(spacing: 12) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color(hex: 0xFD5B68).opacity(0.15))
-                                    .frame(width: 38, height: 38)
-                                Image(systemName: item.category == "Passe de combat" ? "star.fill" : "cross.case.fill")
-                                    .font(.system(size: 15))
-                                    .foregroundStyle(Color(hex: 0xFD5B68))
-                            }
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(item.name)
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                Text(item.date)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: 0x8E8E93))
-                            }
-
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 3) {
-                                Text(item.cost)
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(Color(hex: 0xFD5B68))
-                                Text(item.category)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: 0x8E8E93))
-                            }
-                        }
-                        .padding(.vertical, 14)
-
-                        if index < transactions.count - 1 {
-                            Divider().overlay(Color.white.opacity(0.06))
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-            }
+    private func run(success: String, _ action: () async throws -> Void) async {
+        working = true
+        defer { working = false }
+        do {
+            try await action()
+            message = success
+        } catch {
+            message = "Échec : \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
         }
     }
 }
 
+/// Riot ne fournit pas l'historique des paiements ni des transactions hors de son client.
+struct EvalPurchaseHistoryView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button { dismiss() } label: {
+                    Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 44, height: 44)
+                        .overlay(Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white))
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                Text("Historique des achats").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                Spacer()
+                Color.clear.frame(width: 44, height: 44)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 4)
+            ContentUnavailableView(
+                "Historique indisponible",
+                systemImage: "creditcard",
+                description: Text("Riot ne partage pas l’historique des paiements et des transactions en dehors de son propre client. Consultez-le sur account.riotgames.com.")
+            )
+            .frame(maxHeight: .infinity)
+            Link("Ouvrir mon compte Riot", destination: URL(string: "https://account.riotgames.com")!)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color(hex: 0xFD5B68), in: .capsule)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 110)
+        }
+        .background(Color.black.ignoresSafeArea())
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+}

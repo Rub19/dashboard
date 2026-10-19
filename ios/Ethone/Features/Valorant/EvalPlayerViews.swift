@@ -62,7 +62,7 @@ struct EvalPlayerProfileView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(item: $selectedMatch) { match in
             ValorantMatchDetailView(match: match, initialTarget: player?.puuid)
         }
@@ -270,7 +270,7 @@ struct EvalShopHistoryView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -312,6 +312,6 @@ struct EvalWishlistView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }

@@ -69,6 +69,8 @@ final class AppModel {
     private(set) var ethoneAvatar: String?
     private(set) var ethoneName: String?
     var morePath = NavigationPath()
+    /// E:VAL ouvert comme une app à part, en plein écran.
+    var evalPresented = false
 
     private(set) var themePreset: ThemePreset = Theme.preset
     private(set) var chosenAccentHex: UInt32? = Theme.chosenAccentHex

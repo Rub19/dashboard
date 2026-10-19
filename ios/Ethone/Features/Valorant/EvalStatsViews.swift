@@ -179,7 +179,7 @@ struct EvalStatisticsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .task { await ValorantAssets.shared.load() }
     }
 
@@ -544,7 +544,7 @@ struct EvalOverviewDetailView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -596,7 +596,7 @@ struct EvalPlayTimeDetailView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func list(_ items: [(String, URL?, EvalStatsEngine)]) -> some View {
@@ -700,7 +700,7 @@ struct EvalHitsDetailView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .task { await ValorantAssets.shared.load() }
     }
 
@@ -765,7 +765,7 @@ struct EvalWinRateDetailView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func dot(_ color: Color, _ label: String) -> some View {
@@ -1043,7 +1043,7 @@ struct EvalSeasonGoalsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private var picker: some View {
@@ -1242,7 +1242,7 @@ struct EvalWeaponSkinsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -1307,7 +1307,7 @@ struct EvalSkinDetailView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(item: Binding(get: { video.map(IdentifiedURL.init) }, set: { video = $0?.url })) { item in
             VideoPlayer(player: AVPlayer(url: item.url)).ignoresSafeArea()
         }
@@ -1400,7 +1400,7 @@ struct EvalStorageView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .confirmationDialog("Supprimer les données locales ?", isPresented: $confirmClear, titleVisibility: .visible) {
             Button("Supprimer", role: .destructive) {
                 for prefix in ["valorant-eval.", "valorant-api.", "valorant-personal-cache."] { DiskCache.remove(prefix: prefix) }
@@ -1447,7 +1447,7 @@ struct EvalResourcesView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             struct Response: Decodable { struct Data: Decodable { let riotClientVersion: String?; let version: String?; let buildDate: String? }; let data: Data }
             guard let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/version")!),
@@ -1484,7 +1484,7 @@ struct EvalAdvancedSettingsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -1511,7 +1511,7 @@ struct EvalInterfaceSettingsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar, .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func toggle(_ icon: String, _ title: String, _ value: Binding<Bool>, _ footer: String) -> some View {

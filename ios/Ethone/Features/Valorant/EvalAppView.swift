@@ -143,86 +143,100 @@ struct EvalLogoView: View {
 
 struct EvalAppView: View {
     @Environment(AppModel.self) private var model
-    @Environment(\.dismiss) private var dismiss
 
-    /// Ouvert depuis « Plus » (poussé) : la barre Ethone se cache, on revient par un swipe.
-    /// Épinglé comme onglet (racine) : la barre Ethone reste pour changer d'onglet.
-    @Environment(\.isPresented) private var isPushed
     @State private var selectedTab: EvalTab = .profile
     @State private var selectedMatch: ValorantMatch?
 
     private var store: ValorantStore { model.valorant }
 
-    @Namespace private var tabGlass
-
     var body: some View {
-        Group {
-            switch selectedTab {
-            case .game:
-                EvalGameView()
-            case .profile:
-                EvalProfileView(selectedMatch: $selectedMatch)
-            case .hub:
-                EvalHubView()
-            case .settings:
-                EvalSettingsView()
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 8) {
-                if selectedTab == .game && store.riot.isLinked {
-                    EvalWalletBar(wallet: store.wallet)
-                }
-                evalTabBar
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 4)
-        }
-        .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
-        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
-        .ethoneScreen()
-        .dynamicTypeSize(.xLarge)
-        .navigationDestination(item: $selectedMatch) { match in
-            ValorantMatchDetailView(match: match)
-        }
-    }
-
-    private var evalTabBar: some View {
-        GlassEffectContainer(spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(EvalTab.allCases) { tab in
-                    let isSelected = selectedTab == tab
-                    Button {
-                        withAnimation(.bouncy(duration: 0.4, extraBounce: 0.12)) { selectedTab = tab }
-                    } label: {
-                        VStack(spacing: 3) {
-                            Image(systemName: tab.icon)
-                                .font(.system(size: 25, weight: isSelected ? .semibold : .regular))
-                            Text(tab.rawValue)
-                                .font(.system(size: 14, weight: isSelected ? .semibold : .medium))
-                        }
-                        .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background {
-                            if isSelected {
-                                Capsule()
-                                    .fill(.clear)
-                                    .glassEffect(.regular.tint(Color(hex: 0xFD5B68).opacity(0.25)).interactive(), in: .capsule)
-                                    .glassEffectID("selection", in: tabGlass)
+        TabView(selection: $selectedTab) {
+            Tab(EvalTab.game.rawValue, systemImage: EvalTab.game.icon, value: EvalTab.game) {
+                NavigationStack {
+                    EvalGameView()
+                        .safeAreaInset(edge: .bottom) {
+                            if store.riot.isLinked {
+                                EvalWalletBar(wallet: store.wallet).padding(.horizontal, 16).padding(.bottom, 6)
                             }
                         }
-                        .contentShape(.capsule)
-                    }
-                    .buttonStyle(.plain)
+                        .evalRoot()
                 }
             }
-            .padding(5)
-            .glassEffect(.regular.interactive(), in: .capsule)
+            Tab(EvalTab.profile.rawValue, systemImage: EvalTab.profile.icon, value: EvalTab.profile) {
+                NavigationStack {
+                    EvalProfileView(selectedMatch: $selectedMatch)
+                        .evalRoot()
+                        .navigationDestination(item: $selectedMatch) { match in
+                            ValorantMatchDetailView(match: match)
+                        }
+                }
+            }
+            Tab(EvalTab.hub.rawValue, systemImage: EvalTab.hub.icon, value: EvalTab.hub) {
+                NavigationStack { EvalHubView().evalRoot() }
+            }
+            Tab(EvalTab.settings.rawValue, systemImage: EvalTab.settings.icon, value: EvalTab.settings) {
+                NavigationStack { EvalSettingsView().evalRoot() }
+            }
         }
+        .tint(Color(hex: 0xFD5B68))
+        .tabBarMinimizeBehavior(.onScrollDown)
         .sensoryFeedback(.selection, trigger: selectedTab)
+        .dynamicTypeSize(.xLarge)
+        .preferredColorScheme(.dark)
+    }
+}
+
+private extension View {
+    /// Racine d'un onglet E:VAL : en-tête maison, et glisser depuis le bord gauche ramène à Ethone.
+    func evalRoot() -> some View {
+        modifier(EvalRootModifier())
+    }
+}
+
+private struct EvalRootModifier: ViewModifier {
+    @Environment(AppModel.self) private var model
+
+    func body(content: Content) -> some View {
+        content
+            .toolbar(.hidden, for: .navigationBar)
+            .background(Color.black.ignoresSafeArea())
+            .overlay(alignment: .leading) {
+                Color.clear
+                    .frame(width: 22)
+                    .contentShape(.rect)
+                    .gesture(DragGesture(minimumDistance: 15).onEnded { value in
+                        if value.translation.width > 70 { model.evalPresented = false }
+                    })
+            }
+    }
+}
+
+/// Point d'entrée d'E:VAL dans Ethone (grille Plus, onglet épinglé, liens) : ouvre l'app plein écran.
+struct EvalLauncherView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.isPresented) private var isPushed
+    @State private var opened = false
+
+    var body: some View {
+        ContentUnavailableView {
+            Label("E:VAL", systemImage: "scope")
+        } description: {
+            Text("Le tracker VALORANT s’ouvre en plein écran. Revenez à Ethone depuis ses Paramètres ou en glissant depuis le bord gauche.")
+        } actions: {
+            Button("Ouvrir E:VAL") { model.evalPresented = true }
+                .buttonStyle(.glassProminent)
+        }
+        .onAppear {
+            guard !opened else { return }
+            opened = true
+            model.evalPresented = true
+        }
+        .onDisappear { opened = false }
+        .onChange(of: model.evalPresented) { _, shown in
+            guard !shown else { return }
+            if isPushed { dismiss() } else { model.requestedSelection = AppTab.home.rawValue }
+        }
     }
 }
 
@@ -2884,20 +2898,20 @@ struct EvalHubView: View {
                             NavigationLink {
                                 EvalFriendsView()
                             } label: {
-                                hubRowView(icon: "person.2", title: "Amis", badge: "24")
+                                hubRowView(icon: "person.2", title: "Amis", badge: "\(store.friends.count)")
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPlayersSearchView()
                             } label: {
-                                hubRowView(icon: "bookmark", title: "Signets", badge: "2")
+                                hubRowView(icon: "bookmark", title: "Signets", badge: "\(store.userBookmarksCount)")
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalNameHistoryView()
@@ -2906,7 +2920,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalLeaderboardView()
@@ -2915,7 +2929,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPurchaseHistoryView()
@@ -2924,12 +2938,12 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPlayerSettingsView()
                             } label: {
-                                hubRowView(icon: "slider.horizontal.2.square", title: "Paramètres du joueur", badge: "1")
+                                hubRowView(icon: "slider.horizontal.2.square", title: "Paramètres du joueur", badge: "\(store.playerSettingsCount)")
                             }
                             .buttonStyle(.plain)
                         }
@@ -2951,7 +2965,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalAgentsView()
@@ -2960,7 +2974,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalWeaponsView()
@@ -2970,9 +2984,9 @@ struct EvalHubView: View {
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 18)
                     .padding(.top, 10)
-                    .padding(.bottom, 96)
+                    .padding(.bottom, 24)
                 }
                 .scrollIndicators(.hidden)
             }
@@ -2992,44 +3006,47 @@ struct EvalHubView: View {
     }
 
     private func hubGroupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 17))
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(Color(hex: 0x8E8E93))
-                .padding(.leading, 6)
+                .padding(.leading, 20)
 
             VStack(spacing: 0) {
                 content()
             }
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
         }
     }
 
     private func hubRowView(icon: String, title: String, badge: String? = nil) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 18) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(.system(size: 25))
                 .foregroundStyle(Color(hex: 0xFD5B68))
-                .frame(width: 24)
+                .frame(width: 36)
 
             Text(title)
-                .font(.system(size: 18, weight: .medium))
+                .font(.system(size: 22, weight: .medium))
                 .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
 
-            Spacer()
+            Spacer(minLength: 8)
 
             if let badge {
                 Text(badge)
-                    .font(.system(size: 17))
+                    .font(.system(size: 22))
                     .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x8E8E93))
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x636366))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 18)
+        .frame(minHeight: 66)
+        .contentShape(.rect)
     }
 }
 
@@ -4014,6 +4031,26 @@ struct EvalSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 topBar
+
+                Button { model.evalPresented = false } label: {
+                    HStack(spacing: 14) {
+                        Image(systemName: "arrow.uturn.backward.circle.fill")
+                            .font(.system(size: 25))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                        Text("Retour à Ethone")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(.white)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0x636366))
+                    }
+                    .padding(.horizontal, 18)
+                    .frame(minHeight: 62)
+                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 24))
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
 
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(spacing: 0) {

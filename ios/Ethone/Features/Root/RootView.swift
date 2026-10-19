@@ -71,6 +71,7 @@ struct MainTabs: View {
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .focusAccessory(model: model, selection: selection)
+        .fullScreenCover(isPresented: Bindable(model).evalPresented) { EvalAppView() }
         .task {
             await model.focus.restore()
             await model.refreshAll()

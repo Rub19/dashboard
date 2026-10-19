@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.76.0 - 2026-10-20
+
+**E:VAL sur iPhone : vraies données, compte Riot et historique des achats**
+
+- Le tracker E:VAL de l'app iOS utilise uniquement de vraies données : matchs, rang, RR et carrière via HenrikDev (Worker + Supabase, matchs stockés une seule fois et sans requêtes en rafale), images via valorant-api.com.
+- Détail de match complet : tableau des scores, manches, duels, performance, économie et chronologie des manches.
+- Statistiques, récap de session partageable, objectifs de saison, classement filtrable, profil de n'importe quel joueur et chargement de matchs plus anciens.
+- Amis, signets et historique des pseudos limité à vos amis.
+- Connexion au compte Riot sur la page officielle : boutique, packs, accessoires, portefeuille, missions, passe de combat et groupe dans l'onglet Jeu.
+- Modifier son équipement VALORANT depuis le téléphone : skins, cartes, titres, tags, confidentialité, profils d'apparence et tirage aléatoire.
+- Historique des achats : paiements et transactions de VP, radianite et crédits de royaume, lus sur la page support de Riot et gardés sur le téléphone.
+- Liste de souhaits signalée dans la boutique, historique de la boutique, snapshots des paramètres en jeu et plusieurs comptes.
+- Barre d'onglets Liquid Glass, interface agrandie de 15 %, swipe de gauche à droite pour revenir en arrière partout.
+- La carte de joueur s'affiche même quand HenrikDev la renvoie vide (reprise du dernier match).
+
 ## v1.75.152 - 2026-10-18
 
 **E:Val : resume de carriere et analyses de match**

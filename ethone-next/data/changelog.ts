@@ -59596,4 +59596,80 @@ CHANGELOG_BY_LANG.en.unshift(v12936_en);
 CHANGELOG_BY_LANG.es.unshift(v12936_es);
 CHANGELOG_BY_LANG.de.unshift(v12936_de);
 
+const v12937_fr: ChangelogEntry = {
+  version: "v1.76.0",
+  date: "2026-10-20",
+  title: "E:VAL sur iPhone : vraies données, compte Riot et historique des achats",
+  items: [
+    "Le tracker E:VAL de l'app iOS utilise uniquement de vraies données : matchs, rang, RR et carrière via HenrikDev (Worker + Supabase, matchs stockés une seule fois et sans requêtes en rafale), images via valorant-api.com.",
+    "Détail de match complet : tableau des scores, manches, duels, performance, économie et chronologie des manches.",
+    "Statistiques, récap de session partageable, objectifs de saison, classement filtrable, profil de n'importe quel joueur et chargement de matchs plus anciens.",
+    "Amis, signets et historique des pseudos limité à vos amis.",
+    "Connexion au compte Riot sur la page officielle : boutique, packs, accessoires, portefeuille, missions, passe de combat et groupe dans l'onglet Jeu.",
+    "Modifier son équipement VALORANT depuis le téléphone : skins, cartes, titres, tags, confidentialité, profils d'apparence et tirage aléatoire.",
+    "Historique des achats : paiements et transactions de VP, radianite et crédits de royaume, lus sur la page support de Riot et gardés sur le téléphone.",
+    "Liste de souhaits signalée dans la boutique, historique de la boutique, snapshots des paramètres en jeu et plusieurs comptes.",
+    "Barre d'onglets Liquid Glass, interface agrandie de 15 %, swipe de gauche à droite pour revenir en arrière partout.",
+    "La carte de joueur s'affiche même quand HenrikDev la renvoie vide (reprise du dernier match).",
+  ],
+};
+
+const v12937_en: ChangelogEntry = {
+  version: "v1.76.0",
+  date: "2026-10-20",
+  title: "E:VAL on iPhone: real data, Riot account and purchase history",
+  items: [
+    "The iOS E:VAL tracker now uses real data only: matches, rank, RR and career through HenrikDev (Worker + Supabase, each match stored once, no request bursts), images from valorant-api.com.",
+    "Full match details: scoreboard, rounds, duels, performance, economy and round timeline.",
+    "Statistics, shareable session recap, season goals, filterable leaderboard, any player's profile and loading older matches.",
+    "Friends, bookmarks and name history limited to your friends.",
+    "Riot account sign-in on the official page: store, bundles, accessories, wallet, missions, battle pass and party in the Game tab.",
+    "Change your VALORANT loadout from your phone: skins, cards, titles, buddies, privacy, appearance profiles and random pick.",
+    "Purchase history: payments and VP, Radianite and Kingdom Credit transactions, read from Riot's support page and kept on the phone.",
+    "Wishlist highlighted in the store, store history, in-game settings snapshots and multiple accounts.",
+    "Liquid Glass tab bar, interface enlarged by 15%, swipe left to right to go back everywhere.",
+    "The player card now shows even when HenrikDev returns it empty (taken from the latest match).",
+  ],
+};
+
+const v12937_es: ChangelogEntry = {
+  version: "v1.76.0",
+  date: "2026-10-20",
+  title: "E:VAL en iPhone: datos reales, cuenta de Riot e historial de compras",
+  items: [
+    "El tracker E:VAL de iOS usa solo datos reales: partidas, rango, RR y carrera a través de HenrikDev (Worker + Supabase, cada partida guardada una sola vez, sin ráfagas de peticiones), imágenes de valorant-api.com.",
+    "Detalle de partida completo: marcador, rondas, duelos, rendimiento, economía y cronología de rondas.",
+    "Estadísticas, resumen de sesión para compartir, objetivos de temporada, clasificación filtrable, perfil de cualquier jugador y carga de partidas antiguas.",
+    "Amigos, marcadores e historial de nombres limitado a tus amigos.",
+    "Inicio de sesión de Riot en la página oficial: tienda, lotes, accesorios, cartera, misiones, pase de batalla y grupo en la pestaña Juego.",
+    "Cambia tu equipamiento de VALORANT desde el móvil: skins, tarjetas, títulos, colgantes, privacidad, perfiles de apariencia y selección aleatoria.",
+    "Historial de compras: pagos y transacciones de VP, radianita y créditos de reino, leídos desde la página de soporte de Riot y guardados en el móvil.",
+    "Lista de deseos señalada en la tienda, historial de la tienda, snapshots de ajustes del juego y varias cuentas.",
+    "Barra de pestañas Liquid Glass, interfaz un 15 % más grande y deslizar de izquierda a derecha para volver atrás en todas partes.",
+    "La tarjeta de jugador se muestra aunque HenrikDev la devuelva vacía (tomada de la última partida).",
+  ],
+};
+
+const v12937_de: ChangelogEntry = {
+  version: "v1.76.0",
+  date: "2026-10-20",
+  title: "E:VAL auf dem iPhone: echte Daten, Riot-Konto und Kaufverlauf",
+  items: [
+    "Der iOS-Tracker E:VAL nutzt nur noch echte Daten: Matches, Rang, RR und Karriere über HenrikDev (Worker + Supabase, jedes Match nur einmal gespeichert, keine Anfragewellen), Bilder von valorant-api.com.",
+    "Vollständige Matchdetails: Scoreboard, Runden, Duelle, Leistung, Wirtschaft und Rundenverlauf.",
+    "Statistiken, teilbarer Sitzungsrückblick, Saisonziele, filterbare Rangliste, Profil jedes Spielers und Laden älterer Matches.",
+    "Freunde, Lesezeichen und Namensverlauf nur für deine Freunde.",
+    "Anmeldung beim Riot-Konto auf der offiziellen Seite: Shop, Bundles, Zubehör, Wallet, Missionen, Battle Pass und Gruppe im Tab Spiel.",
+    "VALORANT-Ausrüstung vom Handy aus ändern: Skins, Karten, Titel, Anhänger, Privatsphäre, Erscheinungsprofile und Zufallsauswahl.",
+    "Kaufverlauf: Zahlungen sowie VP-, Radianit- und Königreich-Credit-Transaktionen, von Riots Support-Seite gelesen und auf dem Handy gespeichert.",
+    "Wunschliste im Shop markiert, Shop-Verlauf, Snapshots der Spieleinstellungen und mehrere Konten.",
+    "Liquid-Glass-Tableiste, um 15 % vergrößerte Oberfläche, überall von links nach rechts wischen, um zurückzugehen.",
+    "Die Spielerkarte erscheint auch, wenn HenrikDev sie leer liefert (aus dem letzten Match übernommen).",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12937_fr);
+CHANGELOG_BY_LANG.en.unshift(v12937_en);
+CHANGELOG_BY_LANG.es.unshift(v12937_es);
+CHANGELOG_BY_LANG.de.unshift(v12937_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -322,6 +322,21 @@ export async function syncMatches(env, account, { force = false } = {}) {
     });
     account.tier = ranked.tier;
   }
+
+  // La carte équipée du dernier match fait foi (le compte v2 la renvoie parfois vide).
+  const latest = [...compact]
+    .sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt)))
+    .map((m) => m.players.find((p) => p.puuid === account.puuid))
+    .find((p) => p?.card);
+  if (latest && (latest.card !== account.card || (latest.title && latest.title !== account.title))) {
+    const body = { card: latest.card, ...(latest.title ? { title: latest.title } : {}) };
+    await rest(env, `ethone_valorant_accounts?puuid=eq.${encodeURIComponent(account.puuid)}`, {
+      method: "PATCH",
+      body,
+      prefer: "return=minimal"
+    });
+    Object.assign(account, body);
+  }
   return { synced: true, stored: compact.length };
 }
 

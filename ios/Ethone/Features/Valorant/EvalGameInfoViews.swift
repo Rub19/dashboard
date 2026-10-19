@@ -190,7 +190,7 @@ struct EvalMapsView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task {
             await store.fetchMaps()
         }
@@ -622,7 +622,7 @@ struct EvalAgentsView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task {
             await store.fetchAgents()
         }
@@ -798,7 +798,7 @@ struct EvalAgentDetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .onAppear {
             if let firstSlot = sortedAbilities.first?.slot {
                 selectedSlot = firstSlot
@@ -1191,7 +1191,7 @@ struct EvalWeaponsView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task {
             await store.fetchWeapons()
         }
@@ -1320,7 +1320,7 @@ struct EvalWeaponDetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
     }
 
     private var topBar: some View {
@@ -1585,7 +1585,7 @@ struct EvalPlayersSearchView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .navigationDestination(item: $selectedPlayer) { player in
             EvalPlayerProfileView(name: player.name, tag: player.tag)
         }
@@ -1920,7 +1920,7 @@ struct EvalNameHistoryView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task {
             if store.nameChanges.isEmpty {
                 store.loadNameChanges()
@@ -2154,7 +2154,7 @@ struct EvalLeaderboardView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .refreshable {
             await store.loadLeaderboard()
         }
@@ -2532,7 +2532,7 @@ struct EvalPlayerSettingsView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task { await store.loadSnapshots() }
         .alert("Nommer la Snapshot", isPresented: $naming) {
             TextField("Titre", text: $newName)

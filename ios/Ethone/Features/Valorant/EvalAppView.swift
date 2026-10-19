@@ -21,6 +21,7 @@ enum EvalTab: String, CaseIterable, Identifiable {
 struct EvalLockedView: View {
     let title: String
     let message: String
+    var buttonTitle = "Ajouter un compte"
     var onAddAccount: (() -> Void)?
 
     var body: some View {
@@ -43,7 +44,7 @@ struct EvalLockedView: View {
 
             if let onAddAccount {
                 Button(action: onAddAccount) {
-                    Label("Ajouter un compte", systemImage: "plus")
+                    Label(buttonTitle, systemImage: "plus")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 18)
@@ -144,38 +145,43 @@ struct EvalAppView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
 
+    /// Ouvert depuis « Plus » (poussé) : la barre Ethone se cache, on revient par un swipe.
+    /// Épinglé comme onglet (racine) : la barre Ethone reste pour changer d'onglet.
+    @Environment(\.isPresented) private var isPushed
     @State private var selectedTab: EvalTab = .profile
     @State private var selectedMatch: ValorantMatch?
 
     private var store: ValorantStore { model.valorant }
 
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                switch selectedTab {
-                case .game:
-                    EvalGameView()
-                case .profile:
-                    EvalProfileView(selectedMatch: $selectedMatch)
-                case .hub:
-                    EvalHubView()
-                case .settings:
-                    EvalSettingsView()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    @Namespace private var tabGlass
 
+    var body: some View {
+        Group {
+            switch selectedTab {
+            case .game:
+                EvalGameView()
+            case .profile:
+                EvalProfileView(selectedMatch: $selectedMatch)
+            case .hub:
+                EvalHubView()
+            case .settings:
+                EvalSettingsView()
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 8) {
                 if selectedTab == .game && store.riot.isLinked {
                     EvalWalletBar(wallet: store.wallet)
                 }
                 evalTabBar
             }
-            .padding(.horizontal, 18)
-            .padding(.bottom, 10)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 4)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .ethoneScreen()
         .navigationDestination(item: $selectedMatch) { match in
             ValorantMatchDetailView(match: match)
@@ -183,46 +189,39 @@ struct EvalAppView: View {
     }
 
     private var evalTabBar: some View {
-        GlassEffectContainer(spacing: 8) {
+        GlassEffectContainer(spacing: 0) {
             HStack(spacing: 0) {
                 ForEach(EvalTab.allCases) { tab in
                     let isSelected = selectedTab == tab
                     Button {
-                        withAnimation(Motion.snap) {
-                            selectedTab = tab
-                        }
+                        withAnimation(.bouncy(duration: 0.4, extraBounce: 0.12)) { selectedTab = tab }
                     } label: {
-                        VStack(spacing: 4) {
+                        VStack(spacing: 3) {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 18, weight: isSelected ? .bold : .medium))
-                                .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.85))
-
+                                .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
                             Text(tab.rawValue)
-                                .font(.system(size: 10, weight: isSelected ? .bold : .medium))
-                                .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.white.opacity(0.75))
+                                .font(.system(size: 12, weight: isSelected ? .semibold : .medium))
                         }
+                        .foregroundStyle(isSelected ? Color(hex: 0xFD5B68) : Color.primary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 9)
+                        .padding(.vertical, 10)
                         .background {
                             if isSelected {
                                 Capsule()
-                                    .fill(Color(hex: 0xFD5B68).opacity(0.2))
-                                    .glassEffect(.regular.interactive(), in: .capsule)
-                                    .padding(.horizontal, 5)
+                                    .fill(.clear)
+                                    .glassEffect(.regular.tint(Color(hex: 0xFD5B68).opacity(0.25)).interactive(), in: .capsule)
+                                    .glassEffectID("selection", in: tabGlass)
                             }
                         }
+                        .contentShape(.capsule)
                     }
                     .buttonStyle(.plain)
-                    .contentShape(Rectangle())
-                    .sensoryFeedback(.selection, trigger: selectedTab)
                 }
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
+            .padding(5)
             .glassEffect(.regular.interactive(), in: .capsule)
-            .overlay(Capsule().strokeBorder(Color.white.opacity(0.16), lineWidth: 1))
         }
-        .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
+        .sensoryFeedback(.selection, trigger: selectedTab)
     }
 }
 
@@ -1701,8 +1700,11 @@ struct EvalGameView: View {
                 gameContent
             } else {
                 EvalLockedView(
-                    title: "Non connecté",
-                    message: "Connectez votre compte Riot pour voir votre boutique, votre portefeuille, votre équipement et votre groupe.",
+                    title: "Compte Riot non connecté",
+                    message: store.isConfigured
+                        ? "Votre profil \(store.profile?.handle ?? "") est bien suivi. La boutique, le portefeuille et l’équipement demandent en plus une connexion à votre compte Riot."
+                        : "Connectez votre compte Riot pour voir votre boutique, votre portefeuille, votre équipement et votre groupe.",
+                    buttonTitle: "Connecter mon compte Riot",
                     onAddAccount: { showingRiotLogin = true }
                 )
             }

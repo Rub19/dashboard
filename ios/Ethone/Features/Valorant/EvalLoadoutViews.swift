@@ -305,7 +305,7 @@ private struct LoadoutScreen<Content: View>: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
     }
 }
 

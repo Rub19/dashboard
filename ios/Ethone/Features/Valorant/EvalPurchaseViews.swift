@@ -194,7 +194,7 @@ struct EvalPurchaseHistoryView: View {
         }
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .sheet(isPresented: $capturing) {
             NavigationStack {
                 RiotPurchaseCaptureView { data in

@@ -38,7 +38,7 @@ struct EvalAboutView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
     }
 }
 
@@ -79,7 +79,7 @@ struct EvalFAQView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
     }
 }
 
@@ -123,6 +123,6 @@ struct EvalWebLoginDataView: View {
         .scrollIndicators(.hidden)
         .background(Color.black.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
     }
 }

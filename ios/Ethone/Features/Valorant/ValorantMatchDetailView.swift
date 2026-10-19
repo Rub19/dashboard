@@ -92,7 +92,7 @@ struct ValorantMatchDetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar, .tabBar)
         .task {
             await ValorantAssets.shared.load()
             guard evalMatch == nil else { return }

@@ -7,6 +7,8 @@ final class ValorantAssets {
     static let shared = ValorantAssets()
     private(set) var agents: [String: URL] = [:]
     private(set) var maps: [String: URL] = [:]
+    /// Grandes images de carte (bannières des matchs).
+    private(set) var splashes: [String: URL] = [:]
     private var loaded = false
 
     func load() async {
@@ -14,7 +16,7 @@ final class ValorantAssets {
         loaded = true
         struct Page<T: Decodable>: Decodable { let data: [T] }
         struct Agent: Decodable { let displayName: String; let displayIcon: String? }
-        struct GameMap: Decodable { let displayName: String; let listViewIcon: String? }
+        struct GameMap: Decodable { let displayName: String; let listViewIcon: String?; let splash: String? }
         let decoder = JSONDecoder()
         if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true")!),
            let page = try? decoder.decode(Page<Agent>.self, from: data) {
@@ -23,6 +25,7 @@ final class ValorantAssets {
         if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/maps")!),
            let page = try? decoder.decode(Page<GameMap>.self, from: data) {
             maps = Dictionary(page.data.compactMap { m in m.listViewIcon.flatMap(URL.init(string:)).map { (m.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
+            splashes = Dictionary(page.data.compactMap { m in m.splash.flatMap(URL.init(string:)).map { (m.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
         }
     }
 }

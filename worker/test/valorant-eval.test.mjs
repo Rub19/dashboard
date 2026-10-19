@@ -6,7 +6,7 @@ const AGENT = "add6443a-41bd-e414-f6ad-e58d267f4e95";
 const WEAPON = "9c82e19d-4575-0200-1a81-3eacf00cf872";
 
 const v3 = {
-  metadata: { matchid: "11111111-2222-3333-4444-555555555555", map: "Ascent", mode: "Competitive", queue: "Standard", game_start: 1760000000, game_length: 2100 },
+  metadata: { matchid: "11111111-2222-3333-4444-555555555555", map: "Ascent", mode: "Competitive", queue: "Standard", cluster: "Paris", game_start: 1760000000, game_length: 2100 },
   players: {
     all_players: [
       { puuid: "me", name: "Rub19", tag: "Boss", team: "Blue", character: "Jett", currenttier: 24, party_id: "p1",
@@ -27,6 +27,7 @@ test("compactMatch garde ce qu'il faut aux onglets du match", () => {
   assert.equal(m.id, v3.metadata.matchid);
   assert.equal(m.startedAt, new Date(1760000000 * 1000).toISOString());
   assert.equal(m.lengthSec, 2100);
+  assert.equal(m.cluster, "Paris");
   assert.deepEqual(m.teams.Blue, { won: true, rounds: 13 });
   const me = m.players.find((p) => p.puuid === "me");
   assert.equal(me.agentId, AGENT);

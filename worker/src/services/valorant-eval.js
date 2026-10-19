@@ -152,6 +152,7 @@ export function compactMatch(match) {
     queue: safeText(meta.queue, 40),
     season: safeText(meta.season_id, 64),
     version: safeText(meta.game_version, 80),
+    cluster: safeText(meta.cluster, 40),
     startedAt,
     // v3 renvoie game_length en secondes (anciennes réponses en millisecondes).
     lengthSec: num(meta.game_length) > 100000 ? Math.round(num(meta.game_length) / 1000) : num(meta.game_length),

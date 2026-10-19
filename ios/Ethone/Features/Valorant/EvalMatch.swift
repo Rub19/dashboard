@@ -90,6 +90,8 @@ struct EvalMatch: Codable, Identifiable, Hashable {
     let queue: String
     let season: String
     let version: String
+    /// Serveur (« Paris »…), absent des matchs stockés avant son ajout.
+    let cluster: String?
     let startedAt: Date?
     let lengthSec: Int
     let teams: Teams

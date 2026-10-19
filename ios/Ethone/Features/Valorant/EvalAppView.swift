@@ -21,7 +21,7 @@ enum EvalTab: String, CaseIterable, Identifiable {
 struct EvalLockedView: View {
     let title: String
     let message: String
-    let onAddAccount: () -> Void
+    var onAddAccount: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 18) {
@@ -41,15 +41,17 @@ struct EvalLockedView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 340)
 
-            Button(action: onAddAccount) {
-                Label("Ajouter un compte", systemImage: "plus")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(Theme.danger, in: .capsule)
+            if let onAddAccount {
+                Button(action: onAddAccount) {
+                    Label("Ajouter un compte", systemImage: "plus")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 10)
+                        .background(Theme.danger, in: .capsule)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
 
             Spacer()
         }
@@ -164,9 +166,6 @@ struct EvalAppView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             VStack(spacing: 8) {
-                if selectedTab == .game {
-                    EvalWalletBar(wallet: store.wallet)
-                }
 
                 evalTabBar
             }
@@ -250,7 +249,26 @@ struct EvalProfileView: View {
     }
 
     private var recentSessionMatches: [ValorantMatch] {
-        Array(store.matches.prefix(5))
+        var session: [ValorantMatch] = []
+        for match in store.matches {
+            guard let start = match.startedAt else { break }
+            if let last = session.last?.startedAt, last.timeIntervalSince(start) > 3 * 3600 { break }
+            session.append(match)
+        }
+        return session
+    }
+
+    private var sessionDayText: String {
+        guard let date = recentSessionMatches.first?.startedAt else { return "" }
+        if Calendar.current.isDateInToday(date) { return "Aujourd’hui" }
+        if Calendar.current.isDateInYesterday(date) { return "Hier" }
+        return date.formatted(.dateTime.day().month(.wide).locale(Locale(identifier: "fr_FR")))
+    }
+
+    /// Bilan de l'acte en cours (MMR HenrikDev) pour la carte « Résumé de carrière ».
+    private var currentActSeason: EvalMMR.Season? {
+        guard let act = store.currentAct else { return nil }
+        return store.mmr.seasons.first { $0.season.lowercased() == act.id.lowercased() }
     }
 
     private var sessionKdText: String {
@@ -264,9 +282,7 @@ struct EvalProfileView: View {
     private var sessionDeltaText: String {
         guard !recentSessionMatches.isEmpty else { return "—" }
         let wins = recentSessionMatches.filter(\ .won).count
-        let losses = recentSessionMatches.filter { !$0.won }.count
-        let delta = (wins * 24) - (losses * 16)
-        return "\(delta >= 0 ? "+" : "")\(delta) SC"
+        return "\(wins)V – \(recentSessionMatches.count - wins)D"
     }
 
     private var avgHsPercent: Int {
@@ -347,6 +363,7 @@ struct EvalProfileView: View {
             }
         }
         .task {
+            await ValorantAssets.shared.load()
             if store.isConfigured {
                 await store.refresh()
             }
@@ -544,8 +561,8 @@ struct EvalProfileView: View {
                 } label: {
                     HStack(alignment: .center, spacing: 0) {
                         VStack(spacing: 6) {
-                            if !profile.actName.isEmpty {
-                                Text(profile.actName)
+                            if !store.actName(store.mmr.peakSeason).isEmpty {
+                                Text(store.actName(store.mmr.peakSeason))
                                     .font(.system(size: 11, weight: .semibold))
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                                     .tracking(0.6)
@@ -616,7 +633,7 @@ struct EvalProfileView: View {
                     EvalCareerSummaryView(profile: profile, matches: store.matches)
                 } label: {
                     HStack(spacing: 4) {
-                        Text("20 Actes")
+                        Text("\(store.mmr.seasons.count) \(store.mmr.seasons.count > 1 ? "Actes" : "Acte")")
                             .font(.system(size: 15, weight: .medium))
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
@@ -637,9 +654,10 @@ struct EvalProfileView: View {
                 }
             }
 
+            if let season = currentActSeason {
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(winRateText)
+                    Text(season.winRate.formatted(.percent.precision(.fractionLength(1)).locale(Locale(identifier: "fr_FR"))))
                         .font(.system(size: 24, weight: .heavy).monospacedDigit())
                         .foregroundStyle(Color(hex: 0x2DD4BF))
                     Text("Taux de victoire")
@@ -650,10 +668,10 @@ struct EvalProfileView: View {
 
                 VStack(alignment: .trailing, spacing: 2) {
                     HStack(spacing: 2) {
-                        Text("\(totalWinsCount)")
+                        Text("\(season.wins)")
                             .font(.system(size: 24, weight: .heavy).monospacedDigit())
                             .foregroundStyle(Color(hex: 0x22C55E))
-                        Text("/ \(totalMatchesCount)")
+                        Text("/ \(season.games)")
                             .font(.system(size: 24, weight: .heavy).monospacedDigit())
                             .foregroundStyle(.white)
                     }
@@ -662,6 +680,7 @@ struct EvalProfileView: View {
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
+            }
             }
 
             // Trois derniers actes classés réels (MMR HenrikDev), rien si aucun.
@@ -724,7 +743,7 @@ struct EvalProfileView: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
 
-                    Text("Hier\n\(recentSessionMatches.count) parties")
+                    Text("\(sessionDayText)\n\(recentSessionMatches.count) \(recentSessionMatches.count > 1 ? "parties" : "partie") · \(sessionDeltaText)")
                         .font(.system(size: 13))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
@@ -788,7 +807,7 @@ struct EvalProfileView: View {
                 Image(systemName: "desktopcomputer")
                     .font(.system(size: 15))
                     .foregroundStyle(.white.opacity(0.8))
-                Text(match.mode.isEmpty || match.mode == "—" ? "Non classé" : match.mode)
+                Text(Self.modeName(match.mode))
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                 Spacer()
@@ -801,11 +820,7 @@ struct EvalProfileView: View {
                     Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()).replacingOccurrences(of: "/", with: "/").replacingOccurrences(of: " ", with: " · "))
                         .font(.system(size: 12))
                         .foregroundStyle(Color(hex: 0x8E8E93))
-                } else {
-                    Text("17/10/26 · 01:00")
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                }
+
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -822,13 +837,13 @@ struct EvalProfileView: View {
                 )
 
                 HStack(spacing: 14) {
-                    if let agentURL = match.myPlayer?.agentIconURL {
+                    if let agentURL = Self.portraitURL(match.myPlayer?.agentIconURL) {
                         AsyncImage(url: agentURL) { phase in
                             if let image = phase.image {
                                 image
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 82, height: 82)
+                                    .frame(width: 96, height: 82, alignment: .top)
                                     .clipped()
                             } else {
                                 Color.clear.frame(width: 82, height: 82)
@@ -837,20 +852,20 @@ struct EvalProfileView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(match.agent.isEmpty || match.agent == "—" ? "Jett" : match.agent)
+                        Text(match.agent)
                             .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(.white)
 
                         HStack(spacing: 6) {
-                            Text(match.map.isEmpty || match.map == "—" ? "Ascent" : match.map)
+                            Text(match.map)
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.8))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(Color.black.opacity(0.6), in: .capsule)
 
-                            if match.kills >= 18 || match.id == store.matches.first?.id {
-                                Text("MVP du match")
+                            if let mvp = Self.mvpLabel(match) {
+                                Text(mvp)
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(Color(hex: 0xF5D78E))
                                     .padding(.horizontal, 8)
@@ -879,7 +894,7 @@ struct EvalProfileView: View {
                 Label("\(match.kills) / \(match.deaths) / \(match.assists)", systemImage: "scope")
                     .font(.system(size: 14, weight: .medium).monospacedDigit())
                 Spacer()
-                Label("\(match.scoreValue ?? 359)", systemImage: "chart.bar.fill")
+                Label(match.scoreValue.map(String.init) ?? "—", systemImage: "chart.bar.fill")
                     .font(.system(size: 14, weight: .medium).monospacedDigit())
                 Spacer()
                 HStack(spacing: 6) {
@@ -897,22 +912,37 @@ struct EvalProfileView: View {
         .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
     }
 
-    private func mapSplashBanner(for mapName: String) -> some View {
-        let splashURL: String = {
-            let m = mapName.lowercased()
-            if m.contains("ascent") {
-                return "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png"
-            } else if m.contains("bind") {
-                return "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png"
-            } else if m.contains("split") {
-                return "https://media.valorant-api.com/maps/d960549e-485c-68e3-6170-719f11642671/splash.png"
-            } else if m.contains("sunset") {
-                return "https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/splash.png"
-            }
-            return "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png"
-        }()
+    static func modeName(_ mode: String) -> String {
+        switch mode.lowercased() {
+        case "competitive": return "Compétition"
+        case "unrated": return "Non classé"
+        case "swiftplay": return "Vélocité"
+        case "deathmatch": return "Combat à mort"
+        case "team deathmatch": return "Combat à mort par équipe"
+        case "spike rush": return "Spike Rush"
+        case "premier": return "Premier"
+        case "": return "Partie"
+        default: return mode
+        }
+    }
 
-        return AsyncImage(url: URL(string: splashURL)) { phase in
+    /// Portrait en buste de l'agent (même UUID que l'icône renvoyée pour le match).
+    static func portraitURL(_ icon: URL?) -> URL? {
+        guard let icon, icon.pathComponents.count >= 3 else { return icon }
+        let uuid = icon.pathComponents[icon.pathComponents.count - 2]
+        return URL(string: "https://media.valorant-api.com/agents/\(uuid)/fullportrait.png")
+    }
+
+    /// MVP réel : meilleur ACS du match, sinon de l'équipe.
+    static func mvpLabel(_ match: ValorantMatch) -> String? {
+        guard let me = match.myPlayer, match.players.count > 1 else { return nil }
+        if match.players.allSatisfy({ $0.score <= me.score }) { return "MVP du match" }
+        if match.myTeamPlayers.allSatisfy({ $0.score <= me.score }) { return "MVP d’équipe" }
+        return nil
+    }
+
+    private func mapSplashBanner(for mapName: String) -> some View {
+        AsyncImage(url: ValorantAssets.shared.splashes[mapName.lowercased()]) { phase in
             if let img = phase.image {
                 img.resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: 82).clipped()
             } else {
@@ -1644,17 +1674,11 @@ struct EvalGameView: View {
     private var store: ValorantStore { model.valorant }
 
     var body: some View {
-        Group {
-            if store.isConfigured {
-                gameContent
-            } else {
-                EvalLockedView(
-                    title: "Non connecté",
-                    message: "Vous devez vous connecter pour accéder à cela.",
-                    onAddAccount: { showingAccountSheet = true }
-                )
-            }
-        }
+        EvalLockedView(
+            title: "Non connecté",
+            message: "Vous devez vous connecter pour accéder à cela.",
+            onAddAccount: nil
+        )
         .sheet(isPresented: $showingBattlepassSheet) {
             EvalBattlepassDetailSheet()
         }

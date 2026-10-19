@@ -32,6 +32,8 @@ private enum EvalPalette {
     static let secondary = Color(hex: 0x8E8E93)
     static let gold = Color(hex: 0xF5D78E)
     static let up = Color(hex: 0x35C26B)
+    static let target = Color(hex: 0xF3E9A6)
+    static let party = Color(hex: 0xF5A524)
 }
 
 /// Détail d'un match : chaque valeur affichée est calculée depuis le match réel
@@ -48,6 +50,7 @@ struct ValorantMatchDetailView: View {
     @State private var targetPUUID: String = ""
     @State private var expandedPlayerIDs: Set<String> = []
     @State private var performanceSide = 0
+    @State private var showRoundDetails = false
 
     private var analysis: EvalMatchAnalysis? {
         guard let evalMatch else { return nil }
@@ -61,6 +64,7 @@ struct ValorantMatchDetailView: View {
             VStack(spacing: 0) {
                 navBar
                 if let analysis {
+                    if selectedTab == .summary { summaryHeader(analysis).padding(.horizontal, 16).padding(.top, 4) }
                     tabsSelector.padding(.vertical, 8)
                     ScrollView {
                         VStack(spacing: 18) {
@@ -88,6 +92,7 @@ struct ValorantMatchDetailView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task {
+            await ValorantAssets.shared.load()
             guard evalMatch == nil else { return }
             let store = model.valorant
             if let loaded = await store.evalMatch(id: match.id) {
@@ -117,6 +122,9 @@ struct ValorantMatchDetailView: View {
         HStack(spacing: 12) {
             circleButton(systemImage: "chevron.left") { dismiss() }
             Spacer()
+            if selectedTab == .summary {
+                Text("Détails du match").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+            } else {
             HStack(spacing: 8) {
                 Image(systemName: "shield.lefthalf.filled")
                     .font(.system(size: 14))
@@ -129,6 +137,7 @@ struct ValorantMatchDetailView: View {
                 Text("\(analysis?.opponentRounds ?? match.opponentRounds)").foregroundStyle(EvalPalette.enemy)
             }
             .font(.system(size: 19, weight: .bold).monospacedDigit())
+            }
             Spacer()
             ShareLink(item: "Partie Valorant sur \(match.map) : \(match.won ? "Victoire" : "Défaite") \(match.teamRounds)-\(match.opponentRounds)") {
                 Circle().fill(EvalPalette.card).frame(width: 44, height: 44)
@@ -202,41 +211,6 @@ struct ValorantMatchDetailView: View {
         let lobby = a.lobbySummary
         let halves = a.halves()
         return VStack(spacing: 18) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text(a.match.mode.isEmpty ? "Partie" : a.match.mode)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
-                    Spacer()
-                    if let date = a.match.startedAt {
-                        Text(date.formatted(.dateTime.day(.twoDigits).month(.twoDigits).year(.twoDigits).hour().minute().locale(Locale(identifier: "fr_FR"))))
-                            .font(.system(size: 13))
-                            .foregroundStyle(EvalPalette.secondary)
-                    }
-                }
-                if a.match.lengthSec > 0 {
-                    Text("\(a.match.lengthSec / 60)min \(a.match.lengthSec % 60)s")
-                        .font(.system(size: 13))
-                        .foregroundStyle(EvalPalette.secondary)
-                }
-                ZStack {
-                    remoteImage(ValorantAssets.shared.maps[a.match.map.lowercased()])
-                        .frame(height: 120)
-                        .clipped()
-                    HStack(spacing: 8) {
-                        Text("\(a.teamRounds)").foregroundStyle(EvalPalette.ally)
-                        Text("—").foregroundStyle(.white.opacity(0.6))
-                        Text("\(a.opponentRounds)").foregroundStyle(EvalPalette.enemy)
-                    }
-                    .font(.system(size: 20, weight: .bold).monospacedDigit())
-                    .padding(.horizontal, 22).padding(.vertical, 8)
-                    .background(.black.opacity(0.5), in: .capsule)
-                }
-                .clipShape(.rect(cornerRadius: 14))
-            }
-            .padding(16)
-            .background(EvalPalette.card, in: .rect(cornerRadius: 22))
-
             HStack(spacing: 12) {
                 remoteImage(a.target.agentIconURL)
                     .frame(width: 46, height: 46)
@@ -306,6 +280,53 @@ struct ValorantMatchDetailView: View {
         }
     }
 
+    private func summaryHeader(_ a: EvalMatchAnalysis) -> some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "shield.lefthalf.filled").font(.system(size: 28)).foregroundStyle(.white.opacity(0.75))
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "desktopcomputer").font(.system(size: 14))
+                        Text(EvalProfileView.modeName(a.match.mode)).font(.system(size: 17, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    if let cluster = a.match.cluster, !cluster.isEmpty {
+                        Text(cluster).font(.system(size: 13)).foregroundStyle(EvalPalette.secondary)
+                    }
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 3) {
+                    if let date = a.match.startedAt {
+                        Text(date.formatted(.dateTime.day(.twoDigits).month(.twoDigits).year(.twoDigits).locale(Locale(identifier: "fr_FR")))
+                             + " · " + date.formatted(.dateTime.hour().minute().locale(Locale(identifier: "fr_FR"))))
+                            .font(.system(size: 14)).foregroundStyle(.white.opacity(0.85))
+                    }
+                    if a.match.lengthSec > 0 {
+                        Text("\(a.match.lengthSec / 60)min \(a.match.lengthSec % 60)s").font(.system(size: 13)).foregroundStyle(EvalPalette.secondary)
+                    }
+                }
+            }
+            .padding(14)
+            ZStack {
+                remoteImage(ValorantAssets.shared.splashes[a.match.map.lowercased()] ?? ValorantAssets.shared.maps[a.match.map.lowercased()])
+                    .frame(height: 96)
+                    .clipped()
+                HStack(spacing: 8) {
+                    Text("\(a.teamRounds)").foregroundStyle(EvalPalette.ally)
+                    Text("–").foregroundStyle(.white.opacity(0.6))
+                    Text("\(a.opponentRounds)").foregroundStyle(EvalPalette.enemy)
+                }
+                .font(.system(size: 18, weight: .bold).monospacedDigit())
+                .padding(.horizontal, 20).padding(.vertical, 8)
+                .background(.ultraThinMaterial, in: .capsule)
+            }
+            .frame(height: 96)
+            .clipped()
+        }
+        .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+        .clipShape(.rect(cornerRadius: 22))
+    }
+
     private var divider: some View { Divider().overlay(Color.white.opacity(0.06)) }
 
     /// delta > 0 = mieux que le lobby, sauf si `higherIsBetter` est faux.
@@ -334,7 +355,11 @@ struct ValorantMatchDetailView: View {
     private func halfCard(_ title: String, _ half: EvalHalf) -> some View {
         VStack(spacing: 12) {
             Text(title).font(.system(size: 12, weight: .bold)).foregroundStyle(EvalPalette.secondary)
-            Text("\(half.won) / \(half.played)").font(.system(size: 26, weight: .heavy).monospacedDigit()).foregroundStyle(.white)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(half.won)").font(.system(size: 44, weight: .semibold).monospacedDigit())
+                Text("/ \(half.played)").font(.system(size: 22, weight: .medium).monospacedDigit()).foregroundStyle(EvalPalette.secondary)
+            }
+            .foregroundStyle(.white)
             VStack(spacing: 6) {
                 halfRow("Éliminations", half.kills)
                 halfRow("Morts", half.deaths)
@@ -375,94 +400,97 @@ struct ValorantMatchDetailView: View {
     }
 
     private func scoreboardTab(_ a: EvalMatchAnalysis) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack {
-                Spacer()
-                Menu {
-                    Picker("Trier par", selection: $sortBy) {
-                        ForEach(PlayerSortCriteria.allCases) { Text($0.label).tag($0) }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text("Trier : \(sortBy.label)")
-                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 11, weight: .bold))
-                    }
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(EvalPalette.accent)
-                }
-            }
+        VStack(alignment: .leading, spacing: 10) {
             sectionTitle("VOTRE ÉQUIPE")
-            VStack(spacing: 8) {
-                ForEach(sorted(a.allies, a)) { scoreboardCard($0, ally: true, a) }
-            }
-            sectionTitle("ÉQUIPE ENNEMIE")
-            VStack(spacing: 8) {
-                ForEach(sorted(a.enemies, a)) { scoreboardCard($0, ally: false, a) }
-            }
+            ForEach(sorted(a.allies, a)) { scoreboardCard($0, ally: true, a) }
+            sectionTitle("ÉQUIPE ENNEMIE").padding(.top, 12)
+            ForEach(sorted(a.enemies, a)) { scoreboardCard($0, ally: false, a) }
         }
+    }
+
+    /// Bande droite : joueurs groupés (même party). Couleur de l'équipe pour les alliés, orange en face.
+    private func partyColor(_ p: EvalMatch.Player, _ a: EvalMatchAnalysis) -> Color? {
+        guard !p.party.isEmpty, a.match.players.filter({ $0.party == p.party }).count > 1 else { return nil }
+        return p.team == a.target.team ? EvalPalette.ally : EvalPalette.party
     }
 
     private func scoreboardCard(_ p: EvalMatch.Player, ally: Bool, _ a: EvalMatchAnalysis) -> some View {
         let expanded = expandedPlayerIDs.contains(p.puuid)
+        let isTarget = p.puuid == a.target.puuid
         let s = a.summary(for: p.puuid)
-        let kdColor: Color = s.kd >= 1 ? EvalPalette.up : EvalPalette.enemy
+        let leftColor = isTarget ? EvalPalette.target : (ally ? EvalPalette.ally : EvalPalette.enemy)
         return HStack(spacing: 0) {
-            Rectangle().fill(ally ? EvalPalette.ally : EvalPalette.enemy).frame(width: 4)
+            Rectangle().fill(leftColor).frame(width: 4)
             VStack(spacing: 12) {
-                HStack(spacing: 10) {
-                    remoteImage(p.agentIconURL).frame(width: 40, height: 40).clipShape(.rect(cornerRadius: 10))
-                    VStack(alignment: .leading, spacing: 2) {
-                        handleText(p.name, p.tag, size: 15)
-                        Text(EvalRanks.name(p.tier).uppercased())
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(EvalPalette.secondary)
+                HStack(spacing: 12) {
+                    remoteImage(p.agentIconURL).frame(width: 46, height: 46).clipShape(.rect(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 3) {
+                        (Text(p.name).foregroundStyle(isTarget ? EvalPalette.target : .white)
+                         + Text(p.tag.isEmpty ? "" : "#\(p.tag)").foregroundStyle(EvalPalette.secondary))
+                            .font(.system(size: 17, weight: .semibold))
+                            .lineLimit(1)
+                        if p.tier > 0 {
+                            HStack(spacing: 4) {
+                                remoteImage(ValorantProfile.tierIcon(p.tier), fit: true).frame(width: 16, height: 16)
+                                Text(EvalRanks.name(p.tier).uppercased())
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(EvalPalette.secondary)
+                            }
+                        }
                     }
-                    Spacer()
-                    if p.puuid == a.target.puuid {
-                        Image(systemName: "scope").foregroundStyle(EvalPalette.accent)
+                    Spacer(minLength: 6)
+                    VStack(spacing: 1) {
+                        Text("\(p.kills) / \(p.deaths) / \(p.assists)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
+                        Text("K/D/A").font(.system(size: 12, weight: .medium)).foregroundStyle(EvalPalette.secondary)
                     }
+                    VStack(spacing: 1) {
+                        Text("\(s.acs)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
+                        Text("ACS").font(.system(size: 12, weight: .medium)).foregroundStyle(EvalPalette.secondary)
+                    }
+                    .frame(minWidth: 40)
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                             if expanded { expandedPlayerIDs.remove(p.puuid) } else { expandedPlayerIDs.insert(p.puuid) }
                         }
                     } label: {
                         Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(EvalPalette.secondary)
-                            .frame(width: 28, height: 28)
+                            .frame(width: 24, height: 32)
                     }
                     .buttonStyle(.plain)
                 }
-                HStack(spacing: 0) {
-                    statColumn(String(format: "%.2f", s.kd), "K/D", color: kdColor)
-                    statColumn("\(p.kills) / \(p.deaths) / \(p.assists)", "K/D/A")
-                    statColumn("\(s.hsPercent)%", "HS%")
-                    statColumn("\(s.acs)", "ACS")
-                }
                 if expanded {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 10) {
                         divider
-                        statLine("ADR", "\(s.adr)")
-                        statLine("KAST", "\(s.kast)%")
+                        HStack(spacing: 0) {
+                            statColumn(String(format: "%.2f", s.kd), "K/D", color: s.kd >= 1 ? EvalPalette.up : EvalPalette.enemy)
+                            statColumn("\(s.hsPercent)%", "HS%")
+                            statColumn("\(s.adr)", "ADR")
+                            statColumn("\(s.kast)%", "KAST")
+                        }
                         statLine("Premières éliminations", "\(s.firstKills)")
                         statLine("Premières morts", "\(s.firstDeaths)")
                         statLine("Poses", "\(s.plants)")
                         statLine("Désamorçages", "\(s.defuses)")
+                        Button("Cibler ce joueur") { targetPUUID = p.puuid }
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(EvalPalette.accent)
                     }
                 }
             }
-            .padding(14)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            Rectangle().fill(partyColor(p, a) ?? .clear).frame(width: 4)
         }
-        .background(EvalPalette.card, in: .rect(cornerRadius: 16))
-        .clipShape(.rect(cornerRadius: 16))
-        .contentShape(.rect)
-        .onTapGesture { targetPUUID = p.puuid }
+        .background(EvalPalette.card, in: .rect(cornerRadius: 18))
+        .clipShape(.rect(cornerRadius: 18))
     }
 
     private func statColumn(_ value: String, _ label: String, color: Color = .white) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.system(size: 14, weight: .bold).monospacedDigit()).foregroundStyle(color)
-            Text(label).font(.system(size: 10)).foregroundStyle(EvalPalette.secondary)
+            Text(value).font(.system(size: 16, weight: .semibold).monospacedDigit()).foregroundStyle(color)
+            Text(label).font(.system(size: 11, weight: .medium)).foregroundStyle(EvalPalette.secondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -478,48 +506,76 @@ struct ValorantMatchDetailView: View {
     // MARK: - Manches
 
     private func roundsTab(_ a: EvalMatchAnalysis) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Éliminations par manche")
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(.white)
+        let maxKills = max(1, a.match.rounds.map { a.roundKillers($0).ally.count }.max() ?? 1,
+                           a.match.rounds.map { a.roundKillers($0).enemy.count }.max() ?? 1)
+        let laneHeight = CGFloat(maxKills) * 44 + 8
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Tués par Round").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                Spacer()
+            }
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .center, spacing: 10) {
+                HStack(spacing: 1) {
                     ForEach(a.match.rounds) { round in
                         let killers = a.roundKillers(round)
                         let won = round.winner == a.target.team
-                        VStack(spacing: 6) {
-                            VStack(spacing: 4) {
+                        VStack(spacing: 0) {
+                            VStack(spacing: 8) {
                                 ForEach(Array(killers.ally.reversed().enumerated()), id: \.offset) { _, p in
-                                    agentBubble(p.agentIconURL, color: EvalPalette.ally)
+                                    agentBubble(p.agentIconURL, color: EvalPalette.ally, size: 36)
                                 }
                             }
-                            .frame(height: 156, alignment: .bottom)
+                            .padding(.vertical, 4)
+                            .frame(width: 54, height: laneHeight, alignment: .bottom)
+                            .background(LinearGradient(colors: [.clear, EvalPalette.ally.opacity(0.22)], startPoint: .top, endPoint: .bottom))
+
                             Text("\(round.n)")
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.system(size: 20, weight: .semibold).monospacedDigit())
                                 .foregroundStyle(won ? EvalPalette.ally : EvalPalette.enemy)
-                                .frame(width: 32, height: 32)
-                                .background(won ? Color(hex: 0x16332A) : Color(hex: 0x36181C), in: .rect(cornerRadius: 6))
-                            VStack(spacing: 4) {
+                                .frame(width: 54, height: 46)
+                                .background(won ? Color(hex: 0x1F3D36) : Color(hex: 0x4A1E22))
+
+                            VStack(spacing: 8) {
                                 ForEach(Array(killers.enemy.enumerated()), id: \.offset) { _, p in
-                                    agentBubble(p.agentIconURL, color: EvalPalette.enemy)
+                                    agentBubble(p.agentIconURL, color: EvalPalette.enemy, size: 36)
                                 }
                             }
-                            .frame(height: 156, alignment: .top)
+                            .padding(.vertical, 4)
+                            .frame(width: 54, height: laneHeight, alignment: .top)
+                            .background(LinearGradient(colors: [EvalPalette.enemy.opacity(0.22), .clear], startPoint: .top, endPoint: .bottom))
                         }
                     }
                 }
-                .padding(.vertical, 8)
             }
+
+            Button { showRoundDetails = true } label: {
+                HStack(spacing: 14) {
+                    Image(systemName: "map").font(.system(size: 24)).foregroundStyle(EvalPalette.accent)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Détails par Round").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                        Text("Consultez la chronologie et les événements de chaque manche.")
+                            .font(.system(size: 14)).foregroundStyle(EvalPalette.secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(EvalPalette.secondary)
+                }
+                .padding(16)
+                .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 8)
         }
-        .padding(16)
-        .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+        .sheet(isPresented: $showRoundDetails) {
+            EvalRoundTimelineView(match: a.match, team: a.target.team)
+        }
     }
 
     private func agentBubble(_ url: URL?, color: Color, size: CGFloat = 26) -> some View {
         remoteImage(url)
             .frame(width: size, height: size)
             .clipShape(Circle())
-            .overlay(Circle().strokeBorder(color, lineWidth: 1.2))
+            .overlay(Circle().strokeBorder(color, lineWidth: 1.5))
     }
 
     // MARK: - Duels
@@ -853,14 +909,35 @@ struct ValorantMatchDetailView: View {
                     handleText(a.target.name, a.target.tag, size: 17)
                 }
                 Spacer()
-                Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .semibold)).foregroundStyle(EvalPalette.secondary)
+                if selectedTab != .scoreboard {
+                    Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .semibold)).foregroundStyle(EvalPalette.secondary)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(.ultraThinMaterial, in: .capsule)
-            .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
         }
         .buttonStyle(.plain)
+        .overlay(alignment: .trailing) {
+            if selectedTab == .scoreboard {
+                Menu {
+                    Picker("Trier par", selection: $sortBy) {
+                        ForEach(PlayerSortCriteria.allCases) { Text($0.label).tag($0) }
+                    }
+                } label: {
+                    HStack(spacing: 10) {
+                        Rectangle().fill(Color.white.opacity(0.15)).frame(width: 1, height: 36)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("TRIER").font(.system(size: 12, weight: .semibold)).tracking(1.2).foregroundStyle(EvalPalette.secondary)
+                            Text(sortBy.label).font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                        }
+                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .semibold)).foregroundStyle(EvalPalette.secondary)
+                    }
+                    .padding(.trailing, 16)
+                }
+            }
+        }
+        .background(.ultraThinMaterial, in: .capsule)
+        .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
     }
 
     // MARK: - Utilitaires
@@ -879,5 +956,72 @@ struct ValorantMatchDetailView: View {
                 Color(hex: 0x2A2A2E)
             }
         }
+    }
+}
+
+/// Chronologie réelle de chaque manche : qui a tué qui, avec quoi et quand.
+struct EvalRoundTimelineView: View {
+    @Environment(\.dismiss) private var dismiss
+    let match: EvalMatch
+    let team: String
+
+    private static func endLabel(_ end: String) -> String {
+        switch end.lowercased() {
+        case "eliminated": return "Élimination"
+        case "bomb detonated": return "Spike explosé"
+        case "bomb defused": return "Spike désamorcé"
+        case "round timer expired": return "Temps écoulé"
+        case "surrendered": return "Abandon"
+        default: return end
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(match.rounds) { round in
+                Section {
+                    ForEach(Array(match.kills.filter { $0.r == round.n }.sorted { $0.t < $1.t }.enumerated()), id: \.offset) { _, kill in
+                        killRow(kill)
+                    }
+                } header: {
+                    HStack {
+                        Text("Manche \(round.n)").foregroundStyle(round.winner == team ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68))
+                        Spacer()
+                        Text(Self.endLabel(round.end))
+                    }
+                    .font(.system(size: 13, weight: .semibold))
+                }
+            }
+            .navigationTitle("Détails par Round")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("OK") { dismiss() } } }
+        }
+        .presentationDragIndicator(.visible)
+    }
+
+    private func killRow(_ kill: EvalMatch.Kill) -> some View {
+        let killer = match.player(kill.k)
+        let victim = match.player(kill.v)
+        let allyKill = killer?.team == team
+        return HStack(spacing: 8) {
+            Text(String(format: "%d:%02d", kill.t / 60000, (kill.t / 1000) % 60))
+                .font(.system(size: 12).monospacedDigit())
+                .foregroundStyle(.secondary)
+                .frame(width: 34, alignment: .leading)
+            icon(killer?.agentIconURL)
+            Text(killer?.name ?? "?").font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(allyKill ? Color(hex: 0x2DD4BF) : Color(hex: 0xFD5B68)).lineLimit(1)
+            AsyncImage(url: EvalAssets.weaponIcon(kill.w)) { $0.image?.resizable().scaledToFit() }
+                .frame(width: 44, height: 14)
+            icon(victim?.agentIconURL)
+            Text(victim?.name ?? "?").font(.system(size: 14)).lineLimit(1)
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func icon(_ url: URL?) -> some View {
+        AsyncImage(url: url) { $0.image?.resizable().scaledToFill() }
+            .frame(width: 24, height: 24)
+            .clipShape(.rect(cornerRadius: 6))
     }
 }

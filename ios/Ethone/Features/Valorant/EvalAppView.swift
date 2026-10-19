@@ -820,7 +820,7 @@ struct EvalProfileView: View {
                     Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()).replacingOccurrences(of: "/", with: "/").replacingOccurrences(of: " ", with: " · "))
                         .font(.system(size: 12))
                         .foregroundStyle(Color(hex: 0x8E8E93))
-
+                }
                 Spacer()
             }
             .padding(.horizontal, 16)

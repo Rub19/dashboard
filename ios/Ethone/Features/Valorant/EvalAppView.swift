@@ -907,6 +907,11 @@ struct EvalProfileView: View {
                     .font(.system(size: 14, weight: .medium).monospacedDigit())
                 Spacer()
                 HStack(spacing: 6) {
+                    if let change = store.mmr.history.first(where: { $0.match.lowercased() == match.id.lowercased() })?.change {
+                        Text(change >= 0 ? "+\(change)" : "\(change)")
+                            .font(.system(size: 13, weight: .bold).monospacedDigit())
+                            .foregroundStyle(change >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xFD5B68))
+                    }
                     Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
                         .font(.system(size: 14, weight: .medium).monospacedDigit())
                     Image(systemName: "chevron.right")
@@ -1323,6 +1328,7 @@ struct SkinTierIconView: View {
 
 struct EvalDailyOfferCard: View {
     let offer: ValorantDailySkinOffer
+    var wished = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -1332,6 +1338,11 @@ struct EvalDailyOfferCard: View {
 
                 HStack {
                     Spacer()
+                    if wished {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color(hex: 0xFD5B68))
+                    }
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Color(hex: offer.colorHex))
@@ -2044,8 +2055,15 @@ struct EvalGameView: View {
                 .padding(.horizontal, 4)
                 .padding(.top, 4)
 
+                let wished = store.storeOffers.filter { store.isWished($0.id) }
+                if !wished.isEmpty {
+                    Label("\(wished.map(\.name).joined(separator: ", ")) \(wished.count > 1 ? "sont" : "est") dans votre boutique !", systemImage: "heart.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0xFD5B68))
+                        .padding(.horizontal, 4)
+                }
                 ForEach(store.storeOffers) { offer in
-                    EvalDailyOfferCard(offer: offer)
+                    EvalDailyOfferCard(offer: offer, wished: store.isWished(offer.id))
                 }
             }
 

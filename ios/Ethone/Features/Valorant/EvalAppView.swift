@@ -2280,27 +2280,7 @@ struct EvalGameView: View {
             .padding(16)
             .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
 
-            Button {
-                showingMissionsSheet = true
-            } label: {
-                HStack {
-                    Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(.white)
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Text("+\(store.missionsReserveXP.formatted()) XP")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                    }
-                }
-                .padding(16)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
-            }
-            .buttonStyle(.plain)
+            EvalUpcomingMissionsCard()
         }
     }
 }

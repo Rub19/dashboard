@@ -1271,6 +1271,8 @@ final class ValorantStore {
     func loadUpcomingMissions() async {
         guard isConfigured else { return }
         let cache = personalCache
+        if acts.isEmpty { await loadActs() }
+        await MissionObjectives.load()
         let cached = await cache?.read("missions", ttl: Self.missionsCacheTTL)
         if let payload = cached?.payload, applyMissions(payload), cached?.isStale == false { return }
         do {
@@ -1287,17 +1289,23 @@ final class ValorantStore {
     @discardableResult
     private func applyMissions(_ payload: JSONValue) -> Bool {
         let raw = payload.arrayValue ?? payload["data"]?.arrayValue ?? []
+        // Seulement les hebdomadaires pas encore actives de l'acte en cours (dates valorant-api).
+        let now = Date()
+        let actEnd = currentAct?.end
         let parsed = raw.compactMap { m -> ValorantMissionItem? in
             guard let id = m["uuid"]?.stringValue,
                   let title = m["title"]?.stringValue, !title.isEmpty,
                   let xp = m["xpGrant"]?.intValue,
                   let target = m["progressToComplete"]?.intValue,
-                  let type = m["type"]?.stringValue,
-                  type.contains("Weekly") || xp >= 10000 else { return nil }
-            return ValorantMissionItem(id: id, title: title, type: "Hebdomadaire", xpGrant: xp, progressToComplete: target)
+                  m["type"]?.stringValue?.hasSuffix("Weekly") == true,
+                  let start = m["activationDate"]?.stringValue.flatMap(ISODate.parse),
+                  start > now, actEnd.map({ start < $0 }) ?? true else { return nil }
+            let objective = m["objectives"]?.arrayValue?.first?["objectiveUuid"]?.stringValue
+            return ValorantMissionItem(id: id, title: MissionObjectives.text(objective: objective, value: target, fallback: title),
+                                       type: "Hebdomadaire", xpGrant: xp, progressToComplete: target, activates: start)
         }
-        upcomingMissions = Array(parsed.prefix(30))
-        return !upcomingMissions.isEmpty
+        upcomingMissions = parsed.sorted { ($0.activates ?? .distantFuture) < ($1.activates ?? .distantFuture) }
+        return !raw.isEmpty
     }
 
     func loadBattlepass() async {

@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Récompenses du passe (nom + image via valorant-api, cache permanent par objet)
 
 enum BattlepassRewardResolver {
-    private struct Info: Codable { let name: String; let icon: String }
+    struct Info: Codable, Hashable { let name: String; let icon: String }
 
     static func resolve(_ levels: [ValorantBattlepassLevel]) async -> [ValorantBattlepassLevel] {
         var out = levels
@@ -21,7 +21,7 @@ enum BattlepassRewardResolver {
         return out
     }
 
-    private static func info(type: String, uuid: String) async -> Info? {
+    static func info(type: String, uuid: String) async -> Info? {
         guard !uuid.isEmpty else { return nil }
         let key = "valorant-api.reward.\(uuid.lowercased())"
         if let cached = DiskCache.read(Info.self, key: key) { return cached }
@@ -96,7 +96,6 @@ private func remaining(_ date: Date?, now: Date, days: Bool) -> String {
 struct EvalBattlepassContractView: View {
     @Environment(AppModel.self) private var model
     @State private var showingProjection = false
-    @State private var showingDetail = false
 
     private var store: ValorantStore { model.valorant }
     private var xp: RiotAccountXP? { store.contracts.accountXP }
@@ -142,7 +141,7 @@ struct EvalBattlepassContractView: View {
 
             projection
 
-            Button { showingDetail = true } label: {
+            NavigationLink { EvalSeasonPassPage() } label: {
                 Text("Voir \(store.battlepassTitle.isEmpty ? "le passe" : store.battlepassTitle)")
                     .font(.system(size: 20))
                     .foregroundStyle(.white)
@@ -152,7 +151,6 @@ struct EvalBattlepassContractView: View {
             }
             .buttonStyle(.plain)
         }
-        .sheet(isPresented: $showingDetail) { EvalBattlepassDetailSheet() }
     }
 
     @ViewBuilder
@@ -428,6 +426,7 @@ struct EvalAgentContractsView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(Array(store.contracts.agentContracts.enumerated()), id: \.element.id) { index, agent in
+                        NavigationLink { EvalAgentContractPage(agent: agent) } label: {
                         HStack(spacing: 14) {
                             AsyncImage(url: URL(string: agent.icon)) { $0.image?.resizable().scaledToFill() }
                                 .frame(width: 52, height: 52)
@@ -458,9 +457,13 @@ struct EvalAgentContractsView: View {
                                 Text("\(agent.levelReached)").font(.system(size: 17, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
                             }
                             .frame(width: 42, height: 42)
+                            Image(systemName: "chevron.right").font(.system(size: 16, weight: .semibold)).foregroundStyle(Color(hex: 0x636366))
                         }
                         .padding(.horizontal, 18)
                         .frame(minHeight: 80)
+                        .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
                         if index < store.contracts.agentContracts.count - 1 {
                             Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 84)
                         }

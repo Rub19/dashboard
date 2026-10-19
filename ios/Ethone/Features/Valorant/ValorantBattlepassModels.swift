@@ -18,4 +18,6 @@ struct ValorantMissionItem: Identifiable, Hashable {
     let type: String
     let xpGrant: Int
     let progressToComplete: Int
+    /// Date d'activation (missions hebdomadaires à venir).
+    var activates: Date? = nil
 }

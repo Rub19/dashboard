@@ -488,10 +488,14 @@ final class SkinCatalog {
     }
 
     func mission(_ id: String) async -> (title: String, target: Int, xp: Int)? {
-        struct R: Decodable { struct D: Decodable { let title: String?; let progressToComplete: Int?; let xpGrant: Int? }; let data: D }
+        struct Objective: Decodable { let objectiveUuid: String? }
+        struct R: Decodable { struct D: Decodable { let title: String?; let progressToComplete: Int?; let xpGrant: Int?; let objectives: [Objective]? }; let data: D }
         guard let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/missions/\(id)?language=fr-FR")!),
               let r = try? JSONDecoder().decode(R.self, from: data), let title = r.data.title else { return nil }
-        return (title, r.data.progressToComplete ?? 0, r.data.xpGrant ?? 0)
+        if MissionObjectives.directives.isEmpty { await MissionObjectives.load() }
+        let target = r.data.progressToComplete ?? 0
+        let text = MissionObjectives.text(objective: r.data.objectives?.first?.objectiveUuid, value: target, fallback: title)
+        return (text, target, r.data.xpGrant ?? 0)
     }
 
     func title(_ id: String) async -> String? {

@@ -3,13 +3,24 @@ import Observation
 
 /// Contrats publics de valorant-api.com (passes de combat, agents), mis en cache 24 h.
 struct RiotContractCatalog: Codable {
+    struct Level: Codable, Hashable {
+        let chapter: Int
+        let type: String
+        let uuid: String
+        let xp: Int
+        let dough: Int
+        /// Récompense gratuite de fin de chapitre (pas un niveau payant).
+        let isFree: Bool
+    }
+
     struct Contract: Codable {
         let id: String
         let name: String
         let relationType: String
         let relationUuid: String
+        let levels: [Level]
         /// Coût en crédits de royaume de chaque niveau (contrats d'agents).
-        let doughCosts: [Int]
+        var doughCosts: [Int] { levels.filter { !$0.isFree }.map(\.dough) }
     }
 
     struct Agent: Codable {
@@ -23,14 +34,15 @@ struct RiotContractCatalog: Codable {
     let contracts: [Contract]
     let agents: [Agent]
 
-    private static let key = "valorant-api.contracts-agents.fr"
+    private static let key = "valorant-api.contracts-agents.v2.fr"
 
     static func load() async -> RiotContractCatalog? {
         if let cached = DiskCache.read(RiotContractCatalog.self, key: key), Date().timeIntervalSince(cached.fetchedAt) < 86400 {
             return cached
         }
-        struct Level: Decodable { let doughCost: Int? }
-        struct Chapter: Decodable { let levels: [Level]? }
+        struct Reward: Decodable { let type: String?; let uuid: String? }
+        struct LevelDTO: Decodable { let reward: Reward?; let xp: Int?; let doughCost: Int? }
+        struct Chapter: Decodable { let levels: [LevelDTO]?; let freeRewards: [Reward]? }
         struct Content: Decodable { let relationType: String?; let relationUuid: String?; let chapters: [Chapter]? }
         struct ContractDTO: Decodable { let uuid: String; let displayName: String?; let content: Content? }
         struct AgentDTO: Decodable { let uuid: String; let displayName: String; let displayIconSmall: String?; let isBaseContent: Bool? }
@@ -44,8 +56,17 @@ struct RiotContractCatalog: Codable {
         }
         let contracts = cPage.data.compactMap { c -> Contract? in
             guard let type = c.content?.relationType, let relation = c.content?.relationUuid else { return nil }
-            let costs = (c.content?.chapters ?? []).flatMap { $0.levels ?? [] }.map { $0.doughCost ?? 0 }
-            return Contract(id: c.uuid.lowercased(), name: c.displayName ?? "", relationType: type, relationUuid: relation.lowercased(), doughCosts: costs)
+            var levels: [Level] = []
+            for (index, chapter) in (c.content?.chapters ?? []).enumerated() {
+                for level in chapter.levels ?? [] {
+                    levels.append(Level(chapter: index + 1, type: level.reward?.type ?? "", uuid: level.reward?.uuid ?? "",
+                                        xp: level.xp ?? 0, dough: level.doughCost ?? 0, isFree: false))
+                }
+                for reward in chapter.freeRewards ?? [] {
+                    levels.append(Level(chapter: index + 1, type: reward.type ?? "", uuid: reward.uuid ?? "", xp: 0, dough: 0, isFree: true))
+                }
+            }
+            return Contract(id: c.uuid.lowercased(), name: c.displayName ?? "", relationType: type, relationUuid: relation.lowercased(), levels: levels)
         }
         let agents = aPage.data
             .map { Agent(id: $0.uuid.lowercased(), name: $0.displayName, icon: $0.displayIconSmall ?? "", isBase: $0.isBaseContent ?? false) }
@@ -115,6 +136,7 @@ struct RiotAccountXP {
 
 struct RiotAgentContract: Identifiable, Hashable {
     let id: String
+    let contractID: String
     let name: String
     let icon: String
     let levelReached: Int
@@ -132,6 +154,7 @@ final class RiotContractsModel {
     private(set) var agentsOwned = 0
     private(set) var agentsTotal = 0
     private(set) var isLoading = false
+    private(set) var catalog: RiotContractCatalog?
     private var lastLoad: Date?
 
     var agentsCompleted: Int { agentContracts.filter { $0.maxLevel > 0 && $0.levelReached >= $0.maxLevel }.count }
@@ -168,6 +191,7 @@ final class RiotContractsModel {
         }
 
         guard let catalog = await RiotContractCatalog.load() else { return }
+        self.catalog = catalog
         var reached: [String: Int] = [:]
         if let raw = try? await session.gameData("/contracts/v1/contracts/\(puuid)"),
            let json = try? JSONDecoder().decode(JSONValue.self, from: raw) {
@@ -189,12 +213,41 @@ final class RiotContractsModel {
             guard let contract = catalog.contracts.first(where: { $0.relationType == "Agent" && $0.relationUuid == agent.id }) else { return nil }
             let level = min(reached[contract.id] ?? 0, contract.doughCosts.count)
             return RiotAgentContract(
-                id: agent.id, name: agent.name, icon: agent.icon,
+                id: agent.id, contractID: contract.id, name: agent.name, icon: agent.icon,
                 levelReached: level, maxLevel: contract.doughCosts.count,
                 nextCost: level < contract.doughCosts.count ? contract.doughCosts[level] : nil,
                 spent: contract.doughCosts.prefix(level).reduce(0, +),
                 total: contract.doughCosts.reduce(0, +)
             )
         }
+    }
+}
+
+/// Phrases d'objectif de valorant-api (« Infligez {Num} pts de dégâts »), cache 24 h.
+enum MissionObjectives {
+    private struct Cache: Codable { let fetchedAt: Date; let directives: [String: String] }
+    private(set) static var directives: [String: String] = [:]
+
+    static func load() async {
+        let key = "valorant-api.objectives.fr"
+        if let cached = DiskCache.read(Cache.self, key: key), Date().timeIntervalSince(cached.fetchedAt) < 86400 {
+            directives = cached.directives
+            return
+        }
+        struct O: Decodable { let uuid: String; let directive: String? }
+        struct Page: Decodable { let data: [O] }
+        guard let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/objectives?language=fr-FR")!),
+              let page = try? JSONDecoder().decode(Page.self, from: data) else {
+            directives = DiskCache.read(Cache.self, key: key)?.directives ?? [:]
+            return
+        }
+        directives = Dictionary(page.data.compactMap { o in o.directive.map { (o.uuid.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
+        DiskCache.write(Cache(fetchedAt: Date(), directives: directives), key: key)
+    }
+
+    /// Texte de la mission avec le nombre réel, sinon le titre brut.
+    static func text(objective: String?, value: Int, fallback: String) -> String {
+        guard let objective, let directive = directives[objective.lowercased()] else { return fallback }
+        return directive.replacingOccurrences(of: "{Num}", with: value.formatted())
     }
 }

@@ -273,7 +273,7 @@ export default function TrackerGgView() {
       {available && profile && (
         <div className="shrink-0 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/85 p-3.5 backdrop-blur-xl">
           {profile.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={profile.avatarUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--text-primary)]/5">
@@ -357,7 +357,7 @@ export default function TrackerGgView() {
                       )}
                     >
                       {m.metadata.agentImageUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
+                         
                         <img src={m.metadata.agentImageUrl} alt="" className="h-9 w-9 rounded-lg object-cover" />
                       )}
                       <div className="min-w-0 flex-1">

@@ -64,7 +64,7 @@ export default function ConsoleBlacklist({ guildId }: { guildId: string }) {
                   className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0"
                 >
                   {e.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                     
                     <img src={e.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
                   ) : (
                     <span className="h-7 w-7 shrink-0 rounded-full bg-[var(--surface-hover)]" />

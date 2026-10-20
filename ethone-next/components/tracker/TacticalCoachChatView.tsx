@@ -466,7 +466,6 @@ export default function TacticalCoachChatView({
 
   const playerName = valorantProfile?.name || riotName || (isEn ? "Player" : "Joueur");
   const playerTag = (valorantProfile?.tag || riotTag || "").replace(/^#/, "");
-  const mainAgent = topValorantAgents[0]?.agentName || (isEn ? "Versatile" : "Polyvalent");
 
   const storageKey = useMemo(() => {
     return `ethone:tracker:coach:history:${playerName.toLowerCase()}-${playerTag.toLowerCase()}`;

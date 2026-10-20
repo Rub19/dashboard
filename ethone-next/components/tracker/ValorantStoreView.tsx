@@ -102,7 +102,7 @@ function ItemCard({ item }: { item: StoreItem }) {
       <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gradient-to-b from-[var(--text-primary)]/[0.05] to-black/10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.07),transparent_70%)]" />
         {item.image && (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img
             src={item.image}
             alt=""
@@ -152,7 +152,7 @@ function FeaturedSection({ bundle, now }: { bundle: FeaturedBundle; now: number 
       <div className="flex flex-wrap items-center gap-3 border-b border-[var(--text-primary)]/[0.06] bg-gradient-to-r from-[var(--text-primary)]/[0.03] to-transparent p-3.5 sm:p-4">
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.04] sm:h-14 sm:w-14">
           {bundle.image && (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={bundle.image} alt="" className="h-full w-full object-contain p-1.5" loading="lazy" />
           )}
         </div>
@@ -215,7 +215,7 @@ function CatalogueCard({ bundle }: { bundle: CatalogueBundle }) {
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-gradient-to-b from-[var(--text-primary)]/[0.05] to-black/10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.06),transparent_70%)]" />
         {promo ? (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img
             src={promo}
             alt=""
@@ -223,7 +223,7 @@ function CatalogueCard({ bundle }: { bundle: CatalogueBundle }) {
             loading="lazy"
           />
         ) : fallback ? (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img
             src={fallback}
             alt=""

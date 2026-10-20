@@ -91,7 +91,7 @@ export default function EventDetails({ guildId, event, onChanged }: { guildId: s
           <ul className="max-h-80 overflow-y-auto">
             {sorted.map((p) => (
               <li key={p.userId} className="flex flex-wrap items-center gap-2.5 border-t border-[var(--panel-border)] py-2 first:border-t-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 {p.avatarUrl ? <img src={p.avatarUrl} alt="" className="h-7 w-7 rounded-full" /> : <span className="h-7 w-7 rounded-full bg-[var(--panel-border)]" />}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{p.displayName || p.username}</p>

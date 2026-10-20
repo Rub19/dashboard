@@ -51742,6 +51742,11 @@ const v1_75_1_de: ChangelogEntry = {
   ],
 };
 
+CHANGELOG_BY_LANG.fr.unshift(v1_75_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_1_de);
+
 const v1_75_2_fr: ChangelogEntry = {
   version: "v1.75.2",
   date: "2026-10-12",
@@ -52330,6 +52335,11 @@ const v1_75_12_de: ChangelogEntry = {
   ],
 };
 
+CHANGELOG_BY_LANG.fr.unshift(v1_75_12_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_12_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_12_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_12_de);
+
 const v1_75_13_fr: ChangelogEntry = {
   version: "v1.75.13",
   date: "2026-10-13",
@@ -52733,6 +52743,11 @@ const v1_75_20_de: ChangelogEntry = {
   ],
 };
 
+CHANGELOG_BY_LANG.fr.unshift(v1_75_20_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_20_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_20_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_20_de);
+
 const v1_75_21_fr: ChangelogEntry = {
   version: "v1.75.21",
   date: "2026-10-13",
@@ -52784,6 +52799,11 @@ const v1_75_21_de: ChangelogEntry = {
     "Echtzeit-Suche mit Tastaturkürzel Strg+K und interaktive Detail-Modals mit Befehlskopieren per Klick.",
   ],
 };
+
+CHANGELOG_BY_LANG.fr.unshift(v1_75_21_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_75_21_en);
+CHANGELOG_BY_LANG.es.unshift(v1_75_21_es);
+CHANGELOG_BY_LANG.de.unshift(v1_75_21_de);
 
 const v1_75_22_fr: ChangelogEntry = {
   version: "v1.75.22",
@@ -60111,5 +60131,57 @@ CHANGELOG_BY_LANG.fr.unshift(v12945_fr);
 CHANGELOG_BY_LANG.en.unshift(v12945_en);
 CHANGELOG_BY_LANG.es.unshift(v12945_es);
 CHANGELOG_BY_LANG.de.unshift(v12945_de);
+
+const v12946_fr: ChangelogEntry = {
+  version: "v1.78.2",
+  date: "2026-10-20",
+  title: "Site : avertissements du build corrigés",
+  items: [
+    "Les réglages synchronisés en temps réel sont enregistrés dans le bon profil après un changement de profil (le canal gardait l'ancien).",
+    "Les notes des versions 1.75.1, 1.75.12, 1.75.20 et 1.75.21 apparaissent enfin dans le journal des modifications de l'app.",
+    "Console Discord : la liste déroulante indique la liste qu'elle contrôle aux lecteurs d'écran ; modifier l'économie ne réinitialise plus l'onglet de la monnaie.",
+    "Nettoyage : imports et variables inutilisés retirés, plus aucun avertissement au lint.",
+  ],
+};
+
+const v12946_en: ChangelogEntry = {
+  version: "v1.78.2",
+  date: "2026-10-20",
+  title: "Website: build warnings fixed",
+  items: [
+    "Settings synced in real time are saved to the right profile after switching profiles (the channel kept the old one).",
+    "Release notes for 1.75.1, 1.75.12, 1.75.20 and 1.75.21 finally show in the in-app changelog.",
+    "Discord console: the dropdown tells screen readers which list it controls; editing the economy no longer resets the currency tab.",
+    "Cleanup: unused imports and variables removed, no more lint warnings.",
+  ],
+};
+
+const v12946_es: ChangelogEntry = {
+  version: "v1.78.2",
+  date: "2026-10-20",
+  title: "Sitio: avisos de compilación corregidos",
+  items: [
+    "Los ajustes sincronizados en tiempo real se guardan en el perfil correcto tras cambiar de perfil.",
+    "Las notas de las versiones 1.75.1, 1.75.12, 1.75.20 y 1.75.21 por fin aparecen en el registro de cambios de la app.",
+    "Consola de Discord: el desplegable indica a los lectores de pantalla qué lista controla; editar la economía ya no reinicia la pestaña de la moneda.",
+    "Limpieza: imports y variables sin uso eliminados, sin avisos de lint.",
+  ],
+};
+
+const v12946_de: ChangelogEntry = {
+  version: "v1.78.2",
+  date: "2026-10-20",
+  title: "Website: Build-Warnungen behoben",
+  items: [
+    "In Echtzeit synchronisierte Einstellungen werden nach einem Profilwechsel im richtigen Profil gespeichert.",
+    "Die Versionshinweise zu 1.75.1, 1.75.12, 1.75.20 und 1.75.21 erscheinen endlich im Änderungsprotokoll der App.",
+    "Discord-Konsole: Das Dropdown nennt Screenreadern die gesteuerte Liste; das Bearbeiten der Wirtschaft setzt den Währungs-Tab nicht mehr zurück.",
+    "Aufräumen: ungenutzte Importe und Variablen entfernt, keine Lint-Warnungen mehr.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12946_fr);
+CHANGELOG_BY_LANG.en.unshift(v12946_en);
+CHANGELOG_BY_LANG.es.unshift(v12946_es);
+CHANGELOG_BY_LANG.de.unshift(v12946_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

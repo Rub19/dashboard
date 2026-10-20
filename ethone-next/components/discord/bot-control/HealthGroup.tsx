@@ -100,7 +100,7 @@ export default function HealthGroup({
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div className="w-11 h-11 rounded-xl bg-[var(--text-primary)]/10 border border-[var(--text-primary)]/13 flex items-center justify-center font-bold text-[var(--text-primary)] overflow-hidden shrink-0 shadow-md">
                       {s.icon ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                         
                         <img src={s.icon} alt={s.name} className="w-full h-full object-cover" />
                       ) : (
                         s.name?.charAt(0) || "?"

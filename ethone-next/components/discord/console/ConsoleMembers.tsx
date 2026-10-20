@@ -71,7 +71,7 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
             <Panel
               title={
                 <span className="flex items-center gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  { }
                   <img src={inspected.avatarUrl} alt="" width={24} height={24} className="h-6 w-6 rounded-full" />
                   {inspected.displayName}
                   <span className="text-xs font-normal text-[var(--text-muted)]">@{inspected.username}</span>
@@ -182,7 +182,7 @@ export default function ConsoleMembers({ guildId }: { guildId: string }) {
                       ) : (
                         r.members.map((m) => (
                           <li key={m.id} className="flex items-center gap-2.5 px-9 py-2">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            { }
                             <img src={m.avatarUrl} alt="" className="h-6 w-6 rounded-full" />
                             <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--text-primary)]">
                               {m.name} <span className="text-[11px] text-[var(--text-muted)]">@{m.username}</span>

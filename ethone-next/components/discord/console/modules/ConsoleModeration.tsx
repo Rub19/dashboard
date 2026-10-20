@@ -139,7 +139,7 @@ export default function ConsoleModeration({ guildId }: { guildId: string }) {
         <Row label={tx("Membre")}>
           {target ? (
             <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--panel-border)] py-1 pl-1 pr-2 text-sm text-[var(--text-primary)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              { }
               <img src={target.avatarUrl} alt="" className="h-6 w-6 rounded-full" />
               {target.displayName}
               <span className="text-xs text-[var(--text-muted)]">@{target.username}</span>

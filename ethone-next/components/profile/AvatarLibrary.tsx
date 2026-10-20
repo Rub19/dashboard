@@ -382,7 +382,7 @@ function AvatarButton({ avatar, selected, onPick }: { avatar: LibraryAvatar; sel
             <ImageOff className="h-6 w-6" />
           </span>
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img
             src={avatar.url}
             alt=""

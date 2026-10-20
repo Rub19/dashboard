@@ -114,7 +114,7 @@ export default function ConsoleCounting({ guildId }: { guildId: string }) {
             {ov.leaderboard.slice(0, 20).map((m, i) => (
               <li key={m.userId} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
                 <span className="w-6 shrink-0 text-center text-xs font-bold tabular-nums text-[var(--text-muted)]">{i + 1}</span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 {m.avatarUrl ? <img src={m.avatarUrl} alt="" className="h-7 w-7 rounded-full" /> : <span className="h-7 w-7 rounded-full bg-[var(--panel-border)]" />}
                 <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.name}</p>
                 <span className="text-xs tabular-nums text-[var(--text-primary)]">{m.correct}</span>

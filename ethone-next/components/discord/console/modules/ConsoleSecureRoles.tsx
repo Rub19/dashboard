@@ -164,7 +164,7 @@ export default function ConsoleSecureRoles({ guildId }: { guildId: string }) {
           <ul>
             {ov.members.map((m) => (
               <li key={m.userId} className="flex flex-wrap items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 {m.avatar ? <img src={m.avatar} alt="" className="h-7 w-7 rounded-full" /> : <span className="h-7 w-7 rounded-full bg-[var(--panel-border)]" />}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</p>

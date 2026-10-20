@@ -309,7 +309,7 @@ export default function ConsoleLeveling({ guildId }: { guildId: string }) {
               <li key={m.userId} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 text-[13px] first:border-t-0">
                 <span className="w-5 shrink-0 text-right font-mono text-xs text-[var(--text-muted)]">{i + 1}</span>
                 {m.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+                   
                   <img src={m.avatarUrl} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-full" />
                 ) : (
                   <span className="h-6 w-6 shrink-0 rounded-full bg-[var(--surface-hover)]" />

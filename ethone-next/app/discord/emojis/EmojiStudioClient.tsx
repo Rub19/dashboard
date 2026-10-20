@@ -323,7 +323,7 @@ export default function EmojiStudioClient() {
                           transition={SPRING_LAYOUT}
                           className={cn("grid gap-3 rounded-xl border p-3 sm:grid-cols-[auto_1fr_auto]", d.status === "error" ? "border-[var(--danger)]/40" : "border-[var(--panel-border)]")}
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          { }
                           <img src={d.dataUrl} alt="" className="h-14 w-14 rounded-lg object-contain" />
                           <div className="min-w-0 space-y-1.5">
                             <label className="flex h-9 items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--input-bg)] px-2.5 text-sm">
@@ -340,7 +340,7 @@ export default function EmojiStudioClient() {
                             {/* Aperçu tel que dans un message Discord */}
                             <p className="flex items-center gap-1.5 truncate rounded-lg bg-[#313338] px-2.5 py-1.5 text-[13px] text-[#dbdee1]">
                               {tx("Trop bien")}
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              { }
                               <img src={d.dataUrl} alt="" className="h-[22px] w-[22px] object-contain" />
                               <span className="text-[#949ba4]">
                                 {d.animated ? tx("animé") : "fixe"} · {Math.round(d.bytes / 1024)} {" "}{tx("Ko")}
@@ -417,7 +417,7 @@ export default function EmojiStudioClient() {
                         transition={SPRING_LAYOUT}
                         className="group relative flex flex-col items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-3"
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        { }
                         <img src={e.url} alt={e.name} loading="lazy" className="h-12 w-12 object-contain transition-transform duration-200 group-hover:scale-110" />
                         {editingId === e.id ? (
                           <form

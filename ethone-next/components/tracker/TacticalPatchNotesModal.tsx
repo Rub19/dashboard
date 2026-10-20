@@ -4,7 +4,7 @@ import { useEffect, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Sparkles, X, CheckCircle2, ShieldCheck } from "@/components/icons/ph";
 import { getTrackerI18n, getPatchNotes } from "@/lib/i18n-tracker";
-import { EASE_SNAP, SPRING_PANEL } from "@/lib/ease";
+import { SPRING_PANEL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 interface TacticalPatchNotesModalProps {

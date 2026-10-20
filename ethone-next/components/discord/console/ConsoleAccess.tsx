@@ -65,7 +65,7 @@ export default function ConsoleAccess({ guildId }: { guildId: string }) {
                     transition={SPRING_LAYOUT}
                     className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-3 first:border-t-0"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <img src={o.avatarUrl} alt="" width={32} height={32} className="h-8 w-8 shrink-0 rounded-full" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">

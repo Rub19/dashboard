@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -9,23 +8,18 @@ import {
   ShieldCheck,
   User,
   Search,
-  ChevronRight,
   ChevronDown,
   Flame,
   Target,
   Trophy,
   Activity,
-  Zap,
   Share2,
   Brain,
-  CheckCircle2,
   ExternalLink,
   Heart,
   Key,
   RefreshCw,
   Sparkles,
-  ArrowRight,
-  X,
 } from "@/components/icons/ph";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -99,7 +93,7 @@ function getTierTone(tierName?: string | null): { text: string; bg: string; bord
 
 export default function RiotGamingHome() {
   const { settings, update } = useSettings();
-  const { success, error: showError, notify } = useToast();
+  const { notify } = useToast();
   const { open, setOpen } = useAnimatedSidebar();
   const searchParams = useSearchParams();
   const reducedMotion = useReducedMotion();
@@ -248,7 +242,7 @@ export default function RiotGamingHome() {
   }, [valorantMatches, selectedQueue]);
 
   const loadPlayerData = useCallback(
-    async (targetName: string, targetTag: string, game: GameTab) => {
+    async (targetName: string, targetTag: string, _game: GameTab) => {
       const cleanName = targetName.trim();
       const cleanTag = targetTag.trim().replace(/^#/, "");
       if (!cleanName || !cleanTag) return;

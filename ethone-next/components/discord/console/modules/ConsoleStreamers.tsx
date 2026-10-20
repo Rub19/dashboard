@@ -203,7 +203,7 @@ export default function ConsoleStreamers({ guildId }: { guildId: string }) {
             {streamers.map((s) => (
               <li key={s.id} className="border-t border-[var(--panel-border)]">
                 <div className="flex items-center gap-3 px-5 py-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  { }
                   {s.avatarUrl ? <img src={s.avatarUrl} alt="" className="h-8 w-8 rounded-full" /> : <span className="h-8 w-8 rounded-full bg-[var(--panel-border)]" />}
                   <button type="button" onClick={() => setOpen(open === s.id ? null : s.id)} aria-expanded={open === s.id} className="min-w-0 flex-1 text-left">
                     <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">

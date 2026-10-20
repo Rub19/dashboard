@@ -145,16 +145,19 @@ export default function ConsoleEconomy({ guildId }: { guildId: string }) {
   const [adjustBusy, setAdjustBusy] = useState(false);
   const [showManualInput, setShowManualInput] = useState(false);
 
+  const hasCfg = Boolean(cfg);
+  const customIconUrl = cfg?.currencyCustomIconUrl;
+  const currencySymbol = cfg?.currencySymbol;
   useEffect(() => {
-    if (!cfg) return;
-    if (cfg.currencyCustomIconUrl && cfg.currencyCustomIconUrl !== "etho") {
+    if (!hasCfg) return;
+    if (customIconUrl && customIconUrl !== "etho") {
       setCoinTab("custom");
-    } else if (cfg.currencySymbol && cfg.currencySymbol !== "🪙" && cfg.currencySymbol !== "etho") {
+    } else if (currencySymbol && currencySymbol !== "🪙" && currencySymbol !== "etho") {
       setCoinTab("emoji");
     } else {
       setCoinTab("etho");
     }
-  }, [cfg?.currencyCustomIconUrl, cfg?.currencySymbol]);
+  }, [hasCfg, customIconUrl, currencySymbol]);
 
   const handleSelectEtho = () => {
     setCoinTab("etho");

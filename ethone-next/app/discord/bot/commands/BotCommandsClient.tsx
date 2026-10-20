@@ -8,27 +8,17 @@ import {
   Search,
   Copy,
   Check,
-  Sparkles,
-  Shield,
-  ShieldCheck,
-  Music,
-  Users,
-  Bot,
-  Settings,
   ArrowLeft,
-  ChevronDown,
   ChevronRight,
-  ExternalLink,
   LayoutGrid,
   LayoutList,
   Layout,
   X,
   Filter,
-  Clock,
   Zap,
 } from "@/components/icons/ph";
 import { cn } from "@/lib/utils";
-import { SPRING_PILL, SPRING_PRESS } from "@/lib/ease";
+import { SPRING_PILL } from "@/lib/ease";
 import { pageStagger, staggerItem } from "@/lib/motion-variants";
 import { tx } from "@/lib/tx";
 

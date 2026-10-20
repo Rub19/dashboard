@@ -62,7 +62,7 @@ export default function BotSessionGate({ children }: { children: React.ReactNode
         transition={SPRING_LAYOUT}
         className="w-full max-w-sm rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center shadow-2xl backdrop-blur-[var(--panel-blur)]"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        { }
         <img src="/bot-icons/a_logo.gif" alt="" width={56} height={56} className="mx-auto mb-5 h-14 w-14 rounded-2xl" />
         <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{tx("Connecte-toi avec Discord")}</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">

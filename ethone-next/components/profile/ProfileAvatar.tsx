@@ -35,7 +35,7 @@ export default function ProfileAvatar({
       >
         <span className="block h-full w-full overflow-hidden rounded-full bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)]">
           {src && !failed ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={src} alt="" draggable={false} onError={() => setFailed(true)} className="h-full w-full select-none object-cover" />
           ) : (
             <span

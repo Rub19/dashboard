@@ -75,7 +75,7 @@ export default function PublicLeaderboard() {
           <>
             <header className="rise-in mb-6 flex items-center gap-4">
               {data.guild.icon ? (
-                // eslint-disable-next-line @next/next/no-img-element
+                 
                 <img src={data.guild.icon} alt="" className="h-14 w-14 rounded-2xl" />
               ) : (
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-black" style={{ background: accent }}>
@@ -103,7 +103,7 @@ export default function PublicLeaderboard() {
                   >
                     <span className="w-9 text-center text-base font-bold text-zinc-300">{MEDALS[e.rank - 1] ?? `#${e.rank}`}</span>
                     {e.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={e.avatarUrl} alt="" className="h-10 w-10 rounded-full" />
                     ) : (
                       <span className="h-10 w-10 rounded-full bg-zinc-800" />

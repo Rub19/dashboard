@@ -143,7 +143,7 @@ export default function ConsoleStats({ guildId }: { guildId: string }) {
             {rows.map((r) => (
               <li key={r.id} className="flex items-center gap-3 border-t border-[var(--panel-border)] px-5 py-2.5 first:border-t-0">
                 <span className={cn("w-7 shrink-0 text-center text-xs font-bold tabular-nums", r.rank <= 3 ? "text-[var(--warning)]" : "text-[var(--text-muted)]")}>{r.rank}</span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 {r.avatarUrl ? <img src={r.avatarUrl} alt="" className="h-7 w-7 rounded-full" /> : <span className="h-7 w-7 rounded-full bg-[var(--panel-border)]" />}
                 <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">{r.name}</p>
                 <span className="w-20 text-right text-xs tabular-nums text-[var(--text-primary)]">{fmt(r.messages)} {" "}{tx("msg")}</span>

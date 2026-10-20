@@ -36,6 +36,8 @@ const eslintConfig = defineConfig([
       "react-hooks/rules-of-hooks": "warn",
       "prefer-const": "warn",
       "@next/next/no-html-link-for-pages": "warn",
+      // Export statique avec images.unoptimized : next/image n'optimise rien ici, <img> est le bon choix.
+      "@next/next/no-img-element": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",

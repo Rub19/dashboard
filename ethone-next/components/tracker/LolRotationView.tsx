@@ -37,7 +37,7 @@ function ChampionGrid({ champions }: { champions: Champion[] }) {
           className="rise-in group v8-panel flex flex-col items-center gap-1 rounded-[var(--panel-radius)] p-2 text-center transition-colors hover:border-[var(--accent-primary)]/30"
         >
           {champion.icon && (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={champion.icon} alt="" className="h-14 w-14 rounded-lg transition-transform duration-300 group-hover:scale-105" loading="lazy" />
           )}
           <span className="w-full truncate text-xs font-semibold" title={champion.name}>{champion.name}</span>

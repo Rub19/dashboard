@@ -42,7 +42,7 @@ function GuildIcon({ guild, size }: { guild: GuildOption; size: number }) {
   const src = guild.iconUrl || (guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64` : null);
   const style = { width: size, height: size };
   if (src && !failed) {
-    // eslint-disable-next-line @next/next/no-img-element
+     
     return <img src={src} alt="" style={style} className="shrink-0 rounded-lg object-cover" onError={() => setFailed(true)} />;
   }
   return (

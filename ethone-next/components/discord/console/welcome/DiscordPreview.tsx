@@ -52,7 +52,7 @@ function Md({ text, className }: { text: string; className?: string }) {
 
 function Img({ src, className }: { src: string | null; className?: string }) {
   if (!src) return null;
-  // eslint-disable-next-line @next/next/no-img-element
+   
   return <img src={src} alt="" className={className} />;
 }
 
@@ -183,7 +183,7 @@ export default function DiscordPreview({ message, meta, viewer, dm, card }: Prop
     <motion.div layout transition={SPRING_LAYOUT} className="rounded-xl bg-[#313338] p-4 font-[system-ui] shadow-inner">
       <div className="flex gap-3">
         {author.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img src={author.avatar} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
         ) : (
           <div className="h-10 w-10 shrink-0 rounded-full bg-[#5865F2]" />

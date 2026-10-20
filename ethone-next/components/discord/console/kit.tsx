@@ -305,7 +305,7 @@ export function MemberPicker({
                 }}
                 className={cn(PICK_ROW, blocked && "cursor-not-allowed opacity-45 hover:bg-transparent")}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src={m.avatarUrl} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded-full" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>
@@ -544,12 +544,14 @@ export function Select<T extends string | number = string>({
   });
 
   const selected = normalized.find((o) => o.value === value);
+  const listboxId = useId();
 
   return (
     <div ref={containerRef} className={cn("relative inline-block text-left", width, className)}>
       <button
         type="button"
         role="combobox"
+        aria-controls={listboxId}
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={ariaLabel}
@@ -602,7 +604,7 @@ export function Select<T extends string | number = string>({
               dropdownClassName
             )}
           >
-            <ul role="listbox" className="max-h-60 overflow-y-auto">
+            <ul id={listboxId} role="listbox" className="max-h-60 overflow-y-auto">
               {normalized.map((opt) => {
                 const isSelected = opt.value === value;
                 return (

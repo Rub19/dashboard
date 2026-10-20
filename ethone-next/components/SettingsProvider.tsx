@@ -131,8 +131,6 @@ export default function SettingsProvider({
     };
   }, []);
 
-  const CLOCK_SKEW_BUFFER_MS = 5000;
-
   const activeContext = useMemo<ActiveProfileValue>(
     () => ({ active, activeProfile, loaded, reload }),
     [active, activeProfile, loaded, reload]
@@ -277,8 +275,9 @@ export default function SettingsProvider({
     // currentUserId is included so an account switch on the same tab tears
     // down the previous user's channel and re-subscribes under the new
     // identity instead of silently continuing to listen with a stale userId
-    // closure (see useItems.ts for the reference pattern).
-  }, [loaded, currentUserId]);
+    // closure (see useItems.ts for the reference pattern). Same for `active`:
+    // incoming settings are saved under the active profile, never a stale one.
+  }, [loaded, currentUserId, active]);
 
   useEffect(() => {
     const root = document.documentElement;

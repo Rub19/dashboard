@@ -223,7 +223,7 @@ export function MemberSearch({ guildId, value, onChange }: { guildId: string; va
   if (value)
     return (
       <motion.div layout initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3 rounded-lg border border-[var(--panel-border)] px-3 py-2">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        { }
         <img src={value.avatarUrl} alt="" className="h-8 w-8 rounded-full" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{value.displayName}</p>
@@ -247,7 +247,7 @@ export function MemberSearch({ guildId, value, onChange }: { guildId: string; va
             {hits.map((m) => (
               <li key={m.id}>
                 <button type="button" onClick={() => onChange(m)} className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left hover:bg-[var(--surface-hover)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  { }
                   <img src={m.avatarUrl} alt="" className="h-7 w-7 rounded-full" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[13px] font-semibold text-[var(--text-primary)]">{m.displayName}</span>

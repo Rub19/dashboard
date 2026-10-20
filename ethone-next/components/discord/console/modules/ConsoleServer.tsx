@@ -232,7 +232,7 @@ function BadgesTab({ guildId }: { guildId: string }) {
           variants={staggerItem}
           className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-hover)] px-3 py-2.5"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          { }
           <img src={b.iconUrl} alt="" className={cn("h-7 w-7 shrink-0 object-contain", b.count === 0 && "opacity-30 grayscale")} />
           <div className={cn("min-w-0", b.count === 0 && "opacity-40")}>
             <p className="truncate text-[12px] font-semibold text-[var(--text-primary)]">{b.label}</p>
@@ -532,7 +532,7 @@ function EmojisTab({ guildId }: { guildId: string }) {
       <Panel title={tx("Ajouter un emoji")} subtitle={tx("PNG, JPG ou GIF de 256 Ko au maximum.")}>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
           <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={(e) => pick(e.target.files?.[0])} aria-label={tx("Image de l'emoji")} className="text-xs text-[var(--text-muted)]" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          { }
           {file && <img src={file} alt="" className="h-8 w-8 object-contain" />}
           <input value={name} maxLength={32} onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9_]/g, "_"))} placeholder="nom_emoji" aria-label={tx("Nom de l'emoji")} className={`${SELECT} w-40 font-mono`} />
           <GhostButton disabled={!file || !validName || busy} onClick={upload}>
@@ -549,7 +549,7 @@ function EmojisTab({ guildId }: { guildId: string }) {
           <ul className="grid gap-px sm:grid-cols-2">
             {data.emojis.map((e) => (
               <li key={e.id} className="flex items-center gap-2.5 border-t border-[var(--panel-border)] px-5 py-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src={e.url} alt="" className="h-7 w-7 shrink-0 object-contain" />
                 <div className="min-w-0 flex-1">
                   <TextField value={e.name} maxLength={32} mono width="w-full" onCommit={(v) => rename(e, v)} />
@@ -565,7 +565,7 @@ function EmojisTab({ guildId }: { guildId: string }) {
           <div className="flex flex-wrap gap-3 px-5 py-4">
             {data.stickers.map((s) => (
               <div key={s.id} className="w-20 text-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src={s.url} alt="" className="mx-auto h-14 w-14 object-contain" />
                 <p className="mt-1 truncate text-[10px] text-[var(--text-muted)]">{s.name}</p>
               </div>

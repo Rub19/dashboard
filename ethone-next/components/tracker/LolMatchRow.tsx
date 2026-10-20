@@ -204,7 +204,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
 
             {rune?.image && (
               <div className="h-5 w-5 overflow-hidden rounded-md border border-amber-500/30 bg-black/50 flex items-center justify-center" title={rune.name}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src={rune.image} alt="" className="h-4 w-4 object-contain" />
               </div>
             )}
@@ -316,7 +316,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
                     title={p ? `${p.name} (${champName})` : undefined}
                   >
                     {icon && (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img
                         src={icon}
                         alt=""
@@ -345,7 +345,7 @@ export default function LolMatchRow({ match, index, allMatches }: LolMatchRowPro
                     title={p ? `${p.name} (${champName})` : undefined}
                   >
                     {icon && (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img
                         src={icon}
                         alt=""

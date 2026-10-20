@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.78.2 - 2026-10-20
+
+**Site : avertissements du build corrigés**
+
+- Les réglages synchronisés en temps réel sont enregistrés dans le bon profil après un changement de profil (le canal gardait l'ancien).
+- Les notes des versions 1.75.1, 1.75.12, 1.75.20 et 1.75.21 apparaissent enfin dans le journal des modifications de l'app.
+- Console Discord : la liste déroulante indique la liste qu'elle contrôle aux lecteurs d'écran ; modifier l'économie ne réinitialise plus l'onglet de la monnaie.
+- Nettoyage : imports et variables inutilisés retirés, plus aucun avertissement au lint.
+
 ## v1.78.1 - 2026-10-20
 
 **E:VAL : onglet Jeu stable, portraits et barre du profil**

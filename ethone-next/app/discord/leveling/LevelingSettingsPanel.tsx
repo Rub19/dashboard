@@ -119,7 +119,7 @@ export function RankCardPreview({ url, accentColor, rankCard }: { url: string; a
 
   return (
     <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "934 / 300" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- image blob générée par le bot */}
+      { }
       {src && <img src={src} alt={tx("Aperçu de la carte /rank")} className={cn("h-full w-full object-contain transition-opacity duration-200", loading && "opacity-60")} />}
       {!src && !error && <div className="skeleton-shimmer absolute inset-0" />}
       {error && (

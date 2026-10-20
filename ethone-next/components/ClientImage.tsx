@@ -207,7 +207,7 @@ export default function ClientImage({
       {status !== "ok" && (
         <span className={cn("absolute inset-0 z-0", fill && "h-full w-full")}>{resolvedFallback}</span>
       )}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      { }
       <img
         ref={imgRef}
         key={resolved}

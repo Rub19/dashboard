@@ -1616,7 +1616,7 @@ export default function BotLanding() {
                 }}
               />
               <div className="relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img
                   src="/icons/ethone-icon-192.png"
                   alt="Etho"

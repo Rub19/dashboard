@@ -270,7 +270,7 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
                     style={{ left: l.x - l.borderWidth, top: l.y - l.borderWidth, width: l.size + l.borderWidth * 2, height: l.size + l.borderWidth * 2, background: l.borderColor, padding: l.borderWidth, borderRadius: l.shape === "circle" ? "50%" : l.shape === "rounded" ? "28%" : "6%" }}
                   >
                     {viewer.avatar ? (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={viewer.avatar} alt="" draggable={false} className="h-full w-full object-cover" style={{ borderRadius: l.shape === "circle" ? "50%" : l.shape === "rounded" ? "28%" : "6%" }} />
                     ) : (
                       <div className="h-full w-full bg-[#5865F2]" style={{ borderRadius: "inherit" }} />
@@ -282,7 +282,7 @@ export default function ImageEditor({ guildId, image, onChange, viewer, meta, go
                 return (
                   <div key={l.id} onPointerDown={(e) => onDown(e, l, "move")} className={cn("absolute cursor-move", ring)} style={{ left: l.x, top: l.y, width: l.w, height: l.h, opacity: l.opacity }}>
                     {l.url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={l.url} alt="" draggable={false} className="h-full w-full object-cover" style={{ borderRadius: l.radius }} />
                     ) : (
                       <div className="grid h-full w-full place-items-center border-2 border-dashed border-white/40 text-white/60" style={{ borderRadius: l.radius }}>

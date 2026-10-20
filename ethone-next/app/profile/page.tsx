@@ -108,7 +108,7 @@ export default function ProfilePage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.45, ease: EASE_SNAP }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src={profile.bannerUrl} alt="" className="h-full w-full object-cover" />
                 <div
                   className="absolute inset-0"

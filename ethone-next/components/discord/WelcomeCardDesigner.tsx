@@ -368,7 +368,7 @@ export default function WelcomeCardDesigner({
         </div>
         <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40" style={{ aspectRatio: "8 / 3" }}>
           {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img key={preview} src={preview} alt={tx("Aperçu de la carte")} className={cn("pop-in h-full w-full object-cover transition-opacity", loading && "opacity-70")} />
           ) : (
             <div className="grid h-full place-items-center text-center text-xs text-[var(--text-muted)]">

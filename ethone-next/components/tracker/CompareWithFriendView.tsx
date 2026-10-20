@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   Swords,
   User,
@@ -9,20 +8,14 @@ import {
   Target,
   Trophy,
   Zap,
-  Sparkles,
-  Shield,
   Copy,
   Check,
   RotateCcw,
-  Star,
   RefreshCw,
   Award,
-  TrendingUp,
   Percent,
-  ArrowRight,
   Flame,
   Share2,
-  Search,
 } from "@/components/icons/ph";
 import {
   fetchPlayerProfile,
@@ -30,7 +23,6 @@ import {
   calculateAgentStats,
   type ValorantAccountProfile,
   type ValorantComputedStats,
-  type ValorantAgentStat,
 } from "@/lib/valorant-provider";
 import { fetchWorker } from "@/lib/api";
 import { fetchValorantMatchesDirect, type ValorantMatch } from "@/lib/valorant-tracker";
@@ -39,7 +31,6 @@ import { useSettings } from "@/components/SettingsProvider";
 import PlayerCardExportModal from "@/components/tracker/PlayerCardExportModal";
 import ValorantWeaponStatsCard from "@/components/tracker/ValorantWeaponStatsCard";
 import { cn } from "@/lib/utils";
-import { EASE_OUT } from "@/lib/ease";
 
 export interface CompareWithFriendViewProps {
   myProfile?: ValorantAccountProfile | null;
@@ -186,8 +177,6 @@ export default function CompareWithFriendView({
   isEn: propIsEn,
 }: CompareWithFriendViewProps) {
   const { success, error: showError } = useToast();
-  const reducedMotion = useReducedMotion();
-
   const isEn =
     typeof propIsEn === "boolean"
       ? propIsEn

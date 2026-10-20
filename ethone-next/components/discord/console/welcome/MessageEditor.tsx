@@ -202,7 +202,7 @@ function IconRow({ guildId, label, source, url, onChange, preview }: { guildId: 
       <span className="text-[12px] font-semibold text-[var(--text-primary)]">{label}</span>
       <div className="flex items-center gap-2">
         {preview && (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img src={preview} alt="" className="h-9 w-9 shrink-0 rounded-lg border border-[var(--panel-border)] object-cover" />
         )}
         <Select value={source} options={options} onChange={(v) => onChange(v)} width="flex-1" aria-label={label} />

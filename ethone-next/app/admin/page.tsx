@@ -10,7 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2, ShieldCheck, Swords, Radio, Key, Eye, EyeOff } from "@/components/icons/ph";
+import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2, ShieldCheck, Eye, EyeOff } from "@/components/icons/ph";
 import { getRiotAuditStats, clearRiotAuditStats, type RiotAuditStats } from "@/lib/riot-audit";
 
 const adminCardClass =

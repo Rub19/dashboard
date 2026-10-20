@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.77.2 - 2026-10-20
+
+**E:VAL : icône des titres aux couleurs d'Ethone**
+
+- Les titres de joueur (passe de saison, contrats d'agents, boutique d'accessoires) ont une icône Ethone : un ruban avec le monogramme E, au lieu d'une icône vide.
+
 ## v1.77.1 - 2026-10-20
 
 **E:VAL : passe de saison, contrats d'agents et missions à venir**

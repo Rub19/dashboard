@@ -59900,4 +59900,44 @@ CHANGELOG_BY_LANG.en.unshift(v12941_en);
 CHANGELOG_BY_LANG.es.unshift(v12941_es);
 CHANGELOG_BY_LANG.de.unshift(v12941_de);
 
+const v12942_fr: ChangelogEntry = {
+  version: "v1.77.2",
+  date: "2026-10-20",
+  title: "E:VAL : icône des titres aux couleurs d'Ethone",
+  items: [
+    "Les titres de joueur (passe de saison, contrats d'agents, boutique d'accessoires) ont une icône Ethone : un ruban avec le monogramme E, au lieu d'une icône vide.",
+  ],
+};
+
+const v12942_en: ChangelogEntry = {
+  version: "v1.77.2",
+  date: "2026-10-20",
+  title: "E:VAL: Ethone-styled title icon",
+  items: [
+    "Player titles (season pass, agent contracts, accessory store) get an Ethone icon: a ribbon with the E monogram, instead of an empty icon.",
+  ],
+};
+
+const v12942_es: ChangelogEntry = {
+  version: "v1.77.2",
+  date: "2026-10-20",
+  title: "E:VAL: icono de títulos con el estilo de Ethone",
+  items: [
+    "Los títulos de jugador (pase de temporada, contratos de agentes, tienda de accesorios) tienen un icono de Ethone: una cinta con el monograma E, en lugar de un icono vacío.",
+  ],
+};
+
+const v12942_de: ChangelogEntry = {
+  version: "v1.77.2",
+  date: "2026-10-20",
+  title: "E:VAL: Titel-Symbol im Ethone-Stil",
+  items: [
+    "Spielertitel (Saisonpass, Agentenverträge, Zubehörshop) erhalten ein Ethone-Symbol: ein Band mit dem E-Monogramm statt eines leeren Symbols.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12942_fr);
+CHANGELOG_BY_LANG.en.unshift(v12942_en);
+CHANGELOG_BY_LANG.es.unshift(v12942_es);
+CHANGELOG_BY_LANG.de.unshift(v12942_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

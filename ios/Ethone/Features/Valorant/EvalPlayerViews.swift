@@ -38,14 +38,14 @@ struct EvalPlayerProfileView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(EvalAccent.color)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Voir les statistiques").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                                Text("Voir les statistiques").font(.system(size: 18, weight: .bold)).foregroundStyle(EvalPalette.text)
                                 Text("Taux de victoire, K/D et plus").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                             }
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(Color(hex: 0x8E8E93))
                         }
                         .padding(16)
-                        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
                     }
                     .buttonStyle(.plain)
                     matchesSection
@@ -60,7 +60,7 @@ struct EvalPlayerProfileView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(Color.black.ignoresSafeArea())
+        .background(EvalPalette.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(item: $selectedMatch) { match in
@@ -77,12 +77,12 @@ struct EvalPlayerProfileView: View {
     private var header: some View {
         HStack {
             Button { dismiss() } label: {
-                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
-                    .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white))
+                Circle().fill(EvalPalette.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text))
             }
             .buttonStyle(.plain)
             Spacer()
-            Text(player?.name ?? name).font(.system(size: 22, weight: .bold)).foregroundStyle(.white).lineLimit(1)
+            Text(player?.name ?? name).font(.system(size: 22, weight: .bold)).foregroundStyle(EvalPalette.text).lineLimit(1)
             Spacer()
             Menu {
                 if let player {
@@ -97,7 +97,7 @@ struct EvalPlayerProfileView: View {
                     ShareLink(item: "\(player.name)#\(player.tag)") { Label("Partager le Riot ID", systemImage: "square.and.arrow.up") }
                 }
             } label: {
-                Circle().fill(Color(hex: 0x1C1C1E)).frame(width: 51, height: 51)
+                Circle().fill(EvalPalette.card).frame(width: 51, height: 51)
                     .overlay(Image(systemName: "ellipsis").font(.system(size: 20, weight: .bold)).foregroundStyle(EvalAccent.color))
             }
         }
@@ -111,7 +111,7 @@ struct EvalPlayerProfileView: View {
     private func profileCard(_ p: ValorantStore.PlayerSnapshot) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text(p.name).foregroundStyle(.white)
+                Text(p.name).foregroundStyle(EvalPalette.text)
                 Text("#\(p.tag)").foregroundStyle(Color(hex: 0x8E8E93))
                 Spacer()
                 if p.level > 0 { Text("Niveau \(p.level)").foregroundStyle(Color(hex: 0x8E8E93)) }
@@ -128,7 +128,7 @@ struct EvalPlayerProfileView: View {
             }
             .padding(16)
         }
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 
@@ -160,7 +160,7 @@ struct EvalPlayerProfileView: View {
     private func careerCard(_ p: ValorantStore.PlayerSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Résumé de carrière").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
+                Text("Résumé de carrière").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text)
                 Spacer()
                 Text("\(p.mmr.seasons.count) \(p.mmr.seasons.count > 1 ? "Actes" : "Acte")").foregroundStyle(Color(hex: 0x8E8E93))
             }
@@ -173,7 +173,7 @@ struct EvalPlayerProfileView: View {
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("\(season.wins) / \(season.games)").font(.system(size: 28, weight: .heavy).monospacedDigit()).foregroundStyle(.white)
+                        Text("\(season.wins) / \(season.games)").font(.system(size: 28, weight: .heavy).monospacedDigit()).foregroundStyle(EvalPalette.text)
                         Text("Victoires / Parties").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                 }
@@ -195,12 +195,12 @@ struct EvalPlayerProfileView: View {
             }
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var matchesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Matchs").font(.system(size: 21, weight: .bold)).foregroundStyle(.white).padding(.leading, 4)
+            Text("Matchs").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text).padding(.leading, 4)
             if summaries.isEmpty {
                 Text("Aucune partie enregistrée pour ce joueur.").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
             }
@@ -220,7 +220,7 @@ struct EvalCompactMatchRow: View {
             AsyncImage(url: match.myPlayer?.agentIconURL) { $0.image?.resizable().scaledToFill() }
                 .frame(width: 53, height: 53).clipShape(.rect(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 3) {
-                Text("\(match.map) · \(EvalProfileView.modeName(match.mode))").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                Text("\(match.map) · \(EvalProfileView.modeName(match.mode))").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalPalette.text)
                 if let date = match.startedAt {
                     Text(date.formatted(.dateTime.day(.twoDigits).month(.twoDigits).hour().minute().locale(Locale(identifier: "fr_FR"))))
                         .font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -236,7 +236,7 @@ struct EvalCompactMatchRow: View {
             Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(14)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 18))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 18))
     }
 }
 
@@ -268,7 +268,7 @@ struct EvalShopHistoryView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(Color.black.ignoresSafeArea())
+        .background(EvalPalette.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -293,7 +293,7 @@ struct EvalWishlistView: View {
                     HStack(spacing: 14) {
                         AsyncImage(url: URL(string: item.icon)) { $0.image?.resizable().scaledToFit() }.frame(width: 110, height: 44)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(item.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            Text(item.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalPalette.text)
                             if inShop { Text("Dans votre boutique aujourd’hui").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x35C26B)) }
                         }
                         Spacer()
@@ -303,14 +303,14 @@ struct EvalWishlistView: View {
                         .buttonStyle(.plain)
                     }
                     .padding(16)
-                    .background(Color(hex: 0x161618), in: .rect(cornerRadius: 18))
+                    .background(EvalPalette.card, in: .rect(cornerRadius: 18))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(Color.black.ignoresSafeArea())
+        .background(EvalPalette.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }

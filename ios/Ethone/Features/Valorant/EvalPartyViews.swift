@@ -223,7 +223,7 @@ struct EvalPartyCard: View {
                     }
                     .padding(.bottom, 14)
 
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(EvalPalette.text.opacity(0.08))
 
                     controls(party).padding(.top, 14)
                 }
@@ -233,7 +233,7 @@ struct EvalPartyCard: View {
                     .foregroundStyle(Color(hex: 0x8E8E93))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 26)
-                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 22))
+                    .background(EvalPalette.card, in: .rect(cornerRadius: 22))
             }
         }
         .sheet(isPresented: $showingSettings) { EvalPartySettingsSheet() }
@@ -248,12 +248,12 @@ struct EvalPartyCard: View {
         let isMe = member.id == store.riot.credentials?.puuid
         return HStack(spacing: 14) {
             AsyncImage(url: member.cardURL) { phase in
-                if let image = phase.image { image.resizable().scaledToFill() } else { Color(hex: 0x2C2C2E) }
+                if let image = phase.image { image.resizable().scaledToFill() } else { EvalPalette.card2 }
             }
                 .frame(width: 50, height: 50)
                 .clipShape(.rect(cornerRadius: 14))
             VStack(alignment: .leading, spacing: 3) {
-                (Text(member.name).foregroundStyle(.white) + Text("#\(member.tag)").foregroundStyle(Color(hex: 0x8E8E93)))
+                (Text(member.name).foregroundStyle(EvalPalette.text) + Text("#\(member.tag)").foregroundStyle(Color(hex: 0x8E8E93)))
                     .font(.system(size: 19, weight: .medium))
                     .lineLimit(1)
                 Text(member.isReady ? "Prêt" : "Pas prêt")
@@ -264,7 +264,7 @@ struct EvalPartyCard: View {
                 if member.isOwner {
                     Image(systemName: "crown")
                         .font(.system(size: 38, weight: .light))
-                        .foregroundStyle(Color.white.opacity(0.18))
+                        .foregroundStyle(EvalPalette.text.opacity(0.18))
                         .offset(x: 60)
                         .allowsHitTesting(false)
                 }
@@ -281,7 +281,7 @@ struct EvalPartyCard: View {
             }
         }
         .padding(14)
-        .background(Color(hex: 0x2C2C2E).opacity(0.6), in: .rect(cornerRadius: 22))
+        .background(EvalPalette.card2.opacity(0.6), in: .rect(cornerRadius: 22))
     }
 
     private func controls(_ party: RiotPartyState) -> some View {
@@ -292,7 +292,7 @@ struct EvalPartyCard: View {
                 accessButton(open: false, selected: !party.isOpen, enabled: leader)
             }
             .padding(4)
-            .background(Color(hex: 0x2C2C2E).opacity(0.6), in: .capsule)
+            .background(EvalPalette.card2.opacity(0.6), in: .capsule)
 
             Spacer()
 
@@ -306,7 +306,7 @@ struct EvalPartyCard: View {
                     .foregroundStyle(EvalAccent.color)
                     .padding(.horizontal, 22)
                     .padding(.vertical, 12)
-                    .background(Color(hex: 0x2C2C2E).opacity(0.6), in: .capsule)
+                    .background(EvalPalette.card2.opacity(0.6), in: .capsule)
                 }
                 .buttonStyle(.plain)
                 .disabled(partyModel.working)
@@ -321,7 +321,7 @@ struct EvalPartyCard: View {
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(EvalAccent.color)
                     .frame(width: 50, height: 50)
-                    .background(Color(hex: 0x2C2C2E).opacity(0.6), in: .circle)
+                    .background(EvalPalette.card2.opacity(0.6), in: .circle)
             }
             .buttonStyle(.plain)
         }
@@ -363,20 +363,20 @@ struct EvalPartySettingsSheet: View {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 10) {
                         Image(systemName: "gearshape").font(.system(size: 36)).foregroundStyle(EvalAccent.color)
-                        Text("Paramètres du groupe").font(.system(size: 24, weight: .bold)).foregroundStyle(.white)
+                        Text("Paramètres du groupe").font(.system(size: 24, weight: .bold)).foregroundStyle(EvalPalette.text)
                         Text("Ajustez votre file d’attente, gérez les codes de groupe et configurez vos préférences de serveur.")
                             .font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
-                    .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 26))
+                    .background(EvalPalette.card2, in: .rect(cornerRadius: 26))
 
                     if let party = partyModel.party {
                         let leader = partyModel.isLeader(store.riot)
                         VStack(spacing: 0) {
                             HStack(spacing: 18) {
                                 rowIcon("list.bullet")
-                                Text("File d’attente").font(.system(size: 20)).foregroundStyle(.white)
+                                Text("File d’attente").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
                                 Spacer()
                                 Menu {
                                     ForEach(party.eligibleQueues.isEmpty ? [party.queueID] : party.eligibleQueues, id: \.self) { queue in
@@ -402,7 +402,7 @@ struct EvalPartySettingsSheet: View {
                             Button { showingCode = true } label: {
                                 HStack(spacing: 18) {
                                     rowIcon("character.cursor.ibeam")
-                                    Text("Groupe Code").font(.system(size: 20)).foregroundStyle(.white)
+                                    Text("Groupe Code").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
                                     Spacer()
                                     Text(party.inviteCode ?? "-").font(.system(size: 19)).foregroundStyle(Color(hex: 0x8E8E93))
                                     chevron
@@ -415,7 +415,7 @@ struct EvalPartySettingsSheet: View {
                             NavigationLink { EvalPartyServersView() } label: {
                                 HStack(spacing: 18) {
                                     rowIcon("server.rack")
-                                    Text("Serveurs").font(.system(size: 20)).foregroundStyle(.white)
+                                    Text("Serveurs").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
                                     Spacer()
                                     Text("\(party.preferredPods.count) / \(partyModel.pods(store.riot).count)")
                                         .font(.system(size: 19)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -426,7 +426,7 @@ struct EvalPartySettingsSheet: View {
                             .buttonStyle(.plain)
                             .disabled(!leader)
                         }
-                        .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 26))
+                        .background(EvalPalette.card2, in: .rect(cornerRadius: 26))
 
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Inviter des joueurs").font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 20)
@@ -439,7 +439,7 @@ struct EvalPartySettingsSheet: View {
                                 .settingsRow()
                             }
                             .buttonStyle(.plain)
-                            .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 26))
+                            .background(EvalPalette.card2, in: .rect(cornerRadius: 26))
                         }
                     } else {
                         Text("Ouvrez VALORANT sur votre PC pour gérer votre groupe.")
@@ -448,7 +448,7 @@ struct EvalPartySettingsSheet: View {
                 }
                 .padding(18)
             }
-            .background(Color(hex: 0x1C1C1E).ignoresSafeArea())
+            .background(EvalPalette.card.ignoresSafeArea())
             .navigationTitle("Paramètres du groupe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -473,7 +473,7 @@ struct EvalPartySettingsSheet: View {
         } message: {
             Text(partyModel.message ?? "")
         }
-        .preferredColorScheme(.dark)
+        .evalColorScheme()
     }
 
     private var codeSheet: some View {
@@ -481,7 +481,7 @@ struct EvalPartySettingsSheet: View {
             VStack(spacing: 0) {
                 if let code = partyModel.party?.inviteCode {
                     Button { UIPasteboard.general.string = code } label: {
-                        HStack { Text(code).font(.system(size: 22, weight: .bold).monospaced()).foregroundStyle(.white); Spacer(); Image(systemName: "doc.on.doc") }
+                        HStack { Text(code).font(.system(size: 22, weight: .bold).monospaced()).foregroundStyle(EvalPalette.text); Spacer(); Image(systemName: "doc.on.doc") }
                             .settingsRow()
                     }
                     .buttonStyle(.plain)
@@ -503,7 +503,7 @@ struct EvalPartySettingsSheet: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(Color(hex: 0x3A3A3C), in: .rect(cornerRadius: 26))
+            .background(EvalPalette.card2, in: .rect(cornerRadius: 26))
             .padding(18)
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Groupe Code")
@@ -525,7 +525,7 @@ struct EvalPartySettingsSheet: View {
     }
 
     private var divider: some View {
-        Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 72)
+        Divider().overlay(EvalPalette.text.opacity(0.1)).padding(.leading, 72)
     }
 }
 
@@ -562,10 +562,10 @@ struct EvalPartyServersView: View {
                             .settingsRow()
                         }
                         .buttonStyle(.plain)
-                        if index < pods.count - 1 { Divider().overlay(Color.white.opacity(0.1)).padding(.leading, 58) }
+                        if index < pods.count - 1 { Divider().overlay(EvalPalette.text.opacity(0.1)).padding(.leading, 58) }
                     }
                 }
-                .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 26))
+                .background(EvalPalette.card2, in: .rect(cornerRadius: 26))
 
                 Text("Le paramètre optimal équilibre un faible ping avec des temps d’attente raisonnables. Vous pouvez sélectionner des serveurs préférés, mais les temps d’attente peuvent augmenter. Les préférences ne sont pas garanties.")
                     .font(.system(size: 15))
@@ -578,7 +578,7 @@ struct EvalPartyServersView: View {
             }
             .padding(18)
         }
-        .background(Color(hex: 0x1C1C1E).ignoresSafeArea())
+        .background(EvalPalette.card.ignoresSafeArea())
         .navigationTitle("Sélection du serveur")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

@@ -34,7 +34,7 @@ struct EvalLockedView: View {
 
             Text(title)
                 .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Text(message)
                 .font(.system(size: 22, weight: .regular))
@@ -57,7 +57,7 @@ struct EvalLockedView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
+        .background(EvalPalette.background)
     }
 }
 
@@ -127,13 +127,13 @@ struct EvalLogoView: View {
                 HStack(spacing: 4) {
                     Text("E")
                         .font(.system(size: size * 0.48, weight: .black, design: .monospaced))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Text(":")
                         .font(.system(size: size * 0.48, weight: .black, design: .monospaced))
                         .foregroundStyle(Color(hex: 0xA855F7))
                     Text("VAL")
                         .font(.system(size: size * 0.48, weight: .black, design: .monospaced))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                 }
                 .tracking(2)
             }
@@ -184,7 +184,11 @@ struct EvalAppView: View {
         .tabBarMinimizeBehavior(.onScrollDown)
         .sensoryFeedback(.selection, trigger: selectedTab)
         .dynamicTypeSize(.xLarge)
-        .preferredColorScheme(.dark)
+        .evalColorScheme()
+        .onAppear {
+            let saved = UserDefaults.standard.string(forKey: EvalPlatform.key) ?? ""
+            store.leaderboardPlatform = (EvalPlatform(rawValue: saved) ?? .pc).apiValue
+        }
     }
 }
 
@@ -201,8 +205,8 @@ private struct EvalRootModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .toolbar(.hidden, for: .navigationBar)
-            .background(Color.black.ignoresSafeArea())
-            .containerBackground(Color.black, for: .navigation)
+            .background(EvalPalette.background.ignoresSafeArea())
+            .containerBackground(EvalPalette.background, for: .navigation)
             .overlay(alignment: .leading) {
                 Color.clear
                     .frame(width: 22)
@@ -402,7 +406,7 @@ struct EvalProfileView: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(EvalAccent.color)
                     .frame(width: 51, height: 51)
-                    .background(Color(hex: 0x161618), in: .circle)
+                    .background(EvalPalette.card, in: .circle)
             }
             .buttonStyle(.plain)
 
@@ -410,7 +414,7 @@ struct EvalProfileView: View {
 
             Text(profile?.handle.split(separator: "#").first.map(String.init) ?? (store.playerName.isEmpty ? "Profil" : store.playerName))
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Spacer()
 
@@ -423,11 +427,11 @@ struct EvalProfileView: View {
                         .foregroundStyle(EvalAccent.color)
                     Image(systemName: "ellipsis")
                         .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                 }
                 .padding(.horizontal, 16)
                 .frame(height: 44)
-                .background(Color(hex: 0x161618), in: .capsule)
+                .background(EvalPalette.card, in: .capsule)
             }
             .buttonStyle(.plain)
         }
@@ -443,7 +447,7 @@ struct EvalProfileView: View {
             VStack(spacing: 6) {
                 Text("Connexion Riot requise")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Text("Connectez votre compte Riot Games pour synchroniser votre rang réel, votre historique de parties, vos ratios et vos badges de saison.")
                     .font(.footnote)
@@ -466,7 +470,7 @@ struct EvalProfileView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 44)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var emptyMatchesCard: some View {
@@ -477,7 +481,7 @@ struct EvalProfileView: View {
         )
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private func mainProfileCard(profile: ValorantProfile) -> some View {
@@ -486,7 +490,7 @@ struct EvalProfileView: View {
                 HStack(spacing: 0) {
                     Text(profile.handle.split(separator: "#").first.map(String.init) ?? profile.handle)
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     if let tag = profile.handle.split(separator: "#").dropFirst().first {
                         Text("#\(tag)")
                             .font(.system(size: 18, weight: .medium))
@@ -569,7 +573,7 @@ struct EvalProfileView: View {
                         if let leaderboardRank = profile.leaderboardRank {
                             Text("Rang \(leaderboardRank)")
                                 .font(.system(size: 17, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
                                 .padding(.horizontal, 18)
                                 .padding(.vertical, 7)
                                 .foregroundStyle(profile.tier == 27 ? Color.black.opacity(0.8) : .white)
@@ -628,7 +632,7 @@ struct EvalProfileView: View {
             }
             .padding(16)
         }
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var championsGradientBanner: some View {
@@ -651,7 +655,7 @@ struct EvalProfileView: View {
             HStack {
                 Text("Résumé de carrière")
                     .font(.system(size: 21, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 Spacer()
                 NavigationLink {
                     EvalCareerSummaryView(profile: profile, matches: store.matches)
@@ -697,7 +701,7 @@ struct EvalProfileView: View {
                             .foregroundStyle(Color(hex: 0x22C55E))
                         Text("/ \(season.games)")
                             .font(.system(size: 28, weight: .heavy).monospacedDigit())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                     }
                     Text("Victoires / Parties")
                         .font(.system(size: 15))
@@ -722,7 +726,7 @@ struct EvalProfileView: View {
             }
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private func actBadge(name: String, icon: String, color: Color, tier: Int? = nil) -> some View {
@@ -765,7 +769,7 @@ struct EvalProfileView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Récap de session")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     Text("\(sessionDayText)\n\(recentSessionMatches.count) \(recentSessionMatches.count > 1 ? "parties" : "partie") · \(sessionDeltaText)")
                         .font(.system(size: 15))
@@ -774,7 +778,7 @@ struct EvalProfileView: View {
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 20))
             .contentShape(.rect)
             .onTapGesture { if !recentSessionMatches.isEmpty { showingSessionRecap = true } }
             .sheet(isPresented: $showingSessionRecap) {
@@ -793,7 +797,7 @@ struct EvalProfileView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Voir les statistiques")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
 
                         Text("Win rate, K/D & more")
                             .font(.system(size: 15))
@@ -802,7 +806,7 @@ struct EvalProfileView: View {
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
         }
@@ -812,7 +816,7 @@ struct EvalProfileView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Matchs")
                 .font(.system(size: 21, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
                 .padding(.top, 4)
 
             ForEach(store.matches) { match in
@@ -837,7 +841,7 @@ struct EvalProfileView: View {
                     .foregroundStyle(.white.opacity(0.8))
                 Text(Self.modeName(match.mode))
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -882,7 +886,7 @@ struct EvalProfileView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(match.agent)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
 
                         HStack(spacing: 6) {
                             Text(match.map)
@@ -908,7 +912,7 @@ struct EvalProfileView: View {
 
                     Text(match.won ? "VICTOIRE" : "DÉFAITE")
                         .font(.system(size: 15, weight: .heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
                         .background(match.won ? Color(hex: 0x35B86B) : EvalAccent.color, in: .capsule)
@@ -938,11 +942,11 @@ struct EvalProfileView: View {
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(EvalPalette.text)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
         }
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     static func modeName(_ mode: String) -> String {
@@ -1076,13 +1080,13 @@ struct EvalCareerSummaryView: View {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .frame(width: 51, height: 51)
-                    .background(Color(hex: 0x161618), in: .circle)
+                    .background(EvalPalette.card, in: .circle)
             }
             .buttonStyle(.plain)
             Spacer()
-            Text("Résumé de carrière").font(.headline.weight(.bold)).foregroundStyle(.white)
+            Text("Résumé de carrière").font(.headline.weight(.bold)).foregroundStyle(EvalPalette.text)
             Spacer()
             Color.clear.frame(width: 51, height: 51)
         }
@@ -1102,7 +1106,7 @@ struct EvalCareerSummaryView: View {
                             .foregroundStyle(selected ? EvalAccent.color : Color(hex: 0x8E8E93))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 10)
-                            .background(selected ? Color(hex: 0x2C2C2E) : .clear, in: .capsule)
+                            .background(selected ? EvalPalette.card2 : .clear, in: .capsule)
                     }
                     .buttonStyle(.plain)
                 }
@@ -1114,18 +1118,18 @@ struct EvalCareerSummaryView: View {
         HStack {
             Text(profile.actName.isEmpty ? "Acte en cours" : profile.actName)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
             Spacer()
             Text("Actuel").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
         }
         .padding(18)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private func emptyCard(_ message: String) -> some View {
         VStack(spacing: 14) {
             Image(systemName: "desktopcomputer").font(.system(size: 46)).foregroundStyle(Color(hex: 0x8E8E93))
-            Text("Aucune partie jouée").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+            Text("Aucune partie jouée").font(.system(size: 20, weight: .bold)).foregroundStyle(EvalPalette.text)
             Text(message)
                 .font(.system(size: 16))
                 .foregroundStyle(Color(hex: 0x8E8E93))
@@ -1134,7 +1138,7 @@ struct EvalCareerSummaryView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
         .padding(.horizontal, 16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private func tierImage(_ tier: Int, size: CGFloat) -> some View {
@@ -1153,11 +1157,11 @@ struct EvalCareerSummaryView: View {
                     Text(EvalRanks.name(mmr.tier).uppercased())
                         .font(.system(size: 20, weight: .heavy))
                         .foregroundStyle(Color(hex: EvalRanks.color(mmr.tier)))
-                    Text("\(mmr.rr) SC").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                    Text("\(mmr.rr) SC").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalPalette.text)
                     if mmr.leaderboardRank > 0 {
                         Text("Rang \(mmr.leaderboardRank)")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 7)
                             .background(Color(hex: EvalRanks.color(mmr.tier)).opacity(0.75), in: .capsule)
@@ -1167,7 +1171,7 @@ struct EvalCareerSummaryView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
 
-                Divider().frame(height: 120).overlay(Color.white.opacity(0.08))
+                Divider().frame(height: 120).overlay(EvalPalette.text.opacity(0.08))
 
                 Button { showPeak = true } label: {
                     VStack(spacing: 10) {
@@ -1187,7 +1191,7 @@ struct EvalCareerSummaryView: View {
             }
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var allTimeCard: some View {
@@ -1202,7 +1206,7 @@ struct EvalCareerSummaryView: View {
             ratioCard(wins: wins, total: games)
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var previousActsCard: some View {
@@ -1218,7 +1222,7 @@ struct EvalCareerSummaryView: View {
                         tierImage(season.endTier, size: 32)
                         Text(store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season))
                             .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
                         Text(percent(season.winRate))
                             .font(.system(size: 17, weight: .bold).monospacedDigit())
@@ -1234,7 +1238,7 @@ struct EvalCareerSummaryView: View {
             }
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private var recentQueueCard: some View {
@@ -1248,7 +1252,7 @@ struct EvalCareerSummaryView: View {
             ratioCard(wins: wins, total: queueMatches.count)
         }
         .padding(16)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
     }
 
     private func percent(_ value: Double) -> String {
@@ -1264,11 +1268,11 @@ struct EvalCareerSummaryView: View {
                 Text("Taux de victoire").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
             }
             .frame(maxWidth: .infinity)
-            Divider().frame(height: 56).overlay(Color.white.opacity(0.08))
+            Divider().frame(height: 56).overlay(EvalPalette.text.opacity(0.08))
             VStack(spacing: 4) {
                 HStack(spacing: 0) {
                     Text("\(wins)").foregroundStyle(color)
-                    Text(" / \(total)").foregroundStyle(.white)
+                    Text(" / \(total)").foregroundStyle(EvalPalette.text)
                 }
                 .font(.system(size: 30, weight: .heavy).monospacedDigit())
                 Text("Victoires / Parties").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -1404,7 +1408,7 @@ struct EvalDailyOfferCard: View {
             .padding(.bottom, 16)
         }
         .background(Color(hex: offer.colorHex).opacity(0.12))
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -1436,7 +1440,7 @@ struct EvalFeaturedBundleCard: View {
 
                 if bundle.isOwned {
                     Circle()
-                        .fill(Color.white.opacity(0.85))
+                        .fill(EvalPalette.text.opacity(0.85))
                         .frame(width: 39, height: 39)
                         .overlay(Image(systemName: "checkmark").font(.system(size: 18, weight: .bold)).foregroundStyle(Color.black))
                 }
@@ -1447,7 +1451,7 @@ struct EvalFeaturedBundleCard: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(bundle.name)
                         .font(.title3.weight(.heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     Text(description)
                         .font(.caption)
@@ -1460,7 +1464,7 @@ struct EvalFeaturedBundleCard: View {
                                 VPIconView(size: 14)
                                 Text("\(price.formatted())")
                                     .font(.subheadline.weight(.heavy).monospacedDigit())
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(EvalPalette.text)
                             }
                         }
 
@@ -1486,17 +1490,17 @@ struct EvalFeaturedBundleCard: View {
             } else {
                 Text(bundle.name)
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 4)
             }
         }
         .padding(bundle.description != nil ? 12 : 0)
-        .background(bundle.description != nil ? Color.white.opacity(0.03) : Color.clear)
+        .background(bundle.description != nil ? EvalPalette.text.opacity(0.03) : Color.clear)
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.cardRadius)
-                .strokeBorder(Color.white.opacity(bundle.description != nil ? 0.08 : 0), lineWidth: 1)
+                .strokeBorder(EvalPalette.text.opacity(bundle.description != nil ? 0.08 : 0), lineWidth: 1)
         )
     }
 }
@@ -1511,8 +1515,8 @@ struct EvalAccessoryBundleCard: View {
                 ForEach(accessories) { item in
                     ZStack {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.white.opacity(0.06))
-                            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.white.opacity(0.12)))
+                            .fill(EvalPalette.text.opacity(0.06))
+                            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(EvalPalette.text.opacity(0.12)))
 
                         if item.imageURL.isEmpty {
                             EvalTitleBadge(size: 46)
@@ -1535,7 +1539,7 @@ struct EvalAccessoryBundleCard: View {
             HStack {
                 Text("Accessoires")
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Spacer()
 
@@ -1557,7 +1561,7 @@ struct EvalAccessoryBundleCard: View {
         .padding(14)
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
     }
 }
 
@@ -1571,11 +1575,11 @@ struct SprayWheelView: View {
         ZStack {
             Circle()
                 .fill(Color(hex: 0x13151C))
-                .overlay(Circle().strokeBorder(Color.white.opacity(0.18), lineWidth: 2))
+                .overlay(Circle().strokeBorder(EvalPalette.text.opacity(0.18), lineWidth: 2))
                 .shadow(color: Color.black.opacity(0.4), radius: 10)
 
             Circle()
-                .strokeBorder(Color.white.opacity(0.08), lineWidth: 1.5)
+                .strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1.5)
                 .padding(26)
 
             GeometryReader { geo in
@@ -1588,7 +1592,7 @@ struct SprayWheelView: View {
                     path.move(to: CGPoint(x: w * 0.86, y: h * 0.14))
                     path.addLine(to: CGPoint(x: w * 0.14, y: h * 0.86))
                 }
-                .stroke(Color.white.opacity(0.22), lineWidth: 1.5)
+                .stroke(EvalPalette.text.opacity(0.22), lineWidth: 1.5)
             }
 
             ZStack {
@@ -1596,7 +1600,7 @@ struct SprayWheelView: View {
                     .fill(Color(hex: 0x13151C))
                     .frame(width: 60, height: 60)
                 Circle()
-                    .strokeBorder(Color.white.opacity(0.35), lineWidth: 2)
+                    .strokeBorder(EvalPalette.text.opacity(0.35), lineWidth: 2)
                     .frame(width: 55, height: 55)
             }
 
@@ -1635,7 +1639,7 @@ struct SprayWheelView: View {
             } else {
                 Image(systemName: "plus")
                     .font(.system(size: 17, weight: .light))
-                    .foregroundStyle(Color.white.opacity(0.18))
+                    .foregroundStyle(EvalPalette.text.opacity(0.18))
                     .frame(width: size, height: size)
             }
         }
@@ -1652,21 +1656,21 @@ struct EvalWalletBar: View {
             HStack(spacing: 6) {
                 Text("\(wallet.vp.formatted())")
                     .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 VPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.rp.formatted())")
                     .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 RPIconView(size: 14)
             }
 
             HStack(spacing: 6) {
                 Text("\(wallet.kc.formatted())")
                     .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 KCIconView(size: 14)
             }
 
@@ -1674,8 +1678,8 @@ struct EvalWalletBar: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-        .background(Color(hex: 0x161618).opacity(0.92), in: .capsule)
-        .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
+        .background(EvalPalette.card.opacity(0.92), in: .capsule)
+        .overlay(Capsule().strokeBorder(EvalPalette.text.opacity(0.12), lineWidth: 1))
     }
 }
 
@@ -1686,7 +1690,7 @@ struct EvalGroupRefreshWheel: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.white.opacity(0.12), lineWidth: 2.2)
+                .stroke(EvalPalette.text.opacity(0.12), lineWidth: 2.2)
 
             Circle()
                 .trim(from: 0, to: max(0.02, min(progress, 1.0)))
@@ -1844,13 +1848,13 @@ struct EvalGameView: View {
                                             .frame(height: 104)
                                             .clipped()
                                     default:
-                                        Color(hex: 0x1A1C24).frame(height: 104)
+                                        EvalPalette.card.frame(height: 104)
                                     }
                                 }
                                 .clipShape(.rect(cornerRadius: 16))
 
                                 Circle()
-                                    .fill(Color.white.opacity(0.92))
+                                    .fill(EvalPalette.text.opacity(0.92))
                                     .frame(width: 32, height: 32)
                                     .overlay(
                                         Image(systemName: "pencil")
@@ -1867,27 +1871,27 @@ struct EvalGameView: View {
                             NavigationLink { EvalTitlePickerView() } label: {
                                 equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle).contentShape(.rect)
                             }.buttonStyle(.plain)
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
                             NavigationLink { EvalWeaponLoadoutView() } label: {
                                 equipNavRow(icon: "scope", title: "Équipement d'arme").contentShape(.rect)
                             }.buttonStyle(.plain)
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
                             NavigationLink { EvalPrivacySettingsView() } label: { equipPrivacyRow.contentShape(.rect) }.buttonStyle(.plain)
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
                             let appearanceVal: String? = store.appearanceProfilesCount > 0 ? "\(store.appearanceProfilesCount)" : nil
                             NavigationLink { EvalAppearanceProfilesView() } label: {
                                 equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal).contentShape(.rect)
                             }.buttonStyle(.plain)
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
                             Button { confirmRandom = true } label: {
                                 equipNavRow(icon: "die.face.5.fill", title: store.loadout.isSaving ? "Application…" : "Aléatoire").contentShape(.rect)
                             }.buttonStyle(.plain)
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
                             ShareLink(item: store.loadout.shareText.isEmpty ? "Mon équipement VALORANT" : store.loadout.shareText) {
                                 equipNavRow(icon: "square.and.arrow.up", title: "Partager").contentShape(.rect)
                             }.buttonStyle(.plain)
                         }
-                        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
                         .task { await store.loadout.load(store.riot) }
                         .confirmationDialog("Équiper un skin possédé au hasard sur chaque arme ?", isPresented: $confirmRandom, titleVisibility: .visible) {
                             Button("Équiper au hasard") {
@@ -1944,7 +1948,7 @@ struct EvalGameView: View {
             Spacer()
             Text("Jeu")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
             Spacer()
         }
         .padding(.horizontal, 16)
@@ -1959,7 +1963,7 @@ struct EvalGameView: View {
                 HStack {
                     Text("Accessoires")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Spacer()
                     HStack(spacing: 6) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.accessoriesEnd, now: ctx.date)) }
@@ -1975,7 +1979,7 @@ struct EvalGameView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
 
@@ -1983,7 +1987,7 @@ struct EvalGameView: View {
                 HStack {
                     Text("Offres quotidiennes")
                         .font(.system(size: 23, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.offersEnd, now: ctx.date)) }
@@ -2022,7 +2026,7 @@ struct EvalGameView: View {
                         .frame(width: 24)
                     Text("Liste de souhaits")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Spacer()
                     Text("\(store.wishlistCount)")
                         .font(.system(size: 17))
@@ -2037,7 +2041,7 @@ struct EvalGameView: View {
                 }
                 .buttonStyle(.plain)
 
-                Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 54)
+                Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 54)
 
                 NavigationLink {
                     EvalShopHistoryView()
@@ -2049,7 +2053,7 @@ struct EvalGameView: View {
                             .frame(width: 24)
                         Text("Historique de la boutique")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
                         Text("\(store.storeHistoryCount)")
                             .font(.system(size: 17))
@@ -2063,7 +2067,7 @@ struct EvalGameView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         }
     }
 
@@ -2076,7 +2080,7 @@ struct EvalGameView: View {
 
             Text("Paramètres de confidentialité")
                 .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Spacer()
 
@@ -2107,7 +2111,7 @@ struct EvalGameView: View {
 
             Text(title)
                 .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Spacer()
 
@@ -2144,7 +2148,7 @@ struct EvalGameView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
-                isSelected ? EvalAccent.color.opacity(0.16) : Color(hex: 0x161618),
+                isSelected ? EvalAccent.color.opacity(0.16) : EvalPalette.card,
                 in: .capsule
             )
             .overlay(
@@ -2175,7 +2179,7 @@ struct EvalGameView: View {
 
                         Text(title)
                             .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
 
                         Spacer()
                     }
@@ -2201,7 +2205,7 @@ struct EvalGameView: View {
                 HStack {
                     Text("Checkpoints journaliers")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.dailyEnd, now: ctx.date)) }
@@ -2217,17 +2221,17 @@ struct EvalGameView: View {
                     ForEach(0..<4) { i in
                         let done = store.dailyMilestones.indices.contains(i) && store.dailyMilestones[i]
                         ZStack {
-                            Circle().fill(done ? EvalAccent.color : Color.white.opacity(0.06))
+                            Circle().fill(done ? EvalAccent.color : EvalPalette.text.opacity(0.06))
                             Image(systemName: done ? "checkmark" : "smallcircle.filled.circle")
                                 .font(.system(size: done ? 18 : 22, weight: done ? .bold : .regular))
-                                .foregroundStyle(done ? Color.white : Color.white.opacity(0.25))
+                                .foregroundStyle(done ? Color.white : EvalPalette.text.opacity(0.25))
                         }
                         .frame(width: 36, height: 36)
 
                         if i < 3 {
                             let next = store.dailyMilestones.indices.contains(i + 1) && store.dailyMilestones[i + 1]
                             Rectangle()
-                                .fill(done && next ? EvalAccent.color : Color.white.opacity(0.12))
+                                .fill(done && next ? EvalAccent.color : EvalPalette.text.opacity(0.12))
                                 .frame(height: 2)
                                 .frame(maxWidth: .infinity)
                         }
@@ -2237,13 +2241,13 @@ struct EvalGameView: View {
                 .padding(.vertical, 4)
             }
             .padding(16)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 20))
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text("Missions hebdomadaires")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                     Spacer()
                     HStack(spacing: 5) {
                         TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.weeklyMissionsEnd, now: ctx.date)) }
@@ -2270,7 +2274,7 @@ struct EvalGameView: View {
                 ForEach(pending) { mission in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text(mission.title).font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
+                            Text(mission.title).font(.system(size: 16, weight: .medium)).foregroundStyle(EvalPalette.text)
                             Spacer()
                             Text("+\(mission.xp.formatted()) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
@@ -2282,7 +2286,7 @@ struct EvalGameView: View {
                 }
             }
             .padding(16)
-            .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 20))
 
             EvalUpcomingMissionsCard()
         }
@@ -2311,7 +2315,7 @@ struct EvalBattlepassDetailSheet: View {
     private var progressRing: some View {
         ZStack {
             Circle()
-                .strokeBorder(Color.white.opacity(0.12), lineWidth: 4)
+                .strokeBorder(EvalPalette.text.opacity(0.12), lineWidth: 4)
                 .frame(width: 60, height: 60)
 
             if store.isConfigured {
@@ -2324,7 +2328,7 @@ struct EvalBattlepassDetailSheet: View {
 
             Text(store.battlepassLevels.isEmpty ? "—" : "\(store.battlepassCompletionPercent)%")
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
         }
     }
 
@@ -2333,7 +2337,7 @@ struct EvalBattlepassDetailSheet: View {
             HStack {
                 Text(store.battlepassLevels.isEmpty ? "Données indisponibles" : "Niveau actuel : \(store.battlepassCurrentLevel) / 55")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 Spacer()
                 if store.isConfigured {
                     Text("\(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
@@ -2349,7 +2353,7 @@ struct EvalBattlepassDetailSheet: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(height: 6)
 
                     Capsule()
@@ -2373,7 +2377,7 @@ struct EvalBattlepassDetailSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(store.battlepassTitle)
                         .font(.title3.weight(.heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     if let endDate = store.battlepassEndDate {
                         Text("Prend fin dans \(store.daysRemainingInAct) jours • \(endDate.formatted(date: .abbreviated, time: .omitted))")
@@ -2392,13 +2396,13 @@ struct EvalBattlepassDetailSheet: View {
         .padding(16)
         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
         .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.bg.ignoresSafeArea()
+                EvalPalette.background.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -2445,7 +2449,7 @@ struct EvalBattlepassDetailSheet: View {
             HStack {
                 Text(chapter == 11 ? "Épilogue" : "Chapitre \(chapter)")
                     .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Spacer()
 
@@ -2470,7 +2474,7 @@ struct EvalBattlepassDetailSheet: View {
                     levelRow(level: level)
                     if index < levels.count - 1 {
                         Rectangle()
-                            .fill(Color.white.opacity(0.05))
+                            .fill(EvalPalette.text.opacity(0.05))
                             .frame(height: 1)
                             .padding(.leading, 56)
                     }
@@ -2478,7 +2482,7 @@ struct EvalBattlepassDetailSheet: View {
             }
             .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
             .clipShape(.rect(cornerRadius: Theme.cardRadius))
-            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
         }
     }
 
@@ -2501,10 +2505,10 @@ struct EvalBattlepassDetailSheet: View {
                         .frame(width: 37, height: 37)
                     Text("\(level.level)")
                         .font(.system(size: 14, weight: .heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
                 } else {
                     Circle()
-                        .fill(Color.white.opacity(0.06))
+                        .fill(EvalPalette.text.opacity(0.06))
                         .frame(width: 37, height: 37)
                     Text("\(level.level)")
                         .font(.system(size: 14, weight: .medium))
@@ -2523,7 +2527,7 @@ struct EvalBattlepassDetailSheet: View {
                             .frame(width: 51, height: 51)
                     default:
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.white.opacity(0.04))
+                            .fill(EvalPalette.text.opacity(0.04))
                             .frame(width: 51, height: 51)
                             .overlay(Image(systemName: "gift.fill").font(.system(size: 18)).foregroundStyle(.secondary))
                     }
@@ -2531,7 +2535,7 @@ struct EvalBattlepassDetailSheet: View {
                 .frame(width: 51, height: 51)
             } else {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(EvalPalette.text.opacity(0.04))
                     .frame(width: 51, height: 51)
                     .overlay(Image(systemName: "gift.fill").font(.system(size: 18)).foregroundStyle(.secondary))
             }
@@ -2593,7 +2597,7 @@ struct EvalUpcomingMissionsSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.bg.ignoresSafeArea()
+                EvalPalette.background.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 16) {
@@ -2602,7 +2606,7 @@ struct EvalUpcomingMissionsSheet: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("Réserve de missions futures")
                                         .font(.headline.weight(.heavy))
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(EvalPalette.text)
 
                                     Text("\(store.upcomingMissions.count) missions hebdomadaires programmées")
                                         .font(.caption)
@@ -2624,14 +2628,14 @@ struct EvalUpcomingMissionsSheet: View {
                         .padding(16)
                         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                         .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
 
                         VStack(spacing: 0) {
                             ForEach(Array(store.upcomingMissions.enumerated()), id: \.element.id) { index, mission in
                                 HStack(spacing: 12) {
                                     ZStack {
                                         Circle()
-                                            .fill(Color.white.opacity(0.06))
+                                            .fill(EvalPalette.text.opacity(0.06))
                                             .frame(width: 39, height: 39)
 
                                         Image(systemName: "calendar.badge.clock")
@@ -2642,7 +2646,7 @@ struct EvalUpcomingMissionsSheet: View {
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(mission.title)
                                             .font(.subheadline.weight(.medium))
-                                            .foregroundStyle(.white)
+                                            .foregroundStyle(EvalPalette.text)
 
                                         Text("Objectif : \(mission.progressToComplete.formatted())")
                                             .font(.caption2)
@@ -2663,7 +2667,7 @@ struct EvalUpcomingMissionsSheet: View {
 
                                 if index < store.upcomingMissions.count - 1 {
                                     Rectangle()
-                                        .fill(Color.white.opacity(0.05))
+                                        .fill(EvalPalette.text.opacity(0.05))
                                         .frame(height: 1)
                                         .padding(.leading, 56)
                                 }
@@ -2671,7 +2675,7 @@ struct EvalUpcomingMissionsSheet: View {
                         }
                         .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                         .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
                     }
                     .padding(16)
                     .padding(.bottom, 32)
@@ -2701,7 +2705,7 @@ struct EvalHubView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EvalPalette.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topBar
@@ -2716,7 +2720,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPlayersSearchView()
@@ -2725,7 +2729,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalNameHistoryView()
@@ -2734,7 +2738,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalLeaderboardView()
@@ -2743,7 +2747,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPurchaseHistoryView()
@@ -2752,7 +2756,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalPlayerSettingsView()
@@ -2779,7 +2783,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalAgentsView()
@@ -2788,7 +2792,7 @@ struct EvalHubView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
                                 EvalWeaponsView()
@@ -2812,7 +2816,7 @@ struct EvalHubView: View {
             Spacer()
             Text("Hub")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
             Spacer()
         }
         .padding(.horizontal, 16)
@@ -2829,7 +2833,7 @@ struct EvalHubView: View {
             VStack(spacing: 0) {
                 content()
             }
-            .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 28))
         }
     }
 
@@ -2842,7 +2846,7 @@ struct EvalHubView: View {
 
             Text(title)
                 .font(.system(size: 22, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -2917,7 +2921,7 @@ struct EvalFriendsView: View {
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 16)
                         .frame(height: 50)
-                        .background(Color(hex: 0x1C1C1E), in: .capsule)
+                        .background(EvalPalette.card, in: .capsule)
                     }
 
                     if !store.isConfigured {
@@ -3035,12 +3039,12 @@ struct EvalFriendsView: View {
                     dismiss()
                 } label: {
                     Circle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
                         )
                 }
                 .buttonStyle(PressScaleStyle())
@@ -3049,7 +3053,7 @@ struct EvalFriendsView: View {
                     EvalFriendHistoryView()
                 } label: {
                     Circle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "person.crop.circle.badge.clock")
@@ -3064,7 +3068,7 @@ struct EvalFriendsView: View {
 
             Text("Amis")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Spacer()
 
@@ -3073,7 +3077,7 @@ struct EvalFriendsView: View {
                     showingSettingsSheet = true
                 } label: {
                     Circle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "ellipsis")
@@ -3089,7 +3093,7 @@ struct EvalFriendsView: View {
                     }
                 } label: {
                     Circle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(width: 44, height: 44)
                         .overlay(
                             Image(systemName: "person.crop.circle.badge.plus")
@@ -3118,14 +3122,14 @@ struct EvalFriendsView: View {
                                 .clipShape(.rect(cornerRadius: 12))
                         default:
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(hex: 0x1A1C24))
+                                .fill(EvalPalette.card)
                                 .frame(width: 51, height: 51)
                                 .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                         }
                     }
                 } else {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(hex: 0x1A1C24))
+                        .fill(EvalPalette.card)
                         .frame(width: 51, height: 51)
                         .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                 }
@@ -3133,7 +3137,7 @@ struct EvalFriendsView: View {
                 Circle()
                     .fill(Color(hex: 0x8E8E93))
                     .frame(width: 15, height: 15)
-                    .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
+                    .overlay(Circle().strokeBorder(EvalPalette.card, lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
 
@@ -3141,7 +3145,7 @@ struct EvalFriendsView: View {
                 HStack(spacing: 4) {
                     Text(store.playerName.isEmpty ? "Aucun compte" : store.playerName)
                         .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     Text(store.tag.isEmpty ? "" : "#\(store.tag)")
                         .font(.caption.weight(.medium))
@@ -3156,7 +3160,7 @@ struct EvalFriendsView: View {
             Spacer()
         }
         .padding(14)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 
@@ -3169,7 +3173,7 @@ struct EvalFriendsView: View {
             VStack(spacing: 6) {
                 Text("Connexion Riot requise")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Text("Connectez votre compte Riot Games pour voir vos amis en direct, leur mode de jeu, score et rang.")
                     .font(.footnote)
@@ -3192,7 +3196,7 @@ struct EvalFriendsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 36)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 
@@ -3204,7 +3208,7 @@ struct EvalFriendsView: View {
 
             Text("Aucun ami sur ce compte")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Text("Vos amis en jeu et hors ligne apparaîtront ici dès qu'ils feront partie de votre compte.")
                 .font(.footnote)
@@ -3232,7 +3236,7 @@ struct EvalFriendsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 36)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 }
@@ -3260,7 +3264,7 @@ struct EvalFriendCard: View {
                     Spacer()
                     Image(systemName: "crown")
                         .font(.system(size: 51, weight: .light))
-                        .foregroundStyle(Color.white.opacity(0.04))
+                        .foregroundStyle(EvalPalette.text.opacity(0.04))
                         .offset(x: -60)
                     Spacer()
                 }
@@ -3275,7 +3279,7 @@ struct EvalFriendCard: View {
                                 image.resizable().scaledToFill().frame(width: 51, height: 51).clipShape(.rect(cornerRadius: 12))
                             default:
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color(hex: 0x1A1C24))
+                                    .fill(EvalPalette.card)
                                     .frame(width: 51, height: 51)
                                     .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                             }
@@ -3286,13 +3290,13 @@ struct EvalFriendCard: View {
                                 .fill(Color(hex: 0xFD4556))
                                 .frame(width: 15, height: 15)
                                 .overlay(Rectangle().fill(Color.white).frame(width: 7, height: 2))
-                                .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
+                                .overlay(Circle().strokeBorder(EvalPalette.card, lineWidth: 2))
                                 .offset(x: 2, y: 2)
                         } else if friend.isOnline {
                             Circle()
                                 .fill(Color(hex: 0x22C55E))
                                 .frame(width: 15, height: 15)
-                                .overlay(Circle().strokeBorder(Color(hex: 0x161618), lineWidth: 2))
+                                .overlay(Circle().strokeBorder(EvalPalette.card, lineWidth: 2))
                                 .offset(x: 2, y: 2)
                         }
                     }
@@ -3301,7 +3305,7 @@ struct EvalFriendCard: View {
                         HStack(spacing: 4) {
                             Text(friend.name)
                                 .font(.subheadline.weight(.heavy))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
 
                             Text("#\(friend.tag)")
                                 .font(.caption.weight(.medium))
@@ -3311,7 +3315,7 @@ struct EvalFriendCard: View {
                         if let queue = friend.queueState {
                             Text(queue)
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
                             if let mode = friend.gameMode {
                                 Text(mode)
                                     .font(.caption2)
@@ -3329,7 +3333,7 @@ struct EvalFriendCard: View {
                                         .foregroundStyle(.secondary.opacity(0.6))
                                     Text(score)
                                         .font(.caption.weight(.heavy).monospacedDigit())
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(EvalPalette.text)
                                 }
                             }
 
@@ -3376,7 +3380,7 @@ struct EvalFriendCard: View {
 
                 if friend.otherPartyMembersCount > 0 {
                     Divider()
-                        .overlay(Color.white.opacity(0.06))
+                        .overlay(EvalPalette.text.opacity(0.06))
                         .padding(.horizontal, 14)
 
                     HStack {
@@ -3390,7 +3394,7 @@ struct EvalFriendCard: View {
                 }
             }
         }
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 }
@@ -3407,7 +3411,7 @@ struct EvalOfflineFriendCard: View {
                         image.resizable().scaledToFill().frame(width: 51, height: 51).clipShape(.rect(cornerRadius: 12))
                     default:
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(hex: 0x1A1C24))
+                            .fill(EvalPalette.card)
                             .frame(width: 51, height: 51)
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
@@ -3417,7 +3421,7 @@ struct EvalOfflineFriendCard: View {
                 Circle()
                     .fill(Color(hex: 0x64748B))
                     .frame(width: 13, height: 13)
-                    .overlay(Circle().strokeBorder(Color(hex: 0x0E1017), lineWidth: 2))
+                    .overlay(Circle().strokeBorder(EvalPalette.card, lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
 
@@ -3425,7 +3429,7 @@ struct EvalOfflineFriendCard: View {
                 HStack(spacing: 4) {
                     Text(friend.name)
                         .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(Color.white.opacity(0.85))
+                        .foregroundStyle(EvalPalette.text.opacity(0.85))
 
                     Text("#\(friend.tag)")
                         .font(.caption.weight(.medium))
@@ -3459,7 +3463,7 @@ struct EvalOfflineFriendCard: View {
             }
         }
         .padding(14)
-        .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 }
@@ -3476,7 +3480,7 @@ struct EvalAddFriendModal: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Ajouter un ami")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Text("Entre le Riot ID du joueur que tu veux ajouter.")
                     .font(.footnote)
@@ -3487,19 +3491,19 @@ struct EvalAddFriendModal: View {
             VStack(spacing: 0) {
                 TextField("Nom", text: $name)
                     .font(.subheadline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .padding(12)
 
                 Rectangle()
-                    .fill(Color.white.opacity(0.08))
+                    .fill(EvalPalette.text.opacity(0.08))
                     .frame(height: 1)
 
                 TextField("Identifiant", text: $tag)
                     .font(.subheadline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .padding(12)
             }
-            .background(Color.white.opacity(0.06), in: .rect(cornerRadius: 12))
+            .background(EvalPalette.text.opacity(0.06), in: .rect(cornerRadius: 12))
 
             VStack(spacing: 10) {
                 Button {
@@ -3513,7 +3517,7 @@ struct EvalAddFriendModal: View {
                         .foregroundStyle(Theme.danger)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)
-                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 14))
+                        .background(EvalPalette.text.opacity(0.08), in: .rect(cornerRadius: 14))
                 }
                 .buttonStyle(PressScaleStyle())
                 .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -3528,7 +3532,7 @@ struct EvalAddFriendModal: View {
                         .foregroundStyle(Theme.danger)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)
-                        .background(Color.white.opacity(0.08), in: .rect(cornerRadius: 14))
+                        .background(EvalPalette.text.opacity(0.08), in: .rect(cornerRadius: 14))
                 }
                 .buttonStyle(PressScaleStyle())
             }
@@ -3537,7 +3541,7 @@ struct EvalAddFriendModal: View {
         .frame(maxWidth: 320)
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
         .clipShape(.rect(cornerRadius: 24))
-        .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(EvalPalette.text.opacity(0.12), lineWidth: 1))
         .shadow(color: Color.black.opacity(0.5), radius: 24)
     }
 }
@@ -3553,13 +3557,13 @@ struct EvalFriendSettingsSheet: View {
                 Spacer()
                 Text("Paramètres des amis")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                 Spacer()
                 Button {
                     dismiss()
                 } label: {
                     Circle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(EvalPalette.text.opacity(0.08))
                         .frame(width: 37, height: 37)
                         .overlay(Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundStyle(.secondary))
                 }
@@ -3575,7 +3579,7 @@ struct EvalFriendSettingsSheet: View {
 
                         Text("Ouvrir le profil directement")
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
 
                         Spacer()
 
@@ -3601,7 +3605,7 @@ struct EvalFriendSettingsSheet: View {
 
                         Text("Trier les joueurs hors ligne par dernière connexion")
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
 
                         Spacer()
 
@@ -3641,15 +3645,15 @@ struct EvalFriendHistoryView: View {
                         dismiss()
                     } label: {
                         Circle()
-                            .fill(Color.white.opacity(0.08))
+                            .fill(EvalPalette.text.opacity(0.08))
                             .frame(width: 44, height: 44)
-                            .overlay(Image(systemName: "chevron.left").font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
+                            .overlay(Image(systemName: "chevron.left").font(.system(size: 16, weight: .bold)).foregroundStyle(EvalPalette.text))
                     }
                     .buttonStyle(PressScaleStyle())
 
                     Text("Changements de la liste d'amis")
                         .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     Spacer()
                 }
@@ -3677,7 +3681,7 @@ struct EvalFriendHistoryView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(event.handle)
                                     .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(EvalPalette.text)
 
                                 Text(event.type.rawValue)
                                     .font(.footnote)
@@ -3699,7 +3703,7 @@ struct EvalFriendHistoryView: View {
 
                         if index < store.friendHistory.count - 1 {
                             Rectangle()
-                                .fill(Color.white.opacity(0.05))
+                                .fill(EvalPalette.text.opacity(0.05))
                                 .frame(height: 1)
                                 .padding(.leading, 52)
                         }
@@ -3707,7 +3711,7 @@ struct EvalFriendHistoryView: View {
                 }
                 .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
                 .clipShape(.rect(cornerRadius: Theme.cardRadius))
-                .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalPalette.text.opacity(0.08), lineWidth: 1))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
@@ -3735,7 +3739,7 @@ struct EvalFriendDetailSheet: View {
                         image.resizable().scaledToFill().frame(width: 62, height: 62).clipShape(.rect(cornerRadius: 14))
                     default:
                         RoundedRectangle(cornerRadius: 14)
-                            .fill(Color(hex: 0x1A1C24))
+                            .fill(EvalPalette.card)
                             .frame(width: 62, height: 62)
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
@@ -3744,7 +3748,7 @@ struct EvalFriendDetailSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(friend.handle)
                         .font(.title3.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(EvalPalette.text)
 
                     if friend.isInGame, let mode = friend.gameMode, let map = friend.map {
                         Text("\(mode) · \(map) (Score: \(friend.scoreRounds ?? "-"))")
@@ -3817,7 +3821,7 @@ struct EvalFriendDetailSheet: View {
 
                 Text(title)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
 
                 Spacer()
 
@@ -3838,8 +3842,8 @@ struct EvalSettingsView: View {
     @State private var showingRiotLogin = false
     @State private var confirmRiotSignOut = false
     @AppStorage(EvalAccent.key) private var accentHex = Int(EvalAccent.defaultHex)
-    @State private var selectedTheme = "Système"
-    @State private var selectedPlatform = "PC"
+    @AppStorage(EvalTheme.key) private var theme = EvalTheme.system.rawValue
+    @AppStorage(EvalPlatform.key) private var platform = EvalPlatform.pc.rawValue
 
     private var store: ValorantStore { model.valorant }
 
@@ -3855,7 +3859,7 @@ struct EvalSettingsView: View {
                             .foregroundStyle(EvalAccent.color)
                         Text("Retour à Ethone")
                             .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.system(size: 16, weight: .semibold))
@@ -3863,7 +3867,7 @@ struct EvalSettingsView: View {
                     }
                     .padding(.horizontal, 18)
                     .frame(minHeight: 62)
-                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 24))
+                    .background(EvalPalette.card, in: .rect(cornerRadius: 24))
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
@@ -3878,14 +3882,14 @@ struct EvalSettingsView: View {
                                         if active, let url = store.profile?.cardURL {
                                             AsyncImage(url: url) { $0.image?.resizable().scaledToFill() }
                                         } else {
-                                            Color(hex: 0x1A1C24).overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
+                                            EvalPalette.card.overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                                         }
                                     }
                                     .frame(width: 51, height: 51)
                                     .clipShape(.rect(cornerRadius: 10))
                                     VStack(alignment: .leading, spacing: 2) {
                                         let parts = handle.split(separator: "#", maxSplits: 1).map(String.init)
-                                        (Text(parts.first ?? handle).foregroundStyle(.white) + Text(parts.count > 1 ? "#\(parts[1])" : "").foregroundStyle(.secondary))
+                                        (Text(parts.first ?? handle).foregroundStyle(EvalPalette.text) + Text(parts.count > 1 ? "#\(parts[1])" : "").foregroundStyle(.secondary))
                                             .font(.system(size: 20, weight: .semibold))
                                         if active, let level = store.profile?.level, level > 0 {
                                             Text("Niveau \(level)").font(.caption).foregroundStyle(.secondary)
@@ -3906,7 +3910,7 @@ struct EvalSettingsView: View {
                                 }
                                 Button("Retirer ce compte", systemImage: "trash", role: .destructive) { store.removeAccount(handle) }
                             }
-                            Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 16)
+                            Divider().overlay(EvalPalette.text.opacity(0.06)).padding(.leading, 16)
                         }
 
                         Button {
@@ -3918,7 +3922,7 @@ struct EvalSettingsView: View {
                                     .foregroundStyle(EvalAccent.color)
                                 Text("Ajouter un compte")
                                     .font(.system(size: 22, weight: .medium))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(EvalPalette.text)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 14, weight: .semibold))
@@ -3928,7 +3932,7 @@ struct EvalSettingsView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+                    .background(EvalPalette.card, in: .rect(cornerRadius: 28))
 
                     if let error = store.riot.lastError {
                         Text(error).font(.system(size: 15)).foregroundStyle(EvalAccent.color).padding(.horizontal, 6)
@@ -3940,23 +3944,29 @@ struct EvalSettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
+                    let current = EvalPlatform(rawValue: platform) ?? .pc
                     HStack(spacing: 12) {
-                        Image(systemName: "desktopcomputer")
+                        Image(systemName: current.icon)
                             .font(.system(size: 21))
                             .foregroundStyle(EvalAccent.color)
-                        Text(selectedPlatform)
+                        Text(current.label)
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
-                        Button("Modifier") {
-                            selectedPlatform = selectedPlatform == "PC" ? "Console" : "PC"
-                            store.leaderboardPlatform = selectedPlatform == "PC" ? "pc" : "console"
+                        Menu {
+                            Picker("Plateforme", selection: $platform) {
+                                ForEach(EvalPlatform.allCases) { option in
+                                    Label(option.label, systemImage: option.icon).tag(option.rawValue)
+                                }
+                            }
+                        } label: {
+                            Text("Modifier")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(EvalAccent.color)
                         }
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(EvalAccent.color)
                     }
                     .padding(16)
-                    .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+                    .background(EvalPalette.card, in: .rect(cornerRadius: 28))
 
                     Text("Sélectionnez la plateforme sur laquelle vous jouez. Vous pouvez consulter les données des autres plateformes en utilisant le sélecteur de plateforme sur n'importe quel profil.")
                         .font(.system(size: 15))
@@ -3972,7 +3982,7 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                     NavigationLink {
                         EvalAdvancedSettingsView()
@@ -3981,7 +3991,7 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 28))
 
                 VStack(spacing: 0) {
                     HStack {
@@ -3991,12 +4001,12 @@ struct EvalSettingsView: View {
                             .frame(width: 36)
                         Text("Thème")
                             .font(.system(size: 22, weight: .medium))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
-                        Picker("Thème", selection: $selectedTheme) {
-                            Text("Système").tag("Système")
-                            Text("Sombre").tag("Sombre")
-                            Text("Clair").tag("Clair")
+                        Picker("Thème", selection: $theme) {
+                            ForEach(EvalTheme.allCases) { option in
+                                Text(option.label).tag(option.rawValue)
+                            }
                         }
                         .pickerStyle(.menu)
                         .tint(Color(hex: 0x8E8E93))
@@ -4004,16 +4014,7 @@ struct EvalSettingsView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 16)
 
-                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
-
-                    NavigationLink {
-                        AppearanceView()
-                    } label: {
-                        settingsNavRow(icon: "app.dashed", title: "Icône de l'app", detail: "Par défaut")
-                    }
-                    .buttonStyle(.plain)
-
-                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                     HStack(spacing: 18) {
                         Image(systemName: "square.and.pencil")
@@ -4022,7 +4023,7 @@ struct EvalSettingsView: View {
                             .frame(width: 36)
                         Text("Couleur d'accentuation")
                             .font(.system(size: 22, weight: .medium))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
                         ColorPicker("Couleur d'accentuation", selection: Binding(
                             get: { Color(hex: UInt32(truncatingIfNeeded: accentHex)) },
@@ -4034,7 +4035,7 @@ struct EvalSettingsView: View {
                     .padding(.horizontal, 18)
                     .frame(minHeight: 66)
                 }
-                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 28))
 
                 VStack(spacing: 0) {
                     NavigationLink { EvalAboutView() } label: {
@@ -4045,7 +4046,7 @@ struct EvalSettingsView: View {
                             .frame(width: 36)
                         Text("À propos")
                             .font(.system(size: 22, weight: .medium))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(EvalPalette.text)
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .semibold))
@@ -4057,7 +4058,7 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                     Link(destination: URL(string: "https://discord.gg/ethone")!) {
                         HStack(spacing: 18) {
@@ -4067,7 +4068,7 @@ struct EvalSettingsView: View {
                                 .frame(width: 36)
                             Text("Serveur Discord")
                                 .font(.system(size: 22, weight: .medium))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
                             Spacer()
                             Image(systemName: "arrow.up.right")
                                 .font(.system(size: 14, weight: .semibold))
@@ -4077,7 +4078,7 @@ struct EvalSettingsView: View {
                         .padding(.vertical, 20)
                     }
 
-                    Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 72)
+                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 72)
 
                     NavigationLink { EvalFAQView() } label: {
                         HStack(spacing: 18) {
@@ -4087,7 +4088,7 @@ struct EvalSettingsView: View {
                                 .frame(width: 36)
                             Text("FAQ")
                                 .font(.system(size: 22, weight: .medium))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(EvalPalette.text)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
@@ -4099,12 +4100,14 @@ struct EvalSettingsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 28))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 28))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
+        .onAppear { store.leaderboardPlatform = (EvalPlatform(rawValue: platform) ?? .pc).apiValue }
+        .onChange(of: platform) { _, value in store.leaderboardPlatform = (EvalPlatform(rawValue: value) ?? .pc).apiValue }
         .sheet(isPresented: $showingRiotLogin) { EvalRiotLoginSheet(fresh: store.riot.isLinked) }
         .confirmationDialog("Déconnecter le compte Riot ?", isPresented: $confirmRiotSignOut, titleVisibility: .visible) {
             Button("Déconnecter", role: .destructive) { Task { await store.unlinkRiot() } }
@@ -4116,7 +4119,7 @@ struct EvalSettingsView: View {
             Spacer()
             Text("Paramètres")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
             Spacer()
         }
         .padding(.horizontal, 16)
@@ -4132,7 +4135,7 @@ struct EvalSettingsView: View {
 
             Text(title)
                 .font(.system(size: 22, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
 
             Spacer()
 
@@ -4202,7 +4205,7 @@ struct EvalRiotAccountRow: View {
                     Image(systemName: "gamecontroller.fill").font(.system(size: 21)).foregroundStyle(EvalAccent.color).frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(riot.isLinked ? "Compte Riot connecté" : "Connecter mon compte Riot")
-                            .font(.system(size: 18, weight: .medium)).foregroundStyle(.white)
+                            .font(.system(size: 18, weight: .medium)).foregroundStyle(EvalPalette.text)
                         if let creds = riot.credentials {
                             Text("\(creds.gameName)#\(creds.tagLine) · \(creds.region.uppercased())").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
@@ -4211,7 +4214,7 @@ struct EvalRiotAccountRow: View {
                     Text(riot.isLinked ? "Déconnecter" : "Connexion").font(.system(size: 17)).foregroundStyle(EvalAccent.color)
                 }
                 .padding(16)
-                .background(Color(hex: 0x161618), in: .rect(cornerRadius: 20))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
             if let error = riot.lastError {

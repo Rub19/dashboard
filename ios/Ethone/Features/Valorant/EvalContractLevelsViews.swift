@@ -28,12 +28,12 @@ struct EvalContractLevelsPage: View {
         VStack(spacing: 0) {
             HStack {
                 Button { dismiss() } label: {
-                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white)
-                        .frame(width: 50, height: 50).background(Color(hex: 0x1C1C1E), in: .circle)
+                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                        .frame(width: 50, height: 50).background(EvalPalette.card, in: .circle)
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Text(title).font(.system(size: 21, weight: .bold)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.7)
+                Text(title).font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text).lineLimit(1).minimumScaleFactor(0.7)
                 Spacer()
                 Color.clear.frame(width: 50, height: 50)
             }
@@ -48,10 +48,10 @@ struct EvalContractLevelsPage: View {
                         VStack(spacing: 0) {
                             ForEach(Array(items.enumerated()), id: \.element.id) { index, row in
                                 rowView(row)
-                                if index < items.count - 1 { Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 98) }
+                                if index < items.count - 1 { Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 98) }
                             }
                         }
-                        .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 26))
+                        .background(EvalPalette.card, in: .rect(cornerRadius: 26))
                     }
                     if rows.isEmpty {
                         Text("Chargement…").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93)).frame(maxWidth: .infinity)
@@ -61,7 +61,7 @@ struct EvalContractLevelsPage: View {
                 .padding(.bottom, 20)
             }
         }
-        .background(Color.black.ignoresSafeArea())
+        .background(EvalPalette.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .task(id: rows.count) { await resolve() }
         .sheet(item: $preview) { row in previewSheet(row).presentationDetents([.medium]) }
@@ -96,7 +96,7 @@ struct EvalContractLevelsPage: View {
                 .clipShape(.rect(cornerRadius: 14))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(info?.name ?? row.type).font(.system(size: 20)).foregroundStyle(.white).lineLimit(2).multilineTextAlignment(.leading)
+                    Text(info?.name ?? row.type).font(.system(size: 20)).foregroundStyle(EvalPalette.text).lineLimit(2).multilineTextAlignment(.leading)
                     if row.state != .free { costLine(row) }
                 }
                 Spacer(minLength: 8)
@@ -136,16 +136,16 @@ struct EvalContractLevelsPage: View {
     private func ring(_ row: ContractLevelRow) -> some View {
         if let number = row.number {
             ZStack {
-                Circle().stroke(Color.white.opacity(0.12), lineWidth: 4)
+                Circle().stroke(EvalPalette.text.opacity(0.12), lineWidth: 4)
                 switch row.state {
                 case .done:
                     Circle().stroke(EvalAccent.color, lineWidth: 4)
-                    Image(systemName: "checkmark").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white)
+                    Image(systemName: "checkmark").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
                 case .current(let progress, _):
                     Circle().trim(from: 0, to: progress).stroke(EvalAccent.color, style: StrokeStyle(lineWidth: 4, lineCap: .round)).rotationEffect(.degrees(-90))
-                    Text("\(number)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
+                    Text("\(number)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
                 default:
-                    Text("\(number)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
+                    Text("\(number)").font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
                 }
             }
             .frame(width: 46, height: 46)
@@ -159,15 +159,15 @@ struct EvalContractLevelsPage: View {
         return VStack(spacing: 18) {
             AsyncImage(url: URL(string: info?.icon ?? "")) { $0.image?.resizable().scaledToFit() }
                 .frame(maxWidth: .infinity, maxHeight: 220)
-            Text(info?.name ?? "").font(.system(size: 24, weight: .bold)).foregroundStyle(.white).multilineTextAlignment(.center)
+            Text(info?.name ?? "").font(.system(size: 24, weight: .bold)).foregroundStyle(EvalPalette.text).multilineTextAlignment(.center)
             if let number = row.number {
                 Text("Niveau \(number)").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
             }
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: 0x1C1C1E).ignoresSafeArea())
-        .preferredColorScheme(.dark)
+        .background(EvalPalette.card.ignoresSafeArea())
+        .evalColorScheme()
     }
 }
 
@@ -268,10 +268,10 @@ struct EvalUpcomingMissionsCard: View {
             Button { withAnimation(.snappy) { expanded.toggle() } } label: {
                 HStack(spacing: 10) {
                     Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
-                        .font(.system(size: 19, weight: .semibold)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.75)
+                        .font(.system(size: 19, weight: .semibold)).foregroundStyle(EvalPalette.text).lineLimit(1).minimumScaleFactor(0.75)
                     Spacer(minLength: 6)
                     Text("+\(store.missionsReserveXP.formatted()) XP").font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
-                    Image(systemName: expanded ? "chevron.up" : "chevron.down").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                    Image(systemName: expanded ? "chevron.up" : "chevron.down").font(.system(size: 16, weight: .semibold)).foregroundStyle(EvalPalette.text)
                 }
                 .contentShape(.rect)
             }
@@ -282,22 +282,22 @@ struct EvalUpcomingMissionsCard: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Text(Self.relative.localizedString(for: week.date, relativeTo: Date()))
-                                .font(.system(size: 19, weight: .semibold)).foregroundStyle(.white)
+                                .font(.system(size: 19, weight: .semibold)).foregroundStyle(EvalPalette.text)
                             Spacer()
                             Text("+\(week.missions.reduce(0) { $0 + $1.xpGrant }.formatted()) XP")
                                 .font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
                         }
-                        Divider().overlay(Color.white.opacity(0.08))
+                        Divider().overlay(EvalPalette.text.opacity(0.08))
                         ForEach(week.missions) { mission in
                             HStack(alignment: .lastTextBaseline) {
-                                Text(mission.title).font(.system(size: 18)).foregroundStyle(.white)
+                                Text(mission.title).font(.system(size: 18)).foregroundStyle(EvalPalette.text)
                                 Spacer(minLength: 8)
                                 Text("+\(mission.xpGrant.formatted()) XP").font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
                             }
                         }
                     }
                     .padding(18)
-                    .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 20))
+                    .background(EvalPalette.card2, in: .rect(cornerRadius: 20))
                 }
                 if weeks.isEmpty {
                     Text("Aucune mission annoncée pour la suite de l’acte.").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -305,6 +305,6 @@ struct EvalUpcomingMissionsCard: View {
             }
         }
         .padding(18)
-        .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 24))
+        .background(EvalPalette.card, in: .rect(cornerRadius: 24))
     }
 }

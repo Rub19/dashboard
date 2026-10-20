@@ -56,7 +56,7 @@ private struct ContractCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) { content }
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 24))
+            .background(EvalPalette.card, in: .rect(cornerRadius: 24))
     }
 }
 
@@ -65,7 +65,7 @@ private struct ProgressBar: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.white.opacity(0.1))
+                Capsule().fill(EvalPalette.text.opacity(0.1))
                 Capsule().fill(EvalAccent.color).frame(width: geo.size.width * min(1, max(0, value)))
             }
         }
@@ -110,19 +110,19 @@ struct EvalBattlepassContractView: View {
                         .frame(width: 30, height: 30)
                         .background(EvalAccent.color, in: .circle)
                     Text(store.battlepassTitle.isEmpty ? "Passe de combat" : store.battlepassTitle)
-                        .font(.system(size: 21, weight: .bold)).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.7)
+                        .font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text).lineLimit(1).minimumScaleFactor(0.7)
                     Spacer()
                     countdownLabel(store.battlepassEndDate, days: true)
                 }
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(EvalPalette.text.opacity(0.08))
                 if let reward = store.battlepassCurrentReward {
                     HStack(spacing: 14) {
                         AsyncImage(url: URL(string: reward.iconURL)) { $0.image?.resizable().scaledToFit() }
                             .frame(width: 58, height: 58)
-                            .background(Color.white.opacity(0.04), in: .rect(cornerRadius: 10))
+                            .background(EvalPalette.text.opacity(0.04), in: .rect(cornerRadius: 10))
                         VStack(alignment: .leading, spacing: 3) {
                             Text(reward.name.isEmpty ? reward.rewardType : reward.name)
-                                .font(.system(size: 20, weight: .medium)).foregroundStyle(.white).lineLimit(2)
+                                .font(.system(size: 20, weight: .medium)).foregroundStyle(EvalPalette.text).lineLimit(2)
                             Text("Niveau \(store.battlepassCurrentLevel) / \(store.battlepassLevels.count)")
                                 .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
@@ -144,10 +144,10 @@ struct EvalBattlepassContractView: View {
             NavigationLink { EvalSeasonPassPage() } label: {
                 Text("Voir \(store.battlepassTitle.isEmpty ? "le passe" : store.battlepassTitle)")
                     .font(.system(size: 20))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color(hex: 0x3A3A3C), in: .capsule)
+                    .background(EvalPalette.card2, in: .capsule)
             }
             .buttonStyle(.plain)
         }
@@ -169,7 +169,7 @@ struct EvalBattlepassContractView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "clock").font(.system(size: 20)).foregroundStyle(EvalAccent.color)
                     Text(needed.map { "Encore ~\($0.formatted()) parties (\(pace.formatted(.number.precision(.fractionLength(1)))) / jour)" } ?? "Projection indisponible")
-                        .font(.system(size: 19, weight: .medium)).foregroundStyle(.white)
+                        .font(.system(size: 19, weight: .medium)).foregroundStyle(EvalPalette.text)
                     Spacer()
                     Image(systemName: showingProjection ? "chevron.up" : "chevron.down").foregroundStyle(Color(hex: 0x8E8E93))
                 }
@@ -181,11 +181,11 @@ struct EvalBattlepassContractView: View {
                 HStack {
                     Text("\(store.battlepassCompletionPercent) %").foregroundStyle(EvalAccent.color)
                     Spacer()
-                    Text("Encore \(remainingXP.formatted()) XP").foregroundStyle(.white)
+                    Text("Encore \(remainingXP.formatted()) XP").foregroundStyle(EvalPalette.text)
                 }
                 .font(.system(size: 17, weight: .semibold))
                 ProgressBar(value: Double(store.battlepassCompletionPercent) / 100)
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(EvalPalette.text.opacity(0.08))
                 HStack {
                     Label("Missions hebdomadaires à venir", systemImage: "calendar.badge.plus")
                     Spacer()
@@ -218,7 +218,7 @@ struct EvalBattlepassContractView: View {
                     }
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 18))
+                    .background(EvalPalette.card2, in: .rect(cornerRadius: 18))
                 }
 
                 Text("Basé sur vos \(min(20, xp?.history.count ?? 0)) dernières parties (XP réellement gagnée d’après Riot). Les missions hebdomadaires à venir sont déduites du total restant.")
@@ -230,11 +230,11 @@ struct EvalBattlepassContractView: View {
     private func tile(_ title: String, _ icon: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(title, systemImage: icon).font(.system(size: 15)).foregroundStyle(Color(hex: 0xAEAEB2)).lineLimit(1).minimumScaleFactor(0.8)
-            Text(value).font(.system(size: 24, weight: .bold).monospacedDigit()).foregroundStyle(.white).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(.system(size: 24, weight: .bold).monospacedDigit()).foregroundStyle(EvalPalette.text).lineLimit(1).minimumScaleFactor(0.6)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 18))
+        .background(EvalPalette.card2, in: .rect(cornerRadius: 18))
     }
 }
 
@@ -251,11 +251,11 @@ struct EvalAccountXPView: View {
             VStack(spacing: 12) {
                 ContractCard {
                     HStack {
-                        Text("Niveau de compte").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
+                        Text("Niveau de compte").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text)
                         Spacer()
                         Text("\(xp.level)").font(.system(size: 22, weight: .bold).monospacedDigit()).foregroundStyle(EvalAccent.color)
                     }
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(EvalPalette.text.opacity(0.08))
                     ProgressBar(value: Double(xp.xp) / Double(RiotAccountXP.xpPerLevel))
                     HStack {
                         Text("\(xp.xp.formatted()) / \(RiotAccountXP.xpPerLevel.formatted()) XP")
@@ -263,7 +263,7 @@ struct EvalAccountXPView: View {
                         Text("\(max(0, RiotAccountXP.xpPerLevel - xp.xp).formatted()) restants")
                     }
                     .font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(EvalPalette.text.opacity(0.08))
                     HStack {
                         Text("Première victoire du jour").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
                         Spacer()
@@ -278,16 +278,16 @@ struct EvalAccountXPView: View {
                 if !xp.history.isEmpty {
                     ContractCard {
                         HStack {
-                            Text("XP récent").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
+                            Text("XP récent").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text)
                             Spacer()
                             Text("Derniers \(expanded ? min(10, xp.history.count) : min(3, xp.history.count)) matchs")
                                 .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
-                        Divider().overlay(Color.white.opacity(0.08))
+                        Divider().overlay(EvalPalette.text.opacity(0.08))
                         ForEach(xp.history.prefix(expanded ? 10 : 3)) { entry in
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack {
-                                    Text("+\(entry.delta) XP").font(.system(size: 20, weight: .medium).monospacedDigit()).foregroundStyle(.white)
+                                    Text("+\(entry.delta) XP").font(.system(size: 20, weight: .medium).monospacedDigit()).foregroundStyle(EvalPalette.text)
                                     Spacer()
                                     if let date = entry.date {
                                         Text(date, format: .relative(presentation: .named)).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -307,7 +307,7 @@ struct EvalAccountXPView: View {
                                             .padding(.vertical, 8)
                                         }
                                     }
-                                    .background(Color(hex: 0x2C2C2E), in: .rect(cornerRadius: 12))
+                                    .background(EvalPalette.card2, in: .rect(cornerRadius: 12))
                                 }
                             }
                         }
@@ -357,20 +357,20 @@ struct EvalAgentContractsSummary: View {
     var body: some View {
         VStack(spacing: 12) {
             ContractCard {
-                Text("Contrats des agents").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
-                Divider().overlay(Color.white.opacity(0.08))
+                Text("Contrats des agents").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Divider().overlay(EvalPalette.text.opacity(0.08))
                 HStack {
                     stat("\(contracts.agentsOwned)/\(contracts.agentsTotal)", "Déverrouillé")
                     stat("\(contracts.agentsCompleted)", "Terminé")
                 }
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(EvalPalette.text.opacity(0.08))
                 ProgressBar(value: Double(contracts.creditsSpent) / Double(max(1, contracts.creditsTotal)))
                 HStack {
                     CreditsIcon()
                     Text("\(contracts.creditsSpent.formatted()) / \(contracts.creditsTotal.formatted())")
                     Spacer()
                     CreditsIcon()
-                    Text(max(0, contracts.creditsTotal - contracts.creditsSpent).formatted()).fontWeight(.semibold).foregroundStyle(.white)
+                    Text(max(0, contracts.creditsTotal - contracts.creditsSpent).formatted()).fontWeight(.semibold).foregroundStyle(EvalPalette.text)
                 }
                 .font(.system(size: 17).monospacedDigit())
                 .foregroundStyle(Color(hex: 0x8E8E93))
@@ -378,10 +378,10 @@ struct EvalAgentContractsSummary: View {
             NavigationLink { EvalAgentContractsView() } label: {
                 Text("Voir les contrats des agents")
                     .font(.system(size: 20))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(EvalPalette.text)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color(hex: 0x3A3A3C), in: .capsule)
+                    .background(EvalPalette.card2, in: .capsule)
             }
             .buttonStyle(.plain)
         }
@@ -389,7 +389,7 @@ struct EvalAgentContractsSummary: View {
 
     private func stat(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.system(size: 22, weight: .bold).monospacedDigit()).foregroundStyle(.white)
+            Text(value).font(.system(size: 22, weight: .bold).monospacedDigit()).foregroundStyle(EvalPalette.text)
             Text(label).font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
         }
         .frame(maxWidth: .infinity)
@@ -405,20 +405,20 @@ struct EvalAgentContractsView: View {
         VStack(spacing: 0) {
             HStack(spacing: 14) {
                 Button { dismiss() } label: {
-                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white)
-                        .frame(width: 50, height: 50).background(Color(hex: 0x1C1C1E), in: .circle)
+                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                        .frame(width: 50, height: 50).background(EvalPalette.card, in: .circle)
                 }
                 .buttonStyle(.plain)
-                Text("Contrats des agents").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
+                Text("Contrats des agents").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalPalette.text)
                 Spacer()
                 HStack(spacing: 8) {
                     Text(store.wallet.kc.formatted()).font(.system(size: 19, weight: .medium).monospacedDigit())
                     CreditsIcon(size: 22)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(EvalPalette.text)
                 .padding(.horizontal, 16)
                 .frame(height: 50)
-                .background(Color(hex: 0x1C1C1E), in: .capsule)
+                .background(EvalPalette.card, in: .capsule)
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 8)
@@ -430,10 +430,10 @@ struct EvalAgentContractsView: View {
                         HStack(spacing: 14) {
                             AsyncImage(url: URL(string: agent.icon)) { $0.image?.resizable().scaledToFill() }
                                 .frame(width: 52, height: 52)
-                                .background(Color(hex: 0x2C2C2E))
+                                .background(EvalPalette.card2)
                                 .clipShape(.rect(cornerRadius: 14))
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(agent.name).font(.system(size: 20, weight: .medium)).foregroundStyle(.white)
+                                Text(agent.name).font(.system(size: 20, weight: .medium)).foregroundStyle(EvalPalette.text)
                                 HStack(spacing: 6) {
                                     if let cost = agent.nextCost {
                                         Image(systemName: "arrow.right.circle.fill")
@@ -449,12 +449,12 @@ struct EvalAgentContractsView: View {
                             }
                             Spacer()
                             ZStack {
-                                Circle().stroke(Color.white.opacity(0.12), lineWidth: 4)
+                                Circle().stroke(EvalPalette.text.opacity(0.12), lineWidth: 4)
                                 Circle()
                                     .trim(from: 0, to: Double(agent.levelReached) / Double(max(1, agent.maxLevel)))
                                     .stroke(EvalAccent.color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                                     .rotationEffect(.degrees(-90))
-                                Text("\(agent.levelReached)").font(.system(size: 17, weight: .semibold).monospacedDigit()).foregroundStyle(.white)
+                                Text("\(agent.levelReached)").font(.system(size: 17, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
                             }
                             .frame(width: 42, height: 42)
                             Image(systemName: "chevron.right").font(.system(size: 16, weight: .semibold)).foregroundStyle(Color(hex: 0x636366))
@@ -465,11 +465,11 @@ struct EvalAgentContractsView: View {
                         }
                         .buttonStyle(.plain)
                         if index < store.contracts.agentContracts.count - 1 {
-                            Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 84)
+                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 84)
                         }
                     }
                 }
-                .background(Color(hex: 0x1C1C1E), in: .rect(cornerRadius: 26))
+                .background(EvalPalette.card, in: .rect(cornerRadius: 26))
                 .padding(18)
 
                 if store.contracts.agentContracts.isEmpty {
@@ -478,7 +478,7 @@ struct EvalAgentContractsView: View {
                 }
             }
         }
-        .background(Color.black.ignoresSafeArea())
+        .background(EvalPalette.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .task { await store.contracts.load(store.riot) }
     }

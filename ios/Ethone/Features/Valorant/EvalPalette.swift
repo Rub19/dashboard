@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 /// Couleurs d'E:VAL qui suivent le thème choisi (Système / Sombre / Clair).
-enum EvalPalette {
+enum EvalColors {
     private static func dynamic(dark: UInt32, light: UInt32) -> Color {
         Color(UIColor { traits in
             let hex = traits.userInterfaceStyle == .dark ? dark : light

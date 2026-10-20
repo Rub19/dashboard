@@ -282,7 +282,7 @@ final class RiotLoadoutModel {
 // MARK: - Écrans
 
 private enum LUI {
-    static let card = EvalPalette.card
+    static let card = EvalColors.card
     static let secondary = Color(hex: 0x8E8E93)
     static let accent = EvalAccent.color
 }
@@ -303,7 +303,7 @@ private struct LoadoutScreen<Content: View>: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -368,7 +368,7 @@ struct EvalSkinPickerView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             remote(skin.image).frame(height: 64).frame(maxWidth: .infinity)
                             HStack {
-                                Text(skin.displayName).font(.system(size: 21)).foregroundStyle(EvalPalette.text)
+                                Text(skin.displayName).font(.system(size: 21)).foregroundStyle(EvalColors.text)
                                 Spacer()
                                 if skin.uuid.lowercased() == equipped { Image(systemName: "checkmark.circle.fill").foregroundStyle(LUI.accent) }
                             }
@@ -377,7 +377,7 @@ struct EvalSkinPickerView: View {
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                 }
             }
             .background(LUI.card, in: .rect(cornerRadius: 22))
@@ -434,7 +434,7 @@ struct EvalSkinEquipSheet: View {
                 }
                 .padding(16)
             }
-            .background(EvalPalette.background.ignoresSafeArea())
+            .background(EvalColors.background.ignoresSafeArea())
             .navigationTitle(skin.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -494,14 +494,14 @@ struct EvalTitlePickerView: View {
                         Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
                     } label: {
                         HStack {
-                            Text(title.titleText ?? "").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+                            Text(title.titleText ?? "").font(.system(size: 20)).foregroundStyle(EvalColors.text)
                             Spacer()
                             if title.uuid.lowercased() == current { Image(systemName: "checkmark").foregroundStyle(LUI.accent) }
                         }
                         .padding(18).contentShape(.rect)
                     }
                     .buttonStyle(.plain)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                 }
             }
             .background(LUI.card, in: .rect(cornerRadius: 22))
@@ -555,7 +555,7 @@ struct EvalSprayLoadoutView: View {
                             remote(spray?.fullTransparentIcon ?? spray?.displayIcon).frame(width: 64, height: 64)
                             VStack(alignment: .leading) {
                                 Text(i < slotNames.count ? slotNames[i] : "Emplacement \(i + 1)").font(.system(size: 15)).foregroundStyle(LUI.secondary)
-                                Text(spray?.displayName ?? "Aucun").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+                                Text(spray?.displayName ?? "Aucun").font(.system(size: 20)).foregroundStyle(EvalColors.text)
                             }
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(LUI.secondary)
@@ -563,7 +563,7 @@ struct EvalSprayLoadoutView: View {
                         .padding(16).contentShape(.rect)
                     }
                     .buttonStyle(.plain)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 16)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 16)
                 }
             }
             .background(LUI.card, in: .rect(cornerRadius: 22))
@@ -584,7 +584,7 @@ struct EvalSprayLoadoutView: View {
                     }
                     .padding(16)
                 }
-                .background(EvalPalette.background.ignoresSafeArea())
+                .background(EvalColors.background.ignoresSafeArea())
                 .navigationTitle("Choisir un spray")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -615,7 +615,7 @@ struct EvalPrivacySettingsView: View {
                 set(v)
                 Task { _ = await model.valorant.loadout.save(model.valorant.riot) }
             }))
-            .tint(LUI.accent).foregroundStyle(EvalPalette.text)
+            .tint(LUI.accent).foregroundStyle(EvalColors.text)
             .padding(18).background(LUI.card, in: .rect(cornerRadius: 22))
             Text(footer).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4)
         }
@@ -641,7 +641,7 @@ struct EvalAppearanceProfilesView: View {
                 Button { toApply = profile } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(profile.name).font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                            Text(profile.name).font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalColors.text)
                             Text(profile.createdAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))
                                 .font(.system(size: 15)).foregroundStyle(LUI.secondary)
                         }

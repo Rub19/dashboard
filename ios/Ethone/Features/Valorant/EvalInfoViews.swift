@@ -19,14 +19,14 @@ struct EvalAboutView: View {
                     Text("Sources des données").font(.system(size: 21, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
                     VStack(spacing: 0) {
                         EvalSettingsRow(icon: "server.rack", title: "Matchs, rangs, classement", value: "HenrikDev", chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "photo.on.rectangle", title: "Agents, cartes, skins", value: "valorant-api", chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "gamecontroller", title: "Boutique, équipement", value: "Compte Riot", chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "externaldrive", title: "Sauvegarde", value: "Supabase", chevron: false)
                     }
-                    .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+                    .background(EvalColors.card, in: .rect(cornerRadius: 22))
                 }
                 Text("Ethone n’est ni approuvé ni affilié à Riot Games. VALORANT et Riot Games sont des marques de Riot Games, Inc. Les données du compte Riot passent par une API non officielle que Riot peut modifier à tout moment.")
                     .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
@@ -36,7 +36,7 @@ struct EvalAboutView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -66,18 +66,18 @@ struct EvalFAQView: View {
                         Text(item.a).font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
                             .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
                     } label: {
-                        Text(item.q).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text).multilineTextAlignment(.leading)
+                        Text(item.q).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text).multilineTextAlignment(.leading)
                     }
                     .tint(EvalAccent.color)
                     .padding(18)
-                    .background(EvalPalette.card, in: .rect(cornerRadius: 20))
+                    .background(EvalColors.card, in: .rect(cornerRadius: 20))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -97,12 +97,12 @@ struct EvalWebLoginDataView: View {
                 Toggle(isOn: $clearOnOpen) {
                     HStack(spacing: 14) {
                         Image(systemName: "arrow.3.trianglepath").font(.system(size: 23)).foregroundStyle(EvalAccent.color).frame(width: 28)
-                        Text("Effacer les données de connexion Web à l’ouverture").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+                        Text("Effacer les données de connexion Web à l’ouverture").font(.system(size: 20)).foregroundStyle(EvalColors.text)
                     }
                 }
                 .tint(EvalAccent.color)
                 .padding(18)
-                .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+                .background(EvalColors.card, in: .rect(cornerRadius: 22))
                 Text("Efface les cookies Riot à chaque ouverture de l’écran de connexion. Votre compte reste connecté jusqu’à l’expiration de la session.")
                     .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 4)
                 Button {
@@ -113,7 +113,7 @@ struct EvalWebLoginDataView: View {
                         .foregroundStyle(EvalAccent.color)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(18)
-                        .background(EvalPalette.card, in: .rect(cornerRadius: 22))
+                        .background(EvalColors.card, in: .rect(cornerRadius: 22))
                 }
                 .buttonStyle(.plain)
             }
@@ -121,7 +121,7 @@ struct EvalWebLoginDataView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }

@@ -7,7 +7,7 @@ import AVKit
 // stockés (EvalMatch), du MMR HenrikDev et des catalogues valorant-api.com.
 
 private enum EvalUI {
-    static let card = EvalPalette.card
+    static let card = EvalColors.card
     static let tile = Color(hex: 0x2A2A2E)
     static let secondary = Color(hex: 0x8E8E93)
     static let accent = EvalAccent.color
@@ -177,7 +177,7 @@ struct EvalStatisticsView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task { await ValorantAssets.shared.load() }
@@ -186,14 +186,14 @@ struct EvalStatisticsView: View {
     private func matchesCard(_ s: EvalStatsEngine) -> some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Matchs").font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+                Text("Matchs").font(.system(size: 20)).foregroundStyle(EvalColors.text)
                 Spacer()
                 Text(player == nil && store.totalMatches > 0 ? "\(s.count) / \(store.totalMatches)" : "\(s.count) enregistrés")
                     .font(.system(size: 20)).foregroundStyle(EvalUI.secondary)
             }
             .padding(18)
             if player == nil {
-                Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.horizontal, 18)
+                Divider().overlay(EvalColors.text.opacity(0.08)).padding(.horizontal, 18)
                 Button { Task { await store.loadMoreMatches() } } label: {
                     HStack(spacing: 10) {
                         if store.isLoadingMore { ProgressView().tint(EvalUI.accent) } else { Image(systemName: "bolt.fill") }
@@ -214,7 +214,7 @@ struct EvalStatisticsView: View {
     private var emptyCard: some View {
         VStack(spacing: 12) {
             Image(systemName: "magnifyingglass").font(.system(size: 46)).foregroundStyle(EvalUI.secondary)
-            Text("Aucun match").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalPalette.text)
+            Text("Aucun match").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalColors.text)
             Text("Les statistiques apparaîtront après la première synchronisation de vos parties.")
                 .font(.system(size: 18)).foregroundStyle(EvalUI.secondary).multilineTextAlignment(.center)
         }
@@ -231,7 +231,7 @@ struct EvalStatisticsView: View {
             VStack(spacing: 0) {
                 Chart {
                     ForEach(Array(points.enumerated()), id: \.offset) { i, p in
-                        LineMark(x: .value("Partie", i), y: .value("Élo", p.elo)).foregroundStyle(EvalPalette.text)
+                        LineMark(x: .value("Partie", i), y: .value("Élo", p.elo)).foregroundStyle(EvalColors.text)
                         PointMark(x: .value("Partie", i), y: .value("Élo", p.elo))
                             .symbol { Circle().strokeBorder(.white, lineWidth: 2).frame(width: 12, height: 12) }
                     }
@@ -239,7 +239,7 @@ struct EvalStatisticsView: View {
                 .chartXAxis(.hidden)
                 .chartYAxis {
                     AxisMarks(position: .trailing, values: .automatic(desiredCount: 4)) { _ in
-                        AxisGridLine().foregroundStyle(EvalPalette.text.opacity(0.25))
+                        AxisGridLine().foregroundStyle(EvalColors.text.opacity(0.25))
                     }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
@@ -265,11 +265,11 @@ struct EvalStatisticsView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 Image(systemName: icon).font(.system(size: 23)).foregroundStyle(EvalUI.accent)
-                Text(title).font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                Text(title).font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalColors.text)
                 Spacer()
                 Image(systemName: "chevron.right").font(.system(size: 16, weight: .semibold)).foregroundStyle(EvalUI.secondary)
             }
-            Divider().overlay(EvalPalette.text.opacity(0.08))
+            Divider().overlay(EvalColors.text.opacity(0.08))
         }
     }
 
@@ -341,10 +341,10 @@ struct EvalStatisticsView: View {
         return VStack(spacing: 14) {
             HStack(spacing: 12) {
                 Image(systemName: "creditcard").font(.system(size: 23)).foregroundStyle(EvalUI.accent)
-                Text("Économie").font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                Text("Économie").font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalColors.text)
                 Spacer()
             }
-            Divider().overlay(EvalPalette.text.opacity(0.08))
+            Divider().overlay(EvalColors.text.opacity(0.08))
             Chart(types) { t in
                 BarMark(x: .value("Type", t.id), y: .value("Manches", t.rounds)).foregroundStyle(t.color)
                     .annotation(position: .top) {
@@ -376,7 +376,7 @@ struct EvalNavHeader: View {
         HStack {
             Button(action: onBack) {
                 Circle().fill(EvalUI.card).frame(width: 51, height: 51)
-                    .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text))
+                    .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text))
             }
             .buttonStyle(.plain)
             Spacer()
@@ -385,7 +385,7 @@ struct EvalNavHeader: View {
                 Text(title)
             }
             .font(.system(size: 22, weight: .bold))
-            .foregroundStyle(EvalPalette.text)
+            .foregroundStyle(EvalColors.text)
             .lineLimit(1)
             Spacer()
             if let trailing { trailing } else { Color.clear.frame(width: 51, height: 51) }
@@ -408,7 +408,7 @@ struct EvalStatTile: View {
             }
             .foregroundStyle(EvalUI.secondary)
             HStack {
-                Text(value).font(.system(size: 30, weight: .bold).monospacedDigit()).foregroundStyle(EvalPalette.text).lineLimit(1).minimumScaleFactor(0.6)
+                Text(value).font(.system(size: 30, weight: .bold).monospacedDigit()).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.6)
                 Spacer()
                 if trend != 0 {
                     Image(systemName: trend > 0 ? "arrow.up" : "arrow.down")
@@ -440,7 +440,7 @@ struct EvalHitsAreaChart: View {
             }
             RuleMark(y: .value("Moyenne", 1 - average))
                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
-                .foregroundStyle(EvalPalette.text)
+                .foregroundStyle(EvalColors.text)
                 .annotation(position: .bottom) {
                     Text("Moyenne : \(EvalUI.percent(average))").font(.system(size: 15)).foregroundStyle(.black.opacity(0.7))
                 }
@@ -476,7 +476,7 @@ private struct EvalInfoBanner: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: "info.circle.fill").font(.system(size: 30)).foregroundStyle(EvalUI.accent)
-            Text("Données provenant de \(count) matchs enregistrés").font(.system(size: 18)).foregroundStyle(EvalPalette.text)
+            Text("Données provenant de \(count) matchs enregistrés").font(.system(size: 18)).foregroundStyle(EvalColors.text)
             Spacer()
         }
         .padding(16)
@@ -542,7 +542,7 @@ struct EvalOverviewDetailView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -564,7 +564,7 @@ struct EvalPlayTimeDetailView: View {
                     }
                     .chartYAxis {
                         AxisMarks(position: .trailing) { value in
-                            AxisGridLine().foregroundStyle(EvalPalette.text.opacity(0.1))
+                            AxisGridLine().foregroundStyle(EvalColors.text.opacity(0.1))
                             AxisValueLabel { if let m = value.as(Int.self) { Text(EvalUI.duration(m * 60)).foregroundStyle(EvalUI.secondary) } }
                         }
                     }
@@ -594,7 +594,7 @@ struct EvalPlayTimeDetailView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -610,7 +610,7 @@ struct EvalPlayTimeDetailView: View {
                     row(item.0, EvalUI.duration(item.2.playSeconds), "\(item.2.count) parties")
                 }
                 .padding(.leading, item.1 == nil ? 0 : 16)
-                if i < items.count - 1 { Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18) }
+                if i < items.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18) }
             }
         }
         .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -618,10 +618,10 @@ struct EvalPlayTimeDetailView: View {
 
     private func row(_ title: String, _ value: String, _ detail: String) -> some View {
         HStack {
-            Text(title).font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+            Text(title).font(.system(size: 20)).foregroundStyle(EvalColors.text)
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
-                Text(value).font(.system(size: 20, weight: .medium)).foregroundStyle(EvalPalette.text)
+                Text(value).font(.system(size: 20, weight: .medium)).foregroundStyle(EvalColors.text)
                 Text(detail).font(.system(size: 17)).foregroundStyle(EvalUI.secondary)
             }
         }
@@ -655,12 +655,12 @@ struct EvalHitsDetailView: View {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Total de hits").foregroundStyle(EvalUI.secondary)
-                                Text("\(s.hits)").font(.system(size: 34, weight: .bold)).foregroundStyle(EvalPalette.text)
+                                Text("\(s.hits)").font(.system(size: 34, weight: .bold)).foregroundStyle(EvalColors.text)
                             }
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {
                                 Text("Pourcentage de headshot").foregroundStyle(EvalUI.secondary)
-                                Text(EvalUI.percent(s.hsPercent)).font(.system(size: 34, weight: .bold)).foregroundStyle(EvalPalette.text)
+                                Text(EvalUI.percent(s.hsPercent)).font(.system(size: 34, weight: .bold)).foregroundStyle(EvalColors.text)
                             }
                         }
                         zone(EvalUI.head, "Tête", s.headshots, s.hits)
@@ -676,7 +676,7 @@ struct EvalHitsDetailView: View {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(assets.weapons[w.id]?.name ?? "Arme").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                                        Text(assets.weapons[w.id]?.name ?? "Arme").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalColors.text)
                                         Text("\(w.total) coups sûrs").foregroundStyle(EvalUI.secondary)
                                     }
                                     Spacer()
@@ -688,7 +688,7 @@ struct EvalHitsDetailView: View {
                                 }
                             }
                             .padding(18)
-                            Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                            Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                         }
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -698,7 +698,7 @@ struct EvalHitsDetailView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task { await ValorantAssets.shared.load() }
@@ -712,9 +712,9 @@ struct EvalHitsDetailView: View {
     private func zone(_ color: Color, _ label: String, _ value: Int, _ total: Int) -> some View {
         HStack {
             Circle().fill(color).frame(width: 10, height: 10)
-            Text(label).font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+            Text(label).font(.system(size: 20)).foregroundStyle(EvalColors.text)
             Spacer()
-            Text("\(value)").font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+            Text("\(value)").font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
             Text(EvalUI.percent(total == 0 ? 0 : Double(value) / Double(total))).font(.system(size: 18).monospacedDigit()).foregroundStyle(EvalUI.secondary)
                 .frame(width: 70, alignment: .trailing)
         }
@@ -722,7 +722,7 @@ struct EvalHitsDetailView: View {
 
     private func count(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.system(size: 23, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+            Text(value).font(.system(size: 23, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
             Text(label).font(.system(size: 14, weight: .medium)).foregroundStyle(EvalUI.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -752,7 +752,7 @@ struct EvalWinRateDetailView: View {
                 evalSection("Par carte") {
                     VStack(spacing: 14) {
                         mapBar("Toutes les cartes", s)
-                        Divider().overlay(EvalPalette.text.opacity(0.08))
+                        Divider().overlay(EvalColors.text.opacity(0.08))
                         ForEach(maps) { mapBar($0.key, $0.stats) }
                     }
                     .padding(16)
@@ -763,7 +763,7 @@ struct EvalWinRateDetailView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -775,7 +775,7 @@ struct EvalWinRateDetailView: View {
 
     private func mapBar(_ name: String, _ s: EvalStatsEngine) -> some View {
         HStack(spacing: 10) {
-            Text(name).font(.system(size: 18)).foregroundStyle(EvalPalette.text).frame(width: 110, alignment: .trailing).lineLimit(1)
+            Text(name).font(.system(size: 18)).foregroundStyle(EvalColors.text).frame(width: 110, alignment: .trailing).lineLimit(1)
             GeometryReader { geo in
                 HStack(spacing: 0) {
                     Rectangle().fill(EvalUI.win).frame(width: geo.size.width * CGFloat(s.wins) / CGFloat(max(1, s.count)))
@@ -783,7 +783,7 @@ struct EvalWinRateDetailView: View {
                     Rectangle().fill(EvalUI.loss)
                 }
                 .overlay(alignment: .leading) {
-                    Text(EvalUI.percent(s.winRate)).font(.system(size: 15, weight: .medium)).foregroundStyle(EvalPalette.text).padding(.leading, 8)
+                    Text(EvalUI.percent(s.winRate)).font(.system(size: 15, weight: .medium)).foregroundStyle(EvalColors.text).padding(.leading, 8)
                 }
             }
             .frame(height: 30)
@@ -817,7 +817,7 @@ struct EvalSessionRecapSheet: View {
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Text("Récap de session").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Text("Récap de session").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalColors.text)
                 Spacer()
                 Color.clear.frame(width: 51, height: 51)
             }
@@ -838,7 +838,7 @@ struct EvalSessionRecapSheet: View {
                 ShareLink(item: Image(uiImage: rendered), preview: SharePreview("Récap de session", image: Image(uiImage: rendered))) {
                     Label("Partager", systemImage: "square.and.arrow.up")
                         .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(EvalPalette.text)
+                        .foregroundStyle(EvalColors.text)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(EvalUI.accent, in: .capsule)
@@ -846,7 +846,7 @@ struct EvalSessionRecapSheet: View {
             }
         }
         .padding(16)
-        .background(EvalPalette.card.ignoresSafeArea())
+        .background(EvalColors.card.ignoresSafeArea())
         .task { await loadImages(); render() }
         .onChange(of: story) { render() }
         .onChange(of: accent) { render() }
@@ -973,7 +973,7 @@ struct EvalSessionRecapSheet: View {
                 }
             }
         }
-        .foregroundStyle(EvalPalette.text)
+        .foregroundStyle(EvalColors.text)
         .padding(24)
         .background {
             ZStack {
@@ -1026,7 +1026,7 @@ struct EvalSeasonGoalsView: View {
                 EvalNavHeader(title: "Objectifs de la saison") { dismiss() }
                 if store.seasonGoal != nil && activeGoal == nil {
                     VStack(alignment: .leading, spacing: 8) {
-                        Label("Acte terminé", systemImage: "calendar.badge.exclamationmark").font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                        Label("Acte terminé", systemImage: "calendar.badge.exclamationmark").font(.system(size: 23, weight: .semibold)).foregroundStyle(EvalColors.text)
                         Text("Votre objectif précédent a été défini pour un acte terminé. Définissez un nouvel objectif pour l’acte actuel.")
                             .foregroundStyle(EvalUI.secondary)
                     }
@@ -1041,14 +1041,14 @@ struct EvalSeasonGoalsView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
 
     private var picker: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Fixer un objectif").font(.system(size: 28, weight: .bold)).foregroundStyle(EvalPalette.text)
+            Text("Fixer un objectif").font(.system(size: 28, weight: .bold)).foregroundStyle(EvalColors.text)
             Text("Choisissez le rang que vous souhaitez atteindre avant la fin de l’acte. L’estimation se base sur l’évolution de votre RR en parties classées.")
                 .foregroundStyle(EvalUI.secondary)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
@@ -1094,14 +1094,14 @@ struct EvalSeasonGoalsView: View {
             HStack(spacing: 12) {
                 AsyncImage(url: ValorantProfile.tierIcon(goal.tier)) { $0.image?.resizable().scaledToFit() }.frame(width: 55, height: 55)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Objectif : \(EvalRanks.name(goal.tier))").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalPalette.text)
+                    Text("Objectif : \(EvalRanks.name(goal.tier))").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalColors.text)
                     Text("Actuel : \(EvalRanks.name(currentTier)) · \(store.mmr.rr) RR").foregroundStyle(EvalUI.secondary)
                 }
             }
             if needed == 0 {
                 Label("Objectif atteint", systemImage: "checkmark.seal.fill").foregroundStyle(EvalUI.up).font(.system(size: 20, weight: .semibold))
             } else {
-                Text("Encore \(needed) RR").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                Text("Encore \(needed) RR").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text)
                 if goal.tier == 27 {
                     Text("Radiant dépend du classement de votre région : l’estimation est indicative.").font(.system(size: 15)).foregroundStyle(EvalUI.secondary)
                 }
@@ -1146,7 +1146,7 @@ struct EvalLeaderboardFilterSheet: View {
                         Button { season = act.isCurrent ? "" : act.id } label: {
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(act.name).foregroundStyle(EvalPalette.text)
+                                    Text(act.name).foregroundStyle(EvalColors.text)
                                     if act.isCurrent { Text("Actuel").font(.footnote).foregroundStyle(EvalUI.secondary) }
                                 }
                                 Spacer()
@@ -1182,7 +1182,7 @@ struct EvalLeaderboardFilterSheet: View {
         Button(action: action) {
             HStack {
                 if let icon { Image(systemName: icon).foregroundStyle(EvalUI.accent).frame(width: 30) }
-                Text(title).foregroundStyle(EvalPalette.text)
+                Text(title).foregroundStyle(EvalColors.text)
                 Spacer()
                 if selected { Image(systemName: "checkmark").foregroundStyle(EvalUI.accent) }
             }
@@ -1223,7 +1223,7 @@ struct EvalWeaponSkinsView: View {
                                 AsyncImage(url: skin.image.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFit() }
                                     .frame(height: 70).frame(maxWidth: .infinity)
                                 HStack {
-                                    Text(skin.displayName).font(.system(size: 22)).foregroundStyle(EvalPalette.text)
+                                    Text(skin.displayName).font(.system(size: 22)).foregroundStyle(EvalColors.text)
                                     Spacer()
                                     Image(systemName: "chevron.right").foregroundStyle(EvalUI.secondary)
                                 }
@@ -1231,7 +1231,7 @@ struct EvalWeaponSkinsView: View {
                             .padding(18)
                         }
                         .buttonStyle(.plain)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                     }
                 }
                 .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -1240,7 +1240,7 @@ struct EvalWeaponSkinsView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -1284,7 +1284,7 @@ struct EvalSkinDetailView: View {
                     VStack(spacing: 0) {
                         ForEach(Array(levels.enumerated()), id: \.offset) { i, level in
                             HStack {
-                                Text("Niveau \(i + 1)").font(.system(size: 21)).foregroundStyle(EvalPalette.text)
+                                Text("Niveau \(i + 1)").font(.system(size: 21)).foregroundStyle(EvalColors.text)
                                 Spacer()
                                 if let item = level.levelItem { Text(Self.levelLabel(item)).foregroundStyle(EvalUI.secondary).lineLimit(1) }
                                 if let url = level.streamedVideo.flatMap(URL.init(string:)) {
@@ -1295,7 +1295,7 @@ struct EvalSkinDetailView: View {
                                 }
                             }
                             .padding(18)
-                            if i < levels.count - 1 { Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18) }
+                            if i < levels.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18) }
                         }
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -1305,7 +1305,7 @@ struct EvalSkinDetailView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .sheet(item: Binding(get: { video.map(IdentifiedURL.init) }, set: { video = $0?.url })) { item in
@@ -1373,11 +1373,11 @@ struct EvalStorageView: View {
                 evalSection("Aperçu") {
                     VStack(spacing: 0) {
                         EvalSettingsRow(icon: "internaldrive", title: "Espace total utilisé", value: ByteCountFormatter.string(fromByteCount: total, countStyle: .file), chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "person.crop.circle", title: "Matchs", value: ByteCountFormatter.string(fromByteCount: matches.bytes, countStyle: .file), chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "photo.on.rectangle", title: "Catalogues du jeu", value: ByteCountFormatter.string(fromByteCount: catalogs.bytes, countStyle: .file), chevron: false)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         EvalSettingsRow(icon: "bookmark", title: "Données personnelles", value: ByteCountFormatter.string(fromByteCount: personal.bytes, countStyle: .file), chevron: false)
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -1398,7 +1398,7 @@ struct EvalStorageView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .confirmationDialog("Supprimer les données locales ?", isPresented: $confirmClear, titleVisibility: .visible) {
@@ -1425,18 +1425,18 @@ struct EvalResourcesView: View {
                                  text: "Les portraits d’agents, images d’armes et données des cartes viennent de valorant-api.com. Après une mise à jour de VALORANT, certaines ressources peuvent mettre quelques heures à apparaître.")
                 VStack(spacing: 0) {
                     HStack {
-                        Text("Statut").font(.system(size: 21)).foregroundStyle(EvalPalette.text)
+                        Text("Statut").font(.system(size: 21)).foregroundStyle(EvalColors.text)
                         Spacer()
                         if version.isEmpty && !failed { ProgressView() } else {
                             Image(systemName: failed ? "xmark.circle.fill" : "checkmark.circle.fill").font(.system(size: 25)).foregroundStyle(failed ? EvalUI.loss : EvalUI.up)
                         }
                     }
                     .padding(18)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                     EvalSettingsRow(title: "Version", value: version.isEmpty ? "—" : version, chevron: false)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                     EvalSettingsRow(title: "Publiée le", value: buildDate.isEmpty ? "—" : buildDate, chevron: false)
-                    Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 18)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                     EvalSettingsRow(title: "Langue", value: "fr-FR", chevron: false)
                 }
                 .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -1445,7 +1445,7 @@ struct EvalResourcesView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task {
@@ -1470,9 +1470,9 @@ struct EvalAdvancedSettingsView: View {
                 evalSection("Catégories") {
                     VStack(spacing: 0) {
                         NavigationLink { EvalInterfaceSettingsView() } label: { EvalSettingsRow(icon: "rectangle.on.rectangle", title: "Paramètres de l'interface") }.buttonStyle(.plain)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         NavigationLink { EvalWebLoginDataView() } label: { EvalSettingsRow(icon: "person.badge.key", title: "Paramètres de connexion") }.buttonStyle(.plain)
-                        Divider().overlay(EvalPalette.text.opacity(0.08)).padding(.leading, 56)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 56)
                         NavigationLink { EvalStorageView() } label: { EvalSettingsRow(icon: "gearshape.2", title: "Paramètres systèmes") }.buttonStyle(.plain)
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))
@@ -1482,7 +1482,7 @@ struct EvalAdvancedSettingsView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -1509,7 +1509,7 @@ struct EvalInterfaceSettingsView: View {
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -1519,7 +1519,7 @@ struct EvalInterfaceSettingsView: View {
             Toggle(isOn: value) {
                 HStack(spacing: 14) {
                     Image(systemName: icon).font(.system(size: 23)).foregroundStyle(EvalUI.accent).frame(width: 28)
-                    Text(title).font(.system(size: 21)).foregroundStyle(EvalPalette.text)
+                    Text(title).font(.system(size: 21)).foregroundStyle(EvalColors.text)
                 }
             }
             .tint(EvalUI.accent)
@@ -1538,7 +1538,7 @@ struct EvalSettingsHero: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: icon).font(.system(size: 41)).foregroundStyle(EvalUI.accent)
-            Text(title).font(.system(size: 28, weight: .bold)).foregroundStyle(EvalPalette.text)
+            Text(title).font(.system(size: 28, weight: .bold)).foregroundStyle(EvalColors.text)
             Text(text).font(.system(size: 20)).foregroundStyle(EvalUI.secondary)
         }
         .padding(20)
@@ -1556,7 +1556,7 @@ struct EvalSettingsRow: View {
     var body: some View {
         HStack(spacing: 14) {
             if let icon { Image(systemName: icon).font(.system(size: 23)).foregroundStyle(EvalUI.accent).frame(width: 28) }
-            Text(title).font(.system(size: 21)).foregroundStyle(EvalPalette.text)
+            Text(title).font(.system(size: 21)).foregroundStyle(EvalColors.text)
             Spacer()
             if let value { Text(value).font(.system(size: 20)).foregroundStyle(EvalUI.secondary) }
             if chevron { Image(systemName: "chevron.right").font(.system(size: 16, weight: .semibold)).foregroundStyle(EvalUI.secondary) }

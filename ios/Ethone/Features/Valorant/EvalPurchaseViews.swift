@@ -141,16 +141,16 @@ struct EvalPurchaseHistoryView: View {
         VStack(spacing: 0) {
             HStack {
                 Button { dismiss() } label: {
-                    Circle().fill(EvalPalette.card).frame(width: 51, height: 51)
-                        .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text))
+                    Circle().fill(EvalColors.card).frame(width: 51, height: 51)
+                        .overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text))
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Text("Historique des achats").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Text("Historique des achats").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalColors.text)
                 Spacer()
                 Button { capturing = true } label: {
-                    Circle().fill(EvalPalette.card).frame(width: 51, height: 51)
-                        .overlay(Image(systemName: "arrow.clockwise").font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalPalette.text))
+                    Circle().fill(EvalColors.card).frame(width: 51, height: 51)
+                        .overlay(Image(systemName: "arrow.clockwise").font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text))
                 }
                 .buttonStyle(.plain)
                 .opacity(history == nil ? 0 : 1)
@@ -192,7 +192,7 @@ struct EvalPurchaseHistoryView: View {
                 .padding(.bottom, 110)
             }
         }
-        .background(EvalPalette.background.ignoresSafeArea())
+        .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $capturing) {
@@ -225,13 +225,13 @@ struct EvalPurchaseHistoryView: View {
             Text("Total dépensé").font(.system(size: 16, weight: .medium)).foregroundStyle(.white.opacity(0.6))
             ForEach(totals.keys.sorted(), id: \.self) { code in
                 Text(totals[code, default: 0].formatted(.currency(code: code)))
-                    .font(.system(size: 32, weight: .bold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                    .font(.system(size: 32, weight: .bold).monospacedDigit()).foregroundStyle(EvalColors.text)
             }
             Text("\(list.count) paiements").font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(EvalPalette.card, in: .rect(cornerRadius: 20))
+        .background(EvalColors.card, in: .rect(cornerRadius: 20))
 
         if list.isEmpty {
             ContentUnavailableView("Aucun paiement", systemImage: "creditcard")
@@ -244,16 +244,16 @@ struct EvalPurchaseHistoryView: View {
                     .frame(width: 46, height: 46)
                     .background(EvalAccent.color.opacity(0.15), in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(payment.methodName).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                    Text(payment.methodName).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text)
                     Text("\(payment.game) · \(payment.date?.formatted(date: .abbreviated, time: .shortened) ?? "—")")
                         .font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
                 }
                 Spacer()
                 Text(payment.value.formatted(.currency(code: payment.currency ?? "USD")))
-                    .font(.system(size: 18, weight: .bold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                    .font(.system(size: 18, weight: .bold).monospacedDigit()).foregroundStyle(EvalColors.text)
             }
             .padding(14)
-            .background(EvalPalette.card, in: .rect(cornerRadius: 18))
+            .background(EvalColors.card, in: .rect(cornerRadius: 18))
         }
     }
 
@@ -272,9 +272,9 @@ struct EvalPurchaseHistoryView: View {
                 } placeholder: { Color.clear }
                 .frame(width: 30, height: 30)
                 .frame(width: 46, height: 46)
-                .background(EvalPalette.text.opacity(0.06), in: .circle)
+                .background(EvalColors.text.opacity(0.06), in: .circle)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(EvalCurrency.name(row.type)).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                    Text(EvalCurrency.name(row.type)).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text)
                     Text(row.date?.formatted(date: .abbreviated, time: .shortened) ?? "—")
                         .font(.system(size: 15)).foregroundStyle(.white.opacity(0.5))
                 }
@@ -284,7 +284,7 @@ struct EvalPurchaseHistoryView: View {
                     .foregroundStyle(row.amount >= 0 ? Color(hex: 0x35C26B) : EvalAccent.color)
             }
             .padding(14)
-            .background(EvalPalette.card, in: .rect(cornerRadius: 18))
+            .background(EvalColors.card, in: .rect(cornerRadius: 18))
         }
     }
 }

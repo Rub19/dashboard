@@ -27,8 +27,8 @@ private enum EvalPalette {
     static let ally = Color(hex: 0x2DD4BF)
     static let enemy = EvalAccent.color
     static let accent = EvalAccent.color
-    static let card = EvalPalette.card
-    static let chip = EvalPalette.card2
+    static let card = EvalColors.card
+    static let chip = EvalColors.card2
     static let secondary = Color(hex: 0x8E8E93)
     static let gold = Color(hex: 0xF5D78E)
     static let up = Color(hex: 0x35C26B)
@@ -61,7 +61,7 @@ struct ValorantMatchDetailView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            EvalPalette.background.ignoresSafeArea()
+            EvalColors.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 navBar
@@ -125,7 +125,7 @@ struct ValorantMatchDetailView: View {
             circleButton(systemImage: "chevron.left") { dismiss() }
             Spacer()
             if selectedTab == .summary {
-                Text("Détails du match").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Text("Détails du match").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalColors.text)
             } else {
             HStack(spacing: 8) {
                 Image(systemName: "shield.lefthalf.filled")
@@ -133,7 +133,7 @@ struct ValorantMatchDetailView: View {
                     .foregroundStyle(.white.opacity(0.8))
                 Text(match.map)
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(EvalPalette.text)
+                    .foregroundStyle(EvalColors.text)
                 Text("\(analysis?.teamRounds ?? match.teamRounds)").foregroundStyle(EvalPalette.ally)
                 Text("–").foregroundStyle(EvalPalette.secondary)
                 Text("\(analysis?.opponentRounds ?? match.opponentRounds)").foregroundStyle(EvalPalette.enemy)
@@ -154,7 +154,7 @@ struct ValorantMatchDetailView: View {
     private func circleButton(systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Circle().fill(EvalPalette.card).frame(width: 51, height: 51)
-                .overlay(Image(systemName: systemImage).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text))
+                .overlay(Image(systemName: systemImage).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text))
         }
         .buttonStyle(PressScaleStyle())
     }
@@ -271,7 +271,7 @@ struct ValorantMatchDetailView: View {
                             ForEach(a.highlights, id: \.self) { label in
                                 Text(label)
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(EvalPalette.text)
+                                    .foregroundStyle(EvalColors.text)
                                     .padding(.horizontal, 14).padding(.vertical, 8)
                                     .background(EvalPalette.chip, in: .capsule)
                             }
@@ -291,7 +291,7 @@ struct ValorantMatchDetailView: View {
                         Image(systemName: "desktopcomputer").font(.system(size: 16))
                         Text(EvalProfileView.modeName(a.match.mode)).font(.system(size: 20, weight: .semibold))
                     }
-                    .foregroundStyle(EvalPalette.text)
+                    .foregroundStyle(EvalColors.text)
                     if let cluster = a.match.cluster, !cluster.isEmpty {
                         Text(cluster).font(.system(size: 15)).foregroundStyle(EvalPalette.secondary)
                     }
@@ -329,17 +329,17 @@ struct ValorantMatchDetailView: View {
         .clipShape(.rect(cornerRadius: 22))
     }
 
-    private var divider: some View { Divider().overlay(EvalPalette.text.opacity(0.06)) }
+    private var divider: some View { Divider().overlay(EvalColors.text.opacity(0.06)) }
 
     /// delta > 0 = mieux que le lobby, sauf si `higherIsBetter` est faux.
     private func metricRow(_ title: String, _ value: String, delta: Double, higherIsBetter: Bool = true, format: (Double) -> String) -> some View {
         let isEqual = abs(delta) < 0.005
         let good = (delta > 0) == higherIsBetter
         return HStack {
-            Text(title).font(.system(size: 20)).foregroundStyle(EvalPalette.text)
+            Text(title).font(.system(size: 20)).foregroundStyle(EvalColors.text)
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
-                Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
                 if isEqual {
                     Text("=").font(.system(size: 15, weight: .bold)).foregroundStyle(EvalPalette.secondary)
                 } else {
@@ -361,7 +361,7 @@ struct ValorantMatchDetailView: View {
                 Text("\(half.won)").font(.system(size: 51, weight: .semibold).monospacedDigit())
                 Text("/ \(half.played)").font(.system(size: 25, weight: .medium).monospacedDigit()).foregroundStyle(EvalPalette.secondary)
             }
-            .foregroundStyle(EvalPalette.text)
+            .foregroundStyle(EvalColors.text)
             VStack(spacing: 6) {
                 halfRow("Éliminations", half.kills)
                 halfRow("Morts", half.deaths)
@@ -381,7 +381,7 @@ struct ValorantMatchDetailView: View {
         HStack {
             Text(label).font(.system(size: 14)).foregroundStyle(EvalPalette.secondary)
             Spacer()
-            Text("\(value)").font(.system(size: 14, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+            Text("\(value)").font(.system(size: 14, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
         }
     }
 
@@ -442,11 +442,11 @@ struct ValorantMatchDetailView: View {
                     }
                     Spacer(minLength: 6)
                     VStack(spacing: 1) {
-                        Text("\(p.kills) / \(p.deaths) / \(p.assists)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                        Text("\(p.kills) / \(p.deaths) / \(p.assists)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
                         Text("K/D/A").font(.system(size: 14, weight: .medium)).foregroundStyle(EvalPalette.secondary)
                     }
                     VStack(spacing: 1) {
-                        Text("\(s.acs)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                        Text("\(s.acs)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
                         Text("ACS").font(.system(size: 14, weight: .medium)).foregroundStyle(EvalPalette.secondary)
                     }
                     .frame(minWidth: 40)
@@ -505,7 +505,7 @@ struct ValorantMatchDetailView: View {
         HStack {
             Text(title).font(.system(size: 15)).foregroundStyle(EvalPalette.secondary)
             Spacer()
-            Text(value).font(.system(size: 15, weight: .semibold).monospacedDigit()).foregroundStyle(EvalPalette.text)
+            Text(value).font(.system(size: 15, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
         }
     }
 
@@ -517,7 +517,7 @@ struct ValorantMatchDetailView: View {
         let laneHeight = CGFloat(maxKills) * 44 + 8
         return VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Tués par Round").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Text("Tués par Round").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalColors.text)
                 Spacer()
             }
             ScrollView(.horizontal, showsIndicators: false) {
@@ -558,7 +558,7 @@ struct ValorantMatchDetailView: View {
                 HStack(spacing: 14) {
                     Image(systemName: "map").font(.system(size: 28)).foregroundStyle(EvalPalette.accent)
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Détails par Round").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                        Text("Détails par Round").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text)
                         Text("Consultez la chronologie et les événements de chaque manche.")
                             .font(.system(size: 16)).foregroundStyle(EvalPalette.secondary)
                             .multilineTextAlignment(.leading)
@@ -595,7 +595,7 @@ struct ValorantMatchDetailView: View {
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                Text("Matrice des duels").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalPalette.text)
+                Text("Matrice des duels").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalColors.text)
                 duelMatrix(a)
                     .padding(14)
                     .background(EvalPalette.card, in: .rect(cornerRadius: 22))
@@ -621,7 +621,7 @@ struct ValorantMatchDetailView: View {
             HStack(spacing: 10) {
                 remoteImage(a.match.player(duel.ally)?.agentIconURL).frame(width: 44, height: 44).clipShape(Circle())
                 VStack(spacing: 2) {
-                    Text("\(duel.won) : \(duel.lost)").font(.system(size: 23, weight: .heavy).monospacedDigit()).foregroundStyle(EvalPalette.text)
+                    Text("\(duel.won) : \(duel.lost)").font(.system(size: 23, weight: .heavy).monospacedDigit()).foregroundStyle(EvalColors.text)
                     Text("\(duel.total) duels").font(.system(size: 14)).foregroundStyle(EvalPalette.secondary)
                 }
                 remoteImage(a.match.player(duel.enemy)?.agentIconURL).frame(width: 44, height: 44).clipShape(Circle())
@@ -674,7 +674,7 @@ struct ValorantMatchDetailView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 50)
         .background(background, in: .rect(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(EvalPalette.text.opacity(zero ? 0 : 0.06), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(EvalColors.text.opacity(zero ? 0 : 0.06), lineWidth: 1))
     }
 
     private func bigStat(_ label: String, _ value: String, color: Color = .white) -> some View {
@@ -775,7 +775,7 @@ struct ValorantMatchDetailView: View {
             Spacer()
             Text("\(r.kills) / \(r.deaths) / \(r.assists)")
                 .font(.system(size: 18, weight: .semibold).monospacedDigit())
-                .foregroundStyle(EvalPalette.text)
+                .foregroundStyle(EvalColors.text)
         }
         .padding(.vertical, 12)
     }
@@ -823,7 +823,7 @@ struct ValorantMatchDetailView: View {
                     .chartXAxis(.hidden)
                     .chartYAxis {
                         AxisMarks(position: .trailing, values: .automatic(desiredCount: 3)) { value in
-                            AxisGridLine().foregroundStyle(EvalPalette.text.opacity(0.08))
+                            AxisGridLine().foregroundStyle(EvalColors.text.opacity(0.08))
                             AxisValueLabel {
                                 if let v = value.as(Int.self) { Text(v >= 1000 ? "\(v / 1000)k" : "\(v)").foregroundStyle(EvalPalette.secondary) }
                             }
@@ -855,20 +855,20 @@ struct ValorantMatchDetailView: View {
                         }
                         RuleMark(y: .value("Moyenne", damage.dealt))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
-                            .foregroundStyle(EvalPalette.text.opacity(0.3))
+                            .foregroundStyle(EvalColors.text.opacity(0.3))
                             .annotation(position: .top, alignment: .trailing) {
                                 Text("Moy. \(damage.dealt)").font(.system(size: 13)).foregroundStyle(EvalPalette.secondary)
                             }
                     }
                     .chartXAxis {
                         AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                            AxisGridLine().foregroundStyle(EvalPalette.text.opacity(0.06))
+                            AxisGridLine().foregroundStyle(EvalColors.text.opacity(0.06))
                             AxisValueLabel().foregroundStyle(EvalPalette.secondary)
                         }
                     }
                     .chartYAxis {
                         AxisMarks(position: .trailing, values: .automatic(desiredCount: 3)) { _ in
-                            AxisGridLine().foregroundStyle(EvalPalette.text.opacity(0.06))
+                            AxisGridLine().foregroundStyle(EvalColors.text.opacity(0.06))
                             AxisValueLabel().foregroundStyle(EvalPalette.secondary)
                         }
                     }
@@ -931,10 +931,10 @@ struct ValorantMatchDetailView: View {
                     }
                 } label: {
                     HStack(spacing: 10) {
-                        Rectangle().fill(EvalPalette.text.opacity(0.15)).frame(width: 1, height: 41)
+                        Rectangle().fill(EvalColors.text.opacity(0.15)).frame(width: 1, height: 41)
                         VStack(alignment: .leading, spacing: 1) {
                             Text("TRIER").font(.system(size: 14, weight: .semibold)).tracking(1.2).foregroundStyle(EvalPalette.secondary)
-                            Text(sortBy.label).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalPalette.text)
+                            Text(sortBy.label).font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text)
                         }
                         Image(systemName: "chevron.up.chevron.down").font(.system(size: 15, weight: .semibold)).foregroundStyle(EvalPalette.secondary)
                     }
@@ -943,13 +943,13 @@ struct ValorantMatchDetailView: View {
             }
         }
         .background(.ultraThinMaterial, in: .capsule)
-        .overlay(Capsule().strokeBorder(EvalPalette.text.opacity(0.12), lineWidth: 1))
+        .overlay(Capsule().strokeBorder(EvalColors.text.opacity(0.12), lineWidth: 1))
     }
 
     // MARK: - Utilitaires
 
     private func handleText(_ name: String, _ tag: String, size: CGFloat) -> some View {
-        (Text(name).foregroundStyle(EvalPalette.text) + Text(tag.isEmpty ? "" : "#\(tag)").foregroundStyle(EvalPalette.secondary))
+        (Text(name).foregroundStyle(EvalColors.text) + Text(tag.isEmpty ? "" : "#\(tag)").foregroundStyle(EvalPalette.secondary))
             .font(.system(size: size, weight: .semibold))
             .lineLimit(1)
     }

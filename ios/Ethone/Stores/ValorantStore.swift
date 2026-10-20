@@ -334,6 +334,10 @@ final class ValorantStore {
     var socialActionMessage: String?
 
     private(set) var currentParty: ValorantParty?
+    /// Rang en direct du compte Riot connecté (prioritaire sur HenrikDev).
+    private(set) var liveRank: RiotLiveRank?
+    /// Rang actuel affiché partout (profil, objectifs, détail de match).
+    var currentTier: Int { profile?.tier ?? mmr.tier }
     private(set) var isPlayerOnline: Bool = false
 
     private(set) var battlepassTitle: String = ""
@@ -388,6 +392,25 @@ final class ValorantStore {
         dailyEnd = snap.dailyEnd
         currentParty = snap.party
         isPlayerOnline = snap.party != nil
+        if acts.isEmpty { await loadActs() }
+        if let live = await RiotGameService.liveRank(riot, seasonID: currentAct?.id) {
+            liveRank = live
+            applyLiveRank()
+        }
+    }
+
+    /// Remplace le rang HenrikDev par le rang en direct si le compte suivi est le compte Riot connecté.
+    private func applyLiveRank() {
+        guard let live = liveRank, let creds = riot.credentials, let current = profile,
+              current.handle.lowercased() == "\(creds.gameName)#\(creds.tagLine)".lowercased() else { return }
+        let peak = max(current.peakTier, live.tier)
+        profile = ValorantProfile(
+            handle: current.handle, cardURL: current.cardURL, bannerURL: current.bannerURL,
+            tier: live.tier, rank: EvalRanks.name(live.tier), rr: live.rr, level: current.level,
+            peakTier: peak, peakRank: EvalRanks.name(peak),
+            leaderboardRank: live.leaderboardRank > 0 ? live.leaderboardRank : nil,
+            actName: current.actName
+        )
     }
 
     /// Après la connexion Riot : le compte connecté devient le compte suivi s'il n'y en a pas.
@@ -922,6 +945,7 @@ final class ValorantStore {
             actName: currentAct?.name ?? ""
         )
         equipmentBannerURL = card.isEmpty ? "" : "https://media.valorant-api.com/playercards/\(card)/wideart.png"
+        applyLiveRank()
     }
 
     func actName(_ seasonID: String) -> String { acts[seasonID.lowercased()]?.name ?? "" }

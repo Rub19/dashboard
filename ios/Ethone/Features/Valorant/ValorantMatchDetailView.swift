@@ -73,7 +73,7 @@ struct ValorantMatchDetailView: View {
                             tabContent(analysis)
                         }
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 170)
+                        .padding(.bottom, 96)
                     }
                     .scrollIndicators(.hidden)
                 } else if loadFailed {
@@ -88,7 +88,7 @@ struct ValorantMatchDetailView: View {
             if let analysis {
                 targetBar(analysis)
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 86)
+                    .padding(.bottom, 8)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -219,9 +219,7 @@ struct ValorantMatchDetailView: View {
                     .clipShape(.rect(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 3) {
                     handleText(a.target.name, a.target.tag, size: 17)
-                    Text(EvalRanks.name(a.target.tier).uppercased())
-                        .font(.system(size: 14, weight: .heavy))
-                        .foregroundStyle(EvalPalette.secondary)
+                    rankLabel(tier(of: a.target), size: 17)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 3) {
@@ -310,7 +308,7 @@ struct ValorantMatchDetailView: View {
             }
             .padding(14)
             ZStack {
-                remoteImage(ValorantAssets.shared.splashes[a.match.map.lowercased()] ?? ValorantAssets.shared.maps[a.match.map.lowercased()])
+                remoteImage(ValorantAssets.shared.maps[a.match.map.lowercased()] ?? ValorantAssets.shared.splashes[a.match.map.lowercased()])
                     .frame(height: 96)
                     .clipped()
                 HStack(spacing: 8) {
@@ -330,6 +328,27 @@ struct ValorantMatchDetailView: View {
     }
 
     private var divider: some View { Divider().overlay(EvalColors.text.opacity(0.06)) }
+
+    /// Rang du match ; à défaut (modes non classés) le rang actuel du compte suivi.
+    private func tier(of p: EvalMatch.Player) -> Int {
+        if p.tier > 0 { return p.tier }
+        return p.puuid == model.valorant.puuid ? model.valorant.currentTier : 0
+    }
+
+    @ViewBuilder
+    private func rankLabel(_ tier: Int, size: CGFloat) -> some View {
+        HStack(spacing: 5) {
+            if tier > 0 {
+                remoteImage(ValorantProfile.tierIcon(tier), fit: true).frame(width: size + 4, height: size + 4)
+            } else {
+                Image(systemName: "questionmark.circle.fill").font(.system(size: size - 1)).foregroundStyle(EvalPalette.secondary)
+            }
+            Text((tier > 0 ? EvalRanks.name(tier) : "Non classé").uppercased())
+                .font(.system(size: size, weight: .semibold))
+                .foregroundStyle(tier > 0 ? Color(hex: EvalRanks.color(tier)) : EvalPalette.secondary)
+                .lineLimit(1)
+        }
+    }
 
     /// delta > 0 = mieux que le lobby, sauf si `higherIsBetter` est faux.
     private func metricRow(_ title: String, _ value: String, delta: Double, higherIsBetter: Bool = true, format: (Double) -> String) -> some View {
@@ -431,25 +450,14 @@ struct ValorantMatchDetailView: View {
                          + Text(p.tag.isEmpty ? "" : "#\(p.tag)").foregroundStyle(EvalPalette.secondary))
                             .font(.system(size: 20, weight: .semibold))
                             .lineLimit(1)
-                        if p.tier > 0 {
-                            HStack(spacing: 4) {
-                                remoteImage(ValorantProfile.tierIcon(p.tier), fit: true).frame(width: 18, height: 18)
-                                Text(EvalRanks.name(p.tier).uppercased())
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(EvalPalette.secondary)
-                            }
-                        }
+                        rankLabel(tier(of: p), size: 15)
                     }
                     Spacer(minLength: 6)
-                    VStack(spacing: 1) {
-                        Text("\(p.kills) / \(p.deaths) / \(p.assists)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
-                        Text("K/D/A").font(.system(size: 14, weight: .medium)).foregroundStyle(EvalPalette.secondary)
+                    if partyColor(p, a) != nil {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(partyColor(p, a) ?? EvalPalette.accent)
                     }
-                    VStack(spacing: 1) {
-                        Text("\(s.acs)").font(.system(size: 21, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
-                        Text("ACS").font(.system(size: 14, weight: .medium)).foregroundStyle(EvalPalette.secondary)
-                    }
-                    .frame(minWidth: 40)
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                             if expanded { expandedPlayerIDs.remove(p.puuid) } else { expandedPlayerIDs.insert(p.puuid) }
@@ -462,12 +470,17 @@ struct ValorantMatchDetailView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                HStack(spacing: 0) {
+                    statColumn(String(format: "%.2f", s.kd), "K/D",
+                               color: isTarget ? EvalPalette.ally : (s.kd > 1 ? EvalPalette.up : (s.kd < 1 ? EvalPalette.enemy : EvalColors.text)))
+                    statColumn("\(p.kills) / \(p.deaths) / \(p.assists)", "K/D/A")
+                    statColumn("\(s.hsPercent)%", "HS%")
+                    statColumn("\(s.acs)", "ACS")
+                }
                 if expanded {
                     VStack(spacing: 10) {
                         divider
                         HStack(spacing: 0) {
-                            statColumn(String(format: "%.2f", s.kd), "K/D", color: s.kd >= 1 ? EvalPalette.up : EvalPalette.enemy)
-                            statColumn("\(s.hsPercent)%", "HS%")
                             statColumn("\(s.adr)", "ADR")
                             statColumn("\(s.kast)%", "KAST")
                         }
@@ -493,7 +506,7 @@ struct ValorantMatchDetailView: View {
         .clipShape(.rect(cornerRadius: 18))
     }
 
-    private func statColumn(_ value: String, _ label: String, color: Color = .white) -> some View {
+    private func statColumn(_ value: String, _ label: String, color: Color = EvalColors.text) -> some View {
         VStack(spacing: 2) {
             Text(value).font(.system(size: 18, weight: .semibold).monospacedDigit()).foregroundStyle(color)
             Text(label).font(.system(size: 13, weight: .medium)).foregroundStyle(EvalPalette.secondary)
@@ -892,7 +905,7 @@ struct ValorantMatchDetailView: View {
         }
     }
 
-    private func statColumnLarge(_ value: String, _ label: String, color: Color = .white) -> some View {
+    private func statColumnLarge(_ value: String, _ label: String, color: Color = EvalColors.text) -> some View {
         VStack(spacing: 4) {
             Text(value).font(.system(size: 22, weight: .bold).monospacedDigit()).foregroundStyle(color)
             Text(label).font(.system(size: 13, weight: .semibold)).tracking(0.8).foregroundStyle(EvalPalette.secondary).lineLimit(1)

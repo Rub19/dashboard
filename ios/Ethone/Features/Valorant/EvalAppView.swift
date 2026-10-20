@@ -387,6 +387,7 @@ struct EvalProfileView: View {
         .refreshable {
             if store.isConfigured {
                 await store.refresh()
+                await store.refreshRiot()
             }
         }
         .task {
@@ -523,6 +524,19 @@ struct EvalProfileView: View {
             .frame(height: 100)
             .frame(maxWidth: .infinity)
             .clipped()
+            .overlay(alignment: .bottom) {
+                if profile.level > 0 {
+                    Text("\(profile.level)")
+                        .font(.system(size: 18, weight: .semibold).monospacedDigit())
+                        .foregroundStyle(EvalColors.text)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 4)
+                        .background(EvalColors.card2, in: .capsule)
+                        .overlay(Capsule().strokeBorder(EvalColors.text.opacity(0.15), lineWidth: 1))
+                        .offset(y: 14)
+                }
+            }
+            .zIndex(1)
 
             HStack(alignment: .top, spacing: 16) {
                 NavigationLink {
@@ -831,122 +845,147 @@ struct EvalProfileView: View {
     }
 
     private func matchRowCard(match: ValorantMatch) -> some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Image(systemName: "cube.transparent")
-                    .font(.system(size: 17))
-                    .foregroundStyle(.white.opacity(0.8))
-                Image(systemName: "desktopcomputer")
-                    .font(.system(size: 17))
-                    .foregroundStyle(.white.opacity(0.8))
-                Text(Self.modeName(match.mode))
-                    .font(.system(size: 18, weight: .bold))
+        let assets = ValorantAssets.shared
+        let history = store.mmr.history.first { $0.match.lowercased() == match.id.lowercased() }
+        return VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Group {
+                    if let icon = assets.modeIcon(match.mode) {
+                        AsyncImage(url: icon) { $0.image?.resizable().renderingMode(.template).scaledToFit() }
+                    } else {
+                        Image(systemName: "cube.transparent").resizable().scaledToFit()
+                    }
+                }
+                .foregroundStyle(EvalColors.text.opacity(0.75))
+                .frame(width: 34, height: 34)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Image(systemName: (EvalPlatform(rawValue: UserDefaults.standard.string(forKey: EvalPlatform.key) ?? "") ?? .pc).icon)
+                            .font(.system(size: 16))
+                        Text(Self.modeName(match.mode)).font(.system(size: 19, weight: .bold))
+                    }
                     .foregroundStyle(EvalColors.text)
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 14)
-
-            HStack {
-                if let startedAt = match.startedAt {
-                    Text(startedAt.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits).hour().minute()).replacingOccurrences(of: "/", with: "/").replacingOccurrences(of: " ", with: " · "))
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    if let startedAt = match.startedAt {
+                        Text(Self.matchDateText(startedAt))
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
                 }
                 Spacer()
+                if let history, match.mode.lowercased() == "competitive" {
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Text(history.change >= 0 ? "+\(history.change)" : "\(history.change)")
+                            .font(.system(size: 16, weight: .bold).monospacedDigit())
+                            .foregroundStyle(history.change >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xE5484D))
+                        Text("\(history.rr)").font(.system(size: 15).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+                    ZStack {
+                        Circle().stroke(EvalColors.text.opacity(0.12), lineWidth: 4)
+                        Circle()
+                            .trim(from: 0, to: min(1, Double(history.rr) / 100))
+                            .stroke(history.change >= 0 ? Color(hex: 0x35C26B) : Color(hex: 0xE5484D), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                        AsyncImage(url: ValorantProfile.tierIcon(history.tier)) { $0.image?.resizable().scaledToFit() }
+                            .frame(width: 26, height: 26)
+                    }
+                    .frame(width: 44, height: 44)
+                }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 2)
-            .padding(.bottom, 12)
+            .padding(.vertical, 12)
 
             ZStack(alignment: .leading) {
-                mapSplashBanner(for: match.map)
-
-                LinearGradient(
-                    colors: [Color.black.opacity(0.8), Color.black.opacity(0.2), Color.black.opacity(0.8)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-
-                HStack(spacing: 14) {
-                    if let agentURL = Self.portraitURL(match.myPlayer?.agentIconURL) {
-                        AsyncImage(url: agentURL) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 96, height: 82, alignment: .top)
-                                    .clipped()
-                            } else {
-                                Color.clear.frame(width: 82, height: 82)
-                            }
-                        }
+                AsyncImage(url: assets.maps[match.map.lowercased()] ?? assets.splashes[match.map.lowercased()]) { phase in
+                    if let image = phase.image {
+                        image.resizable().scaledToFill()
+                    } else {
+                        Color(hex: 0x1F222A)
                     }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 86)
+                .clipped()
 
+                LinearGradient(colors: [Color.black.opacity(0.55), Color.black.opacity(0.05), Color.black.opacity(0.35)], startPoint: .leading, endPoint: .trailing)
+
+                HStack(spacing: 0) {
+                    if let bust = Self.bustURL(match.myPlayer?.agentIconURL) {
+                        AsyncImage(url: bust) { $0.image?.resizable().scaledToFill() }
+                            .frame(width: 112, height: 86, alignment: .leading)
+                            .clipped()
+                    }
                     VStack(alignment: .leading, spacing: 6) {
                         Text(match.agent)
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(EvalColors.text)
-
-                        HStack(spacing: 6) {
+                            .font(.system(size: 21, weight: .bold))
+                            .foregroundStyle(.white)
+                            .shadow(color: .black.opacity(0.6), radius: 3)
+                        HStack(spacing: 0) {
                             Text(match.map)
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.8))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(Color.black.opacity(0.6), in: .capsule)
-
+                                .foregroundStyle(.white.opacity(0.85))
+                                .padding(.horizontal, 9)
                             if let mvp = Self.mvpLabel(match) {
+                                Rectangle().fill(.white.opacity(0.3)).frame(width: 1, height: 14)
                                 Text(mvp)
-                                    .font(.system(size: 13, weight: .bold))
                                     .foregroundStyle(Color(hex: 0xF5D78E))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Color(hex: 0x785618).opacity(0.4), in: .capsule)
-                                    .overlay(Capsule().strokeBorder(Color(hex: 0xF5D78E).opacity(0.5), lineWidth: 1))
+                                    .padding(.horizontal, 9)
                             }
                         }
+                        .font(.system(size: 14, weight: .semibold))
+                        .padding(.vertical, 3)
+                        .background(.black.opacity(0.45), in: .capsule)
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.18), lineWidth: 1))
                     }
-
-                    Spacer()
-
+                    .padding(.leading, 4)
+                    Spacer(minLength: 6)
                     Text(match.won ? "VICTOIRE" : "DÉFAITE")
                         .font(.system(size: 15, weight: .heavy))
-                        .foregroundStyle(EvalColors.text)
-                        .padding(.horizontal, 12)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 14)
                         .padding(.vertical, 7)
-                        .background(match.won ? Color(hex: 0x35B86B) : EvalAccent.color, in: .capsule)
+                        .background(match.won ? Color(hex: 0x35B86B) : Color(hex: 0xE5484D), in: .capsule)
                         .padding(.trailing, 14)
                 }
             }
-            .frame(height: 82)
+            .frame(height: 86)
             .clipped()
 
             HStack(spacing: 0) {
                 Label("\(match.kills) / \(match.deaths) / \(match.assists)", systemImage: "scope")
-                    .font(.system(size: 16, weight: .medium).monospacedDigit())
                 Spacer()
                 Label(match.scoreValue.map(String.init) ?? "—", systemImage: "chart.bar.fill")
-                    .font(.system(size: 16, weight: .medium).monospacedDigit())
                 Spacer()
                 HStack(spacing: 6) {
-                    if let change = store.mmr.history.first(where: { $0.match.lowercased() == match.id.lowercased() })?.change {
-                        Text(change >= 0 ? "+\(change)" : "\(change)")
-                            .font(.system(size: 15, weight: .bold).monospacedDigit())
-                            .foregroundStyle(change >= 0 ? Color(hex: 0x35C26B) : EvalAccent.color)
-                    }
                     Label("\(match.teamRounds) — \(match.opponentRounds)", systemImage: "flag.checkered")
-                        .font(.system(size: 16, weight: .medium).monospacedDigit())
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                 }
             }
+            .font(.system(size: 16, weight: .medium).monospacedDigit())
             .foregroundStyle(EvalColors.text)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
         }
-        .background(EvalColors.card, in: .rect(cornerRadius: 20))
+        .background(EvalColors.card, in: .rect(cornerRadius: 22))
+        .clipShape(.rect(cornerRadius: 22))
+    }
+
+    /// « il y a 9h 24min » pendant 24 h, puis la date (« 14/10/26 · 19:19 »).
+    static func matchDateText(_ date: Date) -> String {
+        let seconds = Int(Date().timeIntervalSince(date))
+        if seconds >= 0 && seconds < 86400 {
+            let h = seconds / 3600, m = (seconds % 3600) / 60
+            return h > 0 ? "il y a \(h)h \(m)min" : "il y a \(max(1, m))min"
+        }
+        let fr = Locale(identifier: "fr_FR")
+        return date.formatted(.dateTime.day(.twoDigits).month(.twoDigits).year(.twoDigits).locale(fr)) + " · " + date.formatted(.dateTime.hour().minute().locale(fr))
+    }
+
+    /// Buste de l'agent (killfeedportrait de valorant-api), même UUID que l'icône du match.
+    static func bustURL(_ icon: URL?) -> URL? {
+        guard let icon, icon.pathComponents.count >= 3 else { return nil }
+        let uuid = icon.pathComponents[icon.pathComponents.count - 2]
+        return URL(string: "https://media.valorant-api.com/agents/\(uuid)/killfeedportrait.png")
     }
 
     static func modeName(_ mode: String) -> String {
@@ -1921,6 +1960,11 @@ struct EvalGameView: View {
             .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
+        .refreshable {
+            await store.refreshRiot()
+            await store.party.load(store.riot)
+            await store.contracts.load(store.riot, force: true)
+        }
         .task {
             await store.refreshGroup()
             while !Task.isCancelled {
@@ -2275,6 +2319,7 @@ struct EvalGameView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text(mission.title).font(.system(size: 16, weight: .medium)).foregroundStyle(EvalColors.text)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             Text("+\(mission.xp.formatted()) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
@@ -3929,6 +3974,8 @@ struct EvalSettingsView: View {
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                             }
                             .padding(16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(.rect)
                         }
                         .buttonStyle(.plain)
                     }

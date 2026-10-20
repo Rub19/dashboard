@@ -1013,8 +1013,8 @@ struct EvalSeasonGoalsView: View {
     @State private var selected: Int?
     private var store: ValorantStore { model.valorant }
 
-    private var currentTier: Int { store.mmr.tier }
-    private var choices: [Int] { Array((max(3, min(currentTier + 1, 20)))...27) }
+    private var currentTier: Int { store.currentTier }
+    private var choices: [Int] { Array(max(3, min(currentTier + 1, 27))...27) }
     private var activeGoal: ValorantStore.SeasonGoal? {
         guard let goal = store.seasonGoal, goal.actID.lowercased() == store.currentAct?.id.lowercased() else { return nil }
         return goal

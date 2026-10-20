@@ -302,6 +302,12 @@ struct RiotGameSnapshot {
     var party: ValorantParty?
 }
 
+struct RiotLiveRank: Hashable {
+    let tier: Int
+    let rr: Int
+    let leaderboardRank: Int
+}
+
 struct RiotMission: Identifiable, Hashable {
     let id: String
     let title: String
@@ -408,6 +414,31 @@ enum RiotGameService {
 
         snap.party = await loadParty(session, puuid: puuid)
         return snap
+    }
+
+    /// Rang actuel en direct : HenrikDev s'arrête à la dernière partie classée, alors qu'un Radiant
+    /// sorti du top du classement redevient Immortel 3 sans rejouer.
+    static func liveRank(_ session: RiotSession, seasonID: String?) async -> RiotLiveRank? {
+        guard let puuid = session.credentials?.puuid, let season = seasonID?.lowercased(),
+              let raw = try? await session.gameData("/mmr/v1/players/\(puuid)"),
+              let json = try? JSONDecoder().decode(JSONValue.self, from: raw) else { return nil }
+        let seasons = json["QueueSkills"]?["competitive"]?["SeasonalInfoBySeasonID"]?.objectValue ?? [:]
+        guard let info = seasons.first(where: { $0.key.lowercased() == season })?.value else { return nil }
+        var tier = info["CompetitiveTier"]?.intValue ?? 0
+        let rr = info["RankedRating"]?.intValue ?? 0
+        let place = info["LeaderboardRank"]?.intValue ?? 0
+        if place > 0, let region = session.credentials?.region,
+           let board = try? await session.gameData("/mmr/v1/leaderboards/affinity/\(region)/queue/competitive/season/\(season)?startIndex=0&size=1"),
+           let boardJSON = try? JSONDecoder().decode(JSONValue.self, from: board),
+           let details = boardJSON["tierDetails"]?.objectValue {
+            // Palier dont la première place du classement est la plus proche au-dessus du joueur.
+            let starts = details.compactMap { key, value -> (tier: Int, start: Int)? in
+                guard let t = Int(key), let start = value["startingIndex"]?.intValue else { return nil }
+                return (t, start)
+            }
+            if let best = starts.filter({ $0.start < place }).max(by: { $0.start < $1.start }) { tier = best.tier }
+        }
+        return tier > 0 ? RiotLiveRank(tier: tier, rr: rr, leaderboardRank: place) : nil
     }
 
     private static func loadParty(_ session: RiotSession, puuid: String) async -> ValorantParty? {

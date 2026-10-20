@@ -135,6 +135,7 @@ struct EvalPurchaseHistoryView: View {
     @State private var history = DiskCache.read(RiotPurchaseHistory.self, key: RiotPurchaseHistory.cacheKey)
     @State private var tab = 0
     @State private var capturing = false
+    @State private var silentLoading = false
     @State private var error: String?
 
     var body: some View {
@@ -148,12 +149,12 @@ struct EvalPurchaseHistoryView: View {
                 Spacer()
                 Text("Historique des achats").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalColors.text)
                 Spacer()
-                Button { capturing = true } label: {
+                Button { Task { await loadSilently(openLoginIfNeeded: true) } } label: {
                     Circle().fill(EvalColors.card).frame(width: 51, height: 51)
                         .overlay(Image(systemName: "arrow.clockwise").font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text))
                 }
                 .buttonStyle(.plain)
-                .opacity(history == nil ? 0 : 1)
+                .opacity(history == nil || silentLoading ? 0 : 1)
             }
             .padding(.horizontal, 16)
             .padding(.top, 4)
@@ -172,6 +173,12 @@ struct EvalPurchaseHistoryView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 110)
                 }
+            } else if silentLoading {
+                VStack(spacing: 14) {
+                    ProgressView().controlSize(.large)
+                    Text("Récupération depuis votre compte Riot…").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .frame(maxHeight: .infinity)
             } else {
                 ContentUnavailableView(
                     "Historique des achats",
@@ -195,18 +202,25 @@ struct EvalPurchaseHistoryView: View {
         .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        // Chargement automatique : la session Riot du WebView suffit, sans rien afficher.
+        .background {
+            if silentLoading {
+                RiotPurchaseCaptureView { data in
+                    if save(data) { silentLoading = false }
+                }
+                .frame(width: 2, height: 2)
+                .opacity(0.01)
+                .allowsHitTesting(false)
+            }
+        }
+        .task {
+            let stale = history?.fetchedAt.map { Date().timeIntervalSince($0) > 6 * 3600 } ?? true
+            if stale { await loadSilently(openLoginIfNeeded: false) }
+        }
         .sheet(isPresented: $capturing) {
             NavigationStack {
                 RiotPurchaseCaptureView { data in
-                    guard var decoded = try? JSONDecoder().decode(RiotPurchaseHistory.self, from: data), decoded.account != nil else {
-                        error = "Réponse Riot illisible. Réessayez."
-                        capturing = false
-                        return
-                    }
-                    decoded.fetchedAt = .now
-                    DiskCache.write(decoded, key: RiotPurchaseHistory.cacheKey)
-                    history = decoded
-                    error = nil
+                    if !save(data) { error = "Réponse Riot illisible. Réessayez." }
                     capturing = false
                 }
                 .ignoresSafeArea(edges: .bottom)
@@ -215,6 +229,29 @@ struct EvalPurchaseHistoryView: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Fermer") { capturing = false } } }
             }
         }
+    }
+
+    /// Charge l'historique en arrière-plan ; si Riot demande une connexion, ouvre la page (au besoin).
+    private func loadSilently(openLoginIfNeeded: Bool) async {
+        guard !silentLoading else { return }
+        let before = history?.fetchedAt
+        silentLoading = true
+        for _ in 0..<50 where silentLoading {
+            try? await Task.sleep(for: .milliseconds(500))
+        }
+        let gotNew = history != nil && history?.fetchedAt != before
+        silentLoading = false
+        if !gotNew && openLoginIfNeeded { capturing = true }
+    }
+
+    @discardableResult
+    private func save(_ data: Data) -> Bool {
+        guard var decoded = try? JSONDecoder().decode(RiotPurchaseHistory.self, from: data), decoded.account != nil else { return false }
+        decoded.fetchedAt = .now
+        DiskCache.write(decoded, key: RiotPurchaseHistory.cacheKey)
+        history = decoded
+        error = nil
+        return true
     }
 
     @ViewBuilder

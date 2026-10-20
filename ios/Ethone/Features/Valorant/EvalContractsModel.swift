@@ -248,6 +248,23 @@ enum MissionObjectives {
     /// Texte de la mission avec le nombre réel, sinon le titre brut.
     static func text(objective: String?, value: Int, fallback: String) -> String {
         guard let objective, let directive = directives[objective.lowercased()] else { return fallback }
-        return directive.replacingOccurrences(of: "{Num}", with: value.formatted())
+        return fill(directive, value: value)
+    }
+
+    /// Remplit {Num} et choisit la forme de « {Num}|plural(one=…,other=…) ».
+    static func fill(_ directive: String, value: Int) -> String {
+        var text = directive
+        let pattern = #"\{Num\}\|plural\(one=([^,]*),other=([^)]*)\)"#
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            let range = NSRange(text.startIndex..., in: text)
+            for match in regex.matches(in: text, range: range).reversed() {
+                guard let whole = Range(match.range, in: text),
+                      let one = Range(match.range(at: 1), in: text),
+                      let other = Range(match.range(at: 2), in: text) else { continue }
+                let word = String(value == 1 ? text[one] : text[other])
+                text.replaceSubrange(whole, with: word)
+            }
+        }
+        return text.replacingOccurrences(of: "{Num}", with: value.formatted())
     }
 }

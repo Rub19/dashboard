@@ -11,11 +11,20 @@ final class ValorantAssets {
     private(set) var splashes: [String: URL] = [:]
     /// Armes par UUID : nom français et silhouette (statistiques par arme).
     private(set) var weapons: [String: (name: String, icon: URL?)] = [:]
+    /// Icônes des modes de jeu (valorant-api « gamemodes »), clé = nom anglais en minuscules.
+    private(set) var gamemodes: [String: URL] = [:]
     private var loaded = false
+
+    /// Icône du mode tel que renvoyé par HenrikDev (Competitive, Swiftplay…).
+    func modeIcon(_ mode: String) -> URL? {
+        let key = mode.lowercased()
+        return gamemodes[["competitive", "unrated", "premier", ""].contains(key) ? "standard" : key]
+    }
 
     func load() async {
         guard !loaded else { return }
         loaded = true
+        defer { if agents.isEmpty || maps.isEmpty { loaded = false } }
         struct Page<T: Decodable>: Decodable { let data: [T] }
         struct Agent: Decodable { let displayName: String; let displayIcon: String? }
         struct GameMap: Decodable { let displayName: String; let listViewIcon: String?; let splash: String? }
@@ -23,6 +32,11 @@ final class ValorantAssets {
         if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/agents?isPlayableCharacter=true")!),
            let page = try? decoder.decode(Page<Agent>.self, from: data) {
             agents = Dictionary(page.data.compactMap { a in a.displayIcon.flatMap(URL.init(string:)).map { (a.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
+        }
+        struct Mode: Decodable { let displayName: String; let displayIcon: String? }
+        if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/gamemodes")!),
+           let page = try? decoder.decode(Page<Mode>.self, from: data) {
+            gamemodes = Dictionary(page.data.compactMap { m in m.displayIcon.flatMap(URL.init(string:)).map { (m.displayName.lowercased(), $0) } }, uniquingKeysWith: { a, _ in a })
         }
         if let (data, _) = try? await URLSession.shared.data(from: URL(string: "https://valorant-api.com/v1/maps")!),
            let page = try? decoder.decode(Page<GameMap>.self, from: data) {

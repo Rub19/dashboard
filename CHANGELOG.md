@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.77.3 - 2026-10-20
+
+**E:VAL : thème clair et choix de plateforme**
+
+- Le thème (Système, Sombre, Clair) est enregistré et appliqué à tout E:VAL : fonds, cartes et textes s'adaptent.
+- La plateforme se choisit dans une liste (PC, PlayStation, Xbox) ; le classement suit ce choix dès l'ouverture d'E:VAL.
+- La ligne « Icône de l'app » est retirée des Paramètres d'E:VAL.
+
 ## v1.77.2 - 2026-10-20
 
 **E:VAL : icône des titres aux couleurs d'Ethone**

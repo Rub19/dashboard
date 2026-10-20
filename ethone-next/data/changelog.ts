@@ -59940,4 +59940,52 @@ CHANGELOG_BY_LANG.en.unshift(v12942_en);
 CHANGELOG_BY_LANG.es.unshift(v12942_es);
 CHANGELOG_BY_LANG.de.unshift(v12942_de);
 
+const v12943_fr: ChangelogEntry = {
+  version: "v1.77.3",
+  date: "2026-10-20",
+  title: "E:VAL : thème clair et choix de plateforme",
+  items: [
+    "Le thème (Système, Sombre, Clair) est enregistré et appliqué à tout E:VAL : fonds, cartes et textes s'adaptent.",
+    "La plateforme se choisit dans une liste (PC, PlayStation, Xbox) ; le classement suit ce choix dès l'ouverture d'E:VAL.",
+    "La ligne « Icône de l'app » est retirée des Paramètres d'E:VAL.",
+  ],
+};
+
+const v12943_en: ChangelogEntry = {
+  version: "v1.77.3",
+  date: "2026-10-20",
+  title: "E:VAL: light theme and platform choice",
+  items: [
+    "The theme (System, Dark, Light) is saved and applied to all of E:VAL: backgrounds, cards and text adapt.",
+    "The platform is picked from a list (PC, PlayStation, Xbox); the leaderboard follows it as soon as E:VAL opens.",
+    "The \"App icon\" row is removed from E:VAL settings.",
+  ],
+};
+
+const v12943_es: ChangelogEntry = {
+  version: "v1.77.3",
+  date: "2026-10-20",
+  title: "E:VAL: tema claro y elección de plataforma",
+  items: [
+    "El tema (Sistema, Oscuro, Claro) se guarda y se aplica a todo E:VAL: fondos, tarjetas y textos se adaptan.",
+    "La plataforma se elige en una lista (PC, PlayStation, Xbox); la clasificación la sigue desde que se abre E:VAL.",
+    "Se quita la fila «Icono de la app» de los ajustes de E:VAL.",
+  ],
+};
+
+const v12943_de: ChangelogEntry = {
+  version: "v1.77.3",
+  date: "2026-10-20",
+  title: "E:VAL: helles Design und Plattformauswahl",
+  items: [
+    "Das Design (System, Dunkel, Hell) wird gespeichert und auf ganz E:VAL angewendet: Hintergründe, Karten und Texte passen sich an.",
+    "Die Plattform wird aus einer Liste gewählt (PC, PlayStation, Xbox); die Rangliste folgt ihr ab dem Öffnen von E:VAL.",
+    "Die Zeile „App-Symbol“ wurde aus den E:VAL-Einstellungen entfernt.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12943_fr);
+CHANGELOG_BY_LANG.en.unshift(v12943_en);
+CHANGELOG_BY_LANG.es.unshift(v12943_es);
+CHANGELOG_BY_LANG.de.unshift(v12943_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

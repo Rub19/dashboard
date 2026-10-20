@@ -87,7 +87,7 @@ struct EvalContractLevelsPage: View {
             HStack(spacing: 16) {
                 Group {
                     if row.type == "Title" {
-                        Image(systemName: "text.badge.star").font(.system(size: 34)).foregroundStyle(Color(hex: 0x8E8E93))
+                        EvalTitleBadge(size: 64)
                     } else {
                         AsyncImage(url: URL(string: info?.icon ?? "")) { $0.image?.resizable().scaledToFit() }
                     }

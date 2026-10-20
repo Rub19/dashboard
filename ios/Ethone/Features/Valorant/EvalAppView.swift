@@ -1514,12 +1514,16 @@ struct EvalAccessoryBundleCard: View {
                             .fill(Color.white.opacity(0.06))
                             .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.white.opacity(0.12)))
 
-                        AsyncImage(url: URL(string: item.imageURL)) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable().interpolation(.high).scaledToFit().frame(width: 46, height: 46)
-                            default:
-                                Color.clear
+                        if item.imageURL.isEmpty {
+                            EvalTitleBadge(size: 46)
+                        } else {
+                            AsyncImage(url: URL(string: item.imageURL)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().interpolation(.high).scaledToFit().frame(width: 46, height: 46)
+                                default:
+                                    Color.clear
+                                }
                             }
                         }
                     }

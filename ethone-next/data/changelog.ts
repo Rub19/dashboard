@@ -59988,4 +59988,76 @@ CHANGELOG_BY_LANG.en.unshift(v12943_en);
 CHANGELOG_BY_LANG.es.unshift(v12943_es);
 CHANGELOG_BY_LANG.de.unshift(v12943_de);
 
+const v12944_fr: ChangelogEntry = {
+  version: "v1.78.0",
+  date: "2026-10-20",
+  title: "E:VAL : rang en direct, cartes de match et détail de match revus",
+  items: [
+    "Rang actuel en direct depuis les serveurs Riot, avec la place au classement : un Radiant sorti du top redevient Immortel 3 même sans rejouer (HenrikDev s'arrêtait à la dernière partie).",
+    "Profil : niveau affiché sous la bannière et place au classement (« Rang 838 ») ; tirer vers le bas rafraîchit aussi le rang Riot.",
+    "Cartes de match refaites : icône du mode, date relative, bandeau de la carte, buste de l'agent, gain ou perte de RR avec l'anneau du rang pour les parties classées.",
+    "Détail de match : la barre « Joueur ciblé » n'est plus trop haute, l'image de la carte s'affiche, rang de chaque joueur avec son icône.",
+    "Tableau des scores façon VALPAW : K/D en couleur, K/D/A, HS% et ACS sous chaque joueur, icône de groupe.",
+    "Missions : le texte des objectifs gère le pluriel (« Utilisez 200 compétences ») et ne déborde plus de l'écran.",
+    "Objectifs de saison : seuls les rangs au-dessus du rang actuel sont proposés.",
+    "Historique des achats : chargé automatiquement avec la session Riot, sans repasser par la page de connexion.",
+    "« Ajouter un compte » : toute la ligne est touchable. L'onglet Jeu se rafraîchit en tirant vers le bas.",
+  ],
+};
+
+const v12944_en: ChangelogEntry = {
+  version: "v1.78.0",
+  date: "2026-10-20",
+  title: "E:VAL: live rank, redesigned match cards and match details",
+  items: [
+    "Live current rank from Riot servers with leaderboard place: a Radiant who drops out of the top goes back to Immortal 3 even without playing (HenrikDev stopped at the last game).",
+    "Profile: level shown under the banner and leaderboard place (\"Rank 838\"); pull to refresh also refreshes the Riot rank.",
+    "Redesigned match cards: mode icon, relative date, map banner, agent bust, RR gain or loss with the rank ring for ranked games.",
+    "Match details: the \"Targeted player\" bar is no longer too high, the map image shows, each player's rank with its icon.",
+    "VALPAW-style scoreboard: colored K/D, K/D/A, HS% and ACS under each player, party icon.",
+    "Missions: objective text handles plurals and no longer overflows the screen.",
+    "Season goals: only ranks above the current rank are offered.",
+    "Purchase history: loaded automatically with the Riot session, without going through the sign-in page again.",
+    "\"Add account\": the whole row is tappable. The Game tab refreshes with pull to refresh.",
+  ],
+};
+
+const v12944_es: ChangelogEntry = {
+  version: "v1.78.0",
+  date: "2026-10-20",
+  title: "E:VAL: rango en directo, tarjetas y detalle de partida rediseñados",
+  items: [
+    "Rango actual en directo desde los servidores de Riot con el puesto en la clasificación: un Radiante que sale del top vuelve a Inmortal 3 aunque no juegue.",
+    "Perfil: nivel bajo el banner y puesto en la clasificación; deslizar hacia abajo también actualiza el rango de Riot.",
+    "Tarjetas de partida rediseñadas: icono del modo, fecha relativa, banner del mapa, busto del agente, RR ganado o perdido con el anillo del rango.",
+    "Detalle de partida: la barra «Jugador objetivo» ya no está demasiado alta, se ve la imagen del mapa y el rango de cada jugador.",
+    "Marcador estilo VALPAW: K/D en color, K/D/A, HS% y ACS bajo cada jugador, icono de grupo.",
+    "Misiones: el texto de los objetivos gestiona el plural y ya no desborda la pantalla.",
+    "Objetivos de temporada: solo se proponen rangos por encima del actual.",
+    "Historial de compras: se carga automáticamente con la sesión de Riot.",
+    "«Añadir cuenta»: toda la fila es pulsable. La pestaña Juego se actualiza deslizando hacia abajo.",
+  ],
+};
+
+const v12944_de: ChangelogEntry = {
+  version: "v1.78.0",
+  date: "2026-10-20",
+  title: "E:VAL: Live-Rang, neue Match-Karten und Matchdetails",
+  items: [
+    "Aktueller Rang live von den Riot-Servern mit Ranglistenplatz: Ein Radiant, der aus den Top fällt, wird auch ohne Spiel wieder Unsterblich 3.",
+    "Profil: Stufe unter dem Banner und Ranglistenplatz; Herunterziehen aktualisiert auch den Riot-Rang.",
+    "Neue Match-Karten: Modus-Symbol, relatives Datum, Karten-Banner, Agenten-Büste, RR-Gewinn oder -Verlust mit Rangring.",
+    "Matchdetails: Die Leiste „Ausgewählter Spieler“ sitzt nicht mehr zu hoch, das Kartenbild erscheint, Rang jedes Spielers mit Symbol.",
+    "Scoreboard im VALPAW-Stil: farbiges K/D, K/D/A, HS% und ACS unter jedem Spieler, Gruppensymbol.",
+    "Missionen: Zieltexte beachten den Plural und laufen nicht mehr über den Bildschirm.",
+    "Saisonziele: Nur Ränge über dem aktuellen Rang werden angeboten.",
+    "Kaufverlauf: wird automatisch mit der Riot-Sitzung geladen.",
+    "„Konto hinzufügen“: Die ganze Zeile ist antippbar. Der Tab Spiel lässt sich per Herunterziehen aktualisieren.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12944_fr);
+CHANGELOG_BY_LANG.en.unshift(v12944_en);
+CHANGELOG_BY_LANG.es.unshift(v12944_es);
+CHANGELOG_BY_LANG.de.unshift(v12944_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.78.0 - 2026-10-20
+
+**E:VAL : rang en direct, cartes de match et détail de match revus**
+
+- Rang actuel en direct depuis les serveurs Riot, avec la place au classement : un Radiant sorti du top redevient Immortel 3 même sans rejouer (HenrikDev s'arrêtait à la dernière partie).
+- Profil : niveau affiché sous la bannière et place au classement (« Rang 838 ») ; tirer vers le bas rafraîchit aussi le rang Riot.
+- Cartes de match refaites : icône du mode, date relative, bandeau de la carte, buste de l'agent, gain ou perte de RR avec l'anneau du rang pour les parties classées.
+- Détail de match : la barre « Joueur ciblé » n'est plus trop haute, l'image de la carte s'affiche, rang de chaque joueur avec son icône.
+- Tableau des scores façon VALPAW : K/D en couleur, K/D/A, HS% et ACS sous chaque joueur, icône de groupe.
+- Missions : le texte des objectifs gère le pluriel (« Utilisez 200 compétences ») et ne déborde plus de l'écran.
+- Objectifs de saison : seuls les rangs au-dessus du rang actuel sont proposés.
+- Historique des achats : chargé automatiquement avec la session Riot, sans repasser par la page de connexion.
+- « Ajouter un compte » : toute la ligne est touchable. L'onglet Jeu se rafraîchit en tirant vers le bas.
+
 ## v1.77.3 - 2026-10-20
 
 **E:VAL : thème clair et choix de plateforme**

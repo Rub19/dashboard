@@ -359,8 +359,6 @@ struct EvalProfileView: View {
     private var profileContent: some View {
         ScrollView {
             VStack(spacing: 16) {
-                topNavHeader
-
                 if let profile {
                     mainProfileCard(profile: profile)
                     if !store.matches.isEmpty {
@@ -384,6 +382,17 @@ struct EvalProfileView: View {
             .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            topNavHeader
+                .padding(.horizontal, 16)
+                .padding(.bottom, 10)
+                .background(alignment: .top) {
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .mask(LinearGradient(colors: [.black, .black, .black.opacity(0)], startPoint: .top, endPoint: .bottom))
+                        .ignoresSafeArea(edges: .top)
+                }
+        }
         .refreshable {
             if store.isConfigured {
                 await store.refresh()
@@ -403,18 +412,18 @@ struct EvalProfileView: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "desktopcomputer")
-                    .font(.system(size: 18, weight: .semibold))
+                Image(systemName: (EvalPlatform(rawValue: UserDefaults.standard.string(forKey: EvalPlatform.key) ?? "") ?? .pc).icon)
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(EvalAccent.color)
-                    .frame(width: 51, height: 51)
-                    .background(EvalColors.card, in: .circle)
+                    .frame(width: 52, height: 52)
+                    .glassEffect(.regular.interactive(), in: .circle)
             }
             .buttonStyle(.plain)
 
             Spacer()
 
             Text(profile?.handle.split(separator: "#").first.map(String.init) ?? (store.playerName.isEmpty ? "Profil" : store.playerName))
-                .font(.headline.weight(.bold))
+                .font(.system(size: 21, weight: .bold))
                 .foregroundStyle(EvalColors.text)
 
             Spacer()
@@ -430,9 +439,9 @@ struct EvalProfileView: View {
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(EvalColors.text)
                 }
-                .padding(.horizontal, 16)
-                .frame(height: 44)
-                .background(EvalColors.card, in: .capsule)
+                .padding(.horizontal, 20)
+                .frame(height: 52)
+                .glassEffect(.regular.interactive(), in: .capsule)
             }
             .buttonStyle(.plain)
         }
@@ -512,7 +521,7 @@ struct EvalProfileView: View {
                     AsyncImage(url: bannerURL) { phase in
                         switch phase {
                         case .success(let image):
-                            image.resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: 100).clipped()
+                            Color.clear.frame(maxWidth: .infinity).frame(height: 100).overlay { image.resizable().scaledToFill() }.clipped()
                         default:
                             championsGradientBanner
                         }
@@ -895,23 +904,27 @@ struct EvalProfileView: View {
             .padding(.vertical, 12)
 
             ZStack(alignment: .leading) {
-                AsyncImage(url: assets.maps[match.map.lowercased()] ?? assets.splashes[match.map.lowercased()]) { phase in
-                    if let image = phase.image {
-                        image.resizable().scaledToFill()
-                    } else {
-                        Color(hex: 0x1F222A)
+                Color(hex: 0x1F222A)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 86)
+                    .overlay {
+                        AsyncImage(url: assets.maps[match.map.lowercased()] ?? assets.splashes[match.map.lowercased()]) { $0.image?.resizable().scaledToFill() }
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 86)
-                .clipped()
+                    .clipped()
 
                 LinearGradient(colors: [Color.black.opacity(0.55), Color.black.opacity(0.05), Color.black.opacity(0.35)], startPoint: .leading, endPoint: .trailing)
 
                 HStack(spacing: 0) {
-                    if let bust = Self.bustURL(match.myPlayer?.agentIconURL) {
-                        AsyncImage(url: bust) { $0.image?.resizable().scaledToFill() }
-                            .frame(width: 112, height: 86, alignment: .leading)
+                    if let portrait = Self.portraitURL(match.myPlayer?.agentIconURL) {
+                        // Portrait détouré, cadré sur le visage : pas de bord coupé net sur la carte.
+                        Color.clear
+                            .frame(width: 128, height: 86)
+                            .overlay(alignment: .topLeading) {
+                                AsyncImage(url: portrait) { $0.image?.resizable().scaledToFit() }
+                                    // fullportrait 2048×1860 : tête vers 45-56 % en largeur, 12-25 % en hauteur.
+                                    .frame(width: 560, height: 509)
+                                    .offset(x: -214, y: -53)
+                            }
                             .clipped()
                     }
                     VStack(alignment: .leading, spacing: 6) {
@@ -1020,7 +1033,7 @@ struct EvalProfileView: View {
     private func mapSplashBanner(for mapName: String) -> some View {
         AsyncImage(url: ValorantAssets.shared.splashes[mapName.lowercased()]) { phase in
             if let img = phase.image {
-                img.resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: 82).clipped()
+                Color.clear.frame(maxWidth: .infinity).frame(height: 82).overlay { img.resizable().scaledToFill() }.clipped()
             } else {
                 Color(hex: 0x1F222A).frame(height: 82)
             }
@@ -1465,12 +1478,8 @@ struct EvalFeaturedBundleCard: View {
                 AsyncImage(url: URL(string: bundle.imageURL)) { phase in
                     switch phase {
                     case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.high)
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 180)
+                        Color.clear.frame(maxWidth: .infinity).frame(height: 180)
+                            .overlay { image.resizable().interpolation(.high).scaledToFill() }
                             .clipped()
                     default:
                         Color(hex: 0x161820).frame(height: 180)
@@ -1879,12 +1888,8 @@ struct EvalGameView: View {
                                 AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
                                     switch phase {
                                     case .success(let image):
-                                        image
-                                            .resizable()
-                                            .interpolation(.high)
-                                            .scaledToFill()
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 104)
+                                        Color.clear.frame(maxWidth: .infinity).frame(height: 104)
+                                            .overlay { image.resizable().interpolation(.high).scaledToFill() }
                                             .clipped()
                                     default:
                                         EvalColors.card.frame(height: 104)

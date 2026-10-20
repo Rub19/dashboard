@@ -946,6 +946,9 @@ final class ValorantStore {
         )
         equipmentBannerURL = card.isEmpty ? "" : "https://media.valorant-api.com/playercards/\(card)/wideart.png"
         applyLiveRank()
+        if equipmentTitle.isEmpty, let titleID = account.title, !titleID.isEmpty {
+            Task { if let text = await SkinCatalog.shared.title(titleID), equipmentTitle.isEmpty { equipmentTitle = text } }
+        }
     }
 
     func actName(_ seasonID: String) -> String { acts[seasonID.lowercased()]?.name ?? "" }

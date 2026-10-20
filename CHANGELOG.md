@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.78.1 - 2026-10-20
+
+**E:VAL : onglet Jeu stable, portraits et barre du profil**
+
+- Corrigé : l'onglet Jeu s'élargissait deux secondes après l'ouverture (bannière d'équipement et images de packs trop larges).
+- Cartes de match : le portrait de l'agent est détouré et cadré sur le visage, sans bord coupé net.
+- Profil : la barre du haut reste en place avec des boutons en verre liquide et un flou derrière quand on défile ; l'icône suit la plateforme choisie.
+- Le titre du joueur s'affiche en haut à droite du profil même avant la synchronisation Riot.
+
 ## v1.78.0 - 2026-10-20
 
 **E:VAL : rang en direct, cartes de match et détail de match revus**

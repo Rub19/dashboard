@@ -60060,4 +60060,56 @@ CHANGELOG_BY_LANG.en.unshift(v12944_en);
 CHANGELOG_BY_LANG.es.unshift(v12944_es);
 CHANGELOG_BY_LANG.de.unshift(v12944_de);
 
+const v12945_fr: ChangelogEntry = {
+  version: "v1.78.1",
+  date: "2026-10-20",
+  title: "E:VAL : onglet Jeu stable, portraits et barre du profil",
+  items: [
+    "Corrigé : l'onglet Jeu s'élargissait deux secondes après l'ouverture (bannière d'équipement et images de packs trop larges).",
+    "Cartes de match : le portrait de l'agent est détouré et cadré sur le visage, sans bord coupé net.",
+    "Profil : la barre du haut reste en place avec des boutons en verre liquide et un flou derrière quand on défile ; l'icône suit la plateforme choisie.",
+    "Le titre du joueur s'affiche en haut à droite du profil même avant la synchronisation Riot.",
+  ],
+};
+
+const v12945_en: ChangelogEntry = {
+  version: "v1.78.1",
+  date: "2026-10-20",
+  title: "E:VAL: stable Game tab, portraits and profile bar",
+  items: [
+    "Fixed: the Game tab widened two seconds after opening (equipment banner and bundle images too wide).",
+    "Match cards: the agent portrait is cut out and framed on the face, with no hard edge.",
+    "Profile: the top bar stays in place with liquid glass buttons and a blur behind while scrolling; the icon follows the chosen platform.",
+    "The player title shows at the top right of the profile even before the Riot sync.",
+  ],
+};
+
+const v12945_es: ChangelogEntry = {
+  version: "v1.78.1",
+  date: "2026-10-20",
+  title: "E:VAL: pestaña Juego estable, retratos y barra del perfil",
+  items: [
+    "Corregido: la pestaña Juego se ensanchaba dos segundos después de abrirse.",
+    "Tarjetas de partida: el retrato del agente está recortado y centrado en la cara, sin borde brusco.",
+    "Perfil: la barra superior se queda fija con botones de cristal líquido y desenfoque al desplazarse.",
+    "El título del jugador aparece arriba a la derecha del perfil incluso antes de sincronizar con Riot.",
+  ],
+};
+
+const v12945_de: ChangelogEntry = {
+  version: "v1.78.1",
+  date: "2026-10-20",
+  title: "E:VAL: stabiler Spiel-Tab, Porträts und Profilleiste",
+  items: [
+    "Behoben: Der Spiel-Tab wurde zwei Sekunden nach dem Öffnen breiter.",
+    "Match-Karten: Das Agentenporträt ist freigestellt und aufs Gesicht zugeschnitten, ohne harte Kante.",
+    "Profil: Die obere Leiste bleibt stehen, mit Liquid-Glass-Knöpfen und Unschärfe beim Scrollen.",
+    "Der Spielertitel erscheint oben rechts im Profil, auch vor der Riot-Synchronisierung.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12945_fr);
+CHANGELOG_BY_LANG.en.unshift(v12945_en);
+CHANGELOG_BY_LANG.es.unshift(v12945_es);
+CHANGELOG_BY_LANG.de.unshift(v12945_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

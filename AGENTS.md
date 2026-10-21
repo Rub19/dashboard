@@ -18,7 +18,7 @@
 - `innerHTML` n'est autorisé que dans les fichiers listés dans `APPROVED_INNER_HTML` de `scripts/audit-security.mjs`.
 - Les changelogs sont ajoutés en haut de `CHANGELOG.md`.
 - Style de commit : `Migration Next.js : description`.
-- Attribution : ne pas ajouter `Generated with [Devin]` ni `Co-Authored-By: Devin`. Utiliser le pseudo `Rub19` et l'email `rub19.mailpro@gmail.com` pour toute mention de co-auteur.
+- Attribution : aucune ligne de co-auteur IA (ni Devin, ni Claude, ni autre). Auteur unique `Rub19 <rub19.mailpro@gmail.com>`.
 - Auteur des commits : `git config user.name "Rub19"` et `git config user.email "rub19.mailpro@gmail.com"`.
 
 ## Versions
@@ -29,22 +29,4 @@
 - Aligner aussi `package-lock.json` (via `npm install --package-lock-only`) et le label `VERSION_LABEL` dans `components/UserProfileDropdown.tsx`.
 - Ajouter une entrée dans `ethone-next/data/changelog.ts` (in-app changelog, pour toutes les langues fr/en/es/de) et dans `CHANGELOG.md` à la racine.
 
-## Archive — État au 2026-08-23 (dépassé : l'état à jour et le « Reste à faire » sont dans `HANDOFF.md`)
-
-**Commit de référence :** `1cd5641c` (`main`, version `v1.8.12`)  
-**Statut CI/CD :** tout vert sur `main` (Cloudflare Pages, Workers, build web, iOS, Android).
-
-### Ce qui est en place
-- Fusion des branches `rub19-symmetrical-giggle` (sécurisée) et `devin/recovered-stash-2026-08-14` dans `main`.
-- Nettoyage des branches obsolètes locales et distantes.
-- Tests Web (`tsc`, `lint`, `build`, `test:unit`, `precommit-upload-check`, `audit-security`, `npx playwright test`) passent.
-- Lint warnings natifs nettoyés (0 warning / 0 erreur).
-- Tests Worker (`npm test`) passent (156/156) et Worker déployé sur `https://raspy-fog-bf5b.rub19-mailpro.workers.dev`.
-- Compilation iOS et Android validées par CI ; structures natives vérifiées.
-
-### Ce qu’il reste à traiter
-1. ~~Lint warnings~~ — nettoyés.
-2. ~~E2E Playwright~~ — 876/876 passent.
-3. ~~Branches restantes~~ — `feat/button-theme-dynamic-audit` et les branches locales fusionnées ont été supprimées.
-4. ~~Déploiement Worker~~ — déployé.
-5. **Tests locaux iOS/Android** : impossibles depuis Windows (`xcodebuild` / Gradle non présents) ; seuls les CI `build-ios.yml` et `build-android.yml` ont validé les builds.
+État à jour, règles et reste à faire : `HANDOFF.md`. Commandes et pièges : `HANDOFF-TUTORIAL.md`.

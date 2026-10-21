@@ -60236,4 +60236,53 @@ CHANGELOG_BY_LANG.en.unshift(v12947_en);
 CHANGELOG_BY_LANG.es.unshift(v12947_es);
 CHANGELOG_BY_LANG.de.unshift(v12947_de);
 
+const v1_78_4_fr: ChangelogEntry = {
+  version: "v1.78.4",
+  date: "2026-10-21",
+  title: "Documentation du dépôt remise à jour",
+  items: [
+    "Les documents dépassés (anciens audits de migration, rapport d'architecture IA, plan de fonctionnalités, notes de refonte, ancienne passation) sont supprimés.",
+    "La passation, le tutoriel de travail et le prompt de reprise décrivent l'état actuel (v1.78) : E:VAL sur iPhone, sécurité du serveur, commandes et vérifications.",
+    "Politique de sécurité et README du Worker réécrits ; la version du bot est de nouveau alignée sur celle du site.",
+  ],
+};
+
+const v1_78_4_en: ChangelogEntry = {
+  version: "v1.78.4",
+  date: "2026-10-21",
+  title: "Repository documentation refreshed",
+  items: [
+    "Outdated documents (old migration audits, AI architecture report, feature plan, redesign notes, old handoff) are removed.",
+    "The handoff, the working tutorial and the takeover prompt describe the current state (v1.78): E:VAL on iPhone, server security, commands and checks.",
+    "Security policy and Worker README rewritten; the bot version is aligned with the site again.",
+  ],
+};
+
+const v1_78_4_es: ChangelogEntry = {
+  version: "v1.78.4",
+  date: "2026-10-21",
+  title: "Documentación del repositorio actualizada",
+  items: [
+    "Se eliminan los documentos obsoletos (auditorías de migración antiguas, informe de arquitectura de IA, plan de funciones, notas de rediseño, traspaso antiguo).",
+    "El traspaso, el tutorial de trabajo y el prompt de relevo describen el estado actual (v1.78): E:VAL en iPhone, seguridad del servidor, comandos y verificaciones.",
+    "Política de seguridad y README del Worker reescritos; la versión del bot vuelve a coincidir con la del sitio.",
+  ],
+};
+
+const v1_78_4_de: ChangelogEntry = {
+  version: "v1.78.4",
+  date: "2026-10-21",
+  title: "Repository-Dokumentation aktualisiert",
+  items: [
+    "Veraltete Dokumente (alte Migrationsaudits, KI-Architekturbericht, Funktionsplan, Redesign-Notizen, alte Übergabe) wurden entfernt.",
+    "Übergabe, Arbeitsanleitung und Übernahme-Prompt beschreiben den aktuellen Stand (v1.78): E:VAL auf dem iPhone, Serversicherheit, Befehle und Prüfungen.",
+    "Sicherheitsrichtlinie und Worker-README neu geschrieben; die Bot-Version entspricht wieder der Website.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_78_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_78_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_78_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_78_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

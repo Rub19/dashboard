@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.78.4 — 2026-10-21
+
+**Documentation du dépôt remise à jour**
+
+- Les documents dépassés (anciens audits de migration, rapport d'architecture IA, plan de fonctionnalités, notes de refonte, ancienne passation) sont supprimés.
+- La passation, le tutoriel de travail et le prompt de reprise décrivent l'état actuel (v1.78) : E:VAL sur iPhone, sécurité du serveur, commandes et vérifications.
+- Politique de sécurité et README du Worker réécrits ; la version du bot est de nouveau alignée sur celle du site.
+
 ## v1.78.3 - 2026-10-20
 
 **Mail sélectionnable et sécurité renforcée**

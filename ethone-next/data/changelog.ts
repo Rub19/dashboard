@@ -60285,4 +60285,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_78_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_78_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_78_4_de);
 
+const v1_78_5_fr: ChangelogEntry = {
+  version: "v1.78.5",
+  date: "2026-10-21",
+  title: "Ancien dashboard du bot supprimé",
+  items: [
+    "L'ancien dashboard Vite du bot (jamais servi, remplacé par le site) et son Dockerfile sont supprimés : les 3 alertes de sécurité GitHub qui le concernaient (vite, dont une haute) disparaissent avec lui.",
+    "L'API du bot n'essaie plus de servir ce dashboard ; sa page d'accueil reste en ligne.",
+  ],
+};
+
+const v1_78_5_en: ChangelogEntry = {
+  version: "v1.78.5",
+  date: "2026-10-21",
+  title: "Old bot dashboard removed",
+  items: [
+    "The bot's old Vite dashboard (never served, replaced by the website) and its Dockerfile are removed: the 3 GitHub security alerts about it (vite, one high) go away with it.",
+    "The bot API no longer tries to serve that dashboard; its home page stays online.",
+  ],
+};
+
+const v1_78_5_es: ChangelogEntry = {
+  version: "v1.78.5",
+  date: "2026-10-21",
+  title: "Panel antiguo del bot eliminado",
+  items: [
+    "Se eliminan el antiguo panel Vite del bot (nunca servido, sustituido por el sitio) y su Dockerfile: desaparecen las 3 alertas de seguridad de GitHub que lo afectaban (vite, una alta).",
+    "La API del bot ya no intenta servir ese panel; su página de inicio sigue en línea.",
+  ],
+};
+
+const v1_78_5_de: ChangelogEntry = {
+  version: "v1.78.5",
+  date: "2026-10-21",
+  title: "Altes Bot-Dashboard entfernt",
+  items: [
+    "Das alte Vite-Dashboard des Bots (nie ausgeliefert, durch die Website ersetzt) und sein Dockerfile wurden entfernt: Die 3 GitHub-Sicherheitswarnungen dazu (vite, eine hoch) verschwinden damit.",
+    "Die Bot-API versucht dieses Dashboard nicht mehr auszuliefern; ihre Startseite bleibt online.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_78_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_78_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_78_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_78_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

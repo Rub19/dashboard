@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.78.5 — 2026-10-21
+
+**Ancien dashboard du bot supprimé**
+
+- L'ancien dashboard Vite du bot (jamais servi, remplacé par le site) et son Dockerfile sont supprimés : les 3 alertes de sécurité GitHub qui le concernaient (vite, dont une haute) disparaissent avec lui.
+- L'API du bot n'essaie plus de servir ce dashboard ; sa page d'accueil reste en ligne.
+
 ## v1.78.4 — 2026-10-21
 
 **Documentation du dépôt remise à jour**

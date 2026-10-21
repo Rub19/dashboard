@@ -565,31 +565,18 @@ export function startWebServer(client: Client): http.Server {
     });
   });
 
-  // Distribution du frontend React (Vite)
-  const webDistPath = path.resolve(process.cwd(), 'web', 'dist');
-  if (fs.existsSync(webDistPath)) {
-    app.use(express.static(webDistPath));
-
-    // Fallback Single Page Application pour React Router
-    app.get('*', (req: Request, res: Response) => {
-      res.sendFile(path.join(webDistPath, 'index.html'));
-    });
-    logger.info(`Frontend web servi depuis : ${webDistPath}`);
-  } else {
-    app.get('/', (req: Request, res: Response) => {
-      res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>ETHONE Discord Bot Dashboard</title></head>
-        <body style="font-family: sans-serif; background: #08090C; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh;">
-          <h1>🚀 ETHONE Discord Bot API</h1>
-          <p>Le backend de l'API est en ligne sur le port ${config.port}.</p>
-          <p>Pour lancer l'interface web en développement : <code>npm run dev:web</code></p>
-        </body>
-        </html>
-      `);
-    });
-  }
+  app.get('/', (req: Request, res: Response) => {
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>ETHONE Discord Bot Dashboard</title></head>
+      <body style="font-family: sans-serif; background: #08090C; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh;">
+        <h1>🚀 ETHONE Discord Bot API</h1>
+        <p>Le backend de l'API est en ligne sur le port ${config.port}.</p>
+      </body>
+      </html>
+    `);
+  });
 
   const server = app.listen(config.port, () => {
     logger.success(`Serveur API Bot en ligne sur le port ${config.port} (Dashboard : ${config.dashboardUrl})`);

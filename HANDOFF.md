@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-21, version 1.78.3)
+# ETHONE — passation (2026-10-21, version 1.78.5)
 
 État du projet, règles et reste à faire. Le « comment travailler » détaillé (commandes, pièges, vérifications) est dans `HANDOFF-TUTORIAL.md`.
 
@@ -46,7 +46,7 @@ Musique du bot : Lavalink tourne sur le NAS (`ssh nas`), relié au VPS par des t
 ### Sécurité (2026-10-21)
 - Pas de PHP dans le projet ni sur le serveur.
 - VPS : pare-feu ufw actif (seuls 22, 80, 443 ouverts), fail2ban sur SSH, mises à jour installées, redémarrage effectué. Cockpit (9090) et le bureau à distance (3389) ne sont plus joignables depuis Internet : passer par un tunnel SSH. Le bot redémarre seul au boot (`pm2-ubuntu`).
-- Workflows GitHub en lecture seule.
+- Workflows GitHub en lecture seule. Ancien dashboard Vite du bot (`discord-bot/web`) et son Dockerfile supprimés : 0 alerte Dependabot.
 
 ## Qualité au 2026-10-21
 
@@ -61,4 +61,3 @@ Musique du bot : Lavalink tourne sur le NAS (`ssh nas`), relié au VPS par des t
 3. **Supabase** : activer la protection contre les mots de passe divulgués (tableau de bord, Auth → Password security) ; l'utilisateur doit le faire.
 4. **Commentaires** : du code Swift/TypeScript récent contient des commentaires, contraire à la règle zéro commentaire ; à retirer au fil des modifications.
 5. **Pages Documentation du bot** (`/docs`, `/documentation`, `components/docs/DocumentationView.tsx`) : à recouper avec les vraies commandes du bot avant toute refonte.
-6. **Ancien dashboard Vite `discord-bot/web`** : jamais servi ; à supprimer avec le bloc `webDistPath` de `discord-bot/src/server/index.ts`.

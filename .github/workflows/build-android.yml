@@ -13,6 +13,10 @@ on:
       - '.github/workflows/build-android.yml'
   workflow_dispatch:
 
+# Lecture seule : le build produit un artefact, il n'écrit rien dans le dépôt.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Android APK

@@ -60184,4 +60184,56 @@ CHANGELOG_BY_LANG.en.unshift(v12946_en);
 CHANGELOG_BY_LANG.es.unshift(v12946_es);
 CHANGELOG_BY_LANG.de.unshift(v12946_de);
 
+const v12947_fr: ChangelogEntry = {
+  version: "v1.78.3",
+  date: "2026-10-20",
+  title: "Mail sélectionnable et sécurité renforcée",
+  items: [
+    "Mail : le contenu des messages, l'objet et l'expéditeur se sélectionnent et se copient de nouveau (toute la page était bloquée en non sélectionnable).",
+    "Serveur du bot : pare-feu activé (seuls SSH, HTTP et HTTPS restent ouverts), fail2ban contre les attaques SSH par mot de passe, mises à jour de sécurité installées.",
+    "Le port interne du bot n'est plus joignable directement : tout passe par HTTPS via bot.ethone.dev.",
+    "Le build Android de GitHub n'a plus que des droits en lecture sur le dépôt.",
+  ],
+};
+
+const v12947_en: ChangelogEntry = {
+  version: "v1.78.3",
+  date: "2026-10-20",
+  title: "Selectable mail and tighter security",
+  items: [
+    "Mail: message content, subject and sender can be selected and copied again (the whole page was blocked as non-selectable).",
+    "Bot server: firewall enabled (only SSH, HTTP and HTTPS stay open), fail2ban against SSH password attacks, security updates installed.",
+    "The bot's internal port is no longer reachable directly: everything goes through HTTPS via bot.ethone.dev.",
+    "The GitHub Android build now only has read access to the repository.",
+  ],
+};
+
+const v12947_es: ChangelogEntry = {
+  version: "v1.78.3",
+  date: "2026-10-20",
+  title: "Correo seleccionable y seguridad reforzada",
+  items: [
+    "Correo: el contenido de los mensajes, el asunto y el remitente se pueden seleccionar y copiar de nuevo.",
+    "Servidor del bot: cortafuegos activado (solo SSH, HTTP y HTTPS abiertos), fail2ban contra ataques SSH, actualizaciones de seguridad instaladas.",
+    "El puerto interno del bot ya no es accesible directamente: todo pasa por HTTPS vía bot.ethone.dev.",
+    "La compilación Android de GitHub solo tiene acceso de lectura al repositorio.",
+  ],
+};
+
+const v12947_de: ChangelogEntry = {
+  version: "v1.78.3",
+  date: "2026-10-20",
+  title: "Auswählbare Mails und mehr Sicherheit",
+  items: [
+    "Mail: Nachrichteninhalt, Betreff und Absender lassen sich wieder markieren und kopieren.",
+    "Bot-Server: Firewall aktiviert (nur SSH, HTTP und HTTPS offen), fail2ban gegen SSH-Passwortangriffe, Sicherheitsupdates installiert.",
+    "Der interne Bot-Port ist nicht mehr direkt erreichbar: alles läuft über HTTPS via bot.ethone.dev.",
+    "Der GitHub-Android-Build hat nur noch Lesezugriff auf das Repository.",
+  ],
+};
+CHANGELOG_BY_LANG.fr.unshift(v12947_fr);
+CHANGELOG_BY_LANG.en.unshift(v12947_en);
+CHANGELOG_BY_LANG.es.unshift(v12947_es);
+CHANGELOG_BY_LANG.de.unshift(v12947_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

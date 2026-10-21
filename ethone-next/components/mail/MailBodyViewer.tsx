@@ -290,6 +290,8 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
       word-break: break-word;
       overflow-wrap: break-word;
       min-height: 100%;
+      -webkit-user-select: text;
+      user-select: text;
     }
     *, *:before, *:after {
       box-sizing: inherit;
@@ -458,7 +460,7 @@ export default function MailBodyViewer({ msg }: { msg: MailMessage }) {
           />
         </div>
       ) : (
-        <div className="p-5 text-[var(--text-primary)] flex-1 min-h-0 overflow-y-auto os-scroll">
+        <div className="p-5 text-[var(--text-primary)] flex-1 min-h-0 overflow-y-auto os-scroll select-text">
           <PlainTextContent text={rawText || "Message vide"} />
         </div>
       )}

@@ -569,7 +569,7 @@ export default function MailPage() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full gap-2.5 overflow-hidden p-2 pb-[calc(2.5rem+0.75rem+env(safe-area-inset-bottom))] select-none">
+    <div className="flex h-full min-h-0 w-full gap-2.5 overflow-hidden p-2 pb-[calc(2.5rem+0.75rem+env(safe-area-inset-bottom))]">
       <div className={cn("hidden h-full", isMaximized ? "lg:hidden" : "lg:flex")}>
         <MailSidebar
           active={folder as MailFolder}

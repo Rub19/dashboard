@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.78.3 - 2026-10-20
+
+**Mail sélectionnable et sécurité renforcée**
+
+- Mail : le contenu des messages, l'objet et l'expéditeur se sélectionnent et se copient de nouveau (toute la page était bloquée en non sélectionnable).
+- Serveur du bot : pare-feu activé (seuls SSH, HTTP et HTTPS restent ouverts), fail2ban contre les attaques SSH par mot de passe, mises à jour de sécurité installées.
+- Le port interne du bot n'est plus joignable directement : tout passe par HTTPS via bot.ethone.dev.
+- Le build Android de GitHub n'a plus que des droits en lecture sur le dépôt.
+
 ## v1.78.2 - 2026-10-20
 
 **Site : avertissements du build corrigés**

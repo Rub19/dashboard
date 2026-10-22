@@ -9,6 +9,12 @@ import WebKit
 // API non officielle : Riot peut la modifier ou la bloquer à tout moment.
 
 enum RiotAuthURL {
+    static var safariUserAgent: String {
+        let version = UIDevice.current.systemVersion
+        let underscored = version.replacingOccurrences(of: ".", with: "_")
+        return "Mozilla/5.0 (iPhone; CPU iPhone OS \(underscored) like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/\(version) Mobile/15E148 Safari/604.1"
+    }
+
     static let authorize = URL(string: "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid")!
 
     /// Jetons contenus dans le fragment de la redirection vers playvalorant.com/opt_in.
@@ -36,6 +42,7 @@ struct RiotLoginView: UIViewRepresentable {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default()
         let view = WKWebView(frame: .zero, configuration: config)
+        view.customUserAgent = RiotAuthURL.safariUserAgent
         view.navigationDelegate = context.coordinator
         if fresh || UserDefaults.standard.bool(forKey: "eval.clearWebLoginOnOpen") {
             Task { @MainActor in
@@ -88,6 +95,7 @@ private final class RiotSilentAuth: NSObject, WKNavigationDelegate {
             let config = WKWebViewConfiguration()
             config.websiteDataStore = .default()
             let view = WKWebView(frame: .zero, configuration: config)
+            view.customUserAgent = RiotAuthURL.safariUserAgent
             view.navigationDelegate = self
             webView = view
             view.load(URLRequest(url: RiotAuthURL.authorize))

@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.81.1 — 2026-10-23
+
+**E:VAL iOS : connexion Riot et historique des pseudos**
+
+- La page de connexion Riot se présente comme Safari : elle ne s'arrête plus sur « Oups ! Un problème est survenu »
+- Historique des pseudos : E:VAL mémorise les pseudos de vos amis Riot et affiche chaque changement à partir de maintenant
+
 ## v1.81.0 — 2026-10-23
 
 **E:VAL iOS : boutique, favoris, apparences et titres comme VALPAW**

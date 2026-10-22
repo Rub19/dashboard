@@ -109,6 +109,7 @@ struct RiotPurchaseCaptureView: UIViewRepresentable {
         config.userContentController.addUserScript(WKUserScript(source: hook, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         config.userContentController.add(context.coordinator, name: "purchases")
         let view = WKWebView(frame: .zero, configuration: config)
+        view.customUserAgent = RiotAuthURL.safariUserAgent
         view.load(URLRequest(url: Self.page))
         return view
     }

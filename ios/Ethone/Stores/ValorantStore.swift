@@ -1195,10 +1195,38 @@ final class ValorantStore {
         guard riot.isLinked else { return }
         await chat.connect(riot)
         rebuildFriends()
+        await logRiotFriendNames()
     }
 
     func chatChanged() {
         rebuildFriends()
+    }
+
+    private struct RiotNameEntry: Codable {
+        let puuid: String
+        let name: String
+        let tag: String
+        let seenAt: Date
+    }
+
+    private var riotNameLog: [RiotNameEntry] = []
+
+    private func logRiotFriendNames() async {
+        guard let cache = personalCache, !chat.friends.isEmpty else { return }
+        if riotNameLog.isEmpty, let r = await cache.read("riot_name_log", ttl: .infinity) {
+            riotNameLog = ValorantPersonalCache.decode([RiotNameEntry].self, from: r.payload) ?? []
+        }
+        var latest: [String: RiotNameEntry] = [:]
+        for entry in riotNameLog where (latest[entry.puuid]?.seenAt ?? .distantPast) <= entry.seenAt { latest[entry.puuid] = entry }
+        var changed = false
+        for friend in chat.friends {
+            if let last = latest[friend.id], last.name == friend.name, last.tag == friend.tag { continue }
+            riotNameLog.append(RiotNameEntry(puuid: friend.id, name: friend.name, tag: friend.tag, seenAt: Date()))
+            changed = true
+        }
+        guard changed else { return }
+        if let payload = ValorantPersonalCache.encode(riotNameLog) { await cache.save(payload, key: "riot_name_log") }
+        await refreshNameChanges()
     }
 
     private func rebuildFriends() {
@@ -1257,15 +1285,19 @@ final class ValorantStore {
 
     func refreshNameChanges() async {
         let ids = friendRecords.map(\.puuid)
-        guard !ids.isEmpty else { nameChanges = []; return }
-        guard let rows: [NameRow] = try? await api.list("ethone_valorant_name_history", query: [
+        var rows: [NameRow] = []
+        if !ids.isEmpty, let remote: [NameRow] = try? await api.list("ethone_valorant_name_history", query: [
             URLQueryItem(name: "puuid", value: "in.(\(ids.joined(separator: ",")))"),
             URLQueryItem(name: "order", value: "first_seen_at.desc")
-        ]) else { return }
+        ]) { rows = remote }
+        let iso = ISO8601DateFormatter()
+        rows += riotNameLog.map { NameRow(puuid: $0.puuid, name: $0.name, tag: $0.tag, first_seen_at: iso.string(from: $0.seenAt)) }
+        rows.sort { $0.first_seen_at > $1.first_seen_at }
+        guard !rows.isEmpty else { nameChanges = []; return }
         var changes: [ValorantNameChange] = []
         for (puuid, history) in Dictionary(grouping: rows, by: \.puuid) {
             // history est trié du plus récent au plus ancien : chaque paire = un changement.
-            for (current, previous) in zip(history, history.dropFirst()) {
+            for (current, previous) in zip(history, history.dropFirst()) where current.name != previous.name || current.tag != previous.tag {
                 changes.append(ValorantNameChange(
                     id: "\(puuid)|\(current.name)#\(current.tag)",
                     currentName: current.name, currentTag: current.tag,
@@ -1274,8 +1306,9 @@ final class ValorantStore {
                 ))
             }
         }
-        let order = Dictionary(uniqueKeysWithValues: rows.map { ("\($0.puuid)|\($0.name)#\($0.tag)", $0.first_seen_at) })
-        nameChanges = changes.sorted { (order[$0.id] ?? "") > (order[$1.id] ?? "") }
+        let order = Dictionary(rows.map { ("\($0.puuid)|\($0.name)#\($0.tag)", $0.first_seen_at) }, uniquingKeysWith: { max($0, $1) })
+        var seenIDs = Set<String>()
+        nameChanges = changes.filter { seenIDs.insert($0.id).inserted }.sorted { (order[$0.id] ?? "") > (order[$1.id] ?? "") }
     }
 
     static func relativeText(_ date: Date?) -> String {

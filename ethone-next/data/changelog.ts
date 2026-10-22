@@ -60693,4 +60693,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_81_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_81_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_81_0_de);
 
+const v1_81_1_fr: ChangelogEntry = {
+  version: "v1.81.1",
+  date: "2026-10-23",
+  title: "E:VAL iOS : connexion Riot et historique des pseudos",
+  items: [
+    "La page de connexion Riot se présente comme Safari : elle ne s'arrête plus sur « Oups ! Un problème est survenu »",
+    "Historique des pseudos : E:VAL mémorise les pseudos de vos amis Riot et affiche chaque changement à partir de maintenant",
+  ],
+};
+
+const v1_81_1_en: ChangelogEntry = {
+  version: "v1.81.1",
+  date: "2026-10-23",
+  title: "E:VAL iOS: Riot sign-in and name history",
+  items: [
+    "The Riot sign-in page identifies as Safari and no longer stops on \"Oops! Something went wrong\"",
+    "Name history: E:VAL remembers your Riot friends' names and shows every change from now on",
+  ],
+};
+
+const v1_81_1_es: ChangelogEntry = {
+  version: "v1.81.1",
+  date: "2026-10-23",
+  title: "E:VAL iOS: inicio de sesión de Riot e historial de nombres",
+  items: [
+    "La página de inicio de sesión de Riot se identifica como Safari y ya no se queda en «¡Vaya! Algo salió mal»",
+    "Historial de nombres: E:VAL recuerda los nombres de tus amigos de Riot y muestra cada cambio a partir de ahora",
+  ],
+};
+
+const v1_81_1_de: ChangelogEntry = {
+  version: "v1.81.1",
+  date: "2026-10-23",
+  title: "E:VAL iOS: Riot-Anmeldung und Namensverlauf",
+  items: [
+    "Die Riot-Anmeldeseite gibt sich als Safari aus und bleibt nicht mehr bei „Hoppla! Ein Problem ist aufgetreten“ hängen",
+    "Namensverlauf: E:VAL merkt sich die Namen deiner Riot-Freunde und zeigt ab jetzt jede Änderung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_81_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_81_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_81_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_81_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

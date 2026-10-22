@@ -2,49 +2,13 @@ import { SITE_LANGS, commandTranslations, type SiteLang } from '../../services/c
 import { Client } from 'discord.js';
 import express, { Request, Response } from 'express';
 import { commandRegistry } from '../../handlers/commandHandler.js';
+import { HIDDEN_COMMANDS, familyOf } from '../../services/publicCommandCatalog.js';
 import { levelingStorage } from '../../modules/leveling/storage/levelingStorage.js';
 
 /**
  * Données publiques pour la page vitrine du bot (aucune authentification, lecture seule, aucune donnée de serveur :
  * uniquement deux compteurs globaux et la liste des commandes slash réellement enregistrées).
  */
-
-/** Commandes réservées au propriétaire du bot : jamais listées publiquement. */
-const HIDDEN_COMMANDS = new Set(['godmode', 'rescue']);
-
-/** Regroupe les catégories historiques (casse et langue variables selon les modules) en familles lisibles. */
-const CATEGORY_MAP: Record<string, string> = {
-  musique: 'Musique',
-  music: 'Musique',
-  spotify: 'Spotify',
-  lastfm: 'Last.fm',
-  fun: 'Fun',
-  modération: 'Modération',
-  moderation: 'Modération',
-  sécurité: 'Sécurité',
-  security: 'Sécurité',
-  économie: 'Économie',
-  economy: 'Économie',
-  leveling: 'Communauté',
-  communauté: 'Communauté',
-  community: 'Communauté',
-  administration: 'Administration',
-  serveur: 'Administration',
-  server: 'Administration',
-  management: 'Administration',
-  général: 'Général',
-  general: 'Général',
-  core: 'Général',
-  utilitaires: 'Utilitaires',
-  utility: 'Utilitaires',
-  support: 'Utilitaires',
-  voice: 'Vocal',
-  vocal: 'Vocal',
-};
-
-function familyOf(category: string | undefined): string {
-  return CATEGORY_MAP[String(category ?? '').trim().toLowerCase()] ?? 'Autres';
-}
 
 interface PublicCommand {
   name: string;

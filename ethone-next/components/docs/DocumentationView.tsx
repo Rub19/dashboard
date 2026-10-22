@@ -8,6 +8,7 @@ import {
   PRACTICAL_SECURITY_GUIDES,
   MODULE_CATEGORIES,
   DOC_COMMANDS,
+  DOC_COMMAND_CATEGORIES,
   type DocGuide,
   type DocModule,
 } from "@/data/documentationData";
@@ -100,16 +101,7 @@ function MenuIcon({ className = "" }: { className?: string }) {
   );
 }
 
-const COMMAND_CATEGORIES = [
-  "Toutes",
-  "Sécurité",
-  "Modération",
-  "Configuration",
-  "Musique",
-  "Spotify",
-  "Utilitaires",
-  "Fun",
-] as const;
+const SUPPORT_URL = "https://discord.gg/WvEcyBuP45";
 
 export default function DocumentationView() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -149,7 +141,7 @@ export default function DocumentationView() {
         m.name.toLowerCase().includes(q) ||
         m.description.toLowerCase().includes(q) ||
         m.categoryLabel.toLowerCase().includes(q) ||
-        m.commandSnippet.toLowerCase().includes(q)
+        m.behaviour.toLowerCase().includes(q)
     );
 
     const matchedCommands = DOC_COMMANDS.filter(
@@ -157,7 +149,8 @@ export default function DocumentationView() {
         cmd.name.toLowerCase().includes(q) ||
         cmd.syntax.toLowerCase().includes(q) ||
         cmd.description.toLowerCase().includes(q) ||
-        cmd.category.toLowerCase().includes(q)
+        cmd.category.toLowerCase().includes(q) ||
+        cmd.subcommands.some((s) => s.syntax.toLowerCase().includes(q) || s.description.toLowerCase().includes(q))
     );
 
     return {
@@ -597,7 +590,7 @@ export default function DocumentationView() {
               </h1>
 
               <p className="mt-3 text-sm leading-relaxed text-zinc-400 sm:text-base">
-                Tout ce qu&apos;il faut savoir pour protéger votre serveur Discord : démarrer en deux minutes, comprendre chaque module avec sa configuration optimale, et retrouver toutes les commandes.
+                Tout ce qu&apos;il faut savoir pour protéger ton serveur Discord : démarrer, comprendre chaque protection et son réglage par défaut, et retrouver toutes les commandes du bot.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -630,7 +623,7 @@ export default function DocumentationView() {
                   Guides pas à pas
                 </h2>
                 <p className="mt-1 text-xs text-zinc-400">
-                  Les étapes clés pour installer et maîtriser la protection de votre serveur.
+                  Les étapes clés pour installer Etho et régler la protection de ton serveur.
                 </p>
               </div>
               <span className="text-xs font-medium text-zinc-500">
@@ -724,7 +717,7 @@ export default function DocumentationView() {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-1.5 pt-1">
-                {COMMAND_CATEGORIES.map((cat) => {
+                {DOC_COMMAND_CATEGORIES.map((cat) => {
                   const isActive = selectedCommandCategory === cat;
                   return (
                     <button
@@ -758,9 +751,9 @@ export default function DocumentationView() {
                           {cmd.category}
                         </span>
                       </div>
-                      {cmd.permissions && (
+                      {cmd.permissions.length > 0 && (
                         <span className="rounded border border-[#1f2d24] bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
-                          {cmd.permissions}
+                          {cmd.permissions.join(", ")}
                         </span>
                       )}
                     </div>
@@ -787,7 +780,7 @@ export default function DocumentationView() {
                       </button>
                     </div>
 
-                    {cmd.subcommands && cmd.subcommands.length > 0 && (
+                    {cmd.subcommands.length > 0 && (
                       <div className="mt-2.5 pt-2 border-t border-[#18231c]/60">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">
                           Sous-commandes
@@ -795,8 +788,8 @@ export default function DocumentationView() {
                         <div className="space-y-1">
                           {cmd.subcommands.map((sub) => (
                             <div key={sub.name} className="flex items-start justify-between gap-2 text-[11px]">
-                              <code className="font-mono text-zinc-300 shrink-0">.{sub.name}</code>
-                              <span className="text-zinc-500 truncate text-right">{sub.description}</span>
+                              <code className="font-mono text-zinc-300 shrink-0">{sub.syntax}</code>
+                              <span className="text-zinc-500 text-right">{sub.description}</span>
                             </div>
                           ))}
                         </div>
@@ -814,7 +807,7 @@ export default function DocumentationView() {
                 Les modules par catégorie
               </h2>
               <p className="mt-1 text-xs text-zinc-400">
-                Retrouvez chaque module de protection avec sa description et ses paramètres recommandés.
+                Chaque protection avec ce qu&apos;elle fait par défaut et ce qu&apos;Etho répare après une attaque.
               </p>
             </div>
 
@@ -853,14 +846,14 @@ export default function DocumentationView() {
 
           <div className="mt-16 mb-8 flex flex-col gap-4 border-t border-[#18231c] pt-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-semibold text-white text-base">Prêt à protéger votre serveur ?</p>
+              <p className="font-semibold text-white text-base">Prêt à protéger ton serveur ?</p>
               <a
-                href="https://discord.gg"
+                href={SUPPORT_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-1 inline-block text-xs text-zinc-400 underline underline-offset-4 hover:text-white transition-colors"
               >
-                Besoin d&apos;aide ? Rejoignez notre serveur de support Discord.
+                Besoin d&apos;aide ? Rejoins le serveur de support Discord.
               </a>
             </div>
             <Link
@@ -1021,20 +1014,32 @@ export default function DocumentationView() {
                 </button>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl border border-[#18231c] bg-[#111914]/50 p-3">
-                  <div className="text-zinc-500 text-[11px]">Action par défaut</div>
-                  <div className="mt-1 font-semibold text-zinc-200">{selectedModule.defaultAction}</div>
-                </div>
-                <div className="rounded-xl border border-[#18231c] bg-[#111914]/50 p-3">
-                  <div className="text-zinc-500 text-[11px]">Temps de réaction</div>
-                  <div className="mt-1 font-semibold text-emerald-400">{selectedModule.reactionTime}</div>
-                </div>
-              </div>
-
               <p className="mt-4 text-xs leading-relaxed text-zinc-300">
                 {selectedModule.description}
               </p>
+
+              <div className="mt-4 rounded-xl border border-[#18231c] bg-[#111914]/50 p-3 text-xs">
+                <div className="text-zinc-500 text-[11px]">Par défaut</div>
+                <div className="mt-1 font-semibold text-zinc-200">{selectedModule.behaviour}</div>
+              </div>
+
+              {selectedModule.aftermath && (
+                <div className="mt-3 rounded-xl border border-[#18231c] bg-[#111914]/50 p-3 text-xs">
+                  <div className="text-zinc-500 text-[11px]">Ce qu&apos;Etho répare</div>
+                  <div className="mt-1 font-semibold text-emerald-400">{selectedModule.aftermath}</div>
+                </div>
+              )}
+
+              {(selectedModule.recommended || selectedModule.lockdownAdvised) && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {selectedModule.recommended && (
+                    <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400">Activée dans la base recommandée</span>
+                  )}
+                  {selectedModule.lockdownAdvised && (
+                    <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300">Verrouillage du serveur conseillé</span>
+                  )}
+                </div>
+              )}
 
               <div className="mt-4 rounded-xl border border-[#1c2820] bg-black/60 p-3">
                 <div className="flex items-center justify-between text-xs text-zinc-400 mb-1.5">
@@ -1064,22 +1069,6 @@ export default function DocumentationView() {
                   {selectedModule.commandSnippet}
                 </code>
               </div>
-
-              {selectedModule.details.length > 0 && (
-                <div className="mt-4">
-                  <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">
-                    Points clés
-                  </div>
-                  <ul className="space-y-1.5 text-xs text-zinc-400">
-                    {selectedModule.details.map((d, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
-                        <span>{d}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
 
               <div className="mt-6 flex justify-end">
                 <button

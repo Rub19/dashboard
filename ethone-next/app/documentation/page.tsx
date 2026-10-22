@@ -3,11 +3,11 @@ import DocumentationView from "@/components/docs/DocumentationView";
 export const metadata = {
   title: "Documentation — Etho",
   description:
-    "Guides pas à pas, scénarios de crise anti-raid et référence complète des modules de sécurité pour votre serveur Discord.",
+    "Guides pas à pas, scénarios de crise anti-raid et référence complète des modules de sécurité pour ton serveur Discord.",
   openGraph: {
     title: "Documentation — Etho",
     description:
-      "Guides pas à pas, scénarios de crise anti-raid et référence complète des modules de sécurité pour votre serveur Discord.",
+      "Guides pas à pas, scénarios de crise anti-raid et référence complète des modules de sécurité pour ton serveur Discord.",
   },
 };
 

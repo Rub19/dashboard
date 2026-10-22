@@ -1,0 +1,2326 @@
+{
+  "commands": [
+    {
+      "name": "ai-setup",
+      "syntax": "/ai-setup [salon] [humeur] [images] [mots_bannis] [desactiver_salon]",
+      "category": "Administration",
+      "description": "Configuration du salon IA public, humeur du Thon et sécurité",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "bienvenue",
+      "syntax": "/bienvenue <carte|apercu|test|salon|message>",
+      "category": "Administration",
+      "description": "Message et carte de bienvenue",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "carte",
+          "syntax": "/bienvenue carte [welcome|goodbye] [default|modern|minimal|gaming] [couleur] [poppins|bebas|serif|mono] [circle|rounded|square] [titre] [nom] [ligne] [fond] [voile] [fond_couleur] [texte_couleur] [nom_serveur] [active] [mp]",
+          "description": "Personnalise la carte image envoyée à chaque arrivée ou départ (affiche un aperçu)"
+        },
+        {
+          "name": "apercu",
+          "syntax": "/bienvenue apercu [welcome|goodbye]",
+          "description": "Montre ta carte telle qu’elle sera envoyée"
+        },
+        {
+          "name": "test",
+          "syntax": "/bienvenue test [welcome|goodbye]",
+          "description": "Envoie un vrai message de test dans le salon configuré"
+        },
+        {
+          "name": "salon",
+          "syntax": "/bienvenue salon <salon> [actif] [welcome|goodbye]",
+          "description": "Choisit le salon de bienvenue ou de départ et active / désactive le message"
+        },
+        {
+          "name": "message",
+          "syntax": "/bienvenue message [welcome|goodbye] [titre] [texte] [couleur]",
+          "description": "Titre et texte de l'embed de bienvenue ou de départ (variables : {user} {server} {membercount}…)"
+        }
+      ]
+    },
+    {
+      "name": "language",
+      "syntax": "/language [fr|en|es|de]",
+      "category": "Administration",
+      "description": "Change ou consulte la langue officielle du bot sur ce serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "logs",
+      "syntax": "/logs <setup|channel|route|verbosite|retention|status|disable>",
+      "category": "Administration",
+      "description": "Configure les journaux du serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "setup",
+          "syntax": "/logs setup",
+          "description": "Ouvre le panneau de configuration guidé (salons, catégories, rétention)"
+        },
+        {
+          "name": "channel",
+          "syntax": "/logs channel <salon>",
+          "description": "Envoie TOUS les logs dans un seul salon (mise en route rapide)"
+        },
+        {
+          "name": "route",
+          "syntax": "/logs route <categorie> [salon]",
+          "description": "Envoie une catégorie de logs dans son propre salon"
+        },
+        {
+          "name": "verbosite",
+          "syntax": "/logs verbosite <categorie> <ALL|IMPORTANT|CRITICAL_ONLY|OFF>",
+          "description": "Règle le niveau de détail d'une catégorie"
+        },
+        {
+          "name": "retention",
+          "syntax": "/logs retention <duree>",
+          "description": "Durée de conservation de l'historique des logs"
+        },
+        {
+          "name": "status",
+          "syntax": "/logs status",
+          "description": "Affiche la configuration actuelle des logs"
+        },
+        {
+          "name": "disable",
+          "syntax": "/logs disable",
+          "description": "Désactive les journaux (la config est conservée)"
+        }
+      ]
+    },
+    {
+      "name": "module",
+      "syntax": "/module [nom] [activer]",
+      "category": "Administration",
+      "description": "Active ou désactive un module du bot sur ce serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "permissions",
+      "syntax": "/permissions [PRESET_STRICT|PRESET_BALANCED|PRESET_COMMUNITY]",
+      "category": "Administration",
+      "description": "Configuration des rôles et permissions avec détection auto et présets",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "prefix",
+      "syntax": "/prefix [nouveau]",
+      "category": "Administration",
+      "description": "Affiche ou modifie le préfixe des commandes pour ce serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "previewmessages",
+      "syntax": "/previewmessages [categorie]",
+      "category": "Administration",
+      "description": "Reçois en message privé un exemple de tous les messages du bot",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "settings",
+      "syntax": "/settings",
+      "category": "Administration",
+      "description": "Panneau de configuration et personnalisation du bot pour ce serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "setup",
+      "syntax": "/setup [modules|welcome]",
+      "category": "Administration",
+      "description": "Ouvre la configuration rapide : choisissez les modules à activer sur ce serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "status",
+      "syntax": "/status [etat] [activite] [texte] [url] [ligne2]",
+      "category": "Administration",
+      "description": "Affiche ou modifie le statut Discord global du bot (réservé au Bot Owner)",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "xp",
+      "syntax": "/xp <add|remove|set|reset|carte>",
+      "category": "Administration",
+      "description": "Gère l’XP et les niveaux d’un membre (Admin).",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "add",
+          "syntax": "/xp add <membre> <montant>",
+          "description": "Ajoute de l’XP à un membre"
+        },
+        {
+          "name": "remove",
+          "syntax": "/xp remove <membre> <montant>",
+          "description": "Retire de l’XP à un membre"
+        },
+        {
+          "name": "set",
+          "syntax": "/xp set <membre> <montant>",
+          "description": "Définit l’XP total d’un membre"
+        },
+        {
+          "name": "reset",
+          "syntax": "/xp reset <membre>",
+          "description": "Réinitialise l’XP et le niveau d’un membre"
+        },
+        {
+          "name": "carte",
+          "syntax": "/xp carte [couleur] [fond_couleur] [texte_couleur] [fond] [voile] [poppins|bebas|serif|mono] [circle|rounded|square] [reinitialiser]",
+          "description": "Personnalise la carte /rank du serveur (affiche un aperçu)"
+        }
+      ]
+    },
+    {
+      "name": "counting",
+      "syntax": "/counting <status|setup|reset>",
+      "category": "Communauté",
+      "description": "Jeu de comptage : état du compteur, salon et remise à zéro",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "status",
+          "syntax": "/counting status",
+          "description": "Affiche le nombre actuel, le record et le classement"
+        },
+        {
+          "name": "setup",
+          "syntax": "/counting setup <salon>",
+          "description": "Choisit le salon de comptage et active le jeu (Gérer le serveur)"
+        },
+        {
+          "name": "reset",
+          "syntax": "/counting reset",
+          "description": "Remet le compteur à zéro (Gérer le serveur)"
+        }
+      ]
+    },
+    {
+      "name": "event",
+      "syntax": "/event <list|info|rsvp|checkin|post>",
+      "category": "Communauté",
+      "description": "Gérer et consulter les événements du serveur (Events 2.0)",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "list",
+          "syntax": "/event list",
+          "description": "Afficher la liste des événements à venir sur le serveur"
+        },
+        {
+          "name": "info",
+          "syntax": "/event info <event_id>",
+          "description": "Afficher les détails et le statut d'un événement"
+        },
+        {
+          "name": "rsvp",
+          "syntax": "/event rsvp <event_id> <GOING|MAYBE|NOT_GOING>",
+          "description": "Répondre à une invitation ou mettre à jour votre participation"
+        },
+        {
+          "name": "checkin",
+          "syntax": "/event checkin <event_id>",
+          "description": "Valider votre présence (Pointage)"
+        },
+        {
+          "name": "post",
+          "syntax": "/event post <event_id> [channel]",
+          "description": "Publier la carte interactive d'un événement dans un salon (Modérateur)"
+        }
+      ]
+    },
+    {
+      "name": "giveaway",
+      "syntax": "/giveaway <start|end|reroll|cancel|extend|list>",
+      "category": "Communauté",
+      "description": "Gère les giveaways et tirages au sort du serveur.",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "start",
+          "syntax": "/giveaway start <lot> <duree> [gagnants] [salon]",
+          "description": "Lance un nouveau tirage au sort instantanément"
+        },
+        {
+          "name": "end",
+          "syntax": "/giveaway end <id>",
+          "description": "Termine immédiatement un giveaway et effectue le tirage"
+        },
+        {
+          "name": "reroll",
+          "syntax": "/giveaway reroll <id> [nombre]",
+          "description": "Sélectionne de nouveaux gagnants pour un giveaway terminé"
+        },
+        {
+          "name": "cancel",
+          "syntax": "/giveaway cancel <id>",
+          "description": "Annule un giveaway en cours sans tirer de gagnant"
+        },
+        {
+          "name": "extend",
+          "syntax": "/giveaway extend <id> <minutes>",
+          "description": "Prolonge la durée d'un giveaway actif"
+        },
+        {
+          "name": "list",
+          "syntax": "/giveaway list",
+          "description": "Liste les giveaways actifs du serveur"
+        }
+      ]
+    },
+    {
+      "name": "leaderboard",
+      "syntax": "/leaderboard",
+      "category": "Communauté",
+      "description": "Affiche le classement des membres les plus actifs du serveur.",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "poll",
+      "syntax": "/poll <create|panel|end|results|list>",
+      "category": "Communauté",
+      "description": "Gestion avancée des sondages et votes communautaires",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "syntax": "/poll create <question> <answers> [natif] [duration] [multiselect] [channel] [quorum] [secret]",
+          "description": "Créer et publier un sondage (classique ou natif Discord)"
+        },
+        {
+          "name": "panel",
+          "syntax": "/poll panel <id> [channel]",
+          "description": "Publier un panneau de vote interactif dans un salon Discord"
+        },
+        {
+          "name": "end",
+          "syntax": "/poll end <id>",
+          "description": "Clôturer immédiatement un sondage et exécuter les automatisations"
+        },
+        {
+          "name": "results",
+          "syntax": "/poll results <id>",
+          "description": "Afficher les résultats actuels ou finaux d'un sondage"
+        },
+        {
+          "name": "list",
+          "syntax": "/poll list",
+          "description": "Lister tous les sondages actifs de ce serveur"
+        }
+      ]
+    },
+    {
+      "name": "rank",
+      "syntax": "/rank [membre]",
+      "category": "Communauté",
+      "description": "Affiche votre niveau, rang et progression d’XP.",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "starboard",
+      "syntax": "/starboard <setup|salon|seuil|emoji|options|ignorer|toggle|status>",
+      "category": "Communauté",
+      "description": "Configure le Starboard : les messages les plus appréciés du serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "setup",
+          "syntax": "/starboard setup <salon> [seuil] [emoji]",
+          "description": "Active le starboard et choisit le salon de publication"
+        },
+        {
+          "name": "salon",
+          "syntax": "/starboard salon <salon>",
+          "description": "Change le salon de publication du starboard"
+        },
+        {
+          "name": "seuil",
+          "syntax": "/starboard seuil <valeur>",
+          "description": "Change le nombre d'étoiles requis"
+        },
+        {
+          "name": "emoji",
+          "syntax": "/starboard emoji <emoji>",
+          "description": "Change l'emoji déclencheur"
+        },
+        {
+          "name": "options",
+          "syntax": "/starboard options [auto_etoile] [ignorer_bots] [autoriser_nsfw] [retirer_sous_seuil]",
+          "description": "Règle les options fines du starboard"
+        },
+        {
+          "name": "ignorer",
+          "syntax": "/starboard ignorer <salon>",
+          "description": "Ajoute ou retire un salon de la liste des salons ignorés"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/starboard toggle",
+          "description": "Active ou désactive le starboard sans perdre la config"
+        },
+        {
+          "name": "status",
+          "syntax": "/starboard status",
+          "description": "Affiche la configuration et les statistiques du starboard"
+        }
+      ]
+    },
+    {
+      "name": "statroles",
+      "syntax": "/statroles <list|check|run>",
+      "category": "Communauté",
+      "description": "Rôles automatiques selon l’activité (messages, vocal, ancienneté)",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "list",
+          "syntax": "/statroles list",
+          "description": "Liste les règles du serveur"
+        },
+        {
+          "name": "check",
+          "syntax": "/statroles check [membre]",
+          "description": "Vérifie un membre par rapport aux règles"
+        },
+        {
+          "name": "run",
+          "syntax": "/statroles run",
+          "description": "Applique les règles maintenant (Gérer le serveur)"
+        }
+      ]
+    },
+    {
+      "name": "stats",
+      "syntax": "/stats <server|member|top|channel|reset>",
+      "category": "Communauté",
+      "description": "Statistiques d’activité du serveur : messages, vocal, membres, classements",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "server",
+          "syntax": "/stats server [messages|voice|members] [jours]",
+          "description": "Graphique et totaux du serveur"
+        },
+        {
+          "name": "member",
+          "syntax": "/stats member [membre]",
+          "description": "Fiche d’un membre : rangs, messages, vocal, salons préférés"
+        },
+        {
+          "name": "top",
+          "syntax": "/stats top [messages|voice] [jours]",
+          "description": "Classement des membres"
+        },
+        {
+          "name": "channel",
+          "syntax": "/stats channel [salon] [jours]",
+          "description": "Activité d’un salon"
+        },
+        {
+          "name": "reset",
+          "syntax": "/stats reset",
+          "description": "Efface toutes les statistiques de ce serveur (Gérer le serveur)"
+        }
+      ]
+    },
+    {
+      "name": "sticky",
+      "syntax": "/sticky <set|retirer|pause|liste|apercu>",
+      "category": "Communauté",
+      "description": "Garde un message toujours visible en bas d'un salon",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "set",
+          "syntax": "/sticky set <salon> <contenu> [titre] [embed] [couleur] [anti_rebond]",
+          "description": "Crée ou remplace le sticky d'un salon"
+        },
+        {
+          "name": "retirer",
+          "syntax": "/sticky retirer <salon>",
+          "description": "Supprime le sticky d'un salon"
+        },
+        {
+          "name": "pause",
+          "syntax": "/sticky pause <salon>",
+          "description": "Met en pause / réactive le sticky d'un salon (sans perdre le contenu)"
+        },
+        {
+          "name": "liste",
+          "syntax": "/sticky liste",
+          "description": "Liste les stickies du serveur"
+        },
+        {
+          "name": "apercu",
+          "syntax": "/sticky apercu <salon>",
+          "description": "Affiche la configuration du sticky d'un salon"
+        }
+      ]
+    },
+    {
+      "name": "streamer",
+      "syntax": "/streamer <add|remove|list|check|config>",
+      "category": "Communauté",
+      "description": "Gère les alertes de streaming en direct (Twitch, YouTube, Kick).",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "add",
+          "syntax": "/streamer add <twitch|youtube|kick> <chaine> [salon] [role_ping] [membre_discord] [jeu_filtre] [message]",
+          "description": "Ajoute un streamer à surveiller pour les alertes de live"
+        },
+        {
+          "name": "remove",
+          "syntax": "/streamer remove <twitch|youtube|kick> <chaine>",
+          "description": "Retire un streamer de la liste de surveillance"
+        },
+        {
+          "name": "list",
+          "syntax": "/streamer list",
+          "description": "Affiche la liste de tous les streamers configurés"
+        },
+        {
+          "name": "check",
+          "syntax": "/streamer check <twitch|youtube|kick> <chaine>",
+          "description": "Vérifie immédiatement le statut en direct d'une chaîne et génère un aperçu"
+        },
+        {
+          "name": "config",
+          "syntax": "/streamer config [activer] [salon_defaut] [none|here|everyone|role] [role_defaut] [role_live] [role_live_auto]",
+          "description": "Configure les options globales du module Streamers"
+        }
+      ]
+    },
+    {
+      "name": "suggest",
+      "syntax": "/suggest [titre] [description] [categorie]",
+      "category": "Communauté",
+      "description": "Propose une idée ou suggestion d’amélioration pour le serveur.",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "balance",
+      "syntax": "/balance [membre]",
+      "category": "Économie",
+      "description": "Affiche votre solde de crédits ou celui d’un autre membre",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "daily",
+      "syntax": "/daily",
+      "category": "Économie",
+      "description": "Réclame votre bonus quotidien de crédits",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "gamble",
+      "syntax": "/gamble <mise>",
+      "category": "Économie",
+      "description": "Tenter votre chance à pile ou face (double ou rien)",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "pay",
+      "syntax": "/pay <membre> <montant>",
+      "category": "Économie",
+      "description": "Transférer des crédits à un membre",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "rob",
+      "syntax": "/rob <membre>",
+      "category": "Économie",
+      "description": "Tente de dérober des crédits à un membre",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "shop",
+      "syntax": "/shop",
+      "category": "Économie",
+      "description": "Consulter les rôles disponibles à l’achat",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "work",
+      "syntax": "/work",
+      "category": "Économie",
+      "description": "Effectue un petit boulot pour gagner des crédits",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "fun",
+      "syntax": "/fun <lyrics|quote|image|duckduckgoimage|reverseimage|tvshow|movie|game>",
+      "category": "Fun",
+      "description": "Commandes de divertissement et médias",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "lyrics",
+          "syntax": "/fun lyrics <query>",
+          "description": "Gets lyrics for the given song"
+        },
+        {
+          "name": "quote",
+          "syntax": "/fun quote <text> [author]",
+          "description": "Quote a message"
+        },
+        {
+          "name": "image",
+          "syntax": "/fun image <search>",
+          "description": "Search Google for an image"
+        },
+        {
+          "name": "duckduckgoimage",
+          "syntax": "/fun duckduckgoimage <search>",
+          "description": "Search duckduckgo for an image"
+        },
+        {
+          "name": "reverseimage",
+          "syntax": "/fun reverseimage <url>",
+          "description": "Reverse Images on Google"
+        },
+        {
+          "name": "tvshow",
+          "syntax": "/fun tvshow <title>",
+          "description": "Returns information about the specified TV show title given"
+        },
+        {
+          "name": "movie",
+          "syntax": "/fun movie <title>",
+          "description": "Returns information about the specified movie title given"
+        },
+        {
+          "name": "game",
+          "syntax": "/fun game <title>",
+          "description": "Returns information about the specified game title given"
+        }
+      ]
+    },
+    {
+      "name": "instagram",
+      "syntax": "/instagram <user|post>",
+      "category": "Fun",
+      "description": "Recherche de profils et inspection de publications Instagram",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "user",
+          "syntax": "/instagram user <username>",
+          "description": "Affiche le profil et les photos d'un compte Instagram"
+        },
+        {
+          "name": "post",
+          "syntax": "/instagram post <url>",
+          "description": "Inspecte et affiche une publication Instagram"
+        }
+      ]
+    },
+    {
+      "name": "lastfm",
+      "syntax": "/lastfm <nowplaying|recent|topartists|toptracks|topalbums|user|taste|login|logout|spotify|youtube|lyrics>",
+      "category": "Fun",
+      "description": "Intègre Last.fm à votre profil et affiche vos statistiques d'écoute",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "nowplaying",
+          "syntax": "/lastfm nowplaying [username]",
+          "description": "Affiche le morceau actuellement en cours d'écoute"
+        },
+        {
+          "name": "recent",
+          "syntax": "/lastfm recent [username] [limit]",
+          "description": "Affiche vos scrobbles récents"
+        },
+        {
+          "name": "topartists",
+          "syntax": "/lastfm topartists [7day|1month|3month|overall] [username]",
+          "description": "Affiche vos artistes les plus écoutés"
+        },
+        {
+          "name": "toptracks",
+          "syntax": "/lastfm toptracks [7day|1month|overall] [username]",
+          "description": "Affiche vos morceaux les plus écoutés"
+        },
+        {
+          "name": "topalbums",
+          "syntax": "/lastfm topalbums [7day|1month|overall] [username]",
+          "description": "Affiche vos albums les plus écoutés"
+        },
+        {
+          "name": "user",
+          "syntax": "/lastfm user [username]",
+          "description": "Affiche le profil et les statistiques Last.fm d'un utilisateur"
+        },
+        {
+          "name": "taste",
+          "syntax": "/lastfm taste <target>",
+          "description": "Compare vos goûts musicaux avec un autre utilisateur"
+        },
+        {
+          "name": "login",
+          "syntax": "/lastfm login <username>",
+          "description": "Associe votre pseudo Last.fm à votre compte Discord"
+        },
+        {
+          "name": "logout",
+          "syntax": "/lastfm logout",
+          "description": "Dissocie votre compte Last.fm de votre profil Discord"
+        },
+        {
+          "name": "spotify",
+          "syntax": "/lastfm spotify [username]",
+          "description": "Partage le lien Spotify du morceau actuellement joué sur Last.fm"
+        },
+        {
+          "name": "youtube",
+          "syntax": "/lastfm youtube [username]",
+          "description": "Partage le lien YouTube du morceau actuellement joué sur Last.fm"
+        },
+        {
+          "name": "lyrics",
+          "syntax": "/lastfm lyrics [username]",
+          "description": "Affiche les paroles du morceau en cours d'écoute sur Last.fm"
+        }
+      ]
+    },
+    {
+      "name": "pinterest",
+      "syntax": "/pinterest <search|pin|user>",
+      "category": "Fun",
+      "description": "Recherche visuelle d'épingles, profils et tableaux Pinterest",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "search",
+          "syntax": "/pinterest search <query>",
+          "description": "Recherche des épingles et inspirations visuelles sur Pinterest"
+        },
+        {
+          "name": "pin",
+          "syntax": "/pinterest pin <url>",
+          "description": "Affiche et inspecte une épingle Pinterest"
+        },
+        {
+          "name": "user",
+          "syntax": "/pinterest user <username>",
+          "description": "Affiche le profil et les tableaux d'un créateur Pinterest"
+        }
+      ]
+    },
+    {
+      "name": "tiktok",
+      "syntax": "/tiktok <user|video>",
+      "category": "Fun",
+      "description": "Recherche de profils et inspection de vidéos TikTok",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "user",
+          "syntax": "/tiktok user <username>",
+          "description": "Affiche le profil et le lien d'un créateur TikTok"
+        },
+        {
+          "name": "video",
+          "syntax": "/tiktok video <url>",
+          "description": "Inspecte et affiche une vidéo TikTok"
+        }
+      ]
+    },
+    {
+      "name": "twitter",
+      "syntax": "/twitter <user|post>",
+      "category": "Fun",
+      "description": "Recherche de profils et inspection de posts X / Twitter",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "user",
+          "syntax": "/twitter user <username>",
+          "description": "Affiche le profil d'un compte sur X"
+        },
+        {
+          "name": "post",
+          "syntax": "/twitter post <url>",
+          "description": "Inspecte et affiche un post X / Twitter"
+        }
+      ]
+    },
+    {
+      "name": "ask",
+      "syntax": "/ask <question> [prive]",
+      "category": "Général",
+      "description": "Posez une question à l'assistant IA du serveur",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "bot",
+      "syntax": "/bot <status|info|ping>",
+      "category": "Général",
+      "description": "Centre d'informations et diagnostic système du bot",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "status",
+          "syntax": "/bot status",
+          "description": "Affiche l'état technique, l'uptime et les ressources en direct"
+        },
+        {
+          "name": "info",
+          "syntax": "/bot info",
+          "description": "Informations détaillées, version et liens vers le Dashboard"
+        },
+        {
+          "name": "ping",
+          "syntax": "/bot ping",
+          "description": "Mesure la latence Gateway WebSocket et API REST en direct"
+        }
+      ]
+    },
+    {
+      "name": "economy",
+      "syntax": "/economy <leaderboard|buy>",
+      "category": "Général",
+      "description": "Économie du serveur",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "leaderboard",
+          "syntax": "/economy leaderboard",
+          "description": "Classement des membres les plus riches"
+        },
+        {
+          "name": "buy",
+          "syntax": "/economy buy <id>",
+          "description": "Acheter un article de la boutique"
+        }
+      ]
+    },
+    {
+      "name": "form",
+      "syntax": "/form <open|panel|stats>",
+      "category": "Général",
+      "description": "Commandes du module ETHONE Forms & Applications",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "open",
+          "syntax": "/form open <id>",
+          "description": "Ouvrir un formulaire Discord"
+        },
+        {
+          "name": "panel",
+          "syntax": "/form panel <id> [salon]",
+          "description": "Publier un panneau de candidature interactif dans un salon"
+        },
+        {
+          "name": "stats",
+          "syntax": "/form stats <id>",
+          "description": "Afficher les statistiques de réponses d'un formulaire"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "syntax": "/help [module] [commande]",
+      "category": "Général",
+      "description": "Affiche le centre d'aide interactif et le catalogue des commandes",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "imagine",
+      "syntax": "/imagine <prompt>",
+      "category": "Général",
+      "description": "Génère une image haute qualité via intelligence artificielle",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "ping",
+      "syntax": "/ping",
+      "category": "Général",
+      "description": "Mesure la latence réseau Gateway et API REST avec diagnostic en direct",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "summarize",
+      "syntax": "/summarize [nombre]",
+      "category": "Général",
+      "description": "Résume les derniers messages échangés dans le salon",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "blackjack",
+      "syntax": "/blackjack [mise]",
+      "category": "Jeux",
+      "description": "Jouer une partie de Blackjack 21 contre le croupier (Ethone Coins)",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "casino",
+      "syntax": "/casino <jackpot|daily|top|stats>",
+      "category": "Jeux",
+      "description": "Centre du Casino ETHONE : Jackpot, Roue quotidienne et classements",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "jackpot",
+          "syntax": "/casino jackpot",
+          "description": "Afficher la cagnotte progressive actuelle du serveur en Ethone Coins"
+        },
+        {
+          "name": "daily",
+          "syntax": "/casino daily",
+          "description": "Tourner la roue de la fortune quotidienne pour remporter des Ethone Coins"
+        },
+        {
+          "name": "top",
+          "syntax": "/casino top",
+          "description": "Afficher le classement des plus grands gagnants du casino"
+        },
+        {
+          "name": "stats",
+          "syntax": "/casino stats",
+          "description": "Afficher les statistiques complètes de l'arène des jeux"
+        }
+      ]
+    },
+    {
+      "name": "dice",
+      "syntax": "/dice <mise> <adversaire>",
+      "category": "Jeux",
+      "description": "Lancer un duel de dés 2d6 en Ethone Coins contre un membre",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "roulette",
+      "syntax": "/roulette <mise> <choix> [numero]",
+      "category": "Jeux",
+      "description": "Placer une mise en Ethone Coins sur la Roulette Royale",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "automod-native",
+      "syntax": "/automod-native <list|toggle|preset|badge|deploy-all>",
+      "category": "Modération",
+      "description": "AutoMod natif de Discord (règles exécutées par Discord lui-même)",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "list",
+          "syntax": "/automod-native list",
+          "description": "Lister les règles AutoMod natives du serveur"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/automod-native toggle <rule> <enabled>",
+          "description": "Activer ou désactiver une règle AutoMod native"
+        },
+        {
+          "name": "preset",
+          "syntax": "/automod-native preset [alert]",
+          "description": "Créer les règles recommandées (langage, spam, mentions)"
+        },
+        {
+          "name": "badge",
+          "syntax": "/automod-native badge",
+          "description": "Vérifier la progression vers le badge 'Uses AutoMod' (100 règles)"
+        },
+        {
+          "name": "deploy-all",
+          "syntax": "/automod-native deploy-all [alert]",
+          "description": "Déployer le pack AutoMod sur tous les serveurs du bot"
+        }
+      ]
+    },
+    {
+      "name": "ban",
+      "syntax": "/ban <utilisateur> [raison] [duree]",
+      "category": "Modération",
+      "description": "Bannit un utilisateur",
+      "permissions": [
+        "Bannir des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "clear",
+      "syntax": "/clear <nombre> [membre]",
+      "category": "Modération",
+      "description": "Supprime un nombre défini de messages dans le salon",
+      "permissions": [
+        "Gérer les messages"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "kick",
+      "syntax": "/kick <membre> [raison]",
+      "category": "Modération",
+      "description": "Expulse un membre",
+      "permissions": [
+        "Expulser des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "lock",
+      "syntax": "/lock [raison]",
+      "category": "Modération",
+      "description": "Verrouille le salon textuel",
+      "permissions": [
+        "Gérer les salons"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "mod",
+      "syntax": "/mod <membre> <raison>",
+      "category": "Modération",
+      "description": "Applique une raison prédéfinie à un membre",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "nickname",
+      "syntax": "/nickname <membre> [nouveau_nom]",
+      "category": "Modération",
+      "description": "Modifie ou réinitialise le surnom d’un membre",
+      "permissions": [
+        "Gérer les pseudos"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "report",
+      "syntax": "/report <user|setup|status>",
+      "category": "Modération",
+      "description": "Signaler un membre à l’équipe de modération",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "user",
+          "syntax": "/report user <membre> <motif>",
+          "description": "Signaler un membre"
+        },
+        {
+          "name": "setup",
+          "syntax": "/report setup [salon] [equipe]",
+          "description": "Installe le système de signalement (Gérer le serveur)"
+        },
+        {
+          "name": "status",
+          "syntax": "/report status",
+          "description": "Réglages actuels (Gérer le serveur)"
+        }
+      ]
+    },
+    {
+      "name": "slowmode",
+      "syntax": "/slowmode <secondes>",
+      "category": "Modération",
+      "description": "Modifie le délai de mode lent du salon",
+      "permissions": [
+        "Gérer les salons"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "timeout",
+      "syntax": "/timeout <membre> <duree> [raison]",
+      "category": "Modération",
+      "description": "Rend un membre muet",
+      "permissions": [
+        "Exclure temporairement des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "unban",
+      "syntax": "/unban <user_id> [raison]",
+      "category": "Modération",
+      "description": "Débannit un utilisateur",
+      "permissions": [
+        "Bannir des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "unlock",
+      "syntax": "/unlock",
+      "category": "Modération",
+      "description": "Déverrouille le salon textuel",
+      "permissions": [
+        "Gérer les salons"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "untimeout",
+      "syntax": "/untimeout <membre> [raison]",
+      "category": "Modération",
+      "description": "Retire le mute d’un membre",
+      "permissions": [
+        "Exclure temporairement des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "warn",
+      "syntax": "/warn <membre> [raison] [light|medium|grave]",
+      "category": "Modération",
+      "description": "Avertit un membre",
+      "permissions": [
+        "Exclure temporairement des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "warnings",
+      "syntax": "/warnings <membre>",
+      "category": "Modération",
+      "description": "Affiche l’historique des sanctions d’un membre",
+      "permissions": [
+        "Exclure temporairement des membres"
+      ],
+      "subcommands": []
+    },
+    {
+      "name": "disconnect",
+      "syntax": "/disconnect",
+      "category": "Musique",
+      "description": "Déconnecte le bot du salon vocal et désactive le mode 24h/24",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "join",
+      "syntax": "/join [salon]",
+      "category": "Musique",
+      "description": "Fait rejoindre le bot dans un salon vocal et l'y garde 24h/24",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "music",
+      "syntax": "/music <play|pause|resume|skip|previous|stop|queue|nowplaying|volume|seek|shuffle|loop|remove|clear|panel>",
+      "category": "Musique",
+      "description": "Centre de contrôle musical ETHONE",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "play",
+          "syntax": "/music play <recherche>",
+          "description": "Joue une musique ou l'ajoute à la file d'attente"
+        },
+        {
+          "name": "pause",
+          "syntax": "/music pause",
+          "description": "Met la lecture en pause"
+        },
+        {
+          "name": "resume",
+          "syntax": "/music resume",
+          "description": "Reprend la lecture"
+        },
+        {
+          "name": "skip",
+          "syntax": "/music skip",
+          "description": "Passe à la musique suivante"
+        },
+        {
+          "name": "previous",
+          "syntax": "/music previous",
+          "description": "Revient à la musique précédente"
+        },
+        {
+          "name": "stop",
+          "syntax": "/music stop",
+          "description": "Arrête la lecture et vide la file"
+        },
+        {
+          "name": "queue",
+          "syntax": "/music queue",
+          "description": "Affiche la file d'attente"
+        },
+        {
+          "name": "nowplaying",
+          "syntax": "/music nowplaying",
+          "description": "Affiche la musique en cours"
+        },
+        {
+          "name": "volume",
+          "syntax": "/music volume <niveau>",
+          "description": "Règle le volume sonore (0-100%)"
+        },
+        {
+          "name": "seek",
+          "syntax": "/music seek <secondes>",
+          "description": "Se déplace à un moment précis (en secondes)"
+        },
+        {
+          "name": "shuffle",
+          "syntax": "/music shuffle",
+          "description": "Mélange aléatoirement la file d'attente"
+        },
+        {
+          "name": "loop",
+          "syntax": "/music loop <OFF|SONG|QUEUE>",
+          "description": "Change le mode de répétition"
+        },
+        {
+          "name": "remove",
+          "syntax": "/music remove <position>",
+          "description": "Retire une musique de la file"
+        },
+        {
+          "name": "clear",
+          "syntax": "/music clear",
+          "description": "Vide entièrement la file d'attente"
+        },
+        {
+          "name": "panel",
+          "syntax": "/music panel",
+          "description": "Affiche le panneau de contrôle interactif"
+        }
+      ]
+    },
+    {
+      "name": "pause",
+      "syntax": "/pause",
+      "category": "Musique",
+      "description": "Met en pause la lecture de la musique actuelle",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "play",
+      "syntax": "/play <recherche> [melanger] [suivant]",
+      "category": "Musique",
+      "description": "Joue une musique ou l'ajoute à la file d'attente",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "player",
+      "syntax": "/player",
+      "category": "Musique",
+      "description": "Ouvre le centre de contrôle musical (lecteur, file, volume, boucle…)",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "playlist",
+      "syntax": "/playlist <lien>",
+      "category": "Musique",
+      "description": "Affiche les titres d'une playlist Spotify / YouTube et choisis lequel jouer",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "queue",
+      "syntax": "/queue",
+      "category": "Musique",
+      "description": "Affiche la liste des morceaux dans la file d'attente musicale",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "resume",
+      "syntax": "/resume",
+      "category": "Musique",
+      "description": "Reprend la lecture de la musique mise en pause",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "skip",
+      "syntax": "/skip",
+      "category": "Musique",
+      "description": "Passe à la musique suivante dans la file d'attente",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "spotify",
+      "syntax": "/spotify <nowplaying|play|pause|resume|next|previous|seek|volume|repeat|shuffle|queue|like|unlike|device|devices|toptracks|topartists|vc|login|logout>",
+      "category": "Musique",
+      "description": "Intégration Spotify complète — contrôle, synchronisation et diffusion vocale",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "nowplaying",
+          "syntax": "/spotify nowplaying [membre]",
+          "description": "Affiche le titre Spotify en cours d'écoute"
+        },
+        {
+          "name": "play",
+          "syntax": "/spotify play [recherche]",
+          "description": "Lance la lecture d'un titre, album ou playlist sur Spotify"
+        },
+        {
+          "name": "pause",
+          "syntax": "/spotify pause",
+          "description": "Met la lecture Spotify en pause"
+        },
+        {
+          "name": "resume",
+          "syntax": "/spotify resume",
+          "description": "Reprend la lecture Spotify"
+        },
+        {
+          "name": "next",
+          "syntax": "/spotify next",
+          "description": "Passe au titre suivant sur Spotify"
+        },
+        {
+          "name": "previous",
+          "syntax": "/spotify previous",
+          "description": "Revient au titre précédent sur Spotify"
+        },
+        {
+          "name": "seek",
+          "syntax": "/spotify seek <secondes>",
+          "description": "Se déplace à un moment précis dans le titre"
+        },
+        {
+          "name": "volume",
+          "syntax": "/spotify volume <pourcentage>",
+          "description": "Règle le volume de lecture Spotify (0-100%)"
+        },
+        {
+          "name": "repeat",
+          "syntax": "/spotify repeat <off|track|context>",
+          "description": "Configure le mode de répétition Spotify"
+        },
+        {
+          "name": "shuffle",
+          "syntax": "/spotify shuffle <on|off>",
+          "description": "Active ou désactive la lecture aléatoire Spotify"
+        },
+        {
+          "name": "queue",
+          "syntax": "/spotify queue [titre]",
+          "description": "Affiche la file d'attente ou y ajoute un titre Spotify"
+        },
+        {
+          "name": "like",
+          "syntax": "/spotify like",
+          "description": "Ajoute le titre en cours à vos favoris Spotify"
+        },
+        {
+          "name": "unlike",
+          "syntax": "/spotify unlike",
+          "description": "Retire le titre en cours de vos favoris Spotify"
+        },
+        {
+          "name": "device",
+          "syntax": "/spotify device <nom>",
+          "description": "Transfère la lecture Spotify vers un appareil précis"
+        },
+        {
+          "name": "devices",
+          "syntax": "/spotify devices",
+          "description": "Liste vos appareils connectés à Spotify"
+        },
+        {
+          "name": "toptracks",
+          "syntax": "/spotify toptracks [short_term|medium_term|long_term]",
+          "description": "Affiche vos titres les plus écoutés sur Spotify"
+        },
+        {
+          "name": "topartists",
+          "syntax": "/spotify topartists [short_term|medium_term|long_term]",
+          "description": "Affiche vos artistes les plus écoutés sur Spotify"
+        },
+        {
+          "name": "vc",
+          "syntax": "/spotify vc",
+          "description": "Diffuse votre musique Spotify en cours dans votre salon vocal"
+        },
+        {
+          "name": "login",
+          "syntax": "/spotify login",
+          "description": "Associe votre compte Spotify avec le bot Etho"
+        },
+        {
+          "name": "logout",
+          "syntax": "/spotify logout",
+          "description": "Dissocie votre compte Spotify"
+        }
+      ]
+    },
+    {
+      "name": "stop",
+      "syntax": "/stop",
+      "category": "Musique",
+      "description": "Arrête la musique, vide la file et quitte le salon vocal",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "voice-status",
+      "syntax": "/voice-status",
+      "category": "Musique",
+      "description": "État du bot dans le vocal : salon, mode 24h/24, lecture, latence et serveur audio",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "antiraid",
+      "syntax": "/antiraid <status|toggle|trustbot|raidmode|lockdown>",
+      "category": "Sécurité",
+      "description": "Centre Anti-Raid",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": [
+        {
+          "name": "status",
+          "syntax": "/antiraid status",
+          "description": "Affiche le statut actuel et le Risk Score du serveur"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/antiraid toggle <actif>",
+          "description": "Active ou désactive complètement l'Anti-Raid sur ce serveur"
+        },
+        {
+          "name": "trustbot",
+          "syntax": "/antiraid trustbot <bot>",
+          "description": "Ajoute (ou retire) un bot de la liste des bots autorisés"
+        },
+        {
+          "name": "raidmode",
+          "syntax": "/antiraid raidmode <activer>",
+          "description": "Active ou désactive le mode Raid d’urgence"
+        },
+        {
+          "name": "lockdown",
+          "syntax": "/antiraid lockdown <activer>",
+          "description": "Verrouille ou déverrouille les salons textuels"
+        }
+      ]
+    },
+    {
+      "name": "automod",
+      "syntax": "/automod <status|test|smartmode|toggle>",
+      "category": "Sécurité",
+      "description": "Centre AutoMod",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": [
+        {
+          "name": "status",
+          "syntax": "/automod status",
+          "description": "Affiche le statut et la configuration AutoMod"
+        },
+        {
+          "name": "test",
+          "syntax": "/automod test <message>",
+          "description": "Teste un message dans le bac à sable sans appliquer de sanctions"
+        },
+        {
+          "name": "smartmode",
+          "syntax": "/automod smartmode <activer>",
+          "description": "Active ou désactive le mode adaptatif intelligent"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/automod toggle <module> <activer>",
+          "description": "Active ou désactive AutoMod dans son ensemble, ou un détecteur précis (anti-spam, liens, etc.)"
+        }
+      ]
+    },
+    {
+      "name": "elevate",
+      "syntax": "/elevate [code] [terminer]",
+      "category": "Sécurité",
+      "description": "Active tes permissions sensibles pour une durée limitée (rôles sécurisés)",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "protection",
+      "syntax": "/protection <liste|voir|activer|desactiver|punition|seuil|salon|deverrouiller>",
+      "category": "Sécurité",
+      "description": "Protections du serveur (anti-ban, anti-spam, anti-lien…)",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": [
+        {
+          "name": "liste",
+          "syntax": "/protection liste",
+          "description": "Toutes les protections et leur état"
+        },
+        {
+          "name": "voir",
+          "syntax": "/protection voir <protection>",
+          "description": "Ce que fait une protection et ses réglages"
+        },
+        {
+          "name": "activer",
+          "syntax": "/protection activer <protection>",
+          "description": "Active une protection"
+        },
+        {
+          "name": "desactiver",
+          "syntax": "/protection desactiver <protection>",
+          "description": "Désactive une protection"
+        },
+        {
+          "name": "punition",
+          "syntax": "/protection punition <protection> <sanction> [minutes]",
+          "description": "Choisit la sanction appliquée à l'auteur"
+        },
+        {
+          "name": "seuil",
+          "syntax": "/protection seuil <protection> <nombre> <secondes>",
+          "description": "Nombre d’actions tolérées et fenêtre de temps"
+        },
+        {
+          "name": "salon",
+          "syntax": "/protection salon <protection> <salon>",
+          "description": "Salon où la protection envoie ses alertes"
+        },
+        {
+          "name": "deverrouiller",
+          "syntax": "/protection deverrouiller",
+          "description": "Rend aux rôles les permissions retirées par un verrouillage"
+        }
+      ]
+    },
+    {
+      "name": "verification",
+      "syntax": "/verification <status|toggle>",
+      "category": "Sécurité",
+      "description": "Vérification des nouveaux membres",
+      "permissions": [
+        "Administrateur"
+      ],
+      "subcommands": [
+        {
+          "name": "status",
+          "syntax": "/verification status",
+          "description": "Affiche la configuration actuelle de la vérification"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/verification toggle <actif>",
+          "description": "Active ou désactive la vérification des nouveaux membres"
+        }
+      ]
+    },
+    {
+      "name": "afk",
+      "syntax": "/afk [raison]",
+      "category": "Utilitaires",
+      "description": "Marque-toi comme absent — le bot préviendra ceux qui te mentionnent",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "birthday",
+      "syntax": "/birthday <set|remove|list|config>",
+      "category": "Utilitaires",
+      "description": "Anniversaires du serveur",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "set",
+          "syntax": "/birthday set <jour> <mois> [annee]",
+          "description": "Enregistre ton anniversaire"
+        },
+        {
+          "name": "remove",
+          "syntax": "/birthday remove",
+          "description": "Supprime ton anniversaire enregistré"
+        },
+        {
+          "name": "list",
+          "syntax": "/birthday list",
+          "description": "Les anniversaires à venir (30 jours)"
+        },
+        {
+          "name": "config",
+          "syntax": "/birthday config [salon] [heure] [role] [message] [actif]",
+          "description": "[Admin] Réglages du module anniversaires"
+        }
+      ]
+    },
+    {
+      "name": "highlight",
+      "syntax": "/highlight <add|remove|list|toggle|mute-channel|unmute-channel>",
+      "category": "Utilitaires",
+      "description": "Mots-clés surveillés — Google Alerts pour ce serveur",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "add",
+          "syntax": "/highlight add <mot-cle>",
+          "description": "Surveille un nouveau mot-clé"
+        },
+        {
+          "name": "remove",
+          "syntax": "/highlight remove <mot-cle>",
+          "description": "Arrête de surveiller un mot-clé"
+        },
+        {
+          "name": "list",
+          "syntax": "/highlight list",
+          "description": "Tes mots-clés surveillés sur ce serveur"
+        },
+        {
+          "name": "toggle",
+          "syntax": "/highlight toggle <actif>",
+          "description": "Active ou coupe tous tes highlights sur ce serveur"
+        },
+        {
+          "name": "mute-channel",
+          "syntax": "/highlight mute-channel <salon>",
+          "description": "Ignore un salon (tu ne recevras plus de highlight venant de là)"
+        },
+        {
+          "name": "unmute-channel",
+          "syntax": "/highlight unmute-channel <salon>",
+          "description": "Réactive les highlights pour un salon ignoré"
+        }
+      ]
+    },
+    {
+      "name": "reminder",
+      "syntax": "/reminder <add|list|cancel>",
+      "category": "Utilitaires",
+      "description": "« Rappelle-moi » : programme un rappel personnel",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "add",
+          "syntax": "/reminder add <dans> <message> [none|daily|weekly]",
+          "description": "Ajoute un rappel"
+        },
+        {
+          "name": "list",
+          "syntax": "/reminder list",
+          "description": "Liste tes rappels en attente"
+        },
+        {
+          "name": "cancel",
+          "syntax": "/reminder cancel <id>",
+          "description": "Annule un rappel"
+        }
+      ]
+    },
+    {
+      "name": "server",
+      "syntax": "/server [overview|members|channels|badges]",
+      "category": "Utilitaires",
+      "description": "Infos du serveur : aperçu, membres, salons et badges Discord",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "serverstats",
+      "syntax": "/serverstats <add|remove|setup|tokens|list|refresh|config>",
+      "category": "Utilitaires",
+      "description": "Salons compteurs de statistiques du serveur",
+      "permissions": [
+        "Gérer le serveur"
+      ],
+      "subcommands": [
+        {
+          "name": "add",
+          "syntax": "/serverstats add <salon> <type> [format] [role]",
+          "description": "Transforme un salon en compteur"
+        },
+        {
+          "name": "remove",
+          "syntax": "/serverstats remove <salon>",
+          "description": "Retire un salon compteur"
+        },
+        {
+          "name": "setup",
+          "syntax": "/serverstats setup <draftbot|statbot>",
+          "description": "Crée la catégorie « SERVER STATS » avec ses salons compteurs verrouillés"
+        },
+        {
+          "name": "tokens",
+          "syntax": "/serverstats tokens",
+          "description": "Liste des jetons utilisables dans un modèle personnalisé"
+        },
+        {
+          "name": "list",
+          "syntax": "/serverstats list",
+          "description": "Liste les salons compteurs"
+        },
+        {
+          "name": "refresh",
+          "syntax": "/serverstats refresh",
+          "description": "Rafraîchit tous les compteurs maintenant"
+        },
+        {
+          "name": "config",
+          "syntax": "/serverstats config [actif] [intervalle]",
+          "description": "Réglages du module"
+        }
+      ]
+    },
+    {
+      "name": "tag",
+      "syntax": "/tag <get|add|edit|remove|list|info>",
+      "category": "Utilitaires",
+      "description": "Réponses réutilisables du serveur",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "get",
+          "syntax": "/tag get <nom>",
+          "description": "Affiche un tag"
+        },
+        {
+          "name": "add",
+          "syntax": "/tag add <nom> <contenu>",
+          "description": "[Gérer les messages] Crée un tag"
+        },
+        {
+          "name": "edit",
+          "syntax": "/tag edit <nom> <contenu>",
+          "description": "[Gérer les messages] Modifie un tag"
+        },
+        {
+          "name": "remove",
+          "syntax": "/tag remove <nom>",
+          "description": "[Gérer les messages] Supprime un tag"
+        },
+        {
+          "name": "list",
+          "syntax": "/tag list",
+          "description": "Liste les tags du serveur"
+        },
+        {
+          "name": "info",
+          "syntax": "/tag info <nom>",
+          "description": "Détails d'un tag (auteur, usages)"
+        }
+      ]
+    },
+    {
+      "name": "ticket",
+      "syntax": "/ticket [sujet]",
+      "category": "Utilitaires",
+      "description": "Ouvre un ticket d’assistance privé auprès de l'équipe",
+      "permissions": [],
+      "subcommands": []
+    },
+    {
+      "name": "voice",
+      "syntax": "/voice <create|delete|info|panel>",
+      "category": "Vocal",
+      "description": "Crée et gère ton salon vocal personnel",
+      "permissions": [],
+      "subcommands": [
+        {
+          "name": "create",
+          "syntax": "/voice create [nom] [limite] [verrouille]",
+          "description": "Créer immédiatement votre salon vocal temporaire"
+        },
+        {
+          "name": "delete",
+          "syntax": "/voice delete",
+          "description": "Fermer et supprimer votre salon vocal temporaire actif"
+        },
+        {
+          "name": "info",
+          "syntax": "/voice info",
+          "description": "Afficher les détails et participants de votre salon actif"
+        },
+        {
+          "name": "panel",
+          "syntax": "/voice panel",
+          "description": "Publier le panneau de création permanent dans ce salon textuel (Admin)"
+        }
+      ]
+    }
+  ],
+  "protectionCategories": [
+    "Sanctions en série",
+    "Salons",
+    "Rôles et permissions",
+    "Bots et intégrations",
+    "Vocal",
+    "Serveur",
+    "Messages",
+    "Membres",
+    "Sauvegarde"
+  ],
+  "protections": [
+    {
+      "key": "antiBan",
+      "label": "Anti-ban",
+      "category": "Sanctions en série",
+      "description": "Détecte les bans en cascade par un même modérateur.",
+      "behaviour": "Si un même membre bannit 5 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Toutes les personnes bannies pendant la rafale sont débannies.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiKick",
+      "label": "Anti-kick",
+      "category": "Sanctions en série",
+      "description": "Détecte les kicks en cascade par un même modérateur.",
+      "behaviour": "Si un même membre expulse 5 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les membres expulsés reçoivent une invitation de retour en message privé.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiTimeout",
+      "label": "Anti-timeout",
+      "category": "Sanctions en série",
+      "description": "Détecte les timeouts en cascade par un même modérateur.",
+      "behaviour": "Si un même membre met en timeout 5 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les timeouts de la rafale sont levés.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiUnban",
+      "label": "Anti-déban",
+      "category": "Sanctions en série",
+      "description": "Détecte les débannissements en cascade, rebannit les comptes libérés et sanctionne l'auteur.",
+      "behaviour": "Si un même membre débannit 3 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les comptes débannis pendant la rafale sont rebannis.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiChannelCreate",
+      "label": "Anti-création de salon",
+      "category": "Salons",
+      "description": "Détecte la création abusive de salons.",
+      "behaviour": "Dès qu'un membre crée un salon, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les salons créés pendant l'attaque sont supprimés.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiChannelDelete",
+      "label": "Anti-suppression de salon",
+      "category": "Salons",
+      "description": "Détecte la suppression abusive de salons.",
+      "behaviour": "Dès qu'un membre supprime un salon, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les salons supprimés sont recréés avec leurs permissions.",
+      "recommended": true,
+      "lockdownAdvised": true
+    },
+    {
+      "key": "antiChannelUpdate",
+      "label": "Anti-modification de salon",
+      "category": "Salons",
+      "description": "Détecte les modifications massives de salons.",
+      "behaviour": "Dès qu'un membre modifie un salon, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les salons retrouvent leur nom, description et permissions.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiChannelRename",
+      "label": "Anti-renommage de salon",
+      "category": "Salons",
+      "description": "Remet l'ancien nom d'un salon renommé et sanctionne l'auteur.",
+      "behaviour": "Dès qu'un membre renomme un salon, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Chaque salon renommé retrouve son ancien nom.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleCreate",
+      "label": "Anti-création de rôle",
+      "category": "Rôles et permissions",
+      "description": "Détecte la création abusive de rôles.",
+      "behaviour": "Dès qu'un membre crée un rôle, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les rôles créés sont supprimés.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleDelete",
+      "label": "Anti-suppression de rôle",
+      "category": "Rôles et permissions",
+      "description": "Détecte la suppression abusive de rôles.",
+      "behaviour": "Dès qu'un membre supprime un rôle, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les rôles supprimés sont recréés avec les mêmes réglages et rendus à leurs membres.",
+      "recommended": true,
+      "lockdownAdvised": true
+    },
+    {
+      "key": "antiRoleUpdate",
+      "label": "Anti-modification de rôle",
+      "category": "Rôles et permissions",
+      "description": "Détecte les modifications massives de rôles.",
+      "behaviour": "Dès qu'un membre modifie un rôle, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les rôles retrouvent leur nom, couleur et permissions.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleAdd",
+      "label": "Anti-ajout de rôle",
+      "category": "Rôles et permissions",
+      "description": "Surveille les rôles sensibles et les permissions critiques ajoutées.",
+      "behaviour": "Dès qu'un membre donne un rôle à permission sensible, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Le rôle donné est retiré immédiatement.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleRemove",
+      "label": "Anti-retrait de rôle",
+      "category": "Rôles et permissions",
+      "description": "Détecte le retrait de rôles protégés ou à permissions sensibles.",
+      "behaviour": "Dès qu'un membre retire un rôle à permission sensible, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Le rôle retiré est rendu à la victime.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleMass",
+      "label": "Anti-rôle de masse",
+      "category": "Rôles et permissions",
+      "description": "Détecte les attributions massives d'un même rôle.",
+      "behaviour": "Si un même membre donne le même rôle à 20 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Le rôle est retiré aux membres de la rafale.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiReorganisation",
+      "label": "Anti-réorganisation de rôle",
+      "category": "Rôles et permissions",
+      "description": "Bloque les changements de position des rôles. Discord n'indique pas qui déplace un rôle : il est remis en place sans sanction.",
+      "behaviour": "Dès qu'un rôle est déplacé dans la liste, Etho le remet à sa place.",
+      "aftermath": null,
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiRoleRename",
+      "label": "Anti-renommage de rôle",
+      "category": "Rôles et permissions",
+      "description": "Remet l'ancien nom d'un rôle renommé et sanctionne l'auteur.",
+      "behaviour": "Dès qu'un membre renomme un rôle, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Chaque rôle renommé retrouve son ancien nom.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiBot",
+      "label": "Anti-bot",
+      "category": "Bots et intégrations",
+      "description": "Détecte l'ajout de bots non autorisés.",
+      "behaviour": "Dès qu'un membre ajoute un bot, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Le bot ajouté est banni.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiWebhook",
+      "label": "Anti-webhook",
+      "category": "Bots et intégrations",
+      "description": "Détecte la création abusive de webhooks.",
+      "behaviour": "Dès qu'un membre crée un webhook, Etho retire tous les rôles de l'auteur.",
+      "aftermath": null,
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiWebhookUpdate",
+      "label": "Anti-modification de webhook",
+      "category": "Bots et intégrations",
+      "description": "Remet le nom, l'avatar et le salon d'un webhook modifié et sanctionne l'auteur.",
+      "behaviour": "Si un même membre modifie 3 webhooks en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les webhooks modifiés retrouvent leur nom, leur avatar et leur salon.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiThreadCreate",
+      "label": "Anti-thread",
+      "category": "Bots et intégrations",
+      "description": "Détecte la création abusive de fils.",
+      "behaviour": "Dès qu'un membre crée un fil, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les fils créés pendant l'attaque sont supprimés.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMuteVoc",
+      "label": "Anti-mute vocal",
+      "category": "Vocal",
+      "description": "Détecte les mutes vocaux en masse.",
+      "behaviour": "Si un même membre mute en vocal 5 membres en moins de 1 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Les membres mutés retrouvent la parole.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiSourdineVoc",
+      "label": "Anti-sourdine vocal",
+      "category": "Vocal",
+      "description": "Détecte les mises en sourdine vocale en masse.",
+      "behaviour": "Si un même membre met en sourdine 5 membres en moins de 1 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Les membres retrouvent le son.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiDecoUser",
+      "label": "Anti-déconnexion vocale",
+      "category": "Vocal",
+      "description": "Détecte les déconnexions vocales en masse.",
+      "behaviour": "Si un même membre déconnecte du vocal 5 membres en moins de 1 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": null,
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiDeplUser",
+      "label": "Anti-déplacement vocal",
+      "category": "Vocal",
+      "description": "Détecte les déplacements vocaux en masse.",
+      "behaviour": "Si un même membre déplace en vocal 5 membres en moins de 1 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": null,
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiUpdateGuild",
+      "label": "Anti-modification du serveur",
+      "category": "Serveur",
+      "description": "Détecte la modification du serveur, de son nom ou de son icône.",
+      "behaviour": "Dès qu'un membre modifie les réglages du serveur, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Etho remet les anciens réglages du serveur quand c’est possible.",
+      "recommended": false,
+      "lockdownAdvised": true
+    },
+    {
+      "key": "antiEvent",
+      "label": "Anti-événement",
+      "category": "Serveur",
+      "description": "Détecte la création, la modification et la suppression abusives d'événements, annule tout et sanctionne l'auteur.",
+      "behaviour": "Si un même membre crée, modifie ou supprime 2 événements en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Les événements créés sont supprimés, les modifiés retrouvent leurs infos et les supprimés sont recréés.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiExpression",
+      "label": "Anti-expression",
+      "category": "Serveur",
+      "description": "Détecte la suppression d'emojis et de stickers.",
+      "behaviour": "Si un même membre supprime 5 emojis ou stickers en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Etho remet en ligne ce qui a été supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiServerRename",
+      "label": "Anti-renommage du serveur",
+      "category": "Serveur",
+      "description": "Remet l'ancien nom du serveur et sanctionne l'auteur d'un renommage.",
+      "behaviour": "Dès qu'un membre renomme le serveur, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "L'ancien nom du serveur est remis.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiIconUpdate",
+      "label": "Anti-changement d'icône",
+      "category": "Serveur",
+      "description": "Remet l'ancienne icône du serveur et sanctionne l'auteur du changement.",
+      "behaviour": "Dès qu'un membre change l'icône du serveur, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "L'ancienne icône est remise.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiEmojiDelete",
+      "label": "Anti-suppression d'emoji",
+      "category": "Serveur",
+      "description": "Recrée l'emoji supprimé et sanctionne l'auteur.",
+      "behaviour": "Dès qu'un membre supprime un emoji, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Chaque emoji supprimé est recréé avec le même nom.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiEmojiRename",
+      "label": "Anti-renommage d'emoji",
+      "category": "Serveur",
+      "description": "Remet l'ancien nom d'un emoji renommé et sanctionne l'auteur.",
+      "behaviour": "Dès qu'un membre renomme un emoji, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Chaque emoji renommé retrouve son ancien nom.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiInviteDelete",
+      "label": "Anti-suppression d'invitation",
+      "category": "Serveur",
+      "description": "Recrée l'invitation supprimée dans le même salon et sanctionne l'auteur.",
+      "behaviour": "Dès qu'un membre supprime une invitation, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Une nouvelle invitation est créée dans le même salon. Son lien est dans le log.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiLink",
+      "label": "Anti-lien",
+      "category": "Messages",
+      "description": "Bloque les liens publiés sans whitelist.",
+      "behaviour": "Dès qu'un membre publie un lien, Etho supprime le message.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiSpam",
+      "label": "Anti-spam",
+      "category": "Messages",
+      "description": "Détecte le flood de messages et bloque le spam.",
+      "behaviour": "Si un même membre envoie 5 messages en moins de 8 s, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Les messages de la rafale sont supprimés.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiBadWord",
+      "label": "Anti-BadWord",
+      "category": "Messages",
+      "description": "Bloque les messages contenant des mots interdits configurables.",
+      "behaviour": "Dès qu'un membre écrit un mot interdit, Etho supprime le message.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMentionUsers",
+      "label": "Anti-mention membres",
+      "category": "Messages",
+      "description": "Bloque les messages mentionnant trop de membres.",
+      "behaviour": "Si un même membre envoie 5 messages mentionnant plus de 5 membres en moins de 10 s, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMentionRoles",
+      "label": "Anti-mention rôles",
+      "category": "Messages",
+      "description": "Bloque les messages mentionnant trop de rôles.",
+      "behaviour": "Si un même membre envoie 3 messages mentionnant plus de 3 rôles en moins de 10 s, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMentionEveryone",
+      "label": "Anti-mention @everyone",
+      "category": "Messages",
+      "description": "Bloque les mentions globales non autorisées.",
+      "behaviour": "Dès qu'un membre mentionne @everyone ou @here, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiGhostPing",
+      "label": "Anti-ghost ping",
+      "category": "Messages",
+      "description": "Repère les mentions supprimées juste après l'envoi, prévient les personnes visées et sanctionne l'auteur.",
+      "behaviour": "Si un même membre fait 3 ghost pings en moins de 10 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Etho indique dans le salon qui a mentionné qui.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiTextWall",
+      "label": "Anti-TextWall",
+      "category": "Messages",
+      "description": "Supprime les messages trop longs ou avec trop de lignes, et sanctionne les pavés répétés.",
+      "behaviour": "Si un même membre envoie 3 pavés en moins de 1 min, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Chaque pavé est supprimé dès l'envoi, même avant la sanction.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiDuplicateMessage",
+      "label": "Anti-DuplicateMessage",
+      "category": "Messages",
+      "description": "Repère le même message envoyé en boucle, efface les copies et sanctionne l'auteur.",
+      "behaviour": "Si un même membre envoie 3 fois le même message en moins de 30 s, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Toutes les copies sont supprimées, dans tous les salons.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiEmojiAbuse",
+      "label": "Anti-EmojiAbuse",
+      "category": "Messages",
+      "description": "Supprime les messages avec trop d'emojis et sanctionne les abus répétés.",
+      "behaviour": "Si un même membre envoie 3 messages avec trop d'emojis en moins de 1 min, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Chaque message avec trop d'emojis est supprimé dès l'envoi.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiScam",
+      "label": "Anti-token grab",
+      "category": "Messages",
+      "description": "Détecte et supprime les messages d'arnaque : faux Nitro, faux Steam, vol de compte.",
+      "behaviour": "Dès qu'un membre publie une arnaque, Etho supprime le message.",
+      "aftermath": "Le message est supprimé. L'auteur n'est pas sanctionné, sauf si tu choisis une punition.",
+      "recommended": true,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiToxicity",
+      "label": "Anti-toxicité",
+      "category": "Messages",
+      "description": "Analyse chaque message et sanctionne ceux dont le taux de toxicité dépasse ta limite, en français comme en anglais.",
+      "behaviour": "Dès qu'un message atteint un taux de toxicité de 90 %, Etho supprime le message et met l'auteur en timeout 10 min.",
+      "aftermath": "Le message est supprimé.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiStickerAbuse",
+      "label": "Anti-StickerAbuse",
+      "category": "Messages",
+      "description": "Sanctionne l'envoi de stickers en rafale, même tous différents, et efface la rafale.",
+      "behaviour": "Si un même membre envoie 4 stickers en moins de 15 s, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "La rafale de stickers est supprimée.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMessageDelete",
+      "label": "Anti-suppression de message",
+      "category": "Messages",
+      "description": "Dans les salons choisis, remet tout message supprimé et sanctionne l'auteur des suppressions.",
+      "behaviour": "Si un même membre supprime 3 messages en moins de 1 min, Etho met l'auteur en timeout 10 min.",
+      "aftermath": "Chaque message supprimé est republié dans son salon.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiReactionRemove",
+      "label": "Anti-suppression de réaction",
+      "category": "Messages",
+      "description": "Dans les salons choisis, signale chaque réaction retirée et peut verrouiller le serveur si ça se répète.",
+      "behaviour": "Si un même membre retire 10 réactions en moins de 1 min, Etho prévient l'équipe.",
+      "aftermath": "Chaque réaction retirée est signalée dans le salon de logs.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiMemberRename",
+      "label": "Anti-renommage de membre",
+      "category": "Membres",
+      "description": "Détecte les pseudos de membres changés en cascade, remet les anciens et sanctionne l'auteur.",
+      "behaviour": "Si un même membre renomme 3 membres en moins de 10 min, Etho retire tous les rôles de l'auteur.",
+      "aftermath": "Chaque membre renommé retrouve son ancien pseudo.",
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "antiAlt",
+      "label": "Anti-alt",
+      "category": "Membres",
+      "description": "Refuse les comptes Discord trop récents.",
+      "behaviour": "Dès qu'un compte créé il y a moins de 7 jours rejoint, Etho lui envoie un message privé puis expulse le compte.",
+      "aftermath": null,
+      "recommended": false,
+      "lockdownAdvised": false
+    },
+    {
+      "key": "rollback",
+      "label": "Rollback & Backups",
+      "category": "Sauvegarde",
+      "description": "Capture le serveur régulièrement pour tout restaurer après un incident.",
+      "behaviour": "Etho prend régulièrement une photo complète du serveur pour tout restaurer après un incident.",
+      "aftermath": null,
+      "recommended": false,
+      "lockdownAdvised": false
+    }
+  ]
+}

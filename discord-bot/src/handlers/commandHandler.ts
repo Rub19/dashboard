@@ -129,7 +129,7 @@ import { logger } from '../utils/logger.js';
 import { commandTranslations } from '../services/commandTranslations.js';
 import { BotErrorIncidentService } from '../modules/botControl/services/botErrorIncidentService.js';
 
-const PREFIX_ONLY_SHORTCUTS = new Set([
+export const PREFIX_ONLY_SHORTCUTS = new Set([
   'spotifylike', 'spotifylogin', 'spotifylogout', 'spotifynext', 'spotifypause', 'spotifyplay',
   'spotifyprevious', 'spotifyqueue', 'spotifyresume', 'spotifyunlike', 'spotifyvc',
   'lyrics', 'quote', 'duckduckgoimage', 'image', 'reverseimage', 'tvshow', 'movie', 'game', 'fm',

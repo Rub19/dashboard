@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "1.78.5",
+  "version": "1.78.6",
   "description": "Modern & secure Discord bot with unified slash and prefix command handling in TypeScript with Web Dashboard",
   "main": "dist/index.js",
   "type": "module",
@@ -12,7 +12,8 @@
     "node:build": "tsc",
     "node:start": "node dist/index.js",
     "test": "node scripts/run-tests.mjs",
-    "music:doctor": "node scripts/music-doctor.mjs"
+    "music:doctor": "node scripts/music-doctor.mjs",
+    "export:docs": "tsx scripts/export-docs.ts"
   },
   "keywords": [
     "discord",

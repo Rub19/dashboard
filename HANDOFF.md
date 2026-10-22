@@ -1,4 +1,4 @@
-# ETHONE — passation (2026-10-21, version 1.78.5)
+# ETHONE — passation (2026-10-21, version 1.78.6)
 
 État du projet, règles et reste à faire. Le « comment travailler » détaillé (commandes, pièges, vérifications) est dans `HANDOFF-TUTORIAL.md`.
 
@@ -43,6 +43,9 @@ Musique du bot : Lavalink tourne sur le NAS (`ssh nas`), relié au VPS par des t
 - 0 avertissement au lint (images `<img>` acceptées dans la config car l'export statique n'optimise pas les images), réglages synchronisés enregistrés dans le bon profil, notes de version manquantes rétablies.
 - Mail : le contenu, l'objet et l'expéditeur se sélectionnent de nouveau.
 
+### Documentation du bot (/docs, /documentation)
+- Commandes et protections générées depuis le code du bot : `cd discord-bot && DISCORD_TOKEN=ci-placeholder-token CLIENT_ID=000000000000000000 npm run export:docs` écrit `ethone-next/data/botDocs.json` (91 commandes slash, 50 protections). À relancer après chaque ajout ou changement de commande ou de protection. Les guides sont écrits à la main dans `ethone-next/data/documentationData.ts` et ne citent que des commandes réelles.
+
 ### Sécurité (2026-10-21)
 - Pas de PHP dans le projet ni sur le serveur.
 - VPS : pare-feu ufw actif (seuls 22, 80, 443 ouverts), fail2ban sur SSH, mises à jour installées, redémarrage effectué. Cockpit (9090) et le bureau à distance (3389) ne sont plus joignables depuis Internet : passer par un tunnel SSH. Le bot redémarre seul au boot (`pm2-ubuntu`).
@@ -60,4 +63,3 @@ Musique du bot : Lavalink tourne sur le NAS (`ssh nas`), relié au VPS par des t
 2. **SSH du VPS** : il accepte encore les mots de passe. À couper (`PasswordAuthentication no`) seulement avec l'accord de l'utilisateur.
 3. **Supabase** : activer la protection contre les mots de passe divulgués (tableau de bord, Auth → Password security) ; l'utilisateur doit le faire.
 4. **Commentaires** : du code Swift/TypeScript récent contient des commentaires, contraire à la règle zéro commentaire ; à retirer au fil des modifications.
-5. **Pages Documentation du bot** (`/docs`, `/documentation`, `components/docs/DocumentationView.tsx`) : à recouper avec les vraies commandes du bot avant toute refonte.

@@ -60330,4 +60330,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_78_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_78_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_78_5_de);
 
+const v1_78_6_fr: ChangelogEntry = {
+  version: "v1.78.6",
+  date: "2026-10-22",
+  title: "Documentation du bot refaite à partir du vrai code",
+  items: [
+    "Le catalogue des commandes affiche les 91 vraies commandes du bot, avec leur syntaxe, leurs sous-commandes et les permissions requises. Les 12 commandes qui n'existaient pas (/shield, /security, /quarantine…) sont retirées.",
+    "Les 50 protections sont décrites telles qu'elles fonctionnent : ce qu'Etho fait par défaut, ce qu'il répare après une attaque, et si elle fait partie de la base recommandée. Les faux temps de réaction sont supprimés.",
+    "Les guides (démarrage, protections, whitelist, logs, AutoMod, raid, modérateur piraté, arnaques, spam, bot inconnu, sauvegardes) ne citent plus que des commandes et des écrans réels.",
+    "Le lien du serveur de support fonctionne, et la vitrine du bot classe correctement les jeux, la bienvenue, les logs et les événements.",
+  ],
+};
+
+const v1_78_6_en: ChangelogEntry = {
+  version: "v1.78.6",
+  date: "2026-10-22",
+  title: "Bot documentation rebuilt from the real code",
+  items: [
+    "The command catalogue shows the bot's 91 real commands with their syntax, subcommands and required permissions. The 12 commands that did not exist (/shield, /security, /quarantine…) are removed.",
+    "The 50 protections are described as they really work: what Etho does by default, what it repairs after an attack, and whether it is part of the recommended base. Fake reaction times are removed.",
+    "The guides (getting started, protections, whitelist, logs, AutoMod, raid, hacked moderator, scams, spam, unknown bot, backups) only mention real commands and screens.",
+    "The support server link works, and the bot showcase now sorts games, welcome, logs and events correctly.",
+  ],
+};
+
+const v1_78_6_es: ChangelogEntry = {
+  version: "v1.78.6",
+  date: "2026-10-22",
+  title: "Documentación del bot rehecha a partir del código real",
+  items: [
+    "El catálogo muestra los 91 comandos reales del bot con su sintaxis, subcomandos y permisos necesarios. Se eliminan los 12 comandos que no existían (/shield, /security, /quarantine…).",
+    "Las 50 protecciones se describen tal como funcionan: lo que Etho hace por defecto, lo que repara tras un ataque y si forma parte de la base recomendada. Se eliminan los tiempos de reacción inventados.",
+    "Las guías solo mencionan comandos y pantallas reales.",
+    "El enlace al servidor de soporte funciona y el escaparate del bot clasifica bien juegos, bienvenida, registros y eventos.",
+  ],
+};
+
+const v1_78_6_de: ChangelogEntry = {
+  version: "v1.78.6",
+  date: "2026-10-22",
+  title: "Bot-Dokumentation aus dem echten Code neu erstellt",
+  items: [
+    "Der Befehlskatalog zeigt die 91 echten Befehle des Bots mit Syntax, Unterbefehlen und nötigen Berechtigungen. Die 12 nicht existierenden Befehle (/shield, /security, /quarantine…) wurden entfernt.",
+    "Die 50 Schutzfunktionen werden so beschrieben, wie sie wirklich arbeiten: was Etho standardmäßig tut, was es nach einem Angriff repariert und ob sie zur empfohlenen Basis gehört. Erfundene Reaktionszeiten wurden entfernt.",
+    "Die Anleitungen nennen nur noch echte Befehle und Bildschirme.",
+    "Der Link zum Support-Server funktioniert, und die Bot-Vorstellung ordnet Spiele, Willkommen, Logs und Events richtig ein.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_78_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_78_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_78_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_78_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

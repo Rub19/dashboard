@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.78.6 — 2026-10-22
+
+**Documentation du bot refaite à partir du vrai code**
+
+- Le catalogue des commandes affiche les 91 vraies commandes du bot, avec leur syntaxe, leurs sous-commandes et les permissions requises. Les 12 commandes qui n'existaient pas (/shield, /security, /quarantine…) sont retirées.
+- Les 50 protections sont décrites telles qu'elles fonctionnent : ce qu'Etho fait par défaut, ce qu'il répare après une attaque, et si elle fait partie de la base recommandée. Les faux temps de réaction sont supprimés.
+- Les guides (démarrage, protections, whitelist, logs, AutoMod, raid, modérateur piraté, arnaques, spam, bot inconnu, sauvegardes) ne citent plus que des commandes et des écrans réels.
+- Le lien du serveur de support fonctionne, et la vitrine du bot classe correctement les jeux, la bienvenue, les logs et les événements.
+
 ## v1.78.5 — 2026-10-21
 
 **Ancien dashboard du bot supprimé**

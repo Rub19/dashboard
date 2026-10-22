@@ -1,3 +1,5 @@
+import botDocs from "./botDocs.json";
+
 export interface DocGuide {
   id: string;
   title: string;
@@ -14,11 +16,12 @@ export interface DocModule {
   name: string;
   category: string;
   categoryLabel: string;
-  defaultAction: string;
-  reactionTime: string;
   description: string;
+  behaviour: string;
+  aftermath: string | null;
+  recommended: boolean;
+  lockdownAdvised: boolean;
   commandSnippet: string;
-  details: string[];
 }
 
 export interface ModuleCategoryGroup {
@@ -28,1454 +31,228 @@ export interface ModuleCategoryGroup {
   modules: DocModule[];
 }
 
+export interface DocCommand {
+  name: string;
+  syntax: string;
+  category: string;
+  description: string;
+  permissions: string[];
+  subcommands: { name: string; syntax: string; description: string }[];
+}
+
+const slug = (text: string) =>
+  text
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+export const DOC_COMMANDS: DocCommand[] = botDocs.commands;
+
+const COMMAND_CATEGORY_ORDER = ["Sécurité", "Modération", "Administration", "Communauté", "Musique", "Économie", "Jeux", "Fun", "Utilitaires", "Vocal", "Général"];
+
+export const DOC_COMMAND_CATEGORIES: string[] = [
+  "Toutes",
+  ...COMMAND_CATEGORY_ORDER.filter((c) => DOC_COMMANDS.some((cmd) => cmd.category === c)),
+  ...Array.from(new Set(DOC_COMMANDS.map((cmd) => cmd.category))).filter((c) => !COMMAND_CATEGORY_ORDER.includes(c)),
+];
+
+export const MODULE_CATEGORIES: ModuleCategoryGroup[] = botDocs.protectionCategories
+  .map((label) => {
+    const modules = botDocs.protections
+      .filter((p) => p.category === label)
+      .map((p) => ({
+        id: p.key,
+        name: p.label,
+        category: slug(label),
+        categoryLabel: label,
+        description: p.description,
+        behaviour: p.behaviour,
+        aftermath: p.aftermath,
+        recommended: p.recommended,
+        lockdownAdvised: p.lockdownAdvised,
+        commandSnippet: `/protection voir protection:${p.key}`,
+      }));
+    return { id: slug(label), label, count: modules.length, modules };
+  })
+  .filter((c) => c.count > 0);
+
+export const PROTECTION_COUNT = botDocs.protections.length;
+
 export const STEP_BY_STEP_GUIDES: DocGuide[] = [
   {
     id: "bien-demarrer",
     title: "Bien démarrer",
-    description: "Inviter Etho, le placer correctement dans la hiérarchie des rôles Discord et avoir un serveur sécurisé en 2 minutes.",
+    description: "Inviter Etho, placer son rôle au bon endroit et choisir les modules à activer.",
     category: "guides",
-    readTime: "2 min",
-    commandSnippet: "/setup quickstart",
+    readTime: "3 min",
+    commandSnippet: "/setup modules",
     steps: [
-      { step: 1, title: "Inviter le bot", content: "Ajoutez Etho sur votre serveur Discord avec les permissions Administrateur recommandées pour que la protection soit totale." },
-      { step: 2, title: "Hiérarchie des rôles", content: "Dans les Paramètres de votre serveur > Rôles, déplacez le rôle 'Etho' tout en haut de la liste, juste sous le rôle Owner." },
-      { step: 3, title: "Lancer la configuration", content: "Exécutez /setup ou activez la protection depuis le dashboard web pour verrouiller automatiquement les permissions vulnérables." }
+      { step: 1, title: "Inviter le bot", content: "Ajoute Etho depuis la page /bot. Seule la personne qui l'invite reçoit un message de bienvenue en privé ; personne d'autre n'est contacté." },
+      { step: 2, title: "Placer le rôle d'Etho", content: "Dans Paramètres du serveur > Rôles, monte le rôle d'Etho au-dessus des rôles de ton équipe. Etho ne peut agir que sur les rôles placés sous le sien." },
+      { step: 3, title: "Activer les modules", content: "Lance /setup modules sur Discord, ou ouvre la console sur ethone.dev/discord et active les modules qui t'intéressent." }
     ],
     content: [
-      "Etho a été conçu pour être opérationnel immédiatement sans passer des heures à tout configurer à la main.",
-      "Dès son arrivée, le bot analyse les salons, les rôles et les webhooks existants pour repérer d'éventuelles failles de sécurité.",
-      "Le rôle du bot doit impérativement se situer au-dessus des rôles de vos modérateurs afin de pouvoir révoquer leurs actions en cas d'attaque."
+      "Sur un nouveau serveur, tous les modules sont désactivés : Etho ne fait rien tant que tu n'en as pas activé un.",
+      "Si Etho est retiré du serveur, sa configuration pour ce serveur est effacée.",
+      "La langue du bot se règle avec /language (français, anglais, espagnol ou allemand)."
     ]
   },
   {
     id: "configurer-les-protections",
     title: "Configurer les protections",
-    description: "Le panneau de configuration, le mode strict, et les réglages communs à tous les modules anti-raid.",
+    description: `Activer les ${PROTECTION_COUNT} protections, choisir la sanction et le seuil de chacune.`,
     category: "guides",
-    readTime: "3 min",
-    commandSnippet: "/security mode strict:true",
+    readTime: "4 min",
+    commandSnippet: "/protection liste",
     steps: [
-      { step: 1, title: "Mode de sensibilité", content: "Basculez entre le mode Standard (recommandé pour les serveurs actifs) et le mode Strict (protection maximale sans délai)." },
-      { step: 2, title: "Action par défaut", content: "Définissez la sanction automatique en cas d'infraction : Révocation de rôle, Expulsion, Bannissement ou Quarantaine." },
-      { step: 3, title: "Salon des alertes", content: "Configurez un salon privé accessible uniquement aux administrateurs pour recevoir les rapports d'intervention en direct." }
+      { step: 1, title: "Voir l'état", content: "/protection liste affiche chaque protection et si elle est active. /protection voir explique ce qu'elle fait avec tes réglages." },
+      { step: 2, title: "Activer", content: "/protection activer <protection>. Dans la console, la page Protections permet aussi de tout activer par catégorie." },
+      { step: 3, title: "Sanction et seuil", content: "/protection punition choisit la sanction (aucune, timeout, retrait des rôles, expulsion, bannissement). /protection seuil règle combien d'actions sont tolérées et en combien de temps." },
+      { step: 4, title: "Salon d'alerte", content: "/protection salon indique où Etho prévient l'équipe quand une protection se déclenche." }
     ],
     content: [
-      "Chaque module de sécurité d'Etho dispose de trois niveaux d'action : Avertissement & Annulation, Quarantaine immédiate, et Bannissement définitif.",
-      "Grâce au moteur de détection temps réel, les seuils sont ajustés automatiquement selon l'activité habituelle de votre communauté.",
-      "Vous pouvez affiner chaque module individuellement ou appliquer un profil global en une seule commande."
+      "Quand tu actives le module Protections sans rien de configuré, Etho allume une base recommandée : anti-ban, anti-kick, anti-suppression de salon et de rôle, anti-ajout de rôle, anti-bot, anti-webhook, anti-spam, anti-mention @everyone et anti-token grab.",
+      "Toutes les protections sont gratuites : Etho n'a ni abonnement ni option payante."
     ]
   },
   {
     id: "qui-est-protege",
-    title: "Qui est protégé, qui peut agir",
-    description: "Owners, whitelist, bypass et hiérarchie des rôles : les règles qui définissent comment Etho intervient.",
-    category: "guides",
-    readTime: "3 min",
-    commandSnippet: "/whitelist add user:@moderateur role:@administrateur",
-    steps: [
-      { step: 1, title: "Statut Propriétaire", content: "Le créateur du serveur (Owner) est automatiquement immunisé et dispose d'un accès absolu à toutes les commandes d'urgence." },
-      { step: 2, title: "Gestion de la Whitelist", content: "Ajoutez vos modérateurs de confiance à la liste blanche par module spécifique ou globalement." },
-      { step: 3, title: "Système de Quorum", content: "Pour les actions critiques (bannissements en masse, suppression de salons), Etho peut exiger la confirmation de deux administrateurs." }
-    ],
-    content: [
-      "La sécurité d'un serveur ne dépend pas seulement des membres extérieurs : 78% des attaques majeures proviennent de comptes administrateurs compromis.",
-      "La Whitelist d'Etho est granulaire : un administrateur peut être autorisé à créer des salons sans être autorisé à bannir plus de 3 membres par heure.",
-      "Tout comportement anormal d'un membre sur liste blanche déclenche un gel temporaire de sécurité jusqu'à validation du propriétaire."
-    ]
-  },
-  {
-    id: "logs-de-protection",
-    title: "Les logs de protection",
-    description: "Lire un log de protection, choisir où le recevoir, et agir directement depuis les boutons interactifs.",
+    title: "Whitelist et exceptions",
+    description: "Qui est ignoré par les protections, et comment faire confiance à un bot.",
     category: "guides",
     readTime: "2 min",
-    commandSnippet: "/logs channel set channel:#etho-alerts",
+    commandSnippet: "/antiraid trustbot",
     content: [
-      "Dès qu'une infraction est détectée, Etho envoie un embed détaillé contenant l'identité de l'auteur, l'action neutralisée, l'adresse IP/token suspect et le temps de réaction en millisecondes.",
-      "Chaque alerte est accompagnée de boutons d'action rapide : 'Lever la sanction', 'Confirmer le bannissement', ou 'Restaurer l'état précédent'.",
-      "Les logs sont chiffrés et dupliqués dans le cloud Ethone pour empêcher un attaquant de supprimer les traces de son forfait."
+      "Le propriétaire du serveur n'est jamais sanctionné par Etho.",
+      "Les membres et rôles ajoutés à la whitelist (console > Whitelist) sont ignorés. Pour une protection donnée, tu peux leur fixer une « limite de whitelist » : un seuil plus haut au lieu d'une exemption totale.",
+      "Certaines protections acceptent aussi des salons ou catégories exemptés.",
+      "Pour qu'un bot de confiance ne déclenche pas l'anti-bot, ajoute-le avec /antiraid trustbot."
     ]
   },
   {
     id: "logs-du-serveur",
-    title: "Les logs du serveur",
-    description: "Garder une trace de tout ce qui se passe sur ton serveur : membres, salons, rôles, modération, messages, vocal.",
+    title: "Configurer les logs",
+    description: "Envoyer les journaux du serveur dans un ou plusieurs salons.",
     category: "guides",
-    readTime: "3 min",
-    commandSnippet: "/audit track all:true",
+    readTime: "2 min",
+    commandSnippet: "/logs channel",
+    steps: [
+      { step: 1, title: "Mise en route rapide", content: "/logs channel <salon> envoie tous les logs dans un seul salon." },
+      { step: 2, title: "Un salon par catégorie", content: "/logs route <catégorie> [salon] sépare une catégorie (modération, messages, membres…) dans son propre salon." },
+      { step: 3, title: "Niveau de détail", content: "/logs verbosite règle chaque catégorie : tout, important, critique seulement, ou rien." }
+    ],
     content: [
-      "Le module de logs d'audit enregistre l'ensemble des mutations de votre guilde avec horodatage précis à la milliseconde.",
-      "Visualisez les modifications de permissions invisibles dans les logs natifs de Discord grâce à l'analyseur de delta de rôles.",
-      "Filtrez les événements par modérateur, salon ou plage horaire depuis le tableau de bord web."
+      "/logs setup ouvre un panneau guidé, /logs status affiche la configuration actuelle et /logs retention choisit combien de temps l'historique est gardé.",
+      "/logs disable coupe les journaux sans perdre ta configuration."
     ]
   },
   {
-    id: "anti-alt-captcha",
-    title: "Arrivées : anti-alt, captcha et sas",
-    description: "Filtrer les nouveaux comptes, vérifier les humains et encaisser une vague de raid en toute sérénité.",
+    id: "automod",
+    title: "AutoMod d'Etho et AutoMod de Discord",
+    description: "Deux couches complémentaires contre le spam et les messages interdits.",
     category: "guides",
-    readTime: "4 min",
-    commandSnippet: "/gatekeeper enable min_age:7d captcha:button",
+    readTime: "3 min",
+    commandSnippet: "/automod-native preset",
     content: [
-      "Le module Gatekeeper analyse chaque nouvel arrivant : ancienneté du compte, présence d'avatar, numéro de téléphone vérifié et historique de réputation Discord.",
-      "En cas d'afflux anormal (ex: 20 comptes en moins de 10 secondes), Etho active automatiquement le mode Sas et isole les arrivants dans un salon d'attente sécurisé.",
-      "Les utilisateurs légitimes passent un captcha interactif sans quitter Discord, évitant ainsi de perdre de vrais membres."
+      "/automod-native preset crée sur ton serveur les règles AutoMod de Discord recommandées (langage, spam, mentions). Elles sont appliquées par Discord lui-même, même si Etho est hors ligne. /automod-native list les affiche.",
+      "/automod status montre l'AutoMod d'Etho, /automod toggle l'active ou coupe un détecteur précis, et /automod test vérifie un message sans sanctionner personne.",
+      "Les protections de la catégorie Messages (anti-lien, anti-spam, anti-mention, anti-toxicité…) se règlent avec /protection."
     ]
   },
   {
     id: "dashboard-web",
-    title: "Le dashboard web",
-    description: "Piloter l'intégralité du bot depuis le navigateur en temps réel sans taper de commande dans Discord.",
+    title: "La console sur le site",
+    description: "Tout régler depuis ethone.dev/discord, sans taper de commande.",
     category: "guides",
     readTime: "2 min",
-    commandSnippet: "Ouvrir ethone.dev/discord",
     content: [
-      "Le tableau de bord web propose une interface moderne, ultra-réactive avec visualisations interactives de l'état de votre serveur.",
-      "Activez ou désactivez n'importe quel module d'un simple clic avec synchronisation immédiate par WebSocket.",
-      "Consultez les graphiques de sécurité, les statistiques de bannissements et téléchargez des rapports d'audit en un instant."
-    ]
-  },
-  {
-    id: "mode-haute-securite",
-    title: "Mode Haute Sécurité",
-    description: "Les protections les plus poussées, avec surveillance renforcée et isolation de crise instantanée.",
-    category: "guides",
-    readTime: "3 min",
-    commandSnippet: "/security mode strict:true panic_button:true",
-    content: [
-      "Le mode Haute Sécurité active la détection renforcée pour neutraliser les attaques coordonnées à haute fréquence.",
-      "Bénéficiez du bouton d'urgence (Panic Button) qui verrouille l'intégralité de la guilde en moins de 150 millisecondes en cas de compromission majeure.",
-      "Sauvegardes automatiques avec restauration de salons, webhooks et permissions en 1 clic, 100% gratuit et inclus pour tous."
-    ]
-  },
-  {
-    id: "questions-frequentes",
-    title: "Questions fréquentes",
-    description: "Les réponses à toutes les interrogations sur la sécurité, le temps de réaction et le paramétrage.",
-    category: "guides",
-    readTime: "4 min",
-    content: [
-      "Q : Est-ce qu'Etho peut bannir un administrateur sans mon accord ?\nR : Non, l'action appliquée dépend de votre configuration. Par défaut, Etho révoque immédiatement les rôles de l'administrateur compromis et avertit l'Owner.",
-      "Q : Quel est le temps de réaction d'Etho en cas d'attaque ?\nR : Notre infrastructure décentralisée traite les événements Discord Gateway en moins de 250ms, neutralisant les actions malveillantes avant même que Discord ne les propage.",
-      "Q : Que se passe-t-il si Discord subit une panne de ses API ?\nR : Les modifications en attente sont mises en mémoire tampon et réappliquées dès la stabilisation des serveurs Discord."
-    ]
-  },
-  {
-    id: "commandes-slash",
-    title: "Commandes slash",
-    description: "Chaque commande /slash détaillée avec sa syntaxe, ses permissions requises et ses exemples d'usage.",
-    category: "guides",
-    readTime: "5 min",
-    commandSnippet: "/help category:security",
-    content: [
-      "Toutes les commandes d'Etho exploitent l'API Slash native de Discord avec auto-complétion intelligente et vérification des permissions en temps réel.",
-      "Les commandes critiques sont protégées par confirmation modale pour éviter toute fausse manipulation en situation de stress.",
-      "Retrouvez la liste complète des commandes dans l'onglet Commandes du dashboard web ou via /help."
+      "Connecte-toi avec Discord sur ethone.dev/discord, puis choisis ton serveur : seuls les serveurs que tu gères apparaissent.",
+      "Chaque module a sa page : protections, AutoMod, sanctions, bienvenue, rôles automatiques, logs, tickets, niveaux, économie, musique, sauvegardes…",
+      "Les réglages faits dans la console et ceux faits par commande sont les mêmes : changer l'un met l'autre à jour."
     ]
   }
 ];
 
 export const PRACTICAL_SECURITY_GUIDES: DocGuide[] = [
   {
-    id: "proteger-contre-les-raids",
-    title: "Protéger son serveur Discord contre les raids",
-    description: "Ce qu'est un raid Discord, comment l'anti-raid intervient en une seconde et met le serveur à l'abri.",
-    category: "security",
-    readTime: "3 min",
-    commandSnippet: "/antiraid enable auto_lockdown:true",
-    content: [
-      "Un raid Discord est une attaque coordonnée par des dizaines de comptes bots ou utilisateurs malveillants visant à inonder les salons de spam, mentionner tout le monde ou détruire l'arborescence.",
-      "Etho surveille le rythme des arrivées et la fréquence des messages. Dès que le seuil de tolérance est dépassé, l'anti-raid s'active instantanément.",
-      "Le serveur est basculé en confinement partiel : les salons de discussion sont verrouillés pour les non-membres, et les bots malveillants sont expulsés sans toucher aux membres réguliers."
-    ]
-  },
-  {
-    id: "comprendre-attaque-raid",
-    title: "Raider Discord : comprendre l'attaque et s'en protéger",
-    description: "Un raid supprime salons, rôles et membres en quelques secondes. Comment l'anti-raid intervient et comment l'éviter.",
-    category: "security",
-    readTime: "4 min",
-    commandSnippet: "/security audit vulnerability_check",
-    content: [
-      "Les attaquants exploitent souvent un webhook non sécurisé ou un token de bot tiers compromis pour exécuter des suppressions en rafale.",
-      "Grâce au module Anti-Nuke d'Etho, toute suppression répétée de rôles ou de salons est interceptée et annulée avant que Discord ne finalise la suppression.",
-      "Etho isole immédiatement le compte fautif et recrée les salons à l'identique avec leurs permissions d'origine."
-    ]
-  },
-  {
-    id: "choisir-bot-securite",
-    title: "Comment choisir un bot de sécurité Discord",
-    description: "Les critères qui comptent vraiment pour choisir un bot anti-raid et anti-nuke, et comment Etho y répond.",
-    category: "security",
-    readTime: "3 min",
-    content: [
-      "Critère n°1 : La latence de réaction. Un bot qui réagit en 2 secondes arrive trop tard. Etho répond en moins de 250ms.",
-      "Critère n°2 : L'indépendance de l'infrastructure. Nos workers tournent sur une architecture multi-région à haute disponibilité 99.99%.",
-      "Critère n°3 : La protection contre les nukes internes. Etho protège votre serveur contre vos propres modérateurs piratés, pas seulement contre les inconnus."
-    ]
-  },
-  {
-    id: "sauvegarder-restaurer-serveur",
-    title: "Sauvegarder et restaurer un serveur Discord",
-    description: "L'erreur arrive, un geste malheureux aussi : pourquoi une bonne sauvegarde protège et comment restaurer en un clic.",
-    category: "security",
-    readTime: "3 min",
-    commandSnippet: "/backup create name:'Sauvegarde Préventive'",
-    content: [
-      "Une sauvegarde complète capture l'intégralité de la structure : salons textuels et vocaux, catégories, rôles, permissions par salon, émojis et paramètres.",
-      "En cas d'incident, tapez /backup restore ou cliquez sur Restaurer depuis le dashboard pour retrouver votre serveur à la seconde près.",
-      "Les sauvegardes sont chiffrées de bout en bout et conservées en toute sécurité de bout en bout et conservées en toute sécurité sur nos serveurs redondés."
-    ]
-  },
-  {
     id: "raid-en-cours-agir-maintenant",
-    title: "Raid en cours sur mon serveur Discord : que faire maintenant",
-    description: "Des dizaines de comptes arrivent et spamment ? Les gestes à faire tout de suite pour arrêter une crise, puis comment éviter la prochaine.",
+    title: "Un raid est en cours",
+    description: "Des dizaines de comptes arrivent et spamment : ce qu'il faut faire tout de suite.",
     category: "security",
     readTime: "2 min",
-    commandSnippet: "/lockdown all reason:'Raid en cours'",
+    commandSnippet: "/antiraid raidmode activer:True",
+    steps: [
+      { step: 1, title: "Mode raid", content: "/antiraid raidmode activer:True passe le serveur en mode raid d'urgence ; selon ta configuration, Etho verrouille aussi les salons." },
+      { step: 2, title: "Verrouiller les salons", content: "/antiraid lockdown activer:True ferme l'écriture dans les salons textuels si ce n'est pas déjà fait." },
+      { step: 3, title: "Suivre l'attaque", content: "/antiraid status affiche l'état et le score de risque du serveur." },
+      { step: 4, title: "Revenir à la normale", content: "Une fois le calme revenu, /antiraid raidmode activer:False puis /antiraid lockdown activer:False rouvrent les salons." }
+    ],
     content: [
-      "1. Activez le confinement d'urgence : tapez /lockdown all pour fermer instantanément l'écriture dans tous les salons publics.",
-      "2. Révoquez les invitations : exécutez /invites pause pour couper l'accès aux nouveaux arrivants pendant l'attaque.",
-      "3. Nettoyez les comptes indésirables : utilisez /cleanup raid pour expulser en masse tous les comptes ayant rejoint durant les 10 dernières minutes."
-    ]
-  },
-  {
-    id: "serveur-raid-reprendre-main",
-    title: "Serveur Discord raid : les étapes pour reprendre la main",
-    description: "Salons supprimés, rôles effacés, membres bannis : ce qu'il faut faire tout de suite après un raid violent, et comment reconstruire son serveur.",
-    category: "security",
-    readTime: "4 min",
-    commandSnippet: "/backup rollback auto",
-    content: [
-      "Étape 1 : Retirez les permissions Administrateur à tous les rôles non vérifiés et révoquez les bots tiers suspects.",
-      "Étape 2 : Lancez /backup rollback auto pour faire réapparaître l'ensemble des salons et rôles supprimés avec leurs permissions.",
-      "Étape 3 : Activez le module Anti-Déban pour débannir automatiquement les membres légitimes expulsés par l'attaquant."
-    ]
-  },
-  {
-    id: "faux-nitro-phishing",
-    title: "Faux Nitro, liens d'arnaque et vol de compte sur Discord",
-    description: "Les arnaques les plus courantes sur Discord (faux Nitro, faux Steam, faux tweets crypto) et comment les bloquer automatiquement.",
-    category: "security",
-    readTime: "3 min",
-    commandSnippet: "/antiscam enable delete_message:true timeout_user:1h",
-    content: [
-      "Le phishing Discord repose sur des domaines sosies (ex: disocrd-gift, stéamcommunity, free-nitro).",
-      "Le filtre Anti-Scam d'Etho inspecte en temps réel chaque URL postée via notre base de menaces mise à jour toutes les 60 secondes.",
-      "Tout message contenant un lien suspect est immédiatement supprimé et l'expéditeur est placé en sourdine pour éviter la propagation du ver."
+      "Pour la suite : active la vérification des nouveaux membres (/verification toggle) et l'anti-alt, qui refuse les comptes Discord trop récents."
     ]
   },
   {
     id: "moderateur-pirate",
-    title: "Compte de modérateur piraté : limiter les dégâts",
-    description: "Le compte de ton staff a été volé et s'en prend au serveur ? Comment réagir et comment faire pour qu'un seul compte ne puisse pas tout casser.",
+    title: "Un modérateur supprime tout",
+    description: "Un compte de l'équipe (piraté ou malveillant) bannit, supprime des salons ou des rôles.",
     category: "security",
     readTime: "3 min",
-    commandSnippet: "/antinuke set threshold:3 action:quarantine",
+    commandSnippet: "/protection deverrouiller",
     content: [
-      "Même un modérateur de confiance peut se faire voler son token via un malware ou une fausse vérification QR code.",
-      "L'Anti-Nuke d'Etho surveille les cadences d'actions : si un modérateur effectue plus de 3 bannissements ou suppressions en moins de 10 secondes, il est automatiquement neutralisé.",
-      "Ses rôles de modération lui sont retirés sur-le-champ et le serveur envoie une alerte prioritaire au propriétaire."
+      "Les protections Sanctions en série, Salons et Rôles et permissions détectent ces rafales : par défaut, Etho retire tous les rôles de l'auteur, puis répare ce qui peut l'être (débannit, recrée les salons et rôles supprimés avec leurs permissions).",
+      "Pour l'anti-suppression de salon, de rôle et l'anti-modification du serveur, Etho conseille de verrouiller le serveur : il retire alors les permissions sensibles à tous les rôles. /protection deverrouiller les rend une fois le danger passé.",
+      "Pour l'éviter : garde peu de membres avec des permissions d'administration, et utilise les rôles sécurisés (/elevate) pour n'activer les permissions sensibles que pour une durée limitée."
+    ]
+  },
+  {
+    id: "faux-nitro-phishing",
+    title: "Liens d'arnaque et faux Nitro",
+    description: "Des messages promettent du Nitro gratuit ou demandent de se connecter.",
+    category: "security",
+    readTime: "2 min",
+    commandSnippet: "/protection activer protection:antiScam",
+    content: [
+      "L'anti-token grab détecte les messages d'arnaque (faux Nitro, faux Steam, vol de compte) et les supprime. Par défaut, l'auteur n'est pas sanctionné, car son compte est souvent lui-même piraté ; tu peux choisir une sanction avec /protection punition.",
+      "L'anti-lien bloque tous les liens qui ne sont pas dans ta liste de domaines autorisés.",
+      "/automod-native preset ajoute aussi les règles AutoMod de Discord contre le spam."
     ]
   },
   {
     id: "arreter-le-spam",
-    title: "Arrêter le spam sur un serveur Discord",
-    description: "Flood, mentions de masse, messages répétés en boucle, ghost pings et perte de texte : les réglages qui suppriment le spam automatiquement.",
+    title: "Arrêter le spam et le flood",
+    description: "Messages en rafale, mentions de masse, pavés de texte.",
     category: "security",
-    readTime: "3 min",
-    commandSnippet: "/automod antispam enable max_duplicates:3",
+    readTime: "2 min",
+    commandSnippet: "/slowmode secondes:10",
     content: [
-      "Le spam perturbe la vie de votre communauté et fait fuir les membres actifs. Etho embarque 6 sous-modules dédiés au spam.",
-      "L'Anti-Flood bloque les rafales de plus de 5 messages en 3 secondes. L'Anti-Duplicate supprime les copier-coller envoyés sur plusieurs salons.",
-      "L'Anti-GhostPing repère les petits malins qui mentionnent un membre avant d'effacer leur message pour le harceler."
+      "Sur le moment : /slowmode impose un délai entre deux messages, /lock ferme le salon et /unlock le rouvre.",
+      "Durablement : active l'anti-spam, l'anti-mention membres, l'anti-mention rôles, l'anti-mention @everyone, l'anti-TextWall et l'anti-DuplicateMessage. Par défaut, ils suppriment les messages en cause et mettent l'auteur en timeout 10 minutes.",
+      "Les sanctions manuelles passent par /warn, /mod et /untimeout ; /warnings affiche l'historique d'un membre."
     ]
   },
   {
-    id: "captcha-verification",
-    title: "Ajouter un captcha de vérification sur Discord",
-    description: "Pourquoi un captcha à l'arrivée bloque les bots et les raids, comment le mettre en place sur ton serveur Discord en quelques minutes.",
+    id: "bot-malveillant",
+    title: "Un bot inconnu a été ajouté",
+    description: "Un bot ajouté sans ton accord peut tout casser.",
     category: "security",
-    readTime: "3 min",
-    commandSnippet: "/captcha setup channel:#reglement role:@Membre",
+    readTime: "1 min",
+    commandSnippet: "/antiraid trustbot",
     content: [
-      "Un sas de bienvenue avec captcha est le rempart le plus efficace pour empêcher les comptes robots de polluer vos salons.",
-      "Etho propose 3 modes de vérification : Clic sur bouton interactif, Choix d'émoji parmi 4 propositions, ou Code alphanumérique aléatoire.",
-      "Une fois validé, le membre reçoit automatiquement son rôle et débloque l'accès aux salons de discussion."
+      "L'anti-bot bannit le bot ajouté et retire les rôles de la personne qui l'a invité (sanction par défaut).",
+      "Ajoute tes bots de confiance avec /antiraid trustbot pour qu'ils ne soient pas bloqués."
     ]
   },
   {
-    id: "checklist-securite-complete",
-    title: "Sécuriser un serveur Discord : la checklist complète",
-    description: "Permissions, rôles, 2FA, salons, logs et sauvegardes : la liste à cocher pour sécuriser un serveur Discord avant qu'un problème n'arrive.",
+    id: "sauvegarder-restaurer-serveur",
+    title: "Sauvegarder et restaurer le serveur",
+    description: "Revenir à un état sain après un incident.",
     category: "security",
-    readTime: "4 min",
-    commandSnippet: "/security audit report",
+    readTime: "2 min",
     content: [
-      "1. Exiger l'authentification 2FA pour tous les membres ayant des permissions de modération.",
-      "2. Placer le rôle Etho tout en haut de la hiérarchie pour lui permettre de révoquer n'importe quel rôle compromis.",
-      "3. Vérifier qu'aucun salon public n'accorde la permission 'Mentionner @everyone' ou 'Gérer les webhooks'.",
-      "4. Créer une sauvegarde initiale complète avec /backup create.",
-      "5. Activer les modules Anti-Ban, Anti-Kick, Anti-Webhook et Anti-Raid dans leur mode de sensibilité standard."
+      "La protection Rollback & Backups prend régulièrement une photo complète du serveur (salons, rôles, permissions).",
+      "Les sauvegardes se consultent et se restaurent depuis la console, page Sauvegardes."
     ]
-  },
-  {
-    id: "bot-moderation-commandes",
-    title: "Bot de modération Discord : commandes et modération automatique",
-    description: "Bannir, expulser, nettoyer, verrouiller un salon, filtrer les insultes : ce qu'un bot de modération fait pour ton équipe, en commandes et en automatique.",
-    category: "security",
-    readTime: "3 min",
-    commandSnippet: "/mod warn user:@membre reason:'Non-respect des règles'",
-    content: [
-      "La modération automatique filtre les insultes, les liens d'arnaque et le flood 24h/24 sans aucune intervention humaine.",
-      "Pour votre équipe de modération, Etho met à disposition une suite complète de commandes : /warn, /mute, /kick, /ban, /purge et /slowmode.",
-      "Chaque sanction est enregistrée dans un casier de modération consultable à tout moment avec historique des avertissements passés."
-    ]
-  }
-];
-
-export const MODULE_CATEGORIES: ModuleCategoryGroup[] = [
-  {
-    id: "sanctions",
-    label: "Sanctions",
-    count: 4,
-    modules: [
-      {
-        id: "anti-ban",
-        name: "Anti-ban",
-        category: "sanctions",
-        categoryLabel: "Sanctions",
-        defaultAction: "Révocation de rôle & Quarantaine",
-        reactionTime: "< 180ms",
-        description: "Surveille tous les bannissements émis sur la guilde. Si un utilisateur banni un nombre anormal de membres en un court laps de temps, ses droits sont retirés et la victime est réintégrée.",
-        commandSnippet: "/security module enable module:anti-ban threshold:3 action:quarantine",
-        details: [
-          "Détection immédiate via l'événement AuditLog Entry Create.",
-          "Rétablissement automatique du membre banni sans perte de données.",
-          "Possibilité de définir un seuil par modérateur ou par rôle."
-        ]
-      },
-      {
-        id: "anti-kick",
-        name: "Anti-kick",
-        category: "sanctions",
-        categoryLabel: "Sanctions",
-        defaultAction: "Révocation des permissions",
-        reactionTime: "< 190ms",
-        description: "Empêche l'expulsion massive des membres du serveur par un modérateur malveillant ou compromis.",
-        commandSnippet: "/security module enable module:anti-kick threshold:3/10s",
-        details: [
-          "Intercepte les expulsions non autorisées.",
-          "Génère une alerte prioritaire avec mention du propriétaire du serveur.",
-          "Isole le modérateur fautif en lui retirant l'ensemble de ses rôles."
-        ]
-      },
-      {
-        id: "anti-timeout",
-        name: "Anti-timeout",
-        category: "sanctions",
-        categoryLabel: "Sanctions",
-        defaultAction: "Annulation de l'exclusion temporaire",
-        reactionTime: "< 210ms",
-        description: "Détecte et annule les mises en exclusion temporaire (time-out) abusives infligées aux membres.",
-        commandSnippet: "/security module enable module:anti-timeout threshold:5/1m",
-        details: [
-          "Restaure immédiatement la parole au membre sanctionné injustement.",
-          "Enregistre la tentative dans les logs de sécurité."
-        ]
-      },
-      {
-        id: "anti-deban",
-        name: "Anti-déban",
-        category: "sanctions",
-        categoryLabel: "Sanctions",
-        defaultAction: "Re-bannissement immédiat",
-        reactionTime: "< 160ms",
-        description: "Interdit le dé-bannissement non autorisé de comptes figurant sur la liste noire ou précédemment sanctionnés pour raid.",
-        commandSnippet: "/security module enable module:anti-deban strict:true",
-        details: [
-          "Re-bannit instantanément le compte sans laisser de fenêtre d'accès.",
-          "Signale quel membre du staff a tenté de lever la sanction."
-        ]
-      }
-    ]
-  },
-  {
-    id: "salons",
-    label: "Salons",
-    count: 3,
-    modules: [
-      {
-        id: "anti-creation-salon",
-        name: "Anti-création de salon",
-        category: "salons",
-        categoryLabel: "Salons",
-        defaultAction: "Suppression du salon créé",
-        reactionTime: "< 220ms",
-        description: "Bloque la création intempestive de dizaines de salons destinés à polluer l'interface ou spammer le serveur.",
-        commandSnippet: "/security module enable module:anti-channel-create threshold:2/10s",
-        details: [
-          "Supprime immédiatement les salons non autorisés.",
-          "Révocation du rôle du créateur suspect."
-        ]
-      },
-      {
-        id: "anti-suppression-salon",
-        name: "Anti-suppression de salon",
-        category: "salons",
-        categoryLabel: "Salons",
-        defaultAction: "Recréation instantanée du salon",
-        reactionTime: "< 240ms",
-        description: "Interdit la destruction de salons textuels, vocaux ou forums. En cas d'effacement, Etho recrée le salon avec son nom, sa catégorie, sa position et ses permissions exactes.",
-        commandSnippet: "/security module enable module:anti-channel-delete restore:true",
-        details: [
-          "Restauration automatique à l'identique.",
-          "Préservation de l'arbre hiérarchique et des permissions spécifiques."
-        ]
-      },
-      {
-        id: "anti-modification-salon",
-        name: "Anti-modification de salon",
-        category: "salons",
-        categoryLabel: "Salons",
-        defaultAction: "Rétablissement des paramètres",
-        reactionTime: "< 230ms",
-        description: "Empêche la modification malveillante du nom d'un salon, de sa description ou de ses restrictions de visibilité.",
-        commandSnippet: "/security module enable module:anti-channel-update",
-        details: [
-          "Détecte les renommages de salons en textes de raid.",
-          "Rétablit instantanément les permissions d'origine."
-        ]
-      }
-    ]
-  },
-  {
-    id: "roles",
-    label: "Rôles",
-    count: 7,
-    modules: [
-      {
-        id: "anti-creation-role",
-        name: "Anti-création de rôle",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Suppression du rôle créé",
-        reactionTime: "< 200ms",
-        description: "Bloque la création répétée de nouveaux rôles par des comptes compromis.",
-        commandSnippet: "/security module enable module:anti-role-create",
-        details: ["Évite la création de rôles fantômes avec permission Administrateur."]
-      },
-      {
-        id: "anti-suppression-role",
-        name: "Anti-suppression de rôle",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Recréation et réattribution du rôle",
-        reactionTime: "< 250ms",
-        description: "Interdit la suppression d'un rôle existant. Etho recrée le rôle, réapplique sa couleur, ses permissions et le redistribue à tous les membres qui le possédaient.",
-        commandSnippet: "/security module enable module:anti-role-delete restore_members:true",
-        details: [
-          "Recréation fidèle des permissions et couleurs.",
-          "Réattribution transparente à tous les détenteurs enregistrés."
-        ]
-      },
-      {
-        id: "anti-modification-role",
-        name: "Anti-modification de rôle",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Annulation de l'élévation de permissions",
-        reactionTime: "< 190ms",
-        description: "Détecte immédiatement tout ajout furtif de permissions critiques (Administrateur, Gérer les rôles, Bannir des membres) à un rôle standard.",
-        commandSnippet: "/security module enable module:anti-role-update protect_admin:true",
-        details: ["Neutralise l'élévation de privilèges en temps réel."]
-      },
-      {
-        id: "anti-octroi-role",
-        name: "Anti-octroi de rôle",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Retrait du rôle octroyé",
-        reactionTime: "< 170ms",
-        description: "Empêche d'attribuer un rôle à privilèges élevés à un membre sans que l'action ne soit validée par un responsable.",
-        commandSnippet: "/security module enable module:anti-role-give roles:@Admin,@Modo",
-        details: ["Empêche un modérateur corrompu de donner les pleins pouvoirs à son compte secondaire."]
-      },
-      {
-        id: "anti-retrait-role",
-        name: "Anti-retrait de rôle",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Restitution immédiate du rôle",
-        reactionTime: "< 180ms",
-        description: "Bloque le retrait massif de rôles clés protégeant vos membres ou votre équipe de modération.",
-        commandSnippet: "/security module enable module:anti-role-remove",
-        details: ["Empêche de dégrader vos administrateurs pour les neutraliser avant une attaque."]
-      },
-      {
-        id: "anti-reorganisation-role",
-        name: "Anti-réorganisation de rôles",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Rétablissement de l'ordre hiérarchique",
-        reactionTime: "< 260ms",
-        description: "Détecte et bloque toute tentative de déplacement d'un rôle vers le haut de la hiérarchie pour contourner les restrictions Discord.",
-        commandSnippet: "/security module enable module:anti-role-reorder",
-        details: ["Verrouille la hiérarchie de rôles définie par l'Owner."]
-      },
-      {
-        id: "anti-role-masse",
-        name: "Anti-rôle de masse",
-        category: "roles",
-        categoryLabel: "Rôles",
-        defaultAction: "Blocage de l'opération en masse",
-        reactionTime: "< 210ms",
-        description: "Empêche l'attribution ou le retrait simultané d'un rôle à des centaines de membres à la chaîne.",
-        commandSnippet: "/security module enable module:anti-mass-role limit:10/1m",
-        details: ["Évite les saturations de file d'attente et perturbations massives."]
-      }
-    ]
-  },
-  {
-    id: "bots",
-    label: "Bots et intégrations",
-    count: 4,
-    modules: [
-      {
-        id: "anti-bot",
-        name: "Anti-bot",
-        category: "bots",
-        categoryLabel: "Bots et intégrations",
-        defaultAction: "Expulsion immédiate du bot",
-        reactionTime: "< 150ms",
-        description: "Interdit l'ajout de bots tiers non autorisés sur le serveur. Tout bot ajouté sans que son ID ne figure dans la whitelist est expulsé à la seconde où il rejoint.",
-        commandSnippet: "/security module enable module:anti-bot action:ban_bot",
-        details: [
-          "Expulsion instantanée sans laisser le temps au bot de recevoir le token Gateway.",
-          "Sanction configurable pour l'administrateur ayant généré le lien OAuth."
-        ]
-      },
-      {
-        id: "anti-webhook",
-        name: "Anti-webhook",
-        category: "bots",
-        categoryLabel: "Bots et intégrations",
-        defaultAction: "Suppression du webhook créé",
-        reactionTime: "< 170ms",
-        description: "Empêche la création furtive de webhooks utilisés par les attaquants pour contourner la modération et envoyer des messages au nom du serveur.",
-        commandSnippet: "/security module enable module:anti-webhook",
-        details: ["Détruit le webhook dès sa déclaration auprès de l'API Discord."]
-      },
-      {
-        id: "anti-modification-webhook",
-        name: "Anti-modification de webhook",
-        category: "bots",
-        categoryLabel: "Bots et intégrations",
-        defaultAction: "Révocation du webhook",
-        reactionTime: "< 190ms",
-        description: "Bloque la modification d'un webhook existant (nom, avatar, salon de destination).",
-        commandSnippet: "/security module enable module:anti-webhook-update",
-        details: ["Empêche le détournement d'intégrations légitimes (GitHub, Zapier)."]
-      },
-      {
-        id: "anti-thread",
-        name: "Anti-thread",
-        category: "bots",
-        categoryLabel: "Bots et intégrations",
-        defaultAction: "Verrouillage et suppression du fil",
-        reactionTime: "< 220ms",
-        description: "Empêche la création en boucle de centaines de fils de discussion (threads) visant à inonder les notifications des membres.",
-        commandSnippet: "/security module enable module:anti-thread threshold:3/10s",
-        details: ["Supprime les fils spam et applique un slowmode automatique au créateur."]
-      }
-    ]
-  },
-  {
-    id: "vocal",
-    label: "Vocal",
-    count: 4,
-    modules: [
-      {
-        id: "anti-mute-vocal",
-        name: "Anti-mute vocal",
-        category: "vocal",
-        categoryLabel: "Vocal",
-        defaultAction: "Rétablissement du micro",
-        reactionTime: "< 190ms",
-        description: "Bloque la mise en sourdine serveur abusive des membres dans les salons vocaux par un animateur malveillant.",
-        commandSnippet: "/security module enable module:anti-voice-mute",
-        details: ["Rend la parole au membre immédiatement."]
-      },
-      {
-        id: "anti-sourdine-vocal",
-        name: "Anti-sourdine vocal",
-        category: "vocal",
-        categoryLabel: "Vocal",
-        defaultAction: "Rétablissement du casque",
-        reactionTime: "< 190ms",
-        description: "Interdit la mise en sourdine casque forcée sur les utilisateurs connectés aux canaux vocaux.",
-        commandSnippet: "/security module enable module:anti-voice-deaf",
-        details: ["Détecte les abus de pouvoir en salon communautaire."]
-      },
-      {
-        id: "anti-deconnexion-vocal",
-        name: "Anti-déconnexion vocale",
-        category: "vocal",
-        categoryLabel: "Vocal",
-        defaultAction: "Sanction du modérateur fautif",
-        reactionTime: "< 220ms",
-        description: "Empêche d'expulser en masse les utilisateurs hors des salons vocaux lors d'événements ou conférences.",
-        commandSnippet: "/security module enable module:anti-voice-disconnect threshold:4/5s",
-        details: ["Avertit le propriétaire et révoque les droits de gestion vocale de l'auteur."]
-      },
-      {
-        id: "anti-deplacement-vocal",
-        name: "Anti-déplacement vocal",
-        category: "vocal",
-        categoryLabel: "Vocal",
-        defaultAction: "Rapatriement des membres déplacés",
-        reactionTime: "< 240ms",
-        description: "Bloque le déplacement forcé en boucle des membres d'un salon vocal à un autre pour les perturber.",
-        commandSnippet: "/security module enable module:anti-voice-move threshold:3/5s",
-        details: ["Replace automatiquement les utilisateurs dans leur salon d'origine."]
-      }
-    ]
-  },
-  {
-    id: "serveur",
-    label: "Serveur",
-    count: 3,
-    modules: [
-      {
-        id: "anti-modification-serveur",
-        name: "Anti-modification du serveur",
-        category: "serveur",
-        categoryLabel: "Serveur",
-        defaultAction: "Rétablissement des paramètres de guilde",
-        reactionTime: "< 210ms",
-        description: "Interdit toute modification du nom du serveur, de son icône, de sa bannière, de son niveau de vérification ou de son salon de règles.",
-        commandSnippet: "/security module enable module:anti-guild-update lock_name:true",
-        details: ["Empêche de transformer un serveur réputé en vitrine de raid."]
-      },
-      {
-        id: "anti-suppression-template",
-        name: "Anti-suppression de template",
-        category: "serveur",
-        categoryLabel: "Serveur",
-        defaultAction: "Restauration immédiate",
-        reactionTime: "< 200ms",
-        description: "Protège les modèles de guilde et paramètres avancés d'intégration.",
-        commandSnippet: "/security module enable module:anti-template-delete",
-        details: ["Garantit l'intégrité de la structure fondamentale du serveur."]
-      },
-      {
-        id: "anti-evenement",
-        name: "Anti-événement",
-        category: "serveur",
-        categoryLabel: "Serveur",
-        defaultAction: "Suppression de l'événement indésirable",
-        reactionTime: "< 230ms",
-        description: "Empêche la création d'événements Discord programmés frauduleux destinés à spammer les notifications calendrier des membres.",
-        commandSnippet: "/security module enable module:anti-event-spam",
-        details: ["Annule les événements non validés par un administrateur."]
-      }
-    ]
-  },
-  {
-    id: "messages",
-    label: "Messages",
-    count: 11,
-    modules: [
-      {
-        id: "anti-lien",
-        name: "Anti-lien",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression du message",
-        reactionTime: "< 140ms",
-        description: "Bloque l'envoi de liens non autorisés avec liste blanche par salon et par domaine (ex: YouTube, Twitch autorisés dans #médias).",
-        commandSnippet: "/automod antilink enable whitelist_domains:youtube.com,twitch.tv",
-        details: ["Filtre les invitations Discord concurrentes et sites suspects."]
-      },
-      {
-        id: "anti-spam",
-        name: "Anti-spam",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression & Mute automatique",
-        reactionTime: "< 130ms",
-        description: "Analyse la fréquence d'envoi et supprime instantanément les messages envoyés trop rapidement.",
-        commandSnippet: "/automod antispam enable max_messages:5 time_window:3s",
-        details: ["Applique une exclusion temporaire de 10 minutes en cas de récidive."]
-      },
-      {
-        id: "anti-badword",
-        name: "Anti-badword",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression & Avertissement",
-        reactionTime: "< 120ms",
-        description: "Filtre les insultes, propos haineux et termes interdits, y compris ceux camouflés par des caractères spéciaux ou leetspeak.",
-        commandSnippet: "/automod badwords add word:insulte strict:true",
-        details: ["Analyse sémantique intelligente résistante aux contournements."]
-      },
-      {
-        id: "anti-toxicite",
-        name: "Anti-toxicité",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Avertissement discret et signalement",
-        reactionTime: "< 250ms",
-        description: "Détecte les comportements toxiques, le harcèlement passif et l'agressivité verbale via notre moteur d'analyse contextuelle.",
-        commandSnippet: "/automod toxicity enable sensitivity:medium",
-        details: ["Avertit les modérateurs sans interrompre les échanges constructifs."]
-      },
-      {
-        id: "anti-mention-mass",
-        name: "Anti-mention mass",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression & Sanction",
-        reactionTime: "< 130ms",
-        description: "Bloque les messages mentionnant plus d'un nombre déterminé d'utilisateurs ou les mentions @everyone / @here non autorisées.",
-        commandSnippet: "/automod antimention enable max_mentions:3 block_everyone:true",
-        details: ["Neutralise la méthode préférée des raiders pour attirer l'attention."]
-      },
-      {
-        id: "anti-mention-ghostping",
-        name: "Anti-mention ghost-ping",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Identification publique de l'auteur",
-        reactionTime: "< 150ms",
-        description: "Identifie tout utilisateur qui mentionne un membre puis supprime ou modifie son message pour le harceler sans laisser de trace.",
-        commandSnippet: "/automod ghostping enable log_channel:#moderation",
-        details: ["Reposte le contenu supprimé dans le salon ou en alerte privée."]
-      },
-      {
-        id: "anti-ghostping",
-        name: "Anti-ghost ping",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Journalisation de la tentative",
-        reactionTime: "< 160ms",
-        description: "Garde une mémoire tampon de 60 secondes des mentions supprimées pour confondre les perturbateurs.",
-        commandSnippet: "/automod ghostping set_threshold:1",
-        details: ["Permet aux modérateurs de voir exactement qui a été pingé et par qui."]
-      },
-      {
-        id: "anti-lockdown",
-        name: "Anti-lockdown",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Procédure d'urgence",
-        reactionTime: "< 110ms",
-        description: "Permet de verrouiller un salon spécifique ou tous les salons du serveur en un seul geste en cas de débordement incontrôlé.",
-        commandSnippet: "/lockdown channel:#general duration:30m",
-        details: ["Ferme la permission d'envoi de messages pour le rôle @everyone."]
-      },
-      {
-        id: "anti-duplicate-message",
-        name: "Anti-DuplicateMessage",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression des doublons",
-        reactionTime: "< 140ms",
-        description: "Supprime automatiquement le même message copié et collé à l'identique dans plusieurs salons différents.",
-        commandSnippet: "/automod duplicate enable max_channels:2",
-        details: ["Bloque la promotion sauvage d'autres serveurs ou de ventes illégales."]
-      },
-      {
-        id: "anti-emoji-abuse",
-        name: "Anti-EmojiAbuse",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression du message surchargé",
-        reactionTime: "< 150ms",
-        description: "Empêche l'envoi de pavés de texte constitués de dizaines d'emojis pour faire planter l'affichage Discord sur mobile.",
-        commandSnippet: "/automod emojis max:10",
-        details: ["Protège le confort de lecture de votre communauté."]
-      },
-      {
-        id: "anti-relais-pub",
-        name: "Anti-relais pub",
-        category: "messages",
-        categoryLabel: "Messages",
-        defaultAction: "Suppression de l'invitation",
-        reactionTime: "< 130ms",
-        description: "Interdit le partage d'invitations Discord (discord.gg/...) dans les salons de discussion non réservés au partenariat.",
-        commandSnippet: "/automod invites block_all:true allow_partners:true",
-        details: ["Vérifie le serveur de destination pour ne pas bloquer les liens officiels."]
-      }
-    ]
-  },
-  {
-    id: "membres",
-    label: "Membres",
-    count: 2,
-    modules: [
-      {
-        id: "anti-renommage-membre",
-        name: "Anti-renommage de membre",
-        category: "membres",
-        categoryLabel: "Membres",
-        defaultAction: "Réinitialisation du pseudonyme",
-        reactionTime: "< 190ms",
-        description: "Rétablit le nom d'origine si un membre tente d'adopter un pseudonyme injurieux, invisible (caractères Zalgo) ou usurpant l'identité d'un membre du staff.",
-        commandSnippet: "/security module enable module:anti-nickname protect_staff:true",
-        details: ["Protège contre le vol d'identité d'administrateurs."]
-      },
-      {
-        id: "anti-alt",
-        name: "Anti-alt",
-        category: "membres",
-        categoryLabel: "Membres",
-        defaultAction: "Mise en quarantaine du compte secondaire",
-        reactionTime: "< 180ms",
-        description: "Analyse l'âge de création des comptes Discord. Tout compte créé il y a moins de X jours est soumis à une vérification approfondie avant d'accéder au serveur.",
-        commandSnippet: "/security module enable module:anti-alt min_age:7d",
-        details: ["Élimine la quasi-totalité des comptes jetables utilisés pour contourner un bannissement."]
-      }
-    ]
-  },
-  {
-    id: "sauvegardes",
-    label: "Sauvegarde & Backups",
-    count: 3,
-    modules: [
-      {
-        id: "rollback-instantane",
-        name: "Rollback instantané",
-        category: "sauvegardes",
-        categoryLabel: "Sauvegarde",
-        defaultAction: "Restauration en un clic",
-        reactionTime: "< 2.5s",
-        description: "En cas d'attaque catastrophique, remontez dans le temps et restaurez l'état exact du serveur avant l'attaque en quelques secondes.",
-        commandSnippet: "/backup rollback auto",
-        details: [
-          "Recrée les salons effacés avec l'ensemble de leurs paramètres.",
-          "Rétablit les rôles et permissions associées.",
-          "Restaure les catégories et l'ordre complet de l'arborescence."
-        ]
-      },
-      {
-        id: "sauvegarde-planifiee",
-        name: "Sauvegarde planifiée",
-        category: "sauvegardes",
-        categoryLabel: "Sauvegarde",
-        defaultAction: "Capture automatique horaire",
-        reactionTime: "Automatique",
-        description: "Prend un instantané complet chiffré de votre serveur toutes les heures et conserve l'historique sur 30 jours glissants.",
-        commandSnippet: "/backup schedule frequency:hourly retain:30d",
-        details: ["Chiffrement de bout en bout AES-256 sur serveurs géolocalisés en Europe."]
-      },
-      {
-        id: "sauvegarde-manuelle",
-        name: "Sauvegarde manuelle",
-        category: "sauvegardes",
-        categoryLabel: "Sauvegarde",
-        defaultAction: "Création d'instantané",
-        reactionTime: "< 1.5s",
-        description: "Créez une archive instantanée de votre serveur avant toute opération de maintenance ou modification de structure importante.",
-        commandSnippet: "/backup create name:'Avant réorganisation'",
-        details: ["Téléchargeable également au format JSON pour vos archives personnelles."]
-      }
-    ]
-  },
-  {
-    id: "supplementaires",
-    label: "Modules supplémentaires",
-    count: 10,
-    modules: [
-      {
-        id: "anti-renommage-massif",
-        name: "Anti-renommage massif de serveur",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Annulation & Verrouillage du nom",
-        reactionTime: "< 180ms",
-        description: "Bloque les tentatives de raid par changement de nom d'affichage de dizaines d'utilisateurs simultanément.",
-        commandSnippet: "/security module enable module:anti-mass-rename",
-        details: ["Empêche de renommer tous les membres avec le même pseudo de raid."]
-      },
-      {
-        id: "anti-changement-icone",
-        name: "Anti-changement d'icône",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Restauration de l'icône originale",
-        reactionTime: "< 210ms",
-        description: "Verrouille l'icône et la bannière du serveur contre tout remplacement malveillant.",
-        commandSnippet: "/security module enable module:lock-icon",
-        details: ["Sauvegarde l'image haute définition dans le cloud de secours."]
-      },
-      {
-        id: "anti-suppression-emojis",
-        name: "Anti-suppression d'émojis",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Ré-upload automatique des émojis effacés",
-        reactionTime: "< 350ms",
-        description: "Protège votre bibliothèque d'émojis personnalisés contre les suppressions massives.",
-        commandSnippet: "/security module enable module:protect-emojis auto_reupload:true",
-        details: ["Conserve une archive compressée de chaque émoji pour ré-upload immédiat."]
-      },
-      {
-        id: "anti-suppression-stickers",
-        name: "Anti-suppression de stickers",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Restauration des autocollants",
-        reactionTime: "< 360ms",
-        description: "Protège les autocollants de guilde contre la destruction intentionnelle.",
-        commandSnippet: "/security module enable module:protect-stickers",
-        details: ["Rétablit les formats PNG, APNG et Lottie."]
-      },
-      {
-        id: "anti-suppression-integration",
-        name: "Anti-suppression d'intégration",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Blocage de la déconnexion",
-        reactionTime: "< 240ms",
-        description: "Protège les intégrations externes liées au serveur contre les déconnexions sauvages.",
-        commandSnippet: "/security module enable module:protect-integrations",
-        details: ["Sécurise les liaisons Patreon, YouTube et Twitch."]
-      },
-      {
-        id: "anti-changement-afk",
-        name: "Anti-changement de salon AFK",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Rétablissement du salon AFK officiel",
-        reactionTime: "< 200ms",
-        description: "Empêche le détournement du salon AFK configuré dans les paramètres du serveur.",
-        commandSnippet: "/security module enable module:lock-afk-channel",
-        details: ["Évite les déplacements intempestifs de membres inactifs vers des salons piégés."]
-      },
-      {
-        id: "anti-suppression-soundboard",
-        name: "Anti-suppression de soundboard",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Restauration des sons",
-        reactionTime: "< 340ms",
-        description: "Protège les effets sonores de la table d'harmonie du serveur.",
-        commandSnippet: "/security module enable module:protect-soundboard",
-        details: ["Préserve les fichiers audio et réglages de volume."]
-      },
-      {
-        id: "anti-bypass-quarantaine",
-        name: "Anti-bypass de quarantaine",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Rétablissement strict des restrictions",
-        reactionTime: "< 140ms",
-        description: "Empêche tout membre placé en quarantaine de contourner ses limitations via des rôles tiers.",
-        commandSnippet: "/security module enable module:strict-quarantine",
-        details: ["Surveillance permanente de la matrice des permissions effectives."]
-      },
-      {
-        id: "anti-changement-widget",
-        name: "Anti-changement de widget",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Verrouillage du widget",
-        reactionTime: "< 220ms",
-        description: "Verrouille les réglages du widget public pour empêcher l'exposition d'invitations pirates.",
-        commandSnippet: "/security module enable module:lock-widget",
-        details: ["Sécurise les intégrations web tierces."]
-      },
-      {
-        id: "anti-suppression-onboarding",
-        name: "Anti-suppression d'onboarding",
-        category: "supplementaires",
-        categoryLabel: "Modules supplémentaires",
-        defaultAction: "Rétablissement de l'accueil communautaire",
-        reactionTime: "< 260ms",
-        description: "Protège les questions de bienvenue, rôles de sélection et canaux par défaut configurés dans l'onboarding Discord.",
-        commandSnippet: "/security module enable module:protect-onboarding",
-        details: ["Garantit que les nouveaux membres arrivent toujours sur un parcours d'accueil propre."]
-      }
-    ]
-  }
-];
-
-export interface DocCommand {
-  name: string;
-  syntax: string;
-  category: "Sécurité" | "Modération" | "Configuration" | "Musique" | "Spotify" | "Utilitaires" | "Fun";
-  description: string;
-  permissions?: string;
-  subcommands?: { name: string; syntax?: string; description: string }[];
-}
-
-export const DOC_COMMANDS: DocCommand[] = [
-  {
-    name: "shield",
-    syntax: "/shield <status|toggle|restore>",
-    category: "Sécurité",
-    permissions: "Propriétaire (Owner)",
-    description: "Active ou consulte l'état du bouclier Owner pour restaurer vos rôles et permissions en cas de raid.",
-    subcommands: [
-      { name: "status", syntax: "/shield status", description: "Affiche l'état en temps réel du bouclier et la liste des rôles sauvegardés." },
-      { name: "toggle", syntax: "/shield toggle", description: "Active ou désactive la surveillance active du bouclier." },
-      { name: "restore", syntax: "/shield restore", description: "Rétablit immédiatement vos rôles d'administration en cas de révocation malveillante." }
-    ]
-  },
-  {
-    name: "antiraid",
-    syntax: "/antiraid <status|toggle|mode>",
-    category: "Sécurité",
-    permissions: "Administrateur",
-    description: "Interrupteur maître et gestion globale des détecteurs anti-raid du serveur.",
-    subcommands: [
-      { name: "status", syntax: "/antiraid status", description: "Consulte le statut d'activation (Actif / Inactif) et la sensibilité actuelle." },
-      { name: "toggle", syntax: "/antiraid toggle", description: "Active ou coupe immédiatement l'ensemble des protections anti-raid." },
-      { name: "mode", syntax: "/antiraid mode <standard|strict>", description: "Définit le mode de réaction face aux afflux suspects." }
-    ]
-  },
-  {
-    name: "automod",
-    syntax: "/automod <rules|action|exemptions>",
-    category: "Sécurité",
-    permissions: "Administrateur",
-    description: "Configure les filtres automatiques contre le spam, les insultes, les liens malveillants et les pings massifs.",
-    subcommands: [
-      { name: "rules", syntax: "/automod rules", description: "Affiche la liste des règles de filtrage actives sur le serveur." },
-      { name: "action", syntax: "/automod action <delete|mute|kick|ban>", description: "Définit la sanction automatique appliquée aux infractions." },
-      { name: "exemptions", syntax: "/automod exemptions <add|remove>", description: "Gère les rôles ou salons exemptés du filtrage automatique." }
-    ]
-  },
-  {
-    name: "security",
-    syntax: "/security <audit|mode|lockdown|panic>",
-    category: "Sécurité",
-    permissions: "Administrateur",
-    description: "Audit de sécurité, sensibilité des modules et mesures d'urgence.",
-    subcommands: [
-      { name: "audit", syntax: "/security audit", description: "Analyse les permissions vulnérables et génère un rapport de sécurité." },
-      { name: "mode", syntax: "/security mode <standard|strict>", description: "Ajuste la rapidité d'intervention et les seuils de tolérance." },
-      { name: "lockdown", syntax: "/security lockdown [channel|all]", description: "Verrouille l'envoi de messages dans les salons publics." },
-      { name: "panic", syntax: "/security panic", description: "Bouton d'urgence : isole le serveur et bloque toutes les modifications en 150ms." }
-    ]
-  },
-  {
-    name: "whitelist",
-    syntax: "/whitelist <add|remove|list>",
-    category: "Sécurité",
-    permissions: "Propriétaire (Owner)",
-    description: "Gestion des utilisateurs et rôles de confiance autorisés à effectuer des actions d'administration sans déclencher l'anti-nuke.",
-    subcommands: [
-      { name: "add", syntax: "/whitelist add <user|role>", description: "Ajoute un membre ou un rôle à la liste blanche." },
-      { name: "remove", syntax: "/whitelist remove <user|role>", description: "Retire un membre ou un rôle de la liste blanche." },
-      { name: "list", syntax: "/whitelist list", description: "Affiche tous les détenteurs de privilèges whitelist." }
-    ]
-  },
-  {
-    name: "rescue",
-    syntax: "/rescue <start|rollback>",
-    category: "Sécurité",
-    permissions: "Propriétaire (Owner)",
-    description: "Procédure d'extrême urgence pour reprendre le contrôle du serveur après un raid destructeur.",
-    subcommands: [
-      { name: "start", syntax: "/rescue start", description: "Isole tous les modérateurs suspects et révoque les tokens Gateway." },
-      { name: "rollback", syntax: "/rescue rollback", description: "Restaure automatiquement la dernière sauvegarde saine du serveur." }
-    ]
-  },
-  {
-    name: "godmode",
-    syntax: "/godmode <enable|disable>",
-    category: "Sécurité",
-    permissions: "Propriétaire (Owner)",
-    description: "Verrouille les modifications de permissions de rôles au seul propriétaire du serveur.",
-    subcommands: [
-      { name: "enable", syntax: "/godmode enable", description: "Active le verrouillage strict Owner-only." },
-      { name: "disable", syntax: "/godmode disable", description: "Désactive le verrouillage strict." }
-    ]
-  },
-  {
-    name: "ban",
-    syntax: "/ban <user> [reason] [delete_days]",
-    category: "Modération",
-    permissions: "Bannir des membres",
-    description: "Bannit définitivement un utilisateur du serveur avec motif et suppression optionnelle des messages récents (0 à 7 jours)."
-  },
-  {
-    name: "kick",
-    syntax: "/kick <user> [reason]",
-    category: "Modération",
-    permissions: "Expulser des membres",
-    description: "Expulse un utilisateur du serveur. Le membre conserve la possibilité de rejoindre à nouveau avec une invitation valide."
-  },
-  {
-    name: "timeout",
-    syntax: "/timeout <user> <duration> [reason]",
-    category: "Modération",
-    permissions: "Modérer les membres",
-    description: "Exclut temporairement un membre pour une durée déterminée (60s à 28 jours), lui retirant le droit de parler et d'interagir."
-  },
-  {
-    name: "clear",
-    syntax: "/clear <amount> [user] [filter]",
-    category: "Modération",
-    permissions: "Gérer les messages",
-    description: "Supprime rapidement un nombre de messages dans le salon (1 à 100), avec filtre optionnel par utilisateur, bots ou liens."
-  },
-  {
-    name: "unban",
-    syntax: "/unban <user_id> [reason]",
-    category: "Modération",
-    permissions: "Bannir des membres",
-    description: "Révoque le bannissement d'un utilisateur Discord à partir de son identifiant numérique."
-  },
-  {
-    name: "mute",
-    syntax: "/mute <user> [reason]",
-    category: "Modération",
-    permissions: "Rendre les membres muets",
-    description: "Rend muet un utilisateur connecté dans un salon vocal du serveur."
-  },
-  {
-    name: "unmute",
-    syntax: "/unmute <user> [reason]",
-    category: "Modération",
-    permissions: "Rendre les membres muets",
-    description: "Rétablit la voix d'un membre réduit au silence en salon vocal."
-  },
-  {
-    name: "deafen",
-    syntax: "/deafen <user> [reason]",
-    category: "Modération",
-    permissions: "Mettre les membres en sourdine",
-    description: "Assourdit un utilisateur connecté en salon vocal, l'empêchant d'entendre les autres participants."
-  },
-  {
-    name: "undeafen",
-    syntax: "/undeafen <user> [reason]",
-    category: "Modération",
-    permissions: "Mettre les membres en sourdine",
-    description: "Réactive l'écoute d'un membre assourdi en salon vocal."
-  },
-  {
-    name: "quarantine",
-    syntax: "/quarantine <user> [reason]",
-    category: "Modération",
-    permissions: "Modérer les membres",
-    description: "Assigne immédiatement le rôle de quarantaine à un utilisateur, bloquant son accès à l'ensemble des salons publics."
-  },
-  {
-    name: "setup",
-    syntax: "/setup [quickstart|interactive]",
-    category: "Configuration",
-    permissions: "Administrateur",
-    description: "Assistant d'initialisation et de configuration automatique d'Etho pour protéger votre serveur en deux minutes.",
-    subcommands: [
-      { name: "quickstart", syntax: "/setup quickstart", description: "Applique automatiquement les paramètres recommandés optimaux." },
-      { name: "interactive", syntax: "/setup interactive", description: "Guide pas à pas avec questions sur la sensibilité désirée." }
-    ]
-  },
-  {
-    name: "settings",
-    syntax: "/settings <view|set|reset>",
-    category: "Configuration",
-    permissions: "Administrateur",
-    description: "Consulte ou modifie les paramètres globaux de configuration d'Etho sur la guilde.",
-    subcommands: [
-      { name: "view", syntax: "/settings view", description: "Affiche un récapitulatif visuel complet des réglages actuels." },
-      { name: "set", syntax: "/settings set <key> <value>", description: "Modifie une valeur de paramètre spécifique." },
-      { name: "reset", syntax: "/settings reset", description: "Rétablit les paramètres d'usine par défaut." }
-    ]
-  },
-  {
-    name: "module",
-    syntax: "/module <list|enable|disable|info>",
-    category: "Configuration",
-    permissions: "Administrateur",
-    description: "Gestion granulaire et activation modulaire des protections et fonctionnalités.",
-    subcommands: [
-      { name: "list", syntax: "/module list", description: "Liste l'ensemble des modules avec leur état (Actif / Inactif)." },
-      { name: "enable", syntax: "/module enable <nom>", description: "Active un module spécifique." },
-      { name: "disable", syntax: "/module disable <nom>", description: "Désactive temporairement un module." },
-      { name: "info", syntax: "/module info <nom>", description: "Affiche la description détaillée et les seuils d'un module." }
-    ]
-  },
-  {
-    name: "logs",
-    syntax: "/logs <channel|type|status>",
-    category: "Configuration",
-    permissions: "Administrateur",
-    description: "Configure le salon récepteur des alertes d'intervention et des rapports d'audit en direct.",
-    subcommands: [
-      { name: "channel", syntax: "/logs channel <#salon>", description: "Définit le salon dédié aux alertes de sécurité." },
-      { name: "type", syntax: "/logs type <all|security|moderation|voice>", description: "Filtre les catégories d'alertes à transmettre." }
-    ]
-  },
-  {
-    name: "audit",
-    syntax: "/audit <track|export>",
-    category: "Configuration",
-    permissions: "Administrateur",
-    description: "Traçage temps réel des modifications de rôles, salons, permissions et webhooks avec horodatage milliseconde.",
-    subcommands: [
-      { name: "track", syntax: "/audit track <all|roles|channels|members>", description: "Active la surveillance ciblée d'événements." },
-      { name: "export", syntax: "/audit export [format:json|csv]", description: "Télécharge le journal d'audit pour archivage externe." }
-    ]
-  },
-  {
-    name: "status",
-    syntax: "/status",
-    category: "Configuration",
-    permissions: "Tout le monde",
-    description: "Affiche l'état opérationnel d'Etho, la latence des workers, le temps de disponibilité (uptime) et le nombre de serveurs protégés."
-  },
-  {
-    name: "play",
-    syntax: "/play <query|url>",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Joue un titre musical ou une playlist complète (Spotify, YouTube, SoundCloud) dans votre salon vocal avec qualité studio haute fidélité."
-  },
-  {
-    name: "pause",
-    syntax: "/pause",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Met en pause la lecture de la piste audio en cours."
-  },
-  {
-    name: "resume",
-    syntax: "/resume",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Reprend la lecture musicale mise en pause."
-  },
-  {
-    name: "skip",
-    syntax: "/skip",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Passe immédiatement au titre suivant dans la file d'attente."
-  },
-  {
-    name: "stop",
-    syntax: "/stop",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Arrête la lecture audio, vide l'ensemble de la file d'attente et déconnecte le bot du salon vocal."
-  },
-  {
-    name: "volume",
-    syntax: "/volume <1-150>",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Ajuste le volume d'écoute sonore de la diffusion musicale entre 1% et 150% sans distorsion."
-  },
-  {
-    name: "queue",
-    syntax: "/queue [page]",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Affiche la liste paginée de tous les titres en attente dans la file musicale actuelle."
-  },
-  {
-    name: "nowplaying",
-    syntax: "/nowplaying",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Affiche la fiche interactive du morceau en cours avec titre, artiste, pochette, barre de progression et boutons interactifs."
-  },
-  {
-    name: "loop",
-    syntax: "/loop <off|track|queue>",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Active la répétition en boucle du morceau actuel ou de l'ensemble de la file d'attente musicale."
-  },
-  {
-    name: "lyrics",
-    syntax: "/lyrics [query]",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Recherche et affiche les paroles synchronisées du morceau en cours de lecture ou du titre recherché."
-  },
-  {
-    name: "filters",
-    syntax: "/filters <bassboost|nightcore|8d|vaporwave|clear>",
-    category: "Musique",
-    permissions: "Tout le monde",
-    description: "Applique des filtres audio DSP en temps réel (Bassboost, Nightcore, Audio spatial 8D ou Vaporwave)."
-  },
-  {
-    name: "spotify",
-    syntax: "/spotify <vc|nowplaying|like|playlist>",
-    category: "Spotify",
-    permissions: "Tout le monde",
-    description: "Passerelle directe Spotify : synchronisez votre compte et partagez votre écoute en direct dans votre salon vocal.",
-    subcommands: [
-      { name: "vc", syntax: "/spotify vc", description: "Rejoint votre salon vocal et diffuse instantanément votre morceau Spotify en cours." },
-      { name: "nowplaying", syntax: "/spotify nowplaying", description: "Affiche votre titre en écoute avec pochette officielle et lien d'accès." },
-      { name: "like", syntax: "/spotify like", description: "Ajoute automatiquement le morceau diffusé à vos titres favoris Spotify." },
-      { name: "playlist", syntax: "/spotify playlist [nom]", description: "Parcourt et lance une de vos playlists Spotify personnelles." }
-    ]
-  },
-  {
-    name: "help",
-    syntax: "/help [category|command]",
-    category: "Utilitaires",
-    permissions: "Tout le monde",
-    description: "Centre d'aide officiel interactif répertoriant toutes les commandes disponibles, leur syntaxe et des exemples d'usage."
-  },
-  {
-    name: "ping",
-    syntax: "/ping",
-    category: "Utilitaires",
-    permissions: "Tout le monde",
-    description: "Mesure la latence en temps réel entre votre serveur Discord, l'API Discord Gateway et les workers d'Etho."
-  },
-  {
-    name: "bot",
-    syntax: "/bot <info|invite|support>",
-    category: "Utilitaires",
-    permissions: "Tout le monde",
-    description: "Informations générales sur Etho, lien d'invitation officiel et accès au serveur de support.",
-    subcommands: [
-      { name: "info", syntax: "/bot info", description: "Version d'Etho, technologies employées et statistiques d'infrastructure." },
-      { name: "invite", syntax: "/bot invite", description: "Génère le lien sécurisé pour ajouter Etho sur un autre serveur." },
-      { name: "support", syntax: "/bot support", description: "Lien d'invitation vers le serveur communautaire d'assistance." }
-    ]
-  },
-  {
-    name: "ticket",
-    syntax: "/ticket <create|close|panel>",
-    category: "Utilitaires",
-    permissions: "Tout le monde",
-    description: "Système complet de tickets de support privés avec salons textuels dédiés et relevés d'historique.",
-    subcommands: [
-      { name: "create", syntax: "/ticket create [motif]", description: "Ouvre un nouveau ticket d'assistance privé avec le staff." },
-      { name: "close", syntax: "/ticket close [raison]", description: "Ferme et archive le ticket avec génération de transcription." },
-      { name: "panel", syntax: "/ticket panel", description: "Déploie un panneau interactif avec bouton d'ouverture de ticket." }
-    ]
-  },
-  {
-    name: "form",
-    syntax: "/form <create|list|responses>",
-    category: "Utilitaires",
-    permissions: "Gérer le serveur",
-    description: "Création et gestion de formulaires de recrutement de staff ou de questionnaires pour les membres.",
-    subcommands: [
-      { name: "create", syntax: "/form create <titre>", description: "Crée un nouveau questionnaire à questions multiples." },
-      { name: "list", syntax: "/form list", description: "Liste tous les formulaires actifs sur le serveur." },
-      { name: "responses", syntax: "/form responses <id>", description: "Consulte les réponses soumises par les candidats." }
-    ]
-  },
-  {
-    name: "language",
-    syntax: "/language <fr|en|es|de>",
-    category: "Utilitaires",
-    permissions: "Gérer le serveur",
-    description: "Définit la langue d'interaction par défaut d'Etho sur votre guilde (Français, Anglais, Espagnol, Allemand)."
-  },
-  {
-    name: "ask",
-    syntax: "/ask <question>",
-    category: "Utilitaires",
-    permissions: "Tout le monde",
-    description: "Assistant d'aide intelligent répondant aux questions des membres sur les fonctionnalités et la sécurité."
-  },
-  {
-    name: "summarize",
-    syntax: "/summarize [channel] [limit]",
-    category: "Utilitaires",
-    permissions: "Gérer les messages",
-    description: "Synthétise automatiquement les conversations récentes d'un salon pour rattraper rapidement ce qui s'est dit."
-  },
-  {
-    name: "lastfm",
-    syntax: "/lastfm <nowplaying|recent|topartists|taste|login>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Intégration Last.fm : affichez vos scrobbles en direct, tops artistes et comparez vos goûts musicaux entre membres.",
-    subcommands: [
-      { name: "nowplaying", syntax: "/lastfm nowplaying", description: "Affiche le titre que vous écoutez actuellement sur Last.fm." },
-      { name: "recent", syntax: "/lastfm recent", description: "Liste vos derniers morceaux écoutés." },
-      { name: "topartists", syntax: "/lastfm topartists [period]", description: "Affiche vos artistes les plus écoutés sur la période choisie." },
-      { name: "taste", syntax: "/lastfm taste <user>", description: "Compare vos goûts musicaux avec un autre membre du serveur." },
-      { name: "login", syntax: "/lastfm login <username>", description: "Associe votre pseudonyme Last.fm à votre compte Discord." }
-    ]
-  },
-  {
-    name: "tiktok",
-    syntax: "/tiktok <profile|video>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Recherche de profils, inspection de vidéos et prévisualisation de créateurs TikTok sans quitter Discord.",
-    subcommands: [
-      { name: "profile", syntax: "/tiktok profile <nom>", description: "Affiche les statistiques (abonnés, likes, bio) d'un compte TikTok." },
-      { name: "video", syntax: "/tiktok video <url>", description: "Inspecte et prévisualise une vidéo TikTok." }
-    ]
-  },
-  {
-    name: "pinterest",
-    syntax: "/pinterest <search|pin|user>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Recherche d'inspiration visuelle, épingles et tableaux créatifs Pinterest.",
-    subcommands: [
-      { name: "search", syntax: "/pinterest search <mots-clés>", description: "Recherche des épingles correspondant à votre requête." },
-      { name: "pin", syntax: "/pinterest pin <id_ou_url>", description: "Affiche l'image haute définition d'une épingle Pinterest." },
-      { name: "user", syntax: "/pinterest user <profil>", description: "Affiche les tableaux et le profil d'un créateur." }
-    ]
-  },
-  {
-    name: "instagram",
-    syntax: "/instagram <user|post>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Inspection de profils publics et aperçu de publications Instagram avec photos haute résolution.",
-    subcommands: [
-      { name: "user", syntax: "/instagram user <compte>", description: "Affiche les informations et photos récentes d'un profil Instagram." },
-      { name: "post", syntax: "/instagram post <url>", description: "Affiche le détail et le média d'une publication Instagram." }
-    ]
-  },
-  {
-    name: "twitter",
-    syntax: "/twitter <user|post>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Consultation de profils et partage enrichi de publications X (Twitter) dans vos salons.",
-    subcommands: [
-      { name: "user", syntax: "/twitter user <handle>", description: "Affiche la bio, abonnés et derniers tweets d'un profil." },
-      { name: "post", syntax: "/twitter post <url>", description: "Intègre proprement un tweet avec médias et texte complet." }
-    ]
-  },
-  {
-    name: "quote",
-    syntax: "/quote <message_id> [style]",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Génère un visuel de citation élégant et stylisé à partir d'un message marquant envoyé sur le serveur."
-  },
-  {
-    name: "image",
-    syntax: "/image <query>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Recherche et affiche des images haute résolution adaptées au contexte Discord."
-  },
-  {
-    name: "reverseimage",
-    syntax: "/reverseimage <url|attachment>",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Recherche d'image inversée sur les moteurs majeurs (Google Lens, TinEye, SauceNAO) pour retrouver la source."
-  },
-  {
-    name: "imagine",
-    syntax: "/imagine <prompt> [style]",
-    category: "Fun",
-    permissions: "Tout le monde",
-    description: "Génère une illustration visuelle originale à partir d'une description textuelle."
   }
 ];

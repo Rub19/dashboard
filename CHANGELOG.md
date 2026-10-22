@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.79.2 — 2026-10-22
+
+**E:VAL iOS : connexion Riot réparée**
+
+- La page de connexion Riot ne reste plus bloquée sur « Oups ! Un problème est survenu » : les anciens cookies Riot sont effacés et la page se recharge
+- La reconnexion silencieuse détecte la nouvelle page de connexion Riot au lieu d'attendre 12 secondes
+
 ## v1.79.1 — 2026-10-22
 
 **E:VAL iOS : glisser pour retirer un compte**

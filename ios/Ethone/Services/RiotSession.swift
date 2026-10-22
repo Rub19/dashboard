@@ -50,9 +50,20 @@ struct RiotLoginView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 
+    @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
         let onTokens: (String, String, Int) -> Void
+        private var retried = false
         init(onTokens: @escaping (String, String, Int) -> Void) { self.onTokens = onTokens }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            guard !retried, webView.url?.host == "auth.riotgames.com" else { return }
+            retried = true
+            Task { @MainActor in
+                await RiotWebData.clear()
+                webView.load(URLRequest(url: RiotAuthURL.authorize))
+            }
+        }
 
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
             if let url = action.request.url, let tokens = RiotAuthURL.tokens(from: url) {
@@ -105,7 +116,7 @@ private final class RiotSilentAuth: NSObject, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // Page de connexion affichée = cookies expirés : il faut se reconnecter à la main.
-        if webView.url?.host?.contains("auth.riotgames.com") == true { finish(nil) }
+        if let host = webView.url?.host, host == "auth.riotgames.com" || host == "authenticate.riotgames.com" { finish(nil) }
     }
 }
 

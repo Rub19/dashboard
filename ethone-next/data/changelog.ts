@@ -60481,4 +60481,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_79_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_79_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_79_1_de);
 
+const v1_79_2_fr: ChangelogEntry = {
+  version: "v1.79.2",
+  date: "2026-10-22",
+  title: "E:VAL iOS : connexion Riot réparée",
+  items: [
+    "La page de connexion Riot ne reste plus bloquée sur « Oups ! Un problème est survenu » : les anciens cookies Riot sont effacés et la page se recharge",
+    "La reconnexion silencieuse détecte la nouvelle page de connexion Riot au lieu d'attendre 12 secondes",
+  ],
+};
+
+const v1_79_2_en: ChangelogEntry = {
+  version: "v1.79.2",
+  date: "2026-10-22",
+  title: "E:VAL iOS: Riot sign-in fixed",
+  items: [
+    "The Riot sign-in page no longer gets stuck on \"Oops! Something went wrong\": stale Riot cookies are cleared and the page reloads",
+    "Silent re-authentication recognises the new Riot sign-in page instead of waiting 12 seconds",
+  ],
+};
+
+const v1_79_2_es: ChangelogEntry = {
+  version: "v1.79.2",
+  date: "2026-10-22",
+  title: "E:VAL iOS: inicio de sesión de Riot reparado",
+  items: [
+    "La página de inicio de sesión de Riot ya no se queda en «¡Vaya! Algo salió mal»: se borran las cookies antiguas de Riot y la página se recarga",
+    "La reconexión silenciosa detecta la nueva página de inicio de sesión de Riot en lugar de esperar 12 segundos",
+  ],
+};
+
+const v1_79_2_de: ChangelogEntry = {
+  version: "v1.79.2",
+  date: "2026-10-22",
+  title: "E:VAL iOS: Riot-Anmeldung repariert",
+  items: [
+    "Die Riot-Anmeldeseite bleibt nicht mehr bei „Hoppla! Ein Problem ist aufgetreten“ hängen: alte Riot-Cookies werden gelöscht und die Seite neu geladen",
+    "Die stille Neuanmeldung erkennt die neue Riot-Anmeldeseite, statt 12 Sekunden zu warten",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_79_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_79_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_79_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_79_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

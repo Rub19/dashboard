@@ -367,8 +367,16 @@ struct EvalProfileView: View {
                         matchesListSection
                     } else if !store.isLoading {
                         emptyMatchesCard
+                    } else {
+                        ProgressView().tint(EvalAccent.color).padding(.top, 24)
                     }
-                } else if !store.isLoading {
+                } else if store.isLoading {
+                    ProgressView("Chargement du profil…")
+                        .tint(EvalAccent.color)
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 160)
+                } else {
                     ContentUnavailableView(
                         "Profil indisponible",
                         systemImage: "person.crop.circle.badge.exclamationmark",
@@ -553,35 +561,13 @@ struct EvalProfileView: View {
                 } label: {
                     VStack(spacing: 6) {
                         if !profile.actName.isEmpty {
-                            Text(profile.actName)
+                            evalActLabel(profile.actName)
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(Color(hex: 0x8E8E93))
                                 .tracking(0.6)
                         }
 
-                        ZStack {
-                            Circle()
-                                .fill(
-                                    RadialGradient(
-                                        colors: [Color(hex: EvalRanks.color(profile.tier)).opacity(0.25), .clear],
-                                        center: .center,
-                                        startRadius: 0,
-                                        endRadius: 40
-                                    )
-                                )
-                                .frame(width: 76, height: 76)
-
-                            if let rankIconURL = ValorantProfile.tierIcon(profile.tier) {
-                                AsyncImage(url: rankIconURL) { phase in
-                                    switch phase {
-                                    case .success(let image):
-                                        image.resizable().scaledToFit().frame(width: 60, height: 60)
-                                    default:
-                                        ProgressView().tint(.secondary)
-                                    }
-                                }
-                            }
-                        }
+                        EvalRankDisc(tier: profile.tier, size: 92, progress: 1)
 
                         Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
                             .font(.system(size: 18, weight: .heavy))
@@ -613,7 +599,7 @@ struct EvalProfileView: View {
                     HStack(alignment: .center, spacing: 0) {
                         VStack(spacing: 6) {
                             if !store.actName(store.mmr.peakSeason).isEmpty {
-                                Text(store.actName(store.mmr.peakSeason))
+                                evalActLabel(store.actName(store.mmr.peakSeason))
                                     .font(.system(size: 13, weight: .semibold))
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                                     .tracking(0.6)
@@ -697,7 +683,7 @@ struct EvalProfileView: View {
             if !profile.actName.isEmpty {
                 HStack {
                     Spacer()
-                    Text(profile.actName)
+                    evalActLabel(profile.actName)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .tracking(0.6)
@@ -740,9 +726,8 @@ struct EvalProfileView: View {
                 HStack(spacing: 12) {
                     ForEach(recentActs) { season in
                         actBadge(name: store.actName(season.season).isEmpty ? season.short.uppercased() : store.actName(season.season),
-                                 icon: "circle.fill",
-                                 color: season.winRate >= 0.5 ? Color(hex: 0x22C55E) : EvalAccent.color,
-                                 tier: season.endTier)
+                                 tier: season.endTier,
+                                 winRate: season.winRate)
                     }
                 }
                 .padding(.top, 4)
@@ -752,32 +737,11 @@ struct EvalProfileView: View {
         .background(EvalColors.card, in: .rect(cornerRadius: 20))
     }
 
-    private func actBadge(name: String, icon: String, color: Color, tier: Int? = nil) -> some View {
+    private func actBadge(name: String, tier: Int, winRate: Double) -> some View {
         VStack(spacing: 6) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.18))
-                    .frame(width: 55, height: 55)
-
-                if let tier, let url = ValorantProfile.tierIcon(tier) {
-                    AsyncImage(url: url) { phase in
-                        if let img = phase.image {
-                            img.resizable().scaledToFit().frame(width: 32, height: 32)
-                        } else {
-                            Image(systemName: icon)
-                                .font(.system(size: 23))
-                                .foregroundStyle(color)
-                        }
-                    }
-                } else {
-                    Image(systemName: icon)
-                        .font(.system(size: 23))
-                        .foregroundStyle(color)
-                }
-            }
-            Text(name)
+            EvalRankDisc(tier: tier, size: 58, progress: winRate)
+            evalActLabel(name)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x8E8E93))
         }
         .frame(maxWidth: .infinity)
     }
@@ -822,7 +786,7 @@ struct EvalProfileView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(EvalColors.text)
 
-                        Text("Win rate, K/D & more")
+                        Text("Taux de victoire, K/D et plus")
                             .font(.system(size: 15))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                     }
@@ -2850,7 +2814,21 @@ struct EvalHubView: View {
                                 hubRowView(icon: "scope", title: "Armes")
                             }
                             .buttonStyle(.plain)
+
+                            Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 72)
+
+                            NavigationLink {
+                                EvalContractsArchiveView()
+                            } label: {
+                                hubRowView(icon: "doc.text.magnifyingglass", title: "Contrats")
+                            }
+                            .buttonStyle(.plain)
                         }
+
+                        Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                            .frame(maxWidth: .infinity)
                     }
                     .padding(.horizontal, 18)
                     .padding(.top, 10)

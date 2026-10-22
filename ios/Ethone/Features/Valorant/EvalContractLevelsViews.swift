@@ -175,20 +175,31 @@ struct EvalContractLevelsPage: View {
 struct EvalSeasonPassPage: View {
     @Environment(AppModel.self) private var model
     @State private var contract: RiotContractCatalog.Contract?
+    var act: EvalAct? = nil
 
     private var store: ValorantStore { model.valorant }
+    private var isArchive: Bool { act.map { !$0.isCurrent } ?? false }
 
     var body: some View {
-        EvalContractLevelsPage(title: store.battlepassTitle.isEmpty ? "Passe de combat" : store.battlepassTitle, rows: rows)
+        EvalContractLevelsPage(title: title, rows: rows)
             .task {
                 let catalog = await RiotContractCatalog.load()
-                contract = catalog?.battlepass(actID: store.currentAct?.id) ?? catalog?.contracts.first { $0.id == RiotGameService.battlepassContract }
+                if let act {
+                    contract = catalog?.battlepass(actID: act.id)
+                } else {
+                    contract = catalog?.battlepass(actID: store.currentAct?.id) ?? catalog?.contracts.first { $0.id == RiotGameService.battlepassContract }
+                }
             }
+    }
+
+    private var title: String {
+        if isArchive, let act { return act.name }
+        return store.battlepassTitle.isEmpty ? "Passe de combat" : store.battlepassTitle
     }
 
     private var rows: [ContractLevelRow] {
         guard let contract else { return [] }
-        let reached = store.battlepassCurrentLevel
+        let reached = isArchive ? 0 : store.battlepassCurrentLevel
         var number = 0
         var out: [ContractLevelRow] = []
         for (index, level) in contract.levels.enumerated() {
@@ -200,7 +211,7 @@ struct EvalSeasonPassPage: View {
             let state: ContractLevelRow.State
             if number <= reached {
                 state = .done
-            } else if number == reached + 1 {
+            } else if !isArchive, number == reached + 1 {
                 state = .current(Double(store.battlepassCurrentXP) / Double(max(1, level.xp)), "\(store.battlepassCurrentXP.formatted()) / \(level.xp.formatted())")
             } else {
                 state = .locked
@@ -306,5 +317,81 @@ struct EvalUpcomingMissionsCard: View {
         }
         .padding(18)
         .background(EvalColors.card, in: .rect(cornerRadius: 24))
+    }
+}
+
+struct EvalContractsArchiveView: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var passIDs: Set<String>?
+
+    private var store: ValorantStore { model.valorant }
+
+    private var acts: [EvalAct] {
+        guard let passIDs else { return [] }
+        return store.acts.values
+            .filter { passIDs.contains($0.id.lowercased()) && $0.start <= Date() }
+            .sorted { $0.start > $1.start }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalColors.text)
+                        .frame(width: 50, height: 50).background(EvalColors.card, in: .circle)
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                Text("Archives des contrats").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.7)
+                Spacer()
+                Color.clear.frame(width: 50, height: 50)
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 8)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Passes de saison").font(.system(size: 19, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 20)
+                    VStack(spacing: 0) {
+                        ForEach(Array(acts.enumerated()), id: \.element.id) { index, act in
+                            NavigationLink { EvalSeasonPassPage(act: act) } label: { row(act) }
+                                .buttonStyle(.plain)
+                            if index < acts.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 20) }
+                        }
+                    }
+                    .background(EvalColors.card, in: .rect(cornerRadius: 26))
+                    if passIDs == nil {
+                        ProgressView().frame(maxWidth: .infinity).padding(.top, 30)
+                    } else if acts.isEmpty {
+                        Text("Aucun contrat archivé.").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93)).frame(maxWidth: .infinity).padding(.top, 30)
+                    }
+                }
+                .padding(18)
+                .padding(.bottom, 20)
+            }
+        }
+        .background(EvalColors.background.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        .task {
+            let catalog = await RiotContractCatalog.load()
+            passIDs = Set((catalog?.contracts ?? []).filter { $0.relationType == "Season" }.map { $0.relationUuid.lowercased() })
+        }
+    }
+
+    private func row(_ act: EvalAct) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(act.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text)
+                Text("\(act.start.formatted(.dateTime.day().month(.abbreviated).year().locale(Locale(identifier: "fr_FR")))) – \(act.end.formatted(.dateTime.day().month(.abbreviated).year().locale(Locale(identifier: "fr_FR"))))")
+                    .font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
+            Spacer()
+            Image(systemName: "crown.circle.fill").font(.system(size: 22)).foregroundStyle(act.isCurrent ? EvalAccent.color : Color(hex: 0x8E8E93))
+            Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+        }
+        .padding(.horizontal, 20)
+        .frame(minHeight: 66)
+        .contentShape(.rect)
     }
 }

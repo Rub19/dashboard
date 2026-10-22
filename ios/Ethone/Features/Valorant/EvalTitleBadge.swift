@@ -63,3 +63,39 @@ private struct RibbonTails: Shape {
         return p
     }
 }
+
+struct EvalRankDisc: View {
+    let tier: Int
+    let size: CGFloat
+    var progress: Double = 1
+
+    private var color: Color { tier > 0 ? Color(hex: EvalRanks.color(tier)) : Color(hex: 0x48484A) }
+
+    var body: some View {
+        ZStack {
+            Circle().fill(color.opacity(tier == 27 ? 0.35 : 0.85))
+            Circle().stroke(Color.white.opacity(0.12), lineWidth: size * 0.06)
+            Circle()
+                .trim(from: 0, to: max(0, min(1, progress)))
+                .stroke(Color.white.opacity(0.85).blendMode(.plusLighter), style: StrokeStyle(lineWidth: size * 0.06, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            if let url = ValorantProfile.tierIcon(tier) {
+                AsyncImage(url: url) { phase in
+                    if let image = phase.image {
+                        image.resizable().scaledToFit()
+                    } else {
+                        ProgressView().tint(.white)
+                    }
+                }
+                .frame(width: size * 0.6, height: size * 0.6)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+func evalActLabel(_ name: String) -> Text {
+    let parts = name.components(separatedBy: " — ")
+    guard parts.count == 2 else { return Text(name).foregroundStyle(Color(hex: 0x8E8E93)) }
+    return Text("\(Text(parts[0]).foregroundStyle(Color(hex: 0x8E8E93)))\(Text("  //  ").foregroundStyle(Color(hex: 0x8E8E93).opacity(0.5)))\(Text(parts[1]).foregroundStyle(Color(hex: 0x8E8E93)))")
+}

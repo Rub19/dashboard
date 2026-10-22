@@ -60383,4 +60383,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_78_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_78_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_78_6_de);
 
+const v1_79_0_fr: ChangelogEntry = {
+  version: "v1.79.0",
+  date: "2026-10-22",
+  title: "E:VAL iOS : rangs façon VALPAW, archives des contrats",
+  items: [
+    "Rang actuel et actes récents affichés dans une pastille à la couleur du rang, avec l'anneau du taux de victoire",
+    "Actes notés « V26 // ACTE VI » comme dans VALPAW",
+    "Hub : nouvelle page Contrats avec l'archive des passes de combat par acte, et numéro de version en bas",
+    "Profil : indicateur de chargement au lieu d'un écran noir, texte des statistiques traduit",
+  ],
+};
+
+const v1_79_0_en: ChangelogEntry = {
+  version: "v1.79.0",
+  date: "2026-10-22",
+  title: "E:VAL iOS: VALPAW-style ranks, contract archive",
+  items: [
+    "Current rank and recent acts shown in a rank-coloured disc with a win-rate ring",
+    "Acts labelled \"V26 // ACT VI\" like VALPAW",
+    "Hub: new Contracts page with the battle pass archive per act, plus the version number at the bottom",
+    "Profile: loading indicator instead of a black screen, statistics label translated",
+  ],
+};
+
+const v1_79_0_es: ChangelogEntry = {
+  version: "v1.79.0",
+  date: "2026-10-22",
+  title: "E:VAL iOS: rangos estilo VALPAW, archivo de contratos",
+  items: [
+    "Rango actual y actos recientes en un disco del color del rango con anillo de porcentaje de victorias",
+    "Actos indicados como «V26 // ACTO VI» como en VALPAW",
+    "Hub: nueva página Contratos con el archivo de pases de batalla por acto y el número de versión abajo",
+    "Perfil: indicador de carga en lugar de una pantalla negra, texto de estadísticas traducido",
+  ],
+};
+
+const v1_79_0_de: ChangelogEntry = {
+  version: "v1.79.0",
+  date: "2026-10-22",
+  title: "E:VAL iOS: Ränge im VALPAW-Stil, Vertragsarchiv",
+  items: [
+    "Aktueller Rang und letzte Akte in einer Scheibe in Rangfarbe mit Siegquoten-Ring",
+    "Akte als „V26 // AKT VI“ wie in VALPAW beschriftet",
+    "Hub: neue Seite Verträge mit dem Battle-Pass-Archiv pro Akt und der Versionsnummer unten",
+    "Profil: Ladeanzeige statt schwarzem Bildschirm, Statistik-Text übersetzt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_79_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_79_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_79_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_79_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

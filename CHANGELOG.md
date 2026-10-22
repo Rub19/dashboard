@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.79.0 — 2026-10-22
+
+**E:VAL iOS : rangs façon VALPAW, archives des contrats**
+
+- Rang actuel et actes récents affichés dans une pastille à la couleur du rang, avec l'anneau du taux de victoire
+- Actes notés « V26 // ACTE VI » comme dans VALPAW
+- Hub : nouvelle page Contrats avec l'archive des passes de combat par acte, et numéro de version en bas
+- Profil : indicateur de chargement au lieu d'un écran noir, texte des statistiques traduit
+
 ## v1.78.6 — 2026-10-22
 
 **Documentation du bot refaite à partir du vrai code**

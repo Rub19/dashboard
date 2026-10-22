@@ -3904,7 +3904,18 @@ struct EvalSettingsView: View {
                     VStack(spacing: 0) {
                         ForEach(store.savedAccounts, id: \.self) { handle in
                             let active = handle == "\(store.playerName)#\(store.tag)"
-                            Button { if !active { store.switchAccount(handle) } } label: {
+                            let linked = store.riot.credentials.map { "\($0.gameName)#\($0.tagLine)".lowercased() == handle.lowercased() } ?? false
+                            EvalSwipeRow(
+                                actions: (linked ? [EvalSwipeRow.Action(title: "Riot", icon: "gamecontroller", color: Color(hex: 0x636366)) { confirmRiotSignOut = true }] : [])
+                                    + [EvalSwipeRow.Action(title: "Retirer", icon: "trash", color: Color(hex: 0xFF3B30), isFullSwipe: true) { store.removeAccount(handle) }]
+                            ) {
+                            Button {
+                                if !active {
+                                    store.switchAccount(handle)
+                                } else if store.riot.lastError != nil {
+                                    showingRiotLogin = true
+                                }
+                            } label: {
                                 HStack(spacing: 12) {
                                     Group {
                                         if active, let url = store.profile?.cardURL {
@@ -3932,11 +3943,6 @@ struct EvalSettingsView: View {
                                 .contentShape(.rect)
                             }
                             .buttonStyle(.plain)
-                            .contextMenu {
-                                if let creds = store.riot.credentials, "\(creds.gameName)#\(creds.tagLine)".lowercased() == handle.lowercased() {
-                                    Button("Déconnecter le compte Riot", systemImage: "gamecontroller") { confirmRiotSignOut = true }
-                                }
-                                Button("Retirer ce compte", systemImage: "trash", role: .destructive) { store.removeAccount(handle) }
                             }
                             Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 16)
                         }
@@ -3963,11 +3969,12 @@ struct EvalSettingsView: View {
                         .buttonStyle(.plain)
                     }
                     .background(EvalColors.card, in: .rect(cornerRadius: 28))
+                    .clipShape(.rect(cornerRadius: 28))
 
                     if let error = store.riot.lastError {
                         Text(error).font(.system(size: 15)).foregroundStyle(EvalAccent.color).padding(.horizontal, 6)
                     }
-                    Text("Ajouter un compte ouvre la connexion Riot officielle. Touchez un compte pour l’afficher, appuyez longuement pour le retirer.")
+                    Text("Ajouter un compte ouvre la connexion Riot officielle. Touchez un compte pour l’afficher, glissez vers la gauche pour le retirer.")
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))
                         .padding(.horizontal, 6)

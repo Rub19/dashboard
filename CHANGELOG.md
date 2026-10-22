@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.79.1 — 2026-10-22
+
+**E:VAL iOS : glisser pour retirer un compte**
+
+- Paramètres : glissez un compte vers la gauche pour le retirer (glissement complet = suppression directe), l'appui long qui buggait est supprimé
+- Toucher le compte actif quand la session Riot est expirée rouvre la connexion Riot
+
 ## v1.79.0 — 2026-10-22
 
 **E:VAL iOS : rangs façon VALPAW, archives des contrats**

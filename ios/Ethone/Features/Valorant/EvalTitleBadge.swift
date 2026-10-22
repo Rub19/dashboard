@@ -99,3 +99,89 @@ func evalActLabel(_ name: String) -> Text {
     guard parts.count == 2 else { return Text(name).foregroundStyle(Color(hex: 0x8E8E93)) }
     return Text("\(Text(parts[0]).foregroundStyle(Color(hex: 0x8E8E93)))\(Text("  //  ").foregroundStyle(Color(hex: 0x8E8E93).opacity(0.5)))\(Text(parts[1]).foregroundStyle(Color(hex: 0x8E8E93)))")
 }
+
+struct EvalSwipeRow<Content: View>: View {
+    struct Action: Identifiable {
+        let id = UUID()
+        let title: String
+        let icon: String
+        let color: Color
+        var isFullSwipe = false
+        let run: () -> Void
+    }
+
+    let actions: [Action]
+    @ViewBuilder let content: Content
+
+    @State private var offset: CGFloat = 0
+    @State private var settled: CGFloat = 0
+    @State private var width: CGFloat = 0
+
+    private let buttonWidth: CGFloat = 78
+    private var revealed: CGFloat { buttonWidth * CGFloat(actions.count) }
+    private var fullSwipe: Action? { actions.last(where: \.isFullSwipe) }
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            HStack(spacing: 0) {
+                ForEach(actions) { action in
+                    Button {
+                        close()
+                        action.run()
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: action.icon).font(.system(size: 18, weight: .semibold))
+                            Text(action.title).font(.system(size: 12, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(width: action.id == fullSwipe?.id ? max(buttonWidth, -offset - buttonWidth * CGFloat(actions.count - 1)) : buttonWidth)
+                        .frame(maxHeight: .infinity)
+                        .background(action.color)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .opacity(offset < 0 ? 1 : 0)
+
+            content
+                .background(EvalColors.card)
+                .overlay {
+                    if settled != 0 {
+                        Color.clear.contentShape(.rect).onTapGesture { close() }
+                    }
+                }
+                .offset(x: offset)
+                .gesture(
+                    DragGesture(minimumDistance: 18)
+                        .onChanged { value in
+                            guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                            offset = min(0, settled + value.translation.width)
+                        }
+                        .onEnded { value in
+                            let target = settled + value.translation.width
+                            if let fullSwipe, width > 0, -target > width * 0.6 {
+                                withAnimation(.easeOut(duration: 0.2)) { offset = -width }
+                                fullSwipe.run()
+                                settled = 0
+                                Task { @MainActor in
+                                    try? await Task.sleep(for: .milliseconds(250))
+                                    offset = 0
+                                }
+                            } else if -target > revealed / 2 {
+                                withAnimation(.spring(duration: 0.3)) { offset = -revealed }
+                                settled = -revealed
+                            } else {
+                                close()
+                            }
+                        }
+                )
+        }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+        .clipped()
+    }
+
+    private func close() {
+        withAnimation(.spring(duration: 0.3)) { offset = 0 }
+        settled = 0
+    }
+}

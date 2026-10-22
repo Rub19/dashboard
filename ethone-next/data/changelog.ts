@@ -60436,4 +60436,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_79_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_79_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_79_0_de);
 
+const v1_79_1_fr: ChangelogEntry = {
+  version: "v1.79.1",
+  date: "2026-10-22",
+  title: "E:VAL iOS : glisser pour retirer un compte",
+  items: [
+    "Paramètres : glissez un compte vers la gauche pour le retirer (glissement complet = suppression directe), l'appui long qui buggait est supprimé",
+    "Toucher le compte actif quand la session Riot est expirée rouvre la connexion Riot",
+  ],
+};
+
+const v1_79_1_en: ChangelogEntry = {
+  version: "v1.79.1",
+  date: "2026-10-22",
+  title: "E:VAL iOS: swipe to remove an account",
+  items: [
+    "Settings: swipe an account left to remove it (full swipe deletes at once), the buggy long press is gone",
+    "Tapping the active account when the Riot session expired reopens the Riot sign-in",
+  ],
+};
+
+const v1_79_1_es: ChangelogEntry = {
+  version: "v1.79.1",
+  date: "2026-10-22",
+  title: "E:VAL iOS: desliza para quitar una cuenta",
+  items: [
+    "Ajustes: desliza una cuenta a la izquierda para quitarla (deslizar del todo la elimina), se elimina la pulsación larga que fallaba",
+    "Tocar la cuenta activa con la sesión de Riot caducada reabre el inicio de sesión de Riot",
+  ],
+};
+
+const v1_79_1_de: ChangelogEntry = {
+  version: "v1.79.1",
+  date: "2026-10-22",
+  title: "E:VAL iOS: Konto per Wischen entfernen",
+  items: [
+    "Einstellungen: Konto nach links wischen, um es zu entfernen (ganz wischen löscht sofort), das fehlerhafte lange Drücken entfällt",
+    "Tippen auf das aktive Konto bei abgelaufener Riot-Sitzung öffnet die Riot-Anmeldung erneut",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_79_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_79_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_79_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_79_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

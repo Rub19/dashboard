@@ -739,7 +739,14 @@ final class ValorantStore {
     /// redemande même pas au Worker avant 10 min, et on ne télécharge que les matchs absents du disque.
     private func syncAndLoadMatches(force: Bool = false) async {
         let cached = DiskCache.read(AccountCache.self, key: accountCacheKey)
-        if !force, let cached, Date().timeIntervalSince(cached.syncedAt) < Self.syncInterval, !cached.matches.isEmpty { return }
+        if !force, let cached, Date().timeIntervalSince(cached.syncedAt) < Self.syncInterval, !cached.matches.isEmpty {
+            if profile == nil || puuid != cached.account.puuid {
+                apply(account: cached.account)
+                evalMatches = Dictionary(cached.matches.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+                rebuildMatchList()
+            }
+            return
+        }
         do {
             let account: Account = try await api.worker("api/valorant/eval/sync", query: [
                 URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag)

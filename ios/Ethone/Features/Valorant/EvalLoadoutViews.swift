@@ -95,7 +95,12 @@ final class RiotLoadoutModel {
         isLoading = true
         defer { isLoading = false }
         catalog = await LoadoutCatalog.load()
-        raw = try? await session.game("/personalization/v2/players/\(puuid)/playerloadout")
+        do {
+            raw = try await session.game("/personalization/v2/players/\(puuid)/playerloadout")
+            message = nil
+        } catch {
+            message = "Équipement indisponible : \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
+        }
         func owned(_ type: String) async -> [Entitlements.E] {
             let r: Entitlements? = try? await session.game("/store/v1/entitlements/\(puuid)/\(type)")
             return r?.Entitlements ?? []
@@ -320,6 +325,11 @@ struct EvalWeaponLoadoutView: View {
     var body: some View {
         LoadoutScreen(title: "Armes") {
             if loadout.isLoading && loadout.raw == nil { ProgressView().tint(.white).frame(maxWidth: .infinity).padding(.top, 60) }
+            if !loadout.isLoading && loadout.guns.isEmpty {
+                ContentUnavailableView("Équipement indisponible", systemImage: "scope",
+                                       description: Text(model.valorant.riot.isLinked ? (loadout.message ?? "Riot n’a renvoyé aucune arme équipée.") : "Connectez votre compte Riot dans Paramètres."))
+                    .padding(.top, 40)
+            }
             ForEach(loadout.catalog.weapons.filter { loadout.gun($0.uuid) != nil }) { weapon in
                 let gun = loadout.gun(weapon.uuid)
                 let chroma = loadout.chroma(gun?["ChromaID"]?.stringValue)

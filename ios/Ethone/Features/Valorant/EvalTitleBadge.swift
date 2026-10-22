@@ -185,3 +185,19 @@ struct EvalSwipeRow<Content: View>: View {
         settled = 0
     }
 }
+
+struct EvalPlayerTitleText: View {
+    let id: String?
+    @State private var text: String?
+
+    var body: some View {
+        Group {
+            if let text, !text.isEmpty { Text(text).lineLimit(1) }
+        }
+        .task(id: id) {
+            guard let id, !id.isEmpty else { text = nil; return }
+            if UUID(uuidString: id) == nil { text = id; return }
+            text = await SkinCatalog.shared.title(id)
+        }
+    }
+}

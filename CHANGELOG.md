@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.79.3 — 2026-10-23
+
+**E:VAL iOS : profil, agents et classement réparés**
+
+- Le profil ne reste plus vide (« Profil indisponible ») quand le cache récent existe déjà
+- La page Agents affiche de nouveau tous les agents, classés par rôle
+- Classement : le vrai titre du joueur remplace l'identifiant brut, et la ligne « Vous » n'apparaît que si vous êtes classé
+- Jeu : section « Boutique » repliable avec les packs en premier, comme dans VALPAW
+- Équipement d'arme : la raison s'affiche si Riot ne renvoie pas l'équipement au lieu d'une page vide
+
 ## v1.79.2 — 2026-10-22
 
 **E:VAL iOS : connexion Riot réparée**

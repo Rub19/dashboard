@@ -60526,4 +60526,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_79_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_79_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_79_2_de);
 
+const v1_79_3_fr: ChangelogEntry = {
+  version: "v1.79.3",
+  date: "2026-10-23",
+  title: "E:VAL iOS : profil, agents et classement réparés",
+  items: [
+    "Le profil ne reste plus vide (« Profil indisponible ») quand le cache récent existe déjà",
+    "La page Agents affiche de nouveau tous les agents, classés par rôle",
+    "Classement : le vrai titre du joueur remplace l'identifiant brut, et la ligne « Vous » n'apparaît que si vous êtes classé",
+    "Jeu : section « Boutique » repliable avec les packs en premier, comme dans VALPAW",
+    "Équipement d'arme : la raison s'affiche si Riot ne renvoie pas l'équipement au lieu d'une page vide",
+  ],
+};
+
+const v1_79_3_en: ChangelogEntry = {
+  version: "v1.79.3",
+  date: "2026-10-23",
+  title: "E:VAL iOS: profile, agents and leaderboard fixed",
+  items: [
+    "The profile no longer stays empty (\"Profile unavailable\") when a recent cache already exists",
+    "The Agents page lists every agent again, grouped by role",
+    "Leaderboard: the player's real title replaces the raw ID, and the \"You\" row only shows when you are ranked",
+    "Play: collapsible \"Store\" section with bundles first, like VALPAW",
+    "Weapon loadout: shows the reason when Riot returns no loadout instead of a blank page",
+  ],
+};
+
+const v1_79_3_es: ChangelogEntry = {
+  version: "v1.79.3",
+  date: "2026-10-23",
+  title: "E:VAL iOS: perfil, agentes y clasificación reparados",
+  items: [
+    "El perfil ya no se queda vacío («Perfil no disponible») cuando ya existe una caché reciente",
+    "La página Agentes vuelve a mostrar todos los agentes por rol",
+    "Clasificación: el título real del jugador sustituye al ID y la fila «Tú» solo aparece si estás clasificado",
+    "Juego: sección «Tienda» plegable con los packs primero, como en VALPAW",
+    "Equipamiento de armas: muestra el motivo si Riot no devuelve el equipamiento en lugar de una página vacía",
+  ],
+};
+
+const v1_79_3_de: ChangelogEntry = {
+  version: "v1.79.3",
+  date: "2026-10-23",
+  title: "E:VAL iOS: Profil, Agenten und Rangliste repariert",
+  items: [
+    "Das Profil bleibt nicht mehr leer („Profil nicht verfügbar“), wenn bereits ein aktueller Cache existiert",
+    "Die Agenten-Seite zeigt wieder alle Agenten nach Rolle",
+    "Rangliste: der echte Titel ersetzt die Roh-ID, die Zeile „Du“ erscheint nur mit Platzierung",
+    "Spiel: einklappbarer Bereich „Shop“ mit Bundles zuerst, wie in VALPAW",
+    "Waffen-Loadout: zeigt den Grund an, wenn Riot kein Loadout liefert, statt einer leeren Seite",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_79_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_79_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_79_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_79_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

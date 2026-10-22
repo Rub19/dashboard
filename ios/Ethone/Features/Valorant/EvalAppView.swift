@@ -1723,6 +1723,7 @@ struct EvalGameView: View {
     @State private var groupExpanded = true
     @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
+    @State private var storeExpanded = true
     @State private var contractsSubtab = 0
     @State private var futureMissionsExpanded = false
     @State private var groupRefreshProgress: Double = 0.0
@@ -1923,7 +1924,9 @@ struct EvalGameView: View {
                     }
                 }
 
-                storeAndAccessoriesSection
+                collapsibleSection(title: "Boutique", isExpanded: $storeExpanded, rightContent: { EmptyView() }) {
+                    storeAndAccessoriesSection
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 96)
@@ -1970,6 +1973,10 @@ struct EvalGameView: View {
 
     private var storeAndAccessoriesSection: some View {
         VStack(spacing: 18) {
+            ForEach(store.bundles) { bundle in
+                EvalFeaturedBundleCard(bundle: bundle)
+            }
+
             NavigationLink {
                 ValorantStoreView()
             } label: {
@@ -2024,10 +2031,6 @@ struct EvalGameView: View {
                 ForEach(store.storeOffers) { offer in
                     EvalDailyOfferCard(offer: offer, wished: store.isWished(offer.id))
                 }
-            }
-
-            ForEach(store.bundles) { bundle in
-                EvalFeaturedBundleCard(bundle: bundle)
             }
 
             VStack(spacing: 0) {

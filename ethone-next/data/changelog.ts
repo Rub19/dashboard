@@ -60636,4 +60636,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_80_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_80_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_80_0_de);
 
+const v1_81_0_fr: ChangelogEntry = {
+  version: "v1.81.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS : boutique, favoris, apparences et titres comme VALPAW",
+  items: [
+    "Historique de la boutique : onglets Skins, Accessoires et Rotations, nombre d'apparitions « N× », dernière date et tri",
+    "Accessoires : vrais noms (cartes, graffitis, porte-bonheur, titres) et prix en crédits de royaume, mémorisés dans l'historique",
+    "Nouveau : Préréglages des Favoris, pour enregistrer vos favoris Riot et basculer d'un ensemble à l'autre",
+    "Profils d'apparences : sections Épinglé et Préréglages, aperçu de la carte, résumé (Carte, Titre, Armes, Expressions), « Surprenez-moi » et mode Modifier",
+    "Choisir un titre : compteurs Total, Affichés, Favoris et Possédés, filtre des favoris et option « Aucun titre »",
+  ],
+};
+
+const v1_81_0_en: ChangelogEntry = {
+  version: "v1.81.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: store, favorites, appearances and titles like VALPAW",
+  items: [
+    "Store history: Skins, Accessories and Rotations tabs, \"N×\" appearance count, last date and sorting",
+    "Accessories: real names (cards, sprays, buddies, titles) and Kingdom Credits prices, kept in the history",
+    "New: Favorite presets, to save your Riot favorites and switch between sets",
+    "Appearance profiles: Pinned and Presets sections, card preview, summary (Card, Title, Weapons, Expressions), \"Surprise me\" and Edit mode",
+    "Choose a title: Total, Shown, Favorites and Owned counters, favorites filter and a \"No title\" option",
+  ],
+};
+
+const v1_81_0_es: ChangelogEntry = {
+  version: "v1.81.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: tienda, favoritos, apariencias y títulos como VALPAW",
+  items: [
+    "Historial de la tienda: pestañas Skins, Accesorios y Rotaciones, número de apariciones «N×», última fecha y orden",
+    "Accesorios: nombres reales (tarjetas, grafitis, colgantes, títulos) y precios en créditos del reino, guardados en el historial",
+    "Nuevo: preajustes de favoritos para guardar tus favoritos de Riot y cambiar entre conjuntos",
+    "Perfiles de apariencia: secciones Fijado y Preajustes, vista de la tarjeta, resumen (Tarjeta, Título, Armas, Expresiones), «Sorpréndeme» y modo Editar",
+    "Elegir un título: contadores Total, Mostrados, Favoritos y Poseídos, filtro de favoritos y opción «Sin título»",
+  ],
+};
+
+const v1_81_0_de: ChangelogEntry = {
+  version: "v1.81.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: Shop, Favoriten, Erscheinungsbilder und Titel wie VALPAW",
+  items: [
+    "Shop-Verlauf: Tabs Skins, Zubehör und Rotationen, Anzahl „N×“, letztes Datum und Sortierung",
+    "Zubehör: echte Namen (Karten, Graffitis, Anhänger, Titel) und Preise in Königreich-Credits, im Verlauf gespeichert",
+    "Neu: Favoriten-Voreinstellungen, um deine Riot-Favoriten zu speichern und zwischen Sets zu wechseln",
+    "Erscheinungsprofile: Bereiche Angeheftet und Voreinstellungen, Kartenvorschau, Zusammenfassung (Karte, Titel, Waffen, Ausdrücke), „Überrasch mich“ und Bearbeiten",
+    "Titel wählen: Zähler Gesamt, Angezeigt, Favoriten und Besessen, Favoritenfilter und Option „Kein Titel“",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_81_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_81_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_81_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_81_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

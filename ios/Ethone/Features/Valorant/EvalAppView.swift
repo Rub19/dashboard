@@ -1894,6 +1894,10 @@ struct EvalGameView: View {
                                 equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal).contentShape(.rect)
                             }.buttonStyle(.plain)
                             Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
+                            NavigationLink { EvalFavoritePresetsView() } label: {
+                                equipNavRow(icon: "star.square.on.square.fill", title: "Préréglages des Favoris", value: "\(store.favorites.presets.count)").contentShape(.rect)
+                            }.buttonStyle(.plain)
+                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
                             Button { confirmRandom = true } label: {
                                 equipNavRow(icon: "die.face.5.fill", title: store.loadout.isSaving ? "Application…" : "Aléatoire").contentShape(.rect)
                             }.buttonStyle(.plain)

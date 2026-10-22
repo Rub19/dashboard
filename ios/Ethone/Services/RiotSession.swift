@@ -369,14 +369,24 @@ enum RiotGameService {
                                                         isOwned: false))
             }
             let accessory = front.AccessoryStore
+            let looks = await LoadoutCatalog.load()
             snap.accessories = (accessory?.AccessoryStoreOffers ?? []).compactMap { entry in
                 guard let reward = entry.Offer.Rewards?.first else { return nil }
                 let id = reward.ItemID.lowercased()
+                let price = entry.Offer.Cost[kc] ?? entry.Offer.Cost.values.first ?? 0
                 switch reward.ItemTypeID?.lowercased() {
-                case "d5f120f8-ff8c-4aac-92ea-f2b5acbe9475": return ValorantAccessoryItem(id: id, name: "Spray", imageURL: "https://media.valorant-api.com/sprays/\(id)/displayicon.png")
-                case "3f296c07-64c3-494c-923b-fe692a4fa1bd": return ValorantAccessoryItem(id: id, name: "Carte", imageURL: "https://media.valorant-api.com/playercards/\(id)/smallart.png")
-                case "dd3bf334-87f3-40bd-b043-682a57a8dc3a": return ValorantAccessoryItem(id: id, name: "Porte-bonheur", imageURL: "https://media.valorant-api.com/buddylevels/\(id)/displayicon.png")
-                default: return ValorantAccessoryItem(id: id, name: "Titre", imageURL: "")
+                case "d5f120f8-ff8c-4aac-92ea-f2b5acbe9475":
+                    let spray = looks.sprays.first { $0.uuid.lowercased() == id }
+                    return ValorantAccessoryItem(id: id, name: spray?.displayName ?? "Graffiti", imageURL: spray?.fullTransparentIcon ?? spray?.displayIcon ?? "https://media.valorant-api.com/sprays/\(id)/displayicon.png", price: price)
+                case "3f296c07-64c3-494c-923b-fe692a4fa1bd":
+                    let card = looks.cards.first { $0.uuid.lowercased() == id }
+                    return ValorantAccessoryItem(id: id, name: card?.displayName ?? "Carte", imageURL: card?.smallArt ?? "https://media.valorant-api.com/playercards/\(id)/smallart.png", price: price)
+                case "dd3bf334-87f3-40bd-b043-682a57a8dc3a":
+                    let buddy = looks.buddies.first { $0.levels.contains { $0.uuid.lowercased() == id } }
+                    return ValorantAccessoryItem(id: id, name: buddy?.displayName ?? "Porte-bonheur", imageURL: buddy?.displayIcon ?? "https://media.valorant-api.com/buddylevels/\(id)/displayicon.png", price: price)
+                default:
+                    let title = looks.titles.first { $0.uuid.lowercased() == id }?.titleText
+                    return ValorantAccessoryItem(id: id, name: title.map { "Titre « \($0) »" } ?? "Titre", imageURL: "", price: price)
                 }
             }
             snap.accessoriesEnd = accessory?.AccessoryStoreRemainingDurationInSeconds.map { Date().addingTimeInterval(TimeInterval($0)) }

@@ -245,22 +245,114 @@ struct EvalCompactMatchRow: View {
 struct EvalShopHistoryView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @State private var tab = 0
+    @State private var sort = Sort.recent
+
+    enum Sort: String, CaseIterable { case recent = "Plus récents", count = "Plus fréquents", name = "Nom", price = "Prix" }
+
+    private struct Entry: Identifiable {
+        let id: String
+        let name: String
+        let image: String
+        let color: Color?
+        let price: Int
+        let count: Int
+        let last: Date
+    }
+
+    private var skinEntries: [Entry] {
+        var map: [String: Entry] = [:]
+        for day in model.valorant.shopHistory {
+            for offer in day.offers {
+                let old = map[offer.id]
+                map[offer.id] = Entry(id: offer.id, name: offer.name, image: offer.imageURL, color: Color(hex: offer.colorHex),
+                                      price: offer.price, count: (old?.count ?? 0) + 1, last: max(old?.last ?? .distantPast, day.day))
+            }
+        }
+        return sorted(Array(map.values))
+    }
+
+    private var accessoryEntries: [Entry] {
+        var map: [String: Entry] = [:]
+        var seen: [String: Set<Date>] = [:]
+        for day in model.valorant.shopHistory {
+            for item in day.accessories ?? [] {
+                let week = Calendar.current.dateInterval(of: .weekOfYear, for: day.day)?.start ?? day.day
+                let isNewRotation = seen[item.id, default: []].insert(week).inserted
+                let old = map[item.id]
+                map[item.id] = Entry(id: item.id, name: item.name, image: item.imageURL, color: nil, price: item.price,
+                                     count: (old?.count ?? 0) + (isNewRotation ? 1 : 0), last: max(old?.last ?? .distantPast, day.day))
+            }
+        }
+        return sorted(Array(map.values))
+    }
+
+    private func sorted(_ list: [Entry]) -> [Entry] {
+        switch sort {
+        case .recent: list.sorted { ($0.last, $0.count, $1.name) > ($1.last, $1.count, $0.name) }
+        case .count: list.sorted { ($0.count, $0.last) > ($1.count, $1.last) }
+        case .name: list.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        case .price: list.sorted { ($0.price, $0.last) > ($1.price, $1.last) }
+        }
+    }
+
+    private func dayText(_ date: Date) -> String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) { return "Aujourd'hui" }
+        if calendar.isDateInYesterday(date) { return "Hier" }
+        return date.formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: "fr_FR")))
+    }
 
     var body: some View {
         let store = model.valorant
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                EvalNavHeader(title: "Historique de la boutique") { dismiss() }
+                EvalNavHeader(title: "Historique de la boutique", trailing: AnyView(
+                    Menu {
+                        Picker("Trier", selection: $sort) {
+                            ForEach(Sort.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                        }
+                    } label: {
+                        Circle().fill(EvalColors.card).frame(width: 51, height: 51)
+                            .overlay(Image(systemName: "arrow.up.arrow.down").font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalAccent.color))
+                    }
+                )) { dismiss() }
+                Picker("", selection: $tab) {
+                    Text("Skins").tag(0)
+                    Text("Accessoires").tag(1)
+                    Text("Rotations").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .padding(.bottom, 14)
                 if store.shopHistory.isEmpty {
                     ContentUnavailableView("Aucune boutique enregistrée", systemImage: "clock.arrow.circlepath",
                                            description: Text("Chaque jour où vous ouvrez l’onglet Jeu avec votre compte Riot connecté, les offres du jour sont enregistrées ici."))
                         .padding(.top, 40)
-                }
-                ForEach(store.shopHistory) { day in
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(day.day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "fr_FR"))).capitalized)
-                            .font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
-                        ForEach(day.offers) { offer in EvalDailyOfferCard(offer: offer) }
+                } else if tab == 2 {
+                    ForEach(store.shopHistory) { day in
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(day.day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "fr_FR"))).capitalized)
+                                .font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
+                            ForEach(day.offers) { offer in EvalDailyOfferCard(offer: offer) }
+                        }
+                    }
+                } else {
+                    let list = tab == 0 ? skinEntries : accessoryEntries
+                    if list.isEmpty {
+                        ContentUnavailableView("Aucun accessoire enregistré", systemImage: "sparkles",
+                                               description: Text("Les accessoires sont enregistrés à chaque nouvelle rotation du magasin d’accessoires."))
+                            .padding(.top, 40)
+                    } else {
+                        VStack(spacing: 0) {
+                            ForEach(Array(list.enumerated()), id: \.element.id) { index, entry in
+                                row(entry, wished: tab == 0 && store.isWished(entry.id))
+                                if index < list.count - 1 {
+                                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 106)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 6)
+                        .background(EvalColors.card, in: .rect(cornerRadius: 28))
                     }
                 }
             }
@@ -271,6 +363,30 @@ struct EvalShopHistoryView: View {
         .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private func row(_ entry: Entry, wished: Bool) -> some View {
+        HStack(spacing: 14) {
+            AsyncImage(url: URL(string: entry.image)) { $0.image?.resizable().scaledToFit() }
+                .frame(width: 62, height: 34)
+            HStack(spacing: 6) {
+                if wished {
+                    Image(systemName: "heart.circle.fill").font(.system(size: 16)).foregroundStyle(entry.color ?? EvalAccent.color)
+                }
+                Text(entry.name)
+                    .font(.system(size: 19))
+                    .foregroundStyle(entry.color ?? EvalColors.text)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 8)
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(entry.count)×").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalColors.text)
+                Text(dayText(entry.last)).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
+            Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+        }
+        .padding(.horizontal, 20)
+        .frame(minHeight: 70)
     }
 }
 

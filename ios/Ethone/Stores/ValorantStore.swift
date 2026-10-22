@@ -184,10 +184,11 @@ struct ValorantStoreBundle: Identifiable, Hashable {
     let isOwned: Bool
 }
 
-struct ValorantAccessoryItem: Identifiable, Hashable {
+struct ValorantAccessoryItem: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let imageURL: String
+    var price: Int = 0
 }
 
 struct ValorantWallet: Hashable {
@@ -355,6 +356,7 @@ final class ValorantStore {
     let riot = RiotSession()
     /// Collection possédée et équipement modifiable du compte Riot connecté.
     let loadout: RiotLoadoutModel
+    let favorites: RiotFavoritesModel
     /// Groupe en cours (glz) : prêt, public/privé, file, serveurs, codes, invitations.
     let party = RiotPartyModel()
     let chat = RiotChat()
@@ -378,7 +380,7 @@ final class ValorantStore {
         let snap = await RiotGameService.load(riot)
         wallet = snap.wallet
         storeOffers = snap.offers
-        recordShop(snap.offers)
+        recordShop(snap.offers, accessories: snap.accessories)
         offersEnd = snap.offersEnd
         bundles = snap.bundles
         accessories = snap.accessories
@@ -581,6 +583,7 @@ final class ValorantStore {
     init(api: APIClient) {
         self.api = api
         self.loadout = RiotLoadoutModel(api: api)
+        self.favorites = RiotFavoritesModel(api: api)
         nameStorage = UserDefaults.standard.string(forKey: Self.nameKey) ?? ""
         tag = UserDefaults.standard.string(forKey: Self.tagKey) ?? ""
         if !nameStorage.isEmpty, !tag.isEmpty, !savedAccounts.contains("\(nameStorage)#\(tag)") {
@@ -882,6 +885,7 @@ final class ValorantStore {
     struct ShopDay: Codable, Hashable, Identifiable {
         let day: Date
         let offers: [ValorantDailySkinOffer]
+        var accessories: [ValorantAccessoryItem]? = nil
         var id: Date { day }
     }
 
@@ -907,11 +911,16 @@ final class ValorantStore {
     }
 
     /// Mémorise les offres du jour (une entrée par jour, 120 jours max).
-    private func recordShop(_ offers: [ValorantDailySkinOffer]) {
+    private func recordShop(_ offers: [ValorantDailySkinOffer], accessories: [ValorantAccessoryItem]) {
         guard !offers.isEmpty, let cache = personalCache else { return }
         let day = Calendar.current.startOfDay(for: Date())
-        guard !shopHistory.contains(where: { $0.day == day }) else { return }
-        shopHistory.insert(ShopDay(day: day, offers: offers), at: 0)
+        if let index = shopHistory.firstIndex(where: { $0.day == day }) {
+            guard shopHistory[index].accessories == nil, !accessories.isEmpty else { return }
+            shopHistory[index].accessories = accessories
+            if let payload = ValorantPersonalCache.encode(shopHistory) { Task { await cache.save(payload, key: "shop_history") } }
+            return
+        }
+        shopHistory.insert(ShopDay(day: day, offers: offers, accessories: accessories.isEmpty ? nil : accessories), at: 0)
         shopHistory = Array(shopHistory.prefix(120))
         storeHistoryCount = Set(shopHistory.flatMap { $0.offers.map(\.id) }).count
         if let payload = ValorantPersonalCache.encode(shopHistory) { Task { await cache.save(payload, key: "shop_history") } }

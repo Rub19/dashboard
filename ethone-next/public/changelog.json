@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.81.0",
+    "date": "2026-10-23",
+    "title": "E:VAL iOS : boutique, favoris, apparences et titres comme VALPAW",
+    "items": [
+      "Historique de la boutique : onglets Skins, Accessoires et Rotations, nombre d'apparitions « N× », dernière date et tri",
+      "Accessoires : vrais noms (cartes, graffitis, porte-bonheur, titres) et prix en crédits de royaume, mémorisés dans l'historique",
+      "Nouveau : Préréglages des Favoris, pour enregistrer vos favoris Riot et basculer d'un ensemble à l'autre",
+      "Profils d'apparences : sections Épinglé et Préréglages, aperçu de la carte, résumé (Carte, Titre, Armes, Expressions), « Surprenez-moi » et mode Modifier",
+      "Choisir un titre : compteurs Total, Affichés, Favoris et Possédés, filtre des favoris et option « Aucun titre »"
+    ]
+  },
+  {
     "version": "v1.80.0",
     "date": "2026-10-23",
     "title": "E:VAL iOS : vos amis Riot en direct",

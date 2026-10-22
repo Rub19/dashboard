@@ -61,6 +61,22 @@ final class RiotLoadoutModel {
         var name: String
         let loadout: JSONValue
         let createdAt: Date
+        var pinned: Bool? = nil
+
+        var cardURL: URL? {
+            guard let id = loadout["Identity"]?["PlayerCardID"]?.stringValue, !id.isEmpty else { return nil }
+            return URL(string: "https://media.valorant-api.com/playercards/\(id.lowercased())/smallart.png")
+        }
+
+        var summary: String {
+            var parts: [String] = []
+            if let card = loadout["Identity"]?["PlayerCardID"]?.stringValue, !card.isEmpty { parts.append("Carte") }
+            if let title = loadout["Identity"]?["PlayerTitleID"]?.stringValue, !title.isEmpty { parts.append("Titre") }
+            let guns = loadout["Guns"]?.arrayValue?.count ?? 0
+            if guns > 0 { parts.append("\(guns) Armes") }
+            if (loadout["Sprays"]?.arrayValue?.isEmpty == false) || (loadout["ActiveExpressions"]?.arrayValue?.isEmpty == false) { parts.append("Expressions") }
+            return parts.joined(separator: ", ")
+        }
     }
 
     private(set) var raw: JSONValue?
@@ -261,6 +277,12 @@ final class RiotLoadoutModel {
         for key in ["Guns", "Sprays", "Identity", "Incognito"] { if let v = saved[key] { current[key] = v } }
         raw = .object(current)
         return await save(session)
+    }
+
+    func togglePin(_ profile: AppearanceProfile) {
+        guard let index = profiles.firstIndex(where: { $0.id == profile.id }) else { return }
+        profiles[index].pinned = !(profiles[index].pinned ?? false)
+        persistProfiles()
     }
 
     func deleteProfile(_ profile: AppearanceProfile) {
@@ -490,33 +512,85 @@ struct EvalSkinEquipSheet: View {
 struct EvalTitlePickerView: View {
     @Environment(AppModel.self) private var model
     @State private var query = ""
+    @State private var favoritesOnly = false
+
+    private static let noTitle = "d13e579c-435e-44d4-cec2-6eae5a3c5ed4"
 
     var body: some View {
         let loadout = model.valorant.loadout
+        let favorites = Set(model.valorant.favorites.current.values)
         let current = loadout.raw?["Identity"]?["PlayerTitleID"]?.stringValue?.lowercased()
-        LoadoutScreen(title: "Changer de titre") {
-            HStack(spacing: 10) { Image(systemName: "magnifyingglass"); TextField("Recherche", text: $query) }
-                .foregroundStyle(LUI.secondary).padding(.horizontal, 16).frame(height: 50).background(LUI.card, in: .capsule)
+        let owned = loadout.catalog.titles
+            .filter { loadout.ownedTitles.contains($0.uuid.lowercased()) }
+            .sorted { ($0.titleText ?? "").localizedCaseInsensitiveCompare($1.titleText ?? "") == .orderedAscending }
+        let shown = owned.filter {
+            (!favoritesOnly || favorites.contains($0.uuid.lowercased())) && (query.isEmpty || ($0.titleText ?? "").localizedCaseInsensitiveContains(query))
+        }
+        LoadoutScreen(title: "Choisir un titre", trailing: AnyView(
+            Button { withAnimation { favoritesOnly.toggle() } } label: {
+                Circle().fill(LUI.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: favoritesOnly ? "star.circle.fill" : "star.circle").font(.system(size: 26)).foregroundStyle(LUI.accent))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Favoris")
+        )) {
+            HStack(spacing: 0) {
+                counter("\(loadout.catalog.titles.count)", "Total", LUI.secondary)
+                counter("\(shown.count)", "Affichés", EvalColors.text)
+                counter("\(owned.filter { favorites.contains($0.uuid.lowercased()) }.count)", "Favoris", Color(hex: 0xF5C518))
+                counter("\(owned.count)", "Possédés", Color(hex: 0x35C26B))
+            }
+            .padding(.vertical, 12)
+            .background(LUI.card, in: .capsule)
+            .padding(.horizontal, 18)
+            HStack(spacing: 10) { Image(systemName: "magnifyingglass"); TextField("Filtrer", text: $query) }
+                .foregroundStyle(LUI.secondary).padding(.horizontal, 16).frame(height: 46).background(LUI.card, in: .capsule)
             VStack(spacing: 0) {
-                ForEach(loadout.catalog.titles.filter { loadout.ownedTitles.contains($0.uuid.lowercased()) && (query.isEmpty || ($0.titleText ?? "").localizedCaseInsensitiveContains(query)) }) { title in
-                    Button {
-                        loadout.setIdentity("PlayerTitleID", .string(title.uuid))
-                        Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
-                    } label: {
-                        HStack {
-                            Text(title.titleText ?? "").font(.system(size: 20)).foregroundStyle(EvalColors.text)
-                            Spacer()
-                            if title.uuid.lowercased() == current { Image(systemName: "checkmark").foregroundStyle(LUI.accent) }
-                        }
-                        .padding(18).contentShape(.rect)
+                if !favoritesOnly && query.isEmpty {
+                    row(text: "Aucun titre", id: Self.noTitle, selected: current == nil || current == Self.noTitle, muted: true)
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 22)
+                }
+                ForEach(Array(shown.enumerated()), id: \.element.id) { index, title in
+                    row(text: title.titleText ?? "", id: title.uuid, selected: title.uuid.lowercased() == current, muted: false)
+                    if index < shown.count - 1 {
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 22)
                     }
-                    .buttonStyle(.plain)
-                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
                 }
             }
-            .background(LUI.card, in: .rect(cornerRadius: 22))
+            .background(LUI.card, in: .rect(cornerRadius: 28))
         }
-        .task { await loadout.load(model.valorant.riot) }
+        .task {
+            await loadout.load(model.valorant.riot)
+            await model.valorant.favorites.load(model.valorant.riot)
+        }
+    }
+
+    private func counter(_ value: String, _ label: String, _ color: Color) -> some View {
+        VStack(spacing: 2) {
+            Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(color)
+            Text(label).font(.system(size: 14)).foregroundStyle(LUI.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func row(text: String, id: String, selected: Bool, muted: Bool) -> some View {
+        let loadout = model.valorant.loadout
+        return Button {
+            loadout.setIdentity("PlayerTitleID", .string(id))
+            Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
+        } label: {
+            HStack {
+                Text(text).font(.system(size: 20)).foregroundStyle(muted ? LUI.secondary : EvalColors.text)
+                Spacer()
+                if selected {
+                    Image(systemName: "checkmark.circle.fill").font(.system(size: 22)).symbolRenderingMode(.palette).foregroundStyle(.white, LUI.accent)
+                }
+            }
+            .padding(.horizontal, 22)
+            .frame(minHeight: 54)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -637,32 +711,48 @@ struct EvalAppearanceProfilesView: View {
     @State private var naming = false
     @State private var name = ""
     @State private var toApply: RiotLoadoutModel.AppearanceProfile?
+    @State private var editing = false
 
     var body: some View {
         let loadout = model.valorant.loadout
-        LoadoutScreen(title: "Profils d'apparences", trailing: AnyView(Button { name = ""; naming = true } label: {
-            Circle().fill(LUI.card).frame(width: 51, height: 51)
-                .overlay(Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.accent))
-        }.buttonStyle(.plain))) {
-            Text("Enregistrez votre équipement complet (skins, porte-bonheur, sprays, carte, titre) et réappliquez-le en un toucher.")
-                .font(.system(size: 17)).foregroundStyle(LUI.secondary)
-            if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary) }
-            ForEach(loadout.profiles) { profile in
-                Button { toApply = profile } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(profile.name).font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalColors.text)
-                            Text(profile.createdAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "fr_FR"))))
-                                .font(.system(size: 15)).foregroundStyle(LUI.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "arrow.up.right").foregroundStyle(LUI.accent)
-                    }
-                    .padding(18).background(LUI.card, in: .rect(cornerRadius: 20))
-                }
-                .buttonStyle(.plain)
-                .contextMenu { Button("Supprimer", systemImage: "trash", role: .destructive) { loadout.deleteProfile(profile) } }
+        let pinned = loadout.profiles.filter { $0.pinned == true }
+        let others = loadout.profiles.filter { $0.pinned != true }
+        LoadoutScreen(title: "Profils d'apparences", trailing: AnyView(HStack(spacing: 10) {
+            Button { toApply = loadout.profiles.randomElement() } label: {
+                Circle().fill(LUI.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "dice").font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.accent))
             }
+            .buttonStyle(.plain)
+            .disabled(loadout.profiles.isEmpty)
+            .accessibilityLabel("Surprenez-moi")
+            Button { withAnimation { editing.toggle() } } label: {
+                Circle().fill(LUI.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: editing ? "checkmark" : "pencil").font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.accent))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(editing ? "Terminé" : "Modifier")
+        })) {
+            if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary) }
+            if !pinned.isEmpty { section("Épinglé", pinned) }
+            if !others.isEmpty { section("Préréglages", others) }
+            if loadout.profiles.isEmpty {
+                Text("Enregistrez votre équipement complet (skins, porte-bonheur, sprays, carte, titre) et réappliquez-le en un toucher.")
+                    .font(.system(size: 17)).foregroundStyle(LUI.secondary)
+            }
+            Button { name = ""; naming = true } label: {
+                HStack(spacing: 18) {
+                    Image(systemName: "plus").font(.system(size: 24, weight: .regular))
+                    Text("Enregistrer l’équipement actuel").font(.system(size: 21))
+                    Spacer()
+                }
+                .foregroundStyle(LUI.accent)
+                .padding(.horizontal, 22)
+                .frame(height: 64)
+                .background(LUI.card, in: .capsule)
+            }
+            .buttonStyle(.plain)
+            .disabled(loadout.raw == nil)
+            .padding(.top, 6)
         }
         .task { await loadout.load(model.valorant.riot) }
         .alert("Nommer le profil", isPresented: $naming) {
@@ -677,6 +767,59 @@ struct EvalAppearanceProfilesView: View {
             }
         } message: {
             Text("Votre équipement actuel sera remplacé.")
+        }
+    }
+
+    private func section(_ title: String, _ list: [RiotLoadoutModel.AppearanceProfile]) -> some View {
+        let loadout = model.valorant.loadout
+        return VStack(alignment: .leading, spacing: 10) {
+            Text(title).font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.secondary).padding(.leading, 20)
+            VStack(spacing: 0) {
+                ForEach(Array(list.enumerated()), id: \.element.id) { index, profile in
+                    HStack(spacing: 14) {
+                        if editing {
+                            Button { loadout.deleteProfile(profile) } label: {
+                                Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF3B30))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        Button { if !editing { toApply = profile } } label: {
+                            HStack(spacing: 14) {
+                                AsyncImage(url: profile.cardURL) { $0.image?.resizable().scaledToFill() }
+                                    .frame(width: 44, height: 44)
+                                    .background(LUI.card)
+                                    .clipShape(.rect(cornerRadius: 9))
+                                VStack(alignment: .leading, spacing: 3) {
+                                    HStack(spacing: 6) {
+                                        Text(profile.name).font(.system(size: 19)).foregroundStyle(EvalColors.text)
+                                        if profile.pinned == true {
+                                            Image(systemName: "pin.fill").font(.system(size: 13)).foregroundStyle(Color(hex: 0xF5C518))
+                                        }
+                                    }
+                                    Text(profile.summary).font(.system(size: 15)).foregroundStyle(LUI.secondary).lineLimit(1)
+                                }
+                                Spacer()
+                                if editing {
+                                    Button { loadout.togglePin(profile) } label: {
+                                        Image(systemName: profile.pinned == true ? "pin.slash" : "pin").font(.system(size: 18)).foregroundStyle(LUI.accent)
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(LUI.secondary)
+                                }
+                            }
+                            .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, 20)
+                    .frame(minHeight: 78)
+                    if index < list.count - 1 {
+                        Divider().overlay(EvalColors.text.opacity(0.1)).padding(.leading, 78)
+                    }
+                }
+            }
+            .background(LUI.card, in: .rect(cornerRadius: 26))
         }
     }
 }

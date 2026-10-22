@@ -576,7 +576,7 @@ struct EvalAgentsView: View {
     private var roleSections: [AgentRoleSection] {
         let roleOrder = ["Controller", "Duelist", "Initiator", "Sentinel"]
         return roleOrder.compactMap { roleKey in
-            let matching = store.agents.filter { [roleKey, roleFrenchName(roleKey)].contains { name in ($0.role?.displayName ?? "").caseInsensitiveCompare(name) == .orderedSame } }
+            let matching = store.agents.filter { agent in [roleKey, roleFrenchName(roleKey)].contains { (agent.role?.displayName ?? "").caseInsensitiveCompare($0) == .orderedSame } }
             guard !matching.isEmpty else { return nil }
             let icon = matching.first?.role?.displayIcon
             return AgentRoleSection(

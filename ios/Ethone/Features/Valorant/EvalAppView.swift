@@ -903,10 +903,12 @@ struct EvalProfileView: View {
                             if let mvp = Self.mvpLabel(match) {
                                 Rectangle().fill(.white.opacity(0.3)).frame(width: 1, height: 14)
                                 Text(mvp)
-                                    .foregroundStyle(Color(hex: 0xF5D78E))
+                                    .foregroundStyle(Color(hex: 0xF2E24A))
                                     .padding(.horizontal, 9)
                             }
                         }
+                        .lineLimit(1)
+                        .fixedSize()
                         .font(.system(size: 14, weight: .semibold))
                         .padding(.vertical, 3)
                         .background(.black.opacity(0.45), in: .capsule)
@@ -990,7 +992,7 @@ struct EvalProfileView: View {
     static func mvpLabel(_ match: ValorantMatch) -> String? {
         guard let me = match.myPlayer, match.players.count > 1 else { return nil }
         if match.players.allSatisfy({ $0.score <= me.score }) { return "MVP du match" }
-        if match.myTeamPlayers.allSatisfy({ $0.score <= me.score }) { return "MVP d’équipe" }
+        if match.myTeamPlayers.allSatisfy({ $0.score <= me.score }) { return "MVP de l’équipe" }
         return nil
     }
 

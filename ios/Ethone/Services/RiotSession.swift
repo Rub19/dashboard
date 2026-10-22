@@ -189,6 +189,8 @@ final class RiotSession {
                            gameName: info.acct?.game_name ?? "", tagLine: info.acct?.tag_line ?? "", region: region, shard: shard)
     }
 
+    func chatCredentials() async -> Credentials? { await validCredentials() }
+
     /// Jeton valide (reconnexion silencieuse si expiré). `nil` = l'utilisateur doit se reconnecter.
     private func validCredentials() async -> Credentials? {
         guard let current = credentials else { return nil }

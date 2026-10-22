@@ -60583,4 +60583,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_79_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_79_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_79_3_de);
 
+const v1_80_0_fr: ChangelogEntry = {
+  version: "v1.80.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS : vos amis Riot en direct",
+  items: [
+    "Amis : la liste vient maintenant de votre compte Riot (chat Riot), avec le statut en direct : en jeu, score, mode, carte, rang et taille du groupe",
+    "Les amis d'un même groupe sont réunis sur une seule carte « Groupe — x/5 » avec « + N autres », comme dans VALPAW",
+    "Vous restez invisible : E:VAL lit les présences sans vous afficher en ligne",
+    "Cartes de match : « MVP du match » sur une seule ligne, libellé « MVP de l'équipe »",
+  ],
+};
+
+const v1_80_0_en: ChangelogEntry = {
+  version: "v1.80.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: your Riot friends, live",
+  items: [
+    "Friends: the list now comes from your Riot account (Riot chat) with live status: in game, score, mode, map, rank and party size",
+    "Friends in the same party share one \"Party — x/5\" card with \"+ N others\", like VALPAW",
+    "You stay invisible: E:VAL reads presences without showing you online",
+    "Match cards: \"Match MVP\" on one line, \"Team MVP\" label",
+  ],
+};
+
+const v1_80_0_es: ChangelogEntry = {
+  version: "v1.80.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: tus amigos de Riot en directo",
+  items: [
+    "Amigos: la lista viene ahora de tu cuenta Riot (chat de Riot) con estado en directo: en partida, marcador, modo, mapa, rango y tamaño del grupo",
+    "Los amigos del mismo grupo comparten una tarjeta «Grupo — x/5» con «+ N más», como en VALPAW",
+    "Sigues invisible: E:VAL lee las presencias sin mostrarte en línea",
+    "Tarjetas de partida: «MVP de la partida» en una línea, etiqueta «MVP del equipo»",
+  ],
+};
+
+const v1_80_0_de: ChangelogEntry = {
+  version: "v1.80.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: deine Riot-Freunde live",
+  items: [
+    "Freunde: die Liste kommt jetzt aus deinem Riot-Konto (Riot-Chat) mit Live-Status: im Spiel, Punktestand, Modus, Karte, Rang und Gruppengröße",
+    "Freunde derselben Gruppe teilen sich eine Karte „Gruppe — x/5“ mit „+ N weitere“, wie in VALPAW",
+    "Du bleibst unsichtbar: E:VAL liest Präsenzen, ohne dich online anzuzeigen",
+    "Match-Karten: „Match-MVP“ in einer Zeile, Bezeichnung „Team-MVP“",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_80_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_80_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_80_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_80_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

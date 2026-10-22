@@ -2926,7 +2926,14 @@ struct EvalFriendsView: View {
     }
 
     private var onlineFriends: [ValorantFriend] {
-        filteredFriends.filter { $0.isOnline || $0.isInGame }
+        var seen = Set<String>()
+        return filteredFriends
+            .filter { $0.isOnline || $0.isInGame }
+            .sorted { ($0.isInGame ? 0 : 1, $0.name.lowercased()) < ($1.isInGame ? 0 : 1, $1.name.lowercased()) }
+            .filter { friend in
+                guard let party = friend.partyID else { return true }
+                return seen.insert(party).inserted
+            }
     }
 
     private var offlineFriends: [ValorantFriend] {
@@ -3024,6 +3031,8 @@ struct EvalFriendsView: View {
                 }
             }
             .navigationBarBackButtonHidden(true)
+            .task { await store.connectChat() }
+            .onChange(of: store.chat.friends) { store.chatChanged() }
             .ethoneScreen()
 
             if showingAddFriendModal {
@@ -3337,43 +3346,44 @@ struct EvalFriendCard: View {
                     VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 4) {
                             Text(friend.name)
-                                .font(.subheadline.weight(.heavy))
+                                .font(.system(size: 19, weight: .semibold))
                                 .foregroundStyle(EvalColors.text)
+                                .padding(.trailing, -4)
 
                             Text("#\(friend.tag)")
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 19))
+                                .foregroundStyle(Color(hex: 0x8E8E93))
                         }
 
                         if let queue = friend.queueState {
                             Text(queue)
-                                .font(.caption.weight(.medium))
+                                .font(.system(size: 16, weight: .medium))
                                 .foregroundStyle(EvalColors.text)
                             if let mode = friend.gameMode {
                                 Text(mode)
-                                    .font(.caption2)
+                                    .font(.system(size: 16))
                                     .foregroundStyle(Color(hex: 0x8E8E93))
                             }
                         } else if friend.isInGame {
                             HStack(spacing: 5) {
                                 Text("En Jeu")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundStyle(EvalColors.text)
 
                                 if let score = friend.scoreRounds {
                                     Text("|")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary.opacity(0.6))
+                                        .font(.system(size: 16))
+                                        .foregroundStyle(Color(hex: 0x8E8E93).opacity(0.7))
                                     Text(score)
-                                        .font(.caption.weight(.heavy).monospacedDigit())
-                                        .foregroundStyle(EvalColors.text)
+                                        .font(.system(size: 16).monospacedDigit())
+                                        .foregroundStyle(Color(hex: 0x8E8E93))
                                 }
                             }
 
                             if let mode = friend.gameMode, let map = friend.map {
-                                Text("\(mode) • \(map)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
+                                Text("\(mode)  •  \(map)")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(Color(hex: 0x8E8E93))
                             }
                         } else {
                             Text(friend.isOnline ? "En ligne" : (friend.lastOnlineText ?? "Hors ligne"))

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.80.0 — 2026-10-23
+
+**E:VAL iOS : vos amis Riot en direct**
+
+- Amis : la liste vient maintenant de votre compte Riot (chat Riot), avec le statut en direct : en jeu, score, mode, carte, rang et taille du groupe
+- Les amis d'un même groupe sont réunis sur une seule carte « Groupe — x/5 » avec « + N autres », comme dans VALPAW
+- Vous restez invisible : E:VAL lit les présences sans vous afficher en ligne
+- Cartes de match : « MVP du match » sur une seule ligne, libellé « MVP de l'équipe »
+
 ## v1.79.3 — 2026-10-23
 
 **E:VAL iOS : profil, agents et classement réparés**

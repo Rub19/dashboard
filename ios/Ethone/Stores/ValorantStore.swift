@@ -214,6 +214,7 @@ struct ValorantFriend: Identifiable, Hashable {
     var otherPartyMembersCount: Int
     let lastOnlineText: String?
     var lastOnlineSecondsAgo: Int
+    var partyID: String? = nil
 
     var handle: String { "\(name)#\(tag)" }
     var rankIconURL: URL? { ValorantProfile.tierIcon(tierNumber) }
@@ -356,6 +357,7 @@ final class ValorantStore {
     let loadout: RiotLoadoutModel
     /// Groupe en cours (glz) : prêt, public/privé, file, serveurs, codes, invitations.
     let party = RiotPartyModel()
+    let chat = RiotChat()
     /// XP du compte et contrats d'agents.
     let contracts = RiotContractsModel()
     private(set) var offersEnd: Date?
@@ -371,6 +373,7 @@ final class ValorantStore {
         guard riot.isLinked, !isLoadingRiot else { return }
         isLoadingRiot = true
         defer { isLoadingRiot = false }
+        if !chat.isConnected { Task { await connectChat() } }
         if battlepassLevels.isEmpty { await loadBattlepass() }
         let snap = await RiotGameService.load(riot)
         wallet = snap.wallet
@@ -1179,7 +1182,46 @@ final class ValorantStore {
         await refreshNameChanges()
     }
 
+    func connectChat() async {
+        guard riot.isLinked else { return }
+        await chat.connect(riot)
+        rebuildFriends()
+    }
+
+    func chatChanged() {
+        rebuildFriends()
+    }
+
     private func rebuildFriends() {
+        if chat.isConnected || !chat.friends.isEmpty {
+            friends = chat.friends.map { friend in
+                let p = friend.presence
+                let inGame = p?.state == "INGAME"
+                let stateText: String? = {
+                    guard let p, p.inValorant else { return nil }
+                    switch p.state {
+                    case "INGAME": return nil
+                    case "PREGAME": return "Sélection d’agent"
+                    default: return p.isIdle ? "Absent" : "Dans les menus"
+                    }
+                }()
+                return ValorantFriend(
+                    id: friend.id, name: friend.name, tag: friend.tag,
+                    avatarURL: (p?.cardID).flatMap { $0.isEmpty ? nil : "https://media.valorant-api.com/playercards/\($0)/smallart.png" },
+                    isOnline: p != nil, isInGame: inGame, isPartyLeader: false,
+                    partyCurrent: p?.partySize ?? 1, partyMax: p?.maxPartySize ?? 5,
+                    queueState: stateText,
+                    gameMode: (p?.queueID).flatMap { $0.isEmpty ? nil : RiotPartyModel.queueName($0) },
+                    map: (p?.mapPath).flatMap { chat.mapName($0) },
+                    scoreRounds: inGame ? "\(p?.allyScore ?? 0) — \(p?.enemyScore ?? 0)" : nil,
+                    tierNumber: p?.tier ?? 0,
+                    otherPartyMembersCount: max(0, (p?.partySize ?? 1) - 1),
+                    lastOnlineText: nil, lastOnlineSecondsAgo: Int.max,
+                    partyID: (p?.partyID).flatMap { $0.isEmpty ? nil : $0 }
+                )
+            }
+            return
+        }
         friends = friendRecords.map { r in
             ValorantFriend(
                 id: r.puuid, name: r.name, tag: r.tag,

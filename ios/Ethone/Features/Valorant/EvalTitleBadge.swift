@@ -201,3 +201,22 @@ struct EvalPlayerTitleText: View {
         }
     }
 }
+
+struct EvalModeIcon: View {
+    let mode: String
+    var tier: Int = 0
+
+    var body: some View {
+        Group {
+            if mode.lowercased() == "competitive", tier > 0, let rank = ValorantProfile.tierIcon(tier) {
+                AsyncImage(url: rank) { $0.image?.resizable().scaledToFit() }
+            } else if mode.lowercased() == "premier" {
+                Image(systemName: "trophy.fill").resizable().scaledToFit().padding(3)
+            } else if let icon = ValorantAssets.shared.modeIcon(mode) {
+                AsyncImage(url: icon) { $0.image?.resizable().renderingMode(.template).scaledToFit() }
+            } else {
+                Image(systemName: "cube.transparent").resizable().scaledToFit()
+            }
+        }
+    }
+}

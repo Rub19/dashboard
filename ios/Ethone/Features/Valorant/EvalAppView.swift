@@ -822,17 +822,7 @@ struct EvalProfileView: View {
         let history = store.mmr.history.first { $0.match.lowercased() == match.id.lowercased() }
         return VStack(spacing: 0) {
             HStack(spacing: 10) {
-                Group {
-                    if match.mode.lowercased() == "competitive", let tier = match.myPlayer?.tierNumber, let rank = ValorantProfile.tierIcon(tier) {
-                        AsyncImage(url: rank) { $0.image?.resizable().scaledToFit() }
-                    } else if match.mode.lowercased() == "premier" {
-                        Image(systemName: "trophy.fill").resizable().scaledToFit().padding(3)
-                    } else if let icon = assets.modeIcon(match.mode) {
-                        AsyncImage(url: icon) { $0.image?.resizable().renderingMode(.template).scaledToFit() }
-                    } else {
-                        Image(systemName: "cube.transparent").resizable().scaledToFit()
-                    }
-                }
+                EvalModeIcon(mode: match.mode, tier: match.myPlayer?.tierNumber ?? 0)
                 .foregroundStyle(EvalColors.text.opacity(0.75))
                 .frame(width: 34, height: 34)
                 VStack(alignment: .leading, spacing: 2) {

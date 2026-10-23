@@ -39,6 +39,7 @@ private enum EvalPalette {
 /// Détail d'un match : chaque valeur affichée est calculée depuis le match réel
 /// (EvalMatch stocké dans Supabase). Aucun chiffre n'est codé en dur.
 struct ValorantMatchDetailView: View {
+    @State private var expandedMetric: String?
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let match: ValorantMatch
@@ -128,8 +129,8 @@ struct ValorantMatchDetailView: View {
                 Text("Détails du match").font(.system(size: 22, weight: .bold)).foregroundStyle(EvalColors.text)
             } else {
             HStack(spacing: 8) {
-                Image(systemName: "shield.lefthalf.filled")
-                    .font(.system(size: 16))
+                EvalModeIcon(mode: match.mode, tier: match.myPlayer?.tierNumber ?? 0)
+                    .frame(width: 22, height: 22)
                     .foregroundStyle(.white.opacity(0.8))
                 Text(match.map)
                     .font(.system(size: 22, weight: .bold))
@@ -226,9 +227,12 @@ struct ValorantMatchDetailView: View {
                     Text(a.won ? "VICTOIRE" : "DÉFAITE")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(a.won ? EvalPalette.ally : EvalPalette.enemy)
-                    Text("\(a.target.kills) / \(a.target.deaths) / \(a.target.assists)")
-                        .font(.system(size: 15, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(EvalPalette.secondary)
+                    HStack(spacing: 6) {
+                        Text("\(a.teamRounds)").foregroundStyle(EvalColors.text)
+                        Text("–").foregroundStyle(EvalPalette.secondary)
+                        Text("\(a.opponentRounds)").foregroundStyle(EvalPalette.secondary)
+                    }
+                    .font(.system(size: 17, weight: .semibold).monospacedDigit())
                 }
             }
             .padding(16)
@@ -238,16 +242,22 @@ struct ValorantMatchDetailView: View {
                 sectionTitle("VS MOYENNE DU LOBBY (N=\(a.lobby.count))")
                 VStack(spacing: 0) {
                     metricRow("ACS", "\(me.acs)", delta: Double(me.acs - lobby.acs), format: { "\(Int(abs($0)))" })
+                    lobbyBreakdown("ACS", a, value: { Double($0.acs) }, text: { "\(Int($0.rounded()))" })
                     divider
                     metricRow("ADR", "\(me.adr)", delta: Double(me.adr - lobby.adr), format: { "\(Int(abs($0)))" })
+                    lobbyBreakdown("ADR", a, value: { Double($0.adr) }, text: { "\(Int($0.rounded()))" })
                     divider
                     metricRow("HS%", "\(me.hsPercent)%", delta: Double(me.hsPercent - lobby.hsPercent), format: { "\(Int(abs($0)))%" })
+                    lobbyBreakdown("HS%", a, value: { Double($0.hsPercent) }, text: { "\(Int($0.rounded()))%" })
                     divider
                     metricRow("KAST", "\(me.kast)%", delta: Double(me.kast - lobby.kast), format: { "\(Int(abs($0)))%" })
+                    lobbyBreakdown("KAST", a, value: { Double($0.kast) }, text: { "\(Int($0.rounded()))%" })
                     divider
                     metricRow("K/D", String(format: "%.2f", me.kd), delta: me.kd - lobby.kd, format: { String(format: "%.2f", abs($0)) })
+                    lobbyBreakdown("K/D", a, value: { $0.kd }, text: { String(format: "%.2f", $0) })
                     divider
                     metricRow("FK / manche", String(format: "%.2f", me.fkPerRound), delta: me.fkPerRound - lobby.fkPerRound, format: { String(format: "%.2f", abs($0)) })
+                    lobbyBreakdown("FK / manche", a, value: { $0.fkPerRound }, text: { String(format: "%.2f", $0) })
                 }
                 .padding(.horizontal, 18)
                 .background(EvalPalette.card, in: .rect(cornerRadius: 22))
@@ -283,7 +293,7 @@ struct ValorantMatchDetailView: View {
     private func summaryHeader(_ a: EvalMatchAnalysis) -> some View {
         VStack(spacing: 0) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "shield.lefthalf.filled").font(.system(size: 32)).foregroundStyle(.white.opacity(0.75))
+                EvalModeIcon(mode: match.mode, tier: match.myPlayer?.tierNumber ?? 0).frame(width: 40, height: 40).foregroundStyle(.white.opacity(0.75))
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
                         Image(systemName: "desktopcomputer").font(.system(size: 16))
@@ -354,23 +364,94 @@ struct ValorantMatchDetailView: View {
     private func metricRow(_ title: String, _ value: String, delta: Double, higherIsBetter: Bool = true, format: (Double) -> String) -> some View {
         let isEqual = abs(delta) < 0.005
         let good = (delta > 0) == higherIsBetter
-        return HStack {
-            Text(title).font(.system(size: 20)).foregroundStyle(EvalColors.text)
-            Spacer()
-            VStack(alignment: .trailing, spacing: 1) {
-                Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
-                if isEqual {
-                    Text("=").font(.system(size: 15, weight: .bold)).foregroundStyle(EvalPalette.secondary)
-                } else {
-                    HStack(spacing: 2) {
-                        Image(systemName: delta > 0 ? "arrow.up" : "arrow.down").font(.system(size: 13, weight: .bold))
-                        Text(format(delta)).font(.system(size: 15, weight: .semibold).monospacedDigit())
+        let expandable = Self.expandableMetrics.contains(title)
+        return Button {
+            guard expandable else { return }
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { expandedMetric = expandedMetric == title ? nil : title }
+        } label: {
+            HStack {
+                Text(title).font(.system(size: 20)).foregroundStyle(EvalColors.text)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(EvalColors.text)
+                    if isEqual {
+                        Text("=").font(.system(size: 15, weight: .bold)).foregroundStyle(EvalPalette.secondary)
+                    } else {
+                        HStack(spacing: 2) {
+                            Image(systemName: delta > 0 ? "arrow.up" : "arrow.down").font(.system(size: 13, weight: .bold))
+                            Text(format(delta)).font(.system(size: 15, weight: .semibold).monospacedDigit())
+                        }
+                        .foregroundStyle(good ? EvalPalette.up : EvalPalette.enemy)
                     }
-                    .foregroundStyle(good ? EvalPalette.up : EvalPalette.enemy)
+                }
+                if expandable {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(EvalPalette.secondary)
+                        .rotationEffect(.degrees(expandedMetric == title ? 180 : 0))
+                        .padding(.leading, 10)
                 }
             }
+            .padding(.vertical, 12)
+            .contentShape(.rect)
         }
-        .padding(.vertical, 12)
+        .buttonStyle(.plain)
+    }
+
+    private static let expandableMetrics: Set<String> = ["ACS", "ADR", "HS%", "KAST", "K/D", "FK / manche"]
+
+    @ViewBuilder
+    private func lobbyBreakdown(_ title: String, _ a: EvalMatchAnalysis, value: @escaping (EvalPlayerSummary) -> Double, text: @escaping (Double) -> String) -> some View {
+        if expandedMetric == title {
+            let rows = a.match.players
+                .map { player in (player: player, value: value(a.summary(for: player.puuid))) }
+                .sorted { $0.value > $1.value }
+            let others = rows.filter { $0.player.puuid != a.target.puuid }
+            let average = others.isEmpty ? 0 : others.reduce(0) { $0 + $1.value } / Double(others.count)
+            let top = max(rows.map(\.value).max() ?? 0, 0.0001)
+            VStack(spacing: 10) {
+                divider
+                ForEach(rows, id: \.player.puuid) { row in
+                    let isTarget = row.player.puuid == a.target.puuid
+                    let color: Color = isTarget ? Color(hex: 0xDADDA4) : (row.player.team == a.target.team ? Color(hex: 0x3F8F7C) : Color(hex: 0xB34A4A))
+                    HStack(spacing: 10) {
+                        remoteImage(row.player.agentIconURL)
+                            .frame(width: 30, height: 30)
+                            .clipShape(.rect(cornerRadius: 7))
+                        Text(row.player.name)
+                            .font(.system(size: 18, weight: isTarget ? .semibold : .regular))
+                            .foregroundStyle(isTarget ? Color(hex: 0xDADDA4) : EvalColors.text)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Capsule()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 128, height: 10)
+                            .overlay(alignment: .leading) {
+                                Capsule().fill(color).frame(width: max(6, 128 * min(1, max(0, row.value) / top)), height: 10)
+                            }
+                            .overlay(alignment: .leading) {
+                                Rectangle().fill(Color.white.opacity(0.55)).frame(width: 1.5, height: 14)
+                                    .offset(x: 128 * min(1, max(0, average) / top))
+                            }
+                        Text(text(row.value))
+                            .font(.system(size: 18, weight: .medium).monospacedDigit())
+                            .foregroundStyle(EvalColors.text)
+                            .frame(width: 54, alignment: .trailing)
+                    }
+                }
+                HStack(spacing: 10) {
+                    Image(systemName: "rectangle.split.3x1")
+                        .font(.system(size: 14))
+                        .frame(width: 30)
+                    Text("Moyenne du lobby").font(.system(size: 16))
+                    Spacer()
+                    Text(text(average)).font(.system(size: 16, weight: .medium).monospacedDigit())
+                }
+                .foregroundStyle(EvalPalette.secondary)
+                .padding(.bottom, 8)
+            }
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
     }
 
     private func halfCard(_ title: String, _ half: EvalHalf) -> some View {
@@ -967,13 +1048,20 @@ struct ValorantMatchDetailView: View {
             .lineLimit(1)
     }
 
+    @ViewBuilder
     private func remoteImage(_ url: URL?, fit: Bool = false) -> some View {
-        AsyncImage(url: url) { phase in
-            if let image = phase.image {
-                if fit { image.resizable().scaledToFit() } else { image.resizable().scaledToFill() }
-            } else {
-                Color(hex: 0x2A2A2E)
+        if fit {
+            AsyncImage(url: url) { phase in
+                if let image = phase.image { image.resizable().scaledToFit() } else { Color(hex: 0x2A2A2E) }
             }
+        } else {
+            Color(hex: 0x2A2A2E)
+                .overlay {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image { image.resizable().scaledToFill() }
+                    }
+                }
+                .clipped()
         }
     }
 }

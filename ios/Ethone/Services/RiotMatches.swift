@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 enum RiotMatches {
     struct Catalog: Codable {
         let fetchedAt: Date
@@ -182,7 +183,7 @@ enum RiotMatches {
         let queue = info.queueID ?? ""
         return EvalMatch(
             v: 1, id: info.matchId.lowercased(), map: map.first ?? "", mapId: map.count > 1 ? map[1] : "",
-            mode: modeName(queue), queue: queue, season: (info.seasonId ?? "").lowercased(), version: info.gameVersion ?? "",
+            mode: modeName(queue), queue: ["competitive", "unrated"].contains(queue.lowercased()) ? "Standard" : modeName(queue), season: (info.seasonId ?? "").lowercased(), version: info.gameVersion ?? "",
             cluster: info.gamePodId.map { RiotPartyModel.podName($0) },
             startedAt: info.gameStartMillis.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) },
             lengthSec: (info.gameLengthMillis ?? 0) / 1000,

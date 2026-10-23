@@ -823,7 +823,11 @@ struct EvalProfileView: View {
         return VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Group {
-                    if let icon = assets.modeIcon(match.mode) {
+                    if match.mode.lowercased() == "competitive", let tier = match.myPlayer?.tierNumber, let rank = ValorantProfile.tierIcon(tier) {
+                        AsyncImage(url: rank) { $0.image?.resizable().scaledToFit() }
+                    } else if match.mode.lowercased() == "premier" {
+                        Image(systemName: "trophy.fill").resizable().scaledToFit().padding(3)
+                    } else if let icon = assets.modeIcon(match.mode) {
                         AsyncImage(url: icon) { $0.image?.resizable().renderingMode(.template).scaledToFit() }
                     } else {
                         Image(systemName: "cube.transparent").resizable().scaledToFit()

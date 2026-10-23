@@ -753,6 +753,19 @@ final class ValorantStore {
             }
             return
         }
+        let ownRiot = riot.credentials.map { "\($0.gameName)#\($0.tagLine)".lowercased() == "\(nameStorage)#\(tag)".lowercased() } ?? false
+        if ownRiot, let account: Account = try? await api.worker("api/valorant/eval/sync", query: [
+            URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag), URLQueryItem(name: "matches", value: "0")
+        ]) {
+            apply(account: account)
+            if await loadRiotMatches(puuid: account.puuid) {
+                let kept = matches.prefix(matchLimit).compactMap { evalMatches[$0.id] }
+                evalMatches = Dictionary(kept.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+                DiskCache.write(AccountCache(account: account, syncedAt: Date(), matches: kept), key: accountCacheKey)
+                errorMessage = nil
+                return
+            }
+        }
         do {
             let account: Account = try await api.worker("api/valorant/eval/sync", query: [
                 URLQueryItem(name: "name", value: nameStorage), URLQueryItem(name: "tag", value: tag)
@@ -780,6 +793,24 @@ final class ValorantStore {
     }
 
     func forceRefreshMatches() async { await syncAndLoadMatches(force: true) }
+
+    private func loadRiotMatches(puuid: String) async -> Bool {
+        guard let catalog = await RiotMatches.catalog(),
+              let ids = try? await RiotMatches.history(riot, puuid: puuid, count: matchLimit), !ids.isEmpty else { return false }
+        let missing = ids.filter { evalMatches[$0] == nil }
+        let session = riot
+        await withTaskGroup(of: EvalMatch?.self) { group in
+            for id in missing {
+                group.addTask { try? await RiotMatches.match(session, id: id, catalog: catalog) }
+            }
+            for await match in group {
+                if let match { evalMatches[match.id] = match }
+            }
+        }
+        guard ids.contains(where: { evalMatches[$0] != nil }) else { return false }
+        rebuildMatchList()
+        return true
+    }
 
     private struct HistoryResult: Decodable { let stored: Int; let total: Int }
 

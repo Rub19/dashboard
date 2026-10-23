@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.82.0 — 2026-10-23
+
+**E:VAL iOS : matchs chargés directement depuis Riot**
+
+- Vos matchs sont maintenant récupérés directement chez Riot quand votre compte Riot est connecté : beaucoup plus rapide que HenrikDev, qui reste utilisé en secours et pour les autres joueurs
+- Amis : votre ligne affiche « En ligne » ou « Hors ligne » comme dans VALPAW
+
 ## v1.81.1 — 2026-10-23
 
 **E:VAL iOS : connexion Riot et historique des pseudos**

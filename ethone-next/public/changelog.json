@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.82.0",
+    "date": "2026-10-23",
+    "title": "E:VAL iOS : matchs chargés directement depuis Riot",
+    "items": [
+      "Vos matchs sont maintenant récupérés directement chez Riot quand votre compte Riot est connecté : beaucoup plus rapide que HenrikDev, qui reste utilisé en secours et pour les autres joueurs",
+      "Amis : votre ligne affiche « En ligne » ou « Hors ligne » comme dans VALPAW"
+    ]
+  },
+  {
     "version": "v1.81.1",
     "date": "2026-10-23",
     "title": "E:VAL iOS : connexion Riot et historique des pseudos",
@@ -615,14 +624,6 @@
       "La page Badges compte les vrais badges Discord des membres (Staff, Partenaire, HypeSquad, Bug Hunter, Early Supporter, développeurs, modérateur certifié) et chaque palier de boost, de 1 mois à 2 ans.",
       "Nouvel onglet Badges dans la page Serveur du dashboard, avec relance de l'analyse.",
       "Le Nitro n'est compté que via l'avatar animé, et le badge Quête n'est pas visible : Discord ne les montre pas aux bots."
-    ]
-  },
-  {
-    "version": "v1.75.109",
-    "date": "2026-10-15",
-    "title": "Musique : secours YouTube réparé",
-    "items": [
-      "Le service de secours qui récupère le son YouTube quand Lavalink est refusé remarche (il imposait des clients YouTube devenus inutilisables)"
     ]
   }
 ]

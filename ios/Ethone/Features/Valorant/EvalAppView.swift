@@ -3181,26 +3181,26 @@ struct EvalFriendsView: View {
                 }
 
                 Circle()
-                    .fill(Color(hex: 0x8E8E93))
+                    .fill(store.isPlayerOnline ? Color(hex: 0x22C55E) : Color(hex: 0x8E8E93))
                     .frame(width: 15, height: 15)
                     .overlay(Circle().strokeBorder(EvalColors.card, lineWidth: 2))
                     .offset(x: 2, y: 2)
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 4) {
+                HStack(spacing: 0) {
                     Text(store.playerName.isEmpty ? "Aucun compte" : store.playerName)
-                        .font(.subheadline.weight(.heavy))
+                        .font(.system(size: 19, weight: .semibold))
                         .foregroundStyle(EvalColors.text)
 
                     Text(store.tag.isEmpty ? "" : "#\(store.tag)")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 19))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
 
-                Text("Statut en jeu indisponible")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text(store.isPlayerOnline ? "En ligne" : "Hors ligne")
+                    .font(.system(size: 16))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Spacer()

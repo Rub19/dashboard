@@ -60738,4 +60738,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_81_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_81_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_81_1_de);
 
+const v1_82_0_fr: ChangelogEntry = {
+  version: "v1.82.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS : matchs chargés directement depuis Riot",
+  items: [
+    "Vos matchs sont maintenant récupérés directement chez Riot quand votre compte Riot est connecté : beaucoup plus rapide que HenrikDev, qui reste utilisé en secours et pour les autres joueurs",
+    "Amis : votre ligne affiche « En ligne » ou « Hors ligne » comme dans VALPAW",
+  ],
+};
+
+const v1_82_0_en: ChangelogEntry = {
+  version: "v1.82.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: matches loaded straight from Riot",
+  items: [
+    "Your matches now come straight from Riot when your Riot account is connected: much faster than HenrikDev, which stays as a fallback and for other players",
+    "Friends: your own row shows \"Online\" or \"Offline\" like VALPAW",
+  ],
+};
+
+const v1_82_0_es: ChangelogEntry = {
+  version: "v1.82.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: partidas cargadas directamente desde Riot",
+  items: [
+    "Tus partidas se obtienen ahora directamente de Riot cuando tu cuenta Riot está conectada: mucho más rápido que HenrikDev, que queda como respaldo y para otros jugadores",
+    "Amigos: tu fila muestra «En línea» o «Desconectado» como en VALPAW",
+  ],
+};
+
+const v1_82_0_de: ChangelogEntry = {
+  version: "v1.82.0",
+  date: "2026-10-23",
+  title: "E:VAL iOS: Matches direkt von Riot geladen",
+  items: [
+    "Deine Matches kommen jetzt direkt von Riot, wenn dein Riot-Konto verbunden ist: viel schneller als HenrikDev, das als Ersatz und für andere Spieler bleibt",
+    "Freunde: deine Zeile zeigt „Online“ oder „Offline“ wie in VALPAW",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_82_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_82_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_82_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_82_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

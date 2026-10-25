@@ -292,6 +292,7 @@ final class RiotSession {
             lastFailure = "Riot \(status) · \(method) \(path) · \(Date().formatted(date: .omitted, time: .standard))"
             throw RiotError.http(status)
         }
+        if lastFailure != nil { lastFailure = nil }
         return data
     }
 

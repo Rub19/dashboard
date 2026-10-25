@@ -61101,4 +61101,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_2_de);
 
+const v1_85_3_fr: ChangelogEntry = {
+  version: "v1.85.3",
+  date: "2026-10-25",
+  title: "E:VAL iOS : alerte de session et glisser pour retirer",
+  items: [
+    "Paramètres : une icône d'alerte apparaît à côté du compte Riot quand la session ou une requête Riot pose problème",
+    "Glisser un compte vers la gauche affiche de nouveau « Retirer » (le geste n'était plus reçu)",
+  ],
+};
+
+const v1_85_3_en: ChangelogEntry = {
+  version: "v1.85.3",
+  date: "2026-10-25",
+  title: "E:VAL iOS: session alert and swipe to remove",
+  items: [
+    "Settings: a warning icon appears next to the Riot account when the session or a Riot request has a problem",
+    "Swiping an account left shows \"Remove\" again (the gesture was no longer received)",
+  ],
+};
+
+const v1_85_3_es: ChangelogEntry = {
+  version: "v1.85.3",
+  date: "2026-10-25",
+  title: "E:VAL iOS: alerta de sesión y deslizar para quitar",
+  items: [
+    "Ajustes: aparece un icono de alerta junto a la cuenta de Riot cuando la sesión o una petición a Riot falla",
+    "Deslizar una cuenta a la izquierda vuelve a mostrar «Quitar» (el gesto ya no se recibía)",
+  ],
+};
+
+const v1_85_3_de: ChangelogEntry = {
+  version: "v1.85.3",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Sitzungswarnung und Wischen zum Entfernen",
+  items: [
+    "Einstellungen: ein Warnsymbol erscheint neben dem Riot-Konto, wenn die Sitzung oder eine Riot-Anfrage ein Problem hat",
+    "Ein Konto nach links wischen zeigt wieder „Entfernen“ (die Geste kam nicht mehr an)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

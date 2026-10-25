@@ -3994,6 +3994,12 @@ struct EvalSettingsView: View {
                                         }
                                     }
                                     Spacer()
+                                    if linked, store.riot.lastError != nil || store.riot.lastFailure != nil {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundStyle(Color(hex: 0xFF9F0A))
+                                            .accessibilityLabel("Problème avec la session Riot")
+                                    }
                                     if active, let tier = store.profile?.tier, tier > 0 {
                                         AsyncImage(url: ValorantProfile.tierIcon(tier)) { $0.image?.resizable().scaledToFit() }.frame(width: 39, height: 39)
                                     }

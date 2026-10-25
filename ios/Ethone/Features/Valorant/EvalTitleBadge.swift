@@ -151,7 +151,7 @@ struct EvalSwipeRow<Content: View>: View {
                     }
                 }
                 .offset(x: offset)
-                .gesture(
+                .simultaneousGesture(
                     DragGesture(minimumDistance: 18)
                         .onChanged { value in
                             guard abs(value.translation.width) > abs(value.translation.height) else { return }

@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.85.3",
+    "date": "2026-10-25",
+    "title": "E:VAL iOS : alerte de session et glisser pour retirer",
+    "items": [
+      "Paramètres : une icône d'alerte apparaît à côté du compte Riot quand la session ou une requête Riot pose problème",
+      "Glisser un compte vers la gauche affiche de nouveau « Retirer » (le geste n'était plus reçu)"
+    ]
+  },
+  {
     "version": "v1.85.2",
     "date": "2026-10-25",
     "title": "E:VAL iOS : requêtes Riot plus robustes et diagnostic",
@@ -613,14 +622,6 @@
       "Nouvel exemple Sanctions avec la carte d'avertissement et le bouton Annuler.",
       "Les exemples, les catégories et les descriptions des commandes sont traduits en anglais, espagnol et allemand.",
       "Le bouton Lever la sanction est de nouveau rouge."
-    ]
-  },
-  {
-    "version": "v1.75.116",
-    "date": "2026-10-16",
-    "title": "Paliers et raisons mieux protégés",
-    "items": [
-      "Un palier ou une raison prédéfinie invalide est maintenant refusé au lieu d'effacer toute la liste."
     ]
   }
 ]

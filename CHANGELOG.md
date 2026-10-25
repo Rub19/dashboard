@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.85.3 — 2026-10-25
+
+**E:VAL iOS : alerte de session et glisser pour retirer**
+
+- Paramètres : une icône d'alerte apparaît à côté du compte Riot quand la session ou une requête Riot pose problème
+- Glisser un compte vers la gauche affiche de nouveau « Retirer » (le geste n'était plus reçu)
+
 ## v1.85.2 — 2026-10-25
 
 **E:VAL iOS : requêtes Riot plus robustes et diagnostic**

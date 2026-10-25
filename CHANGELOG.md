@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.86.0 — 2026-10-25
+
+**E:VAL : partie en direct comme VALPAW**
+
+- Carte « Actuellement en Sélection d'agent / Match » dans Groupe, avec la page en direct
+- En-tête : mode, serveur, camp de départ, carte et score mis à jour toutes les 5 secondes
+- Les 10 joueurs avec agent, niveau, rang (et pic), K/D, HS%, KAST et victoires sur leurs dernières parties, et une bande de couleur par groupe
+- Menu de chaque joueur : ouvrir le profil, voir son équipement, copier son nom, l'inviter dans le groupe
+
 ## v1.85.9 — 2026-10-25
 
 **E:VAL : groupe, armes et roue des expressions comme VALPAW**

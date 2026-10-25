@@ -32,7 +32,9 @@ final class RiotChat {
     private(set) var isConnected = false
     private(set) var isConnecting = false
     private(set) var mapNames: [String: String] = [:]
+    private(set) var selfPresence: RiotChatPresence?
     var error: String?
+    private var selfID = ""
 
     private var connection: NWConnection?
     private var buffer = ""
@@ -56,6 +58,7 @@ final class RiotChat {
 
     func connect(_ session: RiotSession) async {
         guard !isConnected, !isConnecting else { return }
+        selfID = session.credentials?.puuid.lowercased() ?? ""
         guard let creds = await session.chatCredentials() else {
             error = "Connectez votre compte Riot dans Paramètres."
             return
@@ -232,7 +235,7 @@ final class RiotChat {
         let open = Self.firstTag("presence", in: stanza) ?? ""
         guard let from = Self.attribute("from", in: open) else { return }
         let puuid = String(from.split(separator: "@").first ?? "").lowercased()
-        guard roster[puuid] != nil else { return }
+        guard roster[puuid] != nil || puuid == selfID else { return }
         if Self.attribute("type", in: open) == "unavailable" {
             presences[puuid] = nil
             return
@@ -257,6 +260,10 @@ final class RiotChat {
             presence.cardID = player["playerCardId"] as? String ?? ""
             presence.tier = player["competitiveTier"] as? Int ?? 0
             presence.isIdle = json["isIdle"] as? Bool ?? false
+        }
+        if puuid == selfID {
+            if presence.inValorant { selfPresence = presence }
+            return
         }
         presences[puuid] = presence
     }

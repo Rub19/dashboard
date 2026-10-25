@@ -77,22 +77,10 @@ final class RiotPartyModel {
         }
         let season = currentSeason?.lowercased()
         let missing = ids.filter { $0 != puuid && tierCache[$0] == nil }
-        await withTaskGroup(of: (String, Int, Bool)?.self) { group in
-            for id in missing {
-                group.addTask {
-                    guard let raw = try? await session.gameData("/mmr/v1/players/\(id)"),
-                          let json = try? JSONDecoder().decode(JSONValue.self, from: raw) else { return nil }
-                    let seasons = json["QueueSkills"]?["competitive"]?["SeasonalInfoBySeasonID"]?.objectValue ?? [:]
-                    if let season, let info = seasons.first(where: { $0.key.lowercased() == season })?.value,
-                       let tier = info["CompetitiveTier"]?.intValue, tier > 0 {
-                        return (id, tier, true)
-                    }
-                    let latest = json["LatestCompetitiveUpdate"]?["TierAfterUpdate"]?.intValue ?? 0
-                    return (id, latest, false)
-                }
-            }
-            for await result in group {
-                if case let (id, tier, current)? = result { tierCache[id] = (tier, current) }
+        await withTaskGroup(of: (String, RiotRankLookup.Rank?).self) { group in
+            for id in missing { group.addTask { (id, await RiotRankLookup.fetch(session, puuid: id, season: season)) } }
+            for await (id, rank) in group {
+                if let rank { tierCache[id] = (rank.tier, rank.isCurrent) }
             }
         }
         for index in state.members.indices {

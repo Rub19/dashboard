@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.86.0",
+    "date": "2026-10-25",
+    "title": "E:VAL : partie en direct comme VALPAW",
+    "items": [
+      "Carte « Actuellement en Sélection d'agent / Match » dans Groupe, avec la page en direct",
+      "En-tête : mode, serveur, camp de départ, carte et score mis à jour toutes les 5 secondes",
+      "Les 10 joueurs avec agent, niveau, rang (et pic), K/D, HS%, KAST et victoires sur leurs dernières parties, et une bande de couleur par groupe",
+      "Menu de chaque joueur : ouvrir le profil, voir son équipement, copier son nom, l'inviter dans le groupe"
+    ]
+  },
+  {
     "version": "v1.85.9",
     "date": "2026-10-25",
     "title": "E:VAL : groupe, armes et roue des expressions comme VALPAW",
@@ -616,14 +627,6 @@
     "items": [
       "Les sanctions (/warn, /mute, /ban…), leurs messages privés, le bouton Annuler, l'historique, les appels et tout le système de signalement s'affichent dans la langue choisie pour le serveur (français, anglais, espagnol ou allemand).",
       "Les messages personnalisés écrits par l'équipe restent tels quels."
-    ]
-  },
-  {
-    "version": "v1.75.123",
-    "date": "2026-10-16",
-    "title": "Fils de signalement archivés à la clôture",
-    "items": [
-      "Quand un signalement est résolu ou refusé (dashboard ou boutons Discord), son fil est archivé au lieu de rester ouvert dans le salon de l'équipe."
     ]
   }
 ]

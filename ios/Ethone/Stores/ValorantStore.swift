@@ -360,6 +360,8 @@ final class ValorantStore {
     let favorites: RiotFavoritesModel
     /// Groupe en cours (glz) : prêt, public/privé, file, serveurs, codes, invitations.
     let party = RiotPartyModel()
+    let live = RiotLiveMatchModel()
+    private(set) var mapCatalog: RiotMatches.Catalog?
     let chat = RiotChat()
     /// XP du compte et contrats d'agents.
     let contracts = RiotContractsModel()
@@ -752,8 +754,20 @@ final class ValorantStore {
         guard riot.isLinked else { currentParty = nil; isPlayerOnline = false; return }
         party.currentSeason = currentAct?.id
         await party.load(riot)
+        await refreshLive()
         await contracts.load(riot)
     }
+
+    func refreshLive() async {
+        guard riot.isLinked else { return }
+        if mapCatalog == nil { mapCatalog = await RiotMatches.catalog() }
+        live.currentSeason = currentAct?.id
+        await live.load(riot, ownParty: party.party?.members.map(\.id) ?? [])
+    }
+
+    func mapUUID(forPath path: String) -> String? { mapCatalog?.maps[path.lowercased()]?.last }
+    func mapName(forPath path: String) -> String? { mapCatalog?.maps[path.lowercased()]?.first }
+    func actName(id: String) -> String? { acts.values.first { $0.id.lowercased() == id.lowercased() }?.name }
 
     func setPlayerOnline(_ online: Bool) {
         isPlayerOnline = false

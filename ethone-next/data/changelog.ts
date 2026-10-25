@@ -61436,4 +61436,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_9_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_9_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_9_de);
 
+const v1_86_0_fr: ChangelogEntry = {
+  version: "v1.86.0",
+  date: "2026-10-25",
+  title: "E:VAL : partie en direct comme VALPAW",
+  items: [
+    "Carte « Actuellement en Sélection d'agent / Match » dans Groupe, avec la page en direct",
+    "En-tête : mode, serveur, camp de départ, carte et score mis à jour toutes les 5 secondes",
+    "Les 10 joueurs avec agent, niveau, rang (et pic), K/D, HS%, KAST et victoires sur leurs dernières parties, et une bande de couleur par groupe",
+    "Menu de chaque joueur : ouvrir le profil, voir son équipement, copier son nom, l'inviter dans le groupe",
+  ],
+};
+
+const v1_86_0_en: ChangelogEntry = {
+  version: "v1.86.0",
+  date: "2026-10-25",
+  title: "E:VAL: live match like VALPAW",
+  items: [
+    "\"Currently in Agent Select / Match\" card under Party, with the live page",
+    "Header: mode, server, starting side, map and score refreshed every 5 seconds",
+    "All 10 players with agent, level, rank (and peak), K/D, HS%, KAST and wins over their last games, plus a color strip per party",
+    "Each player's menu: open profile, view loadout, copy name, invite to party",
+  ],
+};
+
+const v1_86_0_es: ChangelogEntry = {
+  version: "v1.86.0",
+  date: "2026-10-25",
+  title: "E:VAL: partida en directo como VALPAW",
+  items: [
+    "Tarjeta «Actualmente en Selección de agente / Partida» en Grupo, con la página en directo",
+    "Cabecera: modo, servidor, lado inicial, mapa y marcador actualizados cada 5 segundos",
+    "Los 10 jugadores con agente, nivel, rango (y pico), K/D, HS%, KAST y victorias en sus últimas partidas, y una franja de color por grupo",
+    "Menú de cada jugador: abrir perfil, ver equipamiento, copiar nombre, invitar al grupo",
+  ],
+};
+
+const v1_86_0_de: ChangelogEntry = {
+  version: "v1.86.0",
+  date: "2026-10-25",
+  title: "E:VAL: Live-Spiel wie VALPAW",
+  items: [
+    "Karte „Aktuell in Agentenauswahl / Spiel“ unter Gruppe, mit der Live-Seite",
+    "Kopfzeile: Modus, Server, Startseite, Karte und Spielstand alle 5 Sekunden aktualisiert",
+    "Alle 10 Spieler mit Agent, Level, Rang (und Peak), K/D, HS%, KAST und Siegen ihrer letzten Spiele, plus Farbstreifen pro Gruppe",
+    "Menü jedes Spielers: Profil öffnen, Ausrüstung ansehen, Namen kopieren, in die Gruppe einladen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_86_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_86_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_86_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_86_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

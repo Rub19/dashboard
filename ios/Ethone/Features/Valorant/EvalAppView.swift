@@ -1749,7 +1749,10 @@ struct EvalGameView: View {
                         }
                     }
                 ) {
-                    EvalPartyCard()
+                    VStack(spacing: 14) {
+                        EvalPartyCard()
+                        EvalLiveMatchCard()
+                    }
                 }
 
                 collapsibleSection(

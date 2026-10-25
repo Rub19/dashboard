@@ -323,7 +323,7 @@ struct RiotGameSnapshot {
     var party: ValorantParty?
 }
 
-struct RiotLiveRank: Hashable {
+struct RiotLiveRank: Hashable, Codable {
     let tier: Int
     let rr: Int
     let leaderboardRank: Int
@@ -400,16 +400,12 @@ enum RiotGameService {
             snap.accessoriesEnd = accessory?.AccessoryStoreRemainingDurationInSeconds.map { Date().addingTimeInterval(TimeInterval($0)) }
         }
 
-        struct Loadout: Decodable {
-            struct Identity: Decodable { let PlayerCardID: String?; let PlayerTitleID: String? }
-            struct Spray: Decodable { let SprayID: String }
-            let Identity: Identity?
-            let Sprays: [Spray]?
-        }
-        if let loadout: Loadout = try? await session.game("/personalization/v2/players/\(puuid)/playerloadout") {
-            snap.cardID = loadout.Identity?.PlayerCardID?.lowercased() ?? ""
-            if let title = loadout.Identity?.PlayerTitleID { snap.title = await SkinCatalog.shared.title(title) ?? "" }
-            let sprays = (loadout.Sprays ?? []).map { "https://media.valorant-api.com/sprays/\($0.SprayID.lowercased())/displayicon.png" as String? }
+        let v3Loadout: JSONValue? = try? await session.game("/personalization/v3/players/\(puuid)/playerloadout")
+        let v2Loadout: JSONValue? = v3Loadout == nil ? try? await session.game("/personalization/v2/players/\(puuid)/playerloadout") : nil
+        if let loadout = v3Loadout ?? v2Loadout {
+            snap.cardID = loadout["Identity"]?["PlayerCardID"]?.stringValue?.lowercased() ?? ""
+            if let title = loadout["Identity"]?["PlayerTitleID"]?.stringValue { snap.title = await SkinCatalog.shared.title(title) ?? "" }
+            let sprays = expressionImages(loadout).map { $0 as String? }
             snap.sprays = Array((sprays + [nil, nil, nil, nil]).prefix(4))
         }
 
@@ -459,6 +455,28 @@ enum RiotGameService {
 
     /// Rang actuel en direct : HenrikDev s'arrête à la dernière partie classée, alors qu'un Radiant
     /// sorti du top du classement redevient Immortel 3 sans rejouer.
+    static let flexTypeID = "03a572de-4234-31ed-d344-ababa488f981"
+
+    static func expressionImages(_ loadout: JSONValue) -> [String] {
+        func image(asset: String, type: String?) -> String {
+            let id = asset.lowercased()
+            if type?.lowercased() == flexTypeID { return "https://media.valorant-api.com/flex/\(id)/displayicon.png" }
+            return "https://media.valorant-api.com/sprays/\(id)/displayicon.png"
+        }
+        if let sprays = loadout["Sprays"]?.arrayValue, !sprays.isEmpty {
+            return sprays.compactMap { $0["SprayID"]?.stringValue }.map { image(asset: $0, type: nil) }
+        }
+        let selections = loadout["Expressions"]?["AESSelections"]?.arrayValue
+            ?? loadout["ActiveExpressions"]?.arrayValue
+            ?? loadout["Expressions"]?.arrayValue
+            ?? []
+        return selections.compactMap { entry in
+            guard let asset = entry["AssetID"]?.stringValue ?? entry["ExpressionID"]?.stringValue ?? entry["SprayID"]?.stringValue,
+                  !asset.isEmpty else { return nil }
+            return image(asset: asset, type: entry["TypeID"]?.stringValue)
+        }
+    }
+
     static func liveRank(_ session: RiotSession, seasonID: String?) async -> RiotLiveRank? {
         guard let puuid = session.credentials?.puuid, let season = seasonID?.lowercased(),
               let raw = try? await session.gameData("/mmr/v1/players/\(puuid)"),
@@ -466,8 +484,18 @@ enum RiotGameService {
         let seasons = json["QueueSkills"]?["competitive"]?["SeasonalInfoBySeasonID"]?.objectValue ?? [:]
         guard let info = seasons.first(where: { $0.key.lowercased() == season })?.value else { return nil }
         var tier = info["CompetitiveTier"]?.intValue ?? 0
-        let rr = info["RankedRating"]?.intValue ?? 0
-        let place = info["LeaderboardRank"]?.intValue ?? 0
+        var rr = info["RankedRating"]?.intValue ?? 0
+        var place = info["LeaderboardRank"]?.intValue ?? 0
+        if let creds = session.credentials, !creds.gameName.isEmpty,
+           let query = creds.gameName.addingPercentEncoding(withAllowedCharacters: .alphanumerics),
+           let boardRaw = try? await session.gameData("/mmr/v1/leaderboards/affinity/\(creds.region)/queue/competitive/season/\(season)?startIndex=0&size=25&query=\(query)"),
+           let boardJSON = try? JSONDecoder().decode(JSONValue.self, from: boardRaw),
+           let me = (boardJSON["Players"]?.arrayValue ?? []).first(where: { ($0["puuid"]?.stringValue ?? "").lowercased() == puuid.lowercased() }) {
+            if let t = me["competitiveTier"]?.intValue, t > 0 { tier = t }
+            if let r = me["rankedRating"]?.intValue { rr = r }
+            if let p = me["leaderboardRank"]?.intValue, p > 0 { place = p }
+            if tier > 0 { return RiotLiveRank(tier: tier, rr: rr, leaderboardRank: place) }
+        }
         if place > 0, let region = session.credentials?.region,
            let board = try? await session.gameData("/mmr/v1/leaderboards/affinity/\(region)/queue/competitive/season/\(season)?startIndex=0&size=1"),
            let boardJSON = try? JSONDecoder().decode(JSONValue.self, from: board),
@@ -580,11 +608,11 @@ final class SkinCatalog {
     /// Paliers de contenu (Select, Deluxe, Premium, Exclusive, Ultra).
     static func tier(_ uuid: String?) -> (color: UInt32, icon: String, label: String) {
         switch uuid?.lowercased() {
-        case "12683d76-48d7-84a3-4e09-6985794f0445": return (0x5A9FE2, "circle.fill", "Select")
-        case "0cebb8be-46d7-c12a-d306-e9907bfc5a25": return (0x2DD4BF, "rhombus.fill", "Deluxe")
-        case "60bca009-4182-7998-dee7-b8a2558dc369": return (0xE879F9, "triangle.fill", "Premium")
-        case "e046854e-406c-37f4-6607-19a9ba8426fc": return (0xF59E0B, "pentagon.fill", "Exclusive")
-        case "411e4a55-4e59-7757-41f0-86a53f101bb5": return (0xFACC15, "pentagon.fill", "Ultra")
+        case "12683d76-48d7-84a3-4e09-6985794f0445": return (0x73B8FB, "circle.fill", "Select")
+        case "0cebb8be-46d7-c12a-d306-e9907bfc5a25": return (0x5ED3BE, "rhombus.fill", "Deluxe")
+        case "60bca009-4182-7998-dee7-b8a2558dc369": return (0xE96DA5, "triangle.fill", "Premium")
+        case "e046854e-406c-37f4-6607-19a9ba8426fc": return (0xFEA56D, "pentagon.fill", "Exclusive")
+        case "411e4a55-4e59-7757-41f0-86a53f101bb5": return (0xF5D96A, "pentagon.fill", "Ultra")
         default: return (0x8E8E93, "circle.fill", "")
         }
     }

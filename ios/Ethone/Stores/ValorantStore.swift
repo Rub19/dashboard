@@ -403,12 +403,34 @@ final class ValorantStore {
         if acts.isEmpty { await loadActs() }
         if let live = await RiotGameService.liveRank(riot, seasonID: currentAct?.id) {
             liveRank = live
+            saveLiveRank(live)
             applyLiveRank()
         }
     }
 
     /// Remplace le rang HenrikDev par le rang en direct si le compte suivi est le compte Riot connecté.
+    private var liveRankKey: String? {
+        guard let puuid = riot.credentials?.puuid, !puuid.isEmpty else { return nil }
+        return "ethone.valorant.liveRank.\(puuid.lowercased())"
+    }
+
+    private func saveLiveRank(_ live: RiotLiveRank) {
+        guard let key = liveRankKey, let data = try? JSONEncoder().encode(live) else { return }
+        UserDefaults.standard.set(data, forKey: key)
+    }
+
+    func refreshLiveRank() async {
+        guard riot.isLinked, let live = await RiotGameService.liveRank(riot, seasonID: currentAct?.id) else { return }
+        liveRank = live
+        saveLiveRank(live)
+        applyLiveRank()
+    }
+
     private func applyLiveRank() {
+        if liveRank == nil, let key = liveRankKey, let data = UserDefaults.standard.data(forKey: key),
+           let saved = try? JSONDecoder().decode(RiotLiveRank.self, from: data) {
+            liveRank = saved
+        }
         guard let live = liveRank, let creds = riot.credentials, let current = profile,
               current.handle.lowercased() == "\(creds.gameName)#\(creds.tagLine)".lowercased() else { return }
         let peak = max(current.peakTier, live.tier)

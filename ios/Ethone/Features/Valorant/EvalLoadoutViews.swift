@@ -97,13 +97,21 @@ final class RiotLoadoutModel {
         let Entitlements: [E]?
     }
 
+    private var loadoutVersion = "v3"
+
     func load(_ session: RiotSession) async {
         guard let puuid = session.credentials?.puuid, !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
         catalog = await LoadoutCatalog.load()
         do {
-            raw = try await session.game("/personalization/v2/players/\(puuid)/playerloadout")
+            if let v3: JSONValue = try? await session.game("/personalization/v3/players/\(puuid)/playerloadout") {
+                raw = v3
+                loadoutVersion = "v3"
+            } else {
+                raw = try await session.game("/personalization/v2/players/\(puuid)/playerloadout")
+                loadoutVersion = "v2"
+            }
             message = nil
         } catch {
             message = "Équipement indisponible : \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
@@ -243,7 +251,7 @@ final class RiotLoadoutModel {
         isSaving = true
         defer { isSaving = false }
         do {
-            self.raw = try await session.game("/personalization/v2/players/\(puuid)/playerloadout", method: "PUT", body: body)
+            self.raw = try await session.game("/personalization/\(loadoutVersion)/players/\(puuid)/playerloadout", method: "PUT", body: body)
             message = "Équipement mis à jour."
             return true
         } catch {

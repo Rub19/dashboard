@@ -60897,4 +60897,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_84_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_84_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_84_0_de);
 
+const v1_84_1_fr: ChangelogEntry = {
+  version: "v1.84.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS : vrai rang, équipement et roue des expressions",
+  items: [
+    "Votre rang vient du classement officiel Riot, est mémorisé et actualisé toutes les minutes : plus de Radiant périmé au démarrage",
+    "Équipement lu avec la nouvelle API Riot : armes, bannière de carte et roue des expressions s'affichent de nouveau",
+    "Le rond du groupe se remplit jusqu'à la prochaine actualisation, comme dans VALPAW",
+    "Offres du jour aux couleurs exactes de VALPAW selon la rareté",
+  ],
+};
+
+const v1_84_1_en: ChangelogEntry = {
+  version: "v1.84.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: real rank, loadout and expression wheel",
+  items: [
+    "Your rank comes from Riot's official leaderboard, is saved and refreshed every minute: no more stale Radiant at launch",
+    "Loadout read with the new Riot API: weapons, card banner and expression wheel show again",
+    "The party ring fills up until the next refresh, like VALPAW",
+    "Daily offers in VALPAW's exact rarity colours",
+  ],
+};
+
+const v1_84_1_es: ChangelogEntry = {
+  version: "v1.84.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: rango real, equipamiento y rueda de expresiones",
+  items: [
+    "Tu rango viene de la clasificación oficial de Riot, se guarda y se actualiza cada minuto: ya no aparece Radiante caducado al iniciar",
+    "Equipamiento leído con la nueva API de Riot: armas, tarjeta y rueda de expresiones vuelven a mostrarse",
+    "El anillo del grupo se llena hasta la siguiente actualización, como en VALPAW",
+    "Ofertas diarias con los colores exactos de rareza de VALPAW",
+  ],
+};
+
+const v1_84_1_de: ChangelogEntry = {
+  version: "v1.84.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: echter Rang, Ausrüstung und Ausdrucksrad",
+  items: [
+    "Dein Rang kommt aus der offiziellen Riot-Rangliste, wird gespeichert und jede Minute aktualisiert: kein veralteter Radiant mehr beim Start",
+    "Ausrüstung über die neue Riot-API gelesen: Waffen, Kartenbanner und Ausdrucksrad werden wieder angezeigt",
+    "Der Gruppenring füllt sich bis zur nächsten Aktualisierung, wie in VALPAW",
+    "Tagesangebote in den exakten Seltenheitsfarben von VALPAW",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_84_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_84_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_84_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_84_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

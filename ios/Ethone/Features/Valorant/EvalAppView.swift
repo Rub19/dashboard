@@ -408,6 +408,12 @@ struct EvalProfileView: View {
                 await store.refresh()
             }
         }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60))
+                await store.refreshLiveRank()
+            }
+        }
     }
 
     private var topNavHeader: some View {
@@ -1354,6 +1360,17 @@ struct EvalDailyOfferCard: View {
 
     private var tint: Color { Color(hex: offer.colorHex) }
 
+    static func background(_ hex: UInt32) -> UInt32 {
+        switch hex {
+        case 0x73B8FB: 0x21303C
+        case 0xE96DA5: 0x3A212B
+        case 0xFEA56D: 0x402E22
+        case 0x5ED3BE: 0x1F3633
+        case 0xF5D96A: 0x3B3620
+        default: 0x2C2C2E
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .top) {
@@ -1408,8 +1425,7 @@ struct EvalDailyOfferCard: View {
             .padding(.top, 6)
             .padding(.bottom, 14)
         }
-        .background(tint.opacity(0.2))
-        .background(surface)
+        .background(Color(hex: Self.background(offer.colorHex)))
         .clipShape(.rect(cornerRadius: 18))
     }
 }
@@ -1672,6 +1688,7 @@ struct EvalWalletBar: View {
 }
 
 struct EvalGameView: View {
+    @State private var groupCycleStart = Date()
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var groupExpanded = true
@@ -1727,9 +1744,8 @@ struct EvalGameView: View {
                     title: "Groupe",
                     isExpanded: $groupExpanded,
                     rightContent: {
-                        if store.party.isLoading {
-                            loadingRing
-                                .transition(.opacity)
+                        if store.riot.isLinked {
+                            groupCountdownRing
                         }
                     }
                 ) {
@@ -1801,14 +1817,17 @@ struct EvalGameView: View {
         .refreshable {
             await store.refreshRiot()
             await store.party.load(store.riot)
+            groupCycleStart = Date()
             await store.contracts.load(store.riot, force: true)
         }
         .task {
             await store.refreshGroup()
+            groupCycleStart = Date()
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 15_000_000_000)
+                try? await Task.sleep(for: .seconds(Self.groupRefreshInterval))
                 guard !Task.isCancelled else { break }
                 await store.refreshGroup()
+                groupCycleStart = Date()
             }
         }
     }
@@ -1825,20 +1844,22 @@ struct EvalGameView: View {
         .padding(.vertical, 10)
     }
 
-    private var loadingRing: some View {
-        TimelineView(.animation) { context in
-            let angle = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1) * 360
+    private static let groupRefreshInterval: Double = 15
+
+    private var groupCountdownRing: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
+            let progress = min(1, max(0, context.date.timeIntervalSince(groupCycleStart) / Self.groupRefreshInterval))
             ZStack {
                 Circle()
-                    .stroke(EvalColors.text.opacity(0.14), lineWidth: 3)
+                    .stroke(EvalColors.text.opacity(0.14), lineWidth: 3.5)
                 Circle()
-                    .trim(from: 0, to: 0.8)
-                    .stroke(EvalAccent.color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .rotationEffect(.degrees(angle - 90))
+                    .trim(from: 0, to: progress)
+                    .stroke(EvalAccent.color, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
             }
-            .frame(width: 24, height: 24)
+            .frame(width: 26, height: 26)
         }
-        .accessibilityLabel("Chargement")
+        .accessibilityLabel("Actualisation du groupe")
     }
 
     private func refreshButton(_ action: @escaping () async -> Void) -> some View {

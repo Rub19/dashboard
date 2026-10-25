@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.84.1 — 2026-10-25
+
+**E:VAL iOS : vrai rang, équipement et roue des expressions**
+
+- Votre rang vient du classement officiel Riot, est mémorisé et actualisé toutes les minutes : plus de Radiant périmé au démarrage
+- Équipement lu avec la nouvelle API Riot : armes, bannière de carte et roue des expressions s'affichent de nouveau
+- Le rond du groupe se remplit jusqu'à la prochaine actualisation, comme dans VALPAW
+- Offres du jour aux couleurs exactes de VALPAW selon la rareté
+
 ## v1.84.0 — 2026-10-25
 
 **E:VAL iOS : onglet Jeu refait comme VALPAW**

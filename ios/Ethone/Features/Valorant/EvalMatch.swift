@@ -73,6 +73,8 @@ struct EvalMatch: Codable, Identifiable, Hashable {
         var id: Int { n }
     }
 
+    struct Pos: Codable, Hashable { let x: Double; let y: Double }
+
     struct Kill: Codable, Hashable {
         let r: Int
         let t: Int
@@ -80,6 +82,8 @@ struct EvalMatch: Codable, Identifiable, Hashable {
         let v: String
         let w: String
         let a: [String]
+        var vp: Pos? = nil
+        var kp: Pos? = nil
     }
 
     let v: Int

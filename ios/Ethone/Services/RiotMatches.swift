@@ -66,6 +66,8 @@ enum RiotMatches {
         }
         struct Team: Decodable { let teamId: String; let won: Bool?; let roundsWon: Int? }
         struct Finishing: Decodable { let damageItem: String? }
+        struct Location: Decodable { let x: Double?; let y: Double? }
+        struct PlayerLocation: Decodable { let subject: String?; let location: Location? }
         struct Kill: Decodable {
             let round: Int?
             let roundTime: Int?
@@ -73,6 +75,8 @@ enum RiotMatches {
             let victim: String?
             let assistants: [String]?
             let finishingDamage: Finishing?
+            let victimLocation: Location?
+            let playerLocations: [PlayerLocation]?
         }
         struct Damage: Decodable { let receiver: String?; let damage: Int?; let legshots: Int?; let bodyshots: Int?; let headshots: Int? }
         struct Economy: Decodable { let loadoutValue: Int?; let weapon: String?; let armor: String?; let remaining: Int?; let spent: Int? }
@@ -168,9 +172,15 @@ enum RiotMatches {
             )
         }
         let allKills = raw.kills ?? rounds.flatMap { r in (r.playerStats ?? []).flatMap { $0.kills ?? [] } }
+        func pos(_ l: Raw.Location?) -> EvalMatch.Pos? {
+            guard let x = l?.x, let y = l?.y else { return nil }
+            return EvalMatch.Pos(x: x, y: y)
+        }
         let kills = allKills.map { k in
             EvalMatch.Kill(r: (k.round ?? 0) + 1, t: k.roundTime ?? 0, k: k.killer ?? "", v: k.victim ?? "",
-                           w: (k.finishingDamage?.damageItem ?? "").lowercased(), a: k.assistants ?? [])
+                           w: (k.finishingDamage?.damageItem ?? "").lowercased(), a: k.assistants ?? [],
+                           vp: pos(k.victimLocation),
+                           kp: pos(k.playerLocations?.first { $0.subject != nil && $0.subject == k.killer }?.location))
         }
         .sorted { ($0.r, $0.t) < ($1.r, $1.t) }
         let teams = raw.teams ?? []

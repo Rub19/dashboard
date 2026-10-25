@@ -148,22 +148,52 @@ struct EvalStatisticsView: View {
     /// Profil d'un autre joueur ; nil = compte suivi.
     var player: ValorantStore.PlayerSnapshot? = nil
     private var store: ValorantStore { model.valorant }
+    @State private var filterMode = ""
+    @State private var filterAgent = ""
+    @State private var filterMap = ""
+    @State private var quickLoading = false
+    @State private var quickLoaded = 0
+    @State private var showAllHistory = false
+
+    private var puuid: String { player?.puuid ?? store.puuid }
+    private var allMatches: [EvalMatch] {
+        (player?.matches ?? store.evalMatchList).filter { $0.player(puuid) != nil }
+    }
+    private var filtersActive: Bool { !filterMode.isEmpty || !filterAgent.isEmpty || !filterMap.isEmpty }
     private var stats: EvalStatsEngine {
-        if let player { return EvalStatsEngine(matches: player.matches, puuid: player.puuid) }
-        return EvalStatsEngine(matches: store.evalMatchList, puuid: store.puuid)
+        let filtered = allMatches.filter { m in
+            (filterMode.isEmpty || m.mode == filterMode)
+                && (filterMap.isEmpty || m.map == filterMap)
+                && (filterAgent.isEmpty || m.player(puuid)?.agent == filterAgent)
+        }
+        return EvalStatsEngine(matches: filtered, puuid: puuid)
     }
     private var history: [EvalMMR.HistoryPoint] { player?.mmr.history ?? store.mmr.history }
+    private var playerName: String {
+        if let player { return player.name }
+        return store.profile?.handle.split(separator: "#").first.map(String.init) ?? ""
+    }
 
     var body: some View {
         let s = stats
+        let downloaded = allMatches.count
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                EvalNavHeader(title: "Statistiques", systemImage: "desktopcomputer") { dismiss() }
-                matchesCard(s)
-                if s.count == 0 {
-                    emptyCard
+                VStack(spacing: 2) {
+                    if !playerName.isEmpty {
+                        Text(playerName).font(.system(size: 15, weight: .medium)).foregroundStyle(EvalUI.secondary)
+                            .frame(maxWidth: .infinity)
+                    }
+                    EvalNavHeader(title: "Statistiques", systemImage: "desktopcomputer", trailing: AnyView(filterMenu)) { dismiss() }
                 }
-                if !history.isEmpty { rankChart }
+                matchesCard(s, downloaded: downloaded)
+                if s.count == 0 {
+                    emptyCard(downloaded: downloaded)
+                }
+                if !history.isEmpty {
+                    rankChart
+                    rankChangesList
+                }
                 if s.count > 0 {
                     NavigationLink { EvalOverviewDetailView(title: "Aperçu", stats: s) } label: { overviewCard(s) }.buttonStyle(.plain)
                     NavigationLink { EvalPlayTimeDetailView(stats: s) } label: { playTimeCard(s) }.buttonStyle(.plain)
@@ -183,21 +213,53 @@ struct EvalStatisticsView: View {
         .task { await ValorantAssets.shared.load() }
     }
 
-    private func matchesCard(_ s: EvalStatsEngine) -> some View {
-        VStack(spacing: 0) {
+    private var filterMenu: some View {
+        let modes = Set(allMatches.map(\.mode)).filter { !$0.isEmpty }.sorted()
+        let agents = Set(allMatches.compactMap { $0.player(puuid)?.agent }).filter { !$0.isEmpty }.sorted()
+        let maps = Set(allMatches.map(\.map)).filter { !$0.isEmpty }.sorted()
+        return Menu {
+            filterPicker("Mode", systemImage: "gamecontroller", selection: $filterMode, options: modes)
+            filterPicker("Agent", systemImage: "person", selection: $filterAgent, options: agents)
+            filterPicker("Carte", systemImage: "map", selection: $filterMap, options: maps)
+            if filtersActive {
+                Button(role: .destructive) {
+                    filterMode = ""; filterAgent = ""; filterMap = ""
+                } label: { Label("Réinitialiser les filtres", systemImage: "xmark.circle") }
+            }
+        } label: {
+            Circle().fill(EvalUI.card).frame(width: 51, height: 51)
+                .overlay(Image(systemName: filtersActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+                    .font(.system(size: 20, weight: .semibold)).foregroundStyle(EvalUI.accent))
+        }
+        .accessibilityLabel("Filtrer")
+    }
+
+    private func filterPicker(_ title: String, systemImage: String, selection: Binding<String>, options: [String]) -> some View {
+        Picker(selection: selection) {
+            Text("Tous").tag("")
+            ForEach(options, id: \.self) { Text($0).tag($0) }
+        } label: {
+            Label(selection.wrappedValue.isEmpty ? title : "\(title) : \(selection.wrappedValue)", systemImage: systemImage)
+        }
+        .pickerStyle(.menu)
+    }
+
+    private func matchesCard(_ s: EvalStatsEngine, downloaded: Int) -> some View {
+        let total = player == nil ? store.totalMatches : 0
+        let shown = filtersActive ? "\(s.count) / \(downloaded)" : (total > 0 ? "\(downloaded) / \(total)" : "\(downloaded)")
+        return VStack(spacing: 0) {
             HStack {
                 Text("Matchs").font(.system(size: 20)).foregroundStyle(EvalColors.text)
                 Spacer()
-                Text(player == nil && store.totalMatches > 0 ? "\(s.count) / \(store.totalMatches)" : "\(s.count) enregistrés")
-                    .font(.system(size: 20)).foregroundStyle(EvalUI.secondary)
+                Text(shown).font(.system(size: 20).monospacedDigit()).foregroundStyle(EvalUI.secondary)
             }
             .padding(18)
             if player == nil {
                 Divider().overlay(EvalColors.text.opacity(0.08)).padding(.horizontal, 18)
-                Button { Task { await store.loadMoreMatches() } } label: {
+                Button { Task { await quickLoad() } } label: {
                     HStack(spacing: 10) {
-                        if store.isLoadingMore { ProgressView().tint(EvalUI.accent) } else { Image(systemName: "bolt.fill") }
-                        Text("Charger 10 matchs de plus")
+                        if quickLoading || store.isLoadingMore { ProgressView().tint(EvalUI.accent) } else { Image(systemName: "bolt.fill") }
+                        Text(quickLoading ? "Chargement… \(quickLoaded) / 20" : "Charger rapidement 20 matchs")
                         Spacer()
                     }
                     .font(.system(size: 20))
@@ -205,21 +267,83 @@ struct EvalStatisticsView: View {
                     .padding(18)
                 }
                 .buttonStyle(.plain)
-                .disabled(store.isLoadingMore)
+                .disabled(quickLoading || store.isLoadingMore)
             }
         }
         .background(EvalUI.card, in: .rect(cornerRadius: 22))
     }
 
-    private var emptyCard: some View {
-        VStack(spacing: 12) {
+    private func quickLoad() async {
+        guard !quickLoading else { return }
+        quickLoading = true
+        quickLoaded = 0
+        defer { quickLoading = false }
+        for _ in 0..<2 {
+            let before = store.matches.count
+            await store.loadMoreMatches()
+            let gained = store.matches.count - before
+            guard gained > 0 else { break }
+            quickLoaded = min(20, quickLoaded + gained)
+        }
+    }
+
+    private func emptyCard(downloaded: Int) -> some View {
+        let message: String
+        if downloaded > 0 && filtersActive {
+            message = "Aucun match ne correspond aux filtres sélectionnés."
+        } else if player == nil {
+            message = "Pour consulter les statistiques, vous devez d'abord télécharger les matchs. Appuyez sur « Charger rapidement 20 matchs »."
+        } else {
+            message = "Aucun match de ce joueur n'est encore enregistré."
+        }
+        return VStack(spacing: 12) {
             Image(systemName: "magnifyingglass").font(.system(size: 46)).foregroundStyle(EvalUI.secondary)
             Text("Aucun match").font(.system(size: 23, weight: .bold)).foregroundStyle(EvalColors.text)
-            Text("Les statistiques apparaîtront après la première synchronisation de vos parties.")
+            Text(message)
                 .font(.system(size: 18)).foregroundStyle(EvalUI.secondary).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(28)
+        .background(EvalUI.card, in: .rect(cornerRadius: 22))
+    }
+
+    private var rankChangesList: some View {
+        let rows = showAllHistory ? history : Array(history.prefix(5))
+        return VStack(spacing: 0) {
+            ForEach(rows) { p in
+                HStack(spacing: 12) {
+                    AsyncImage(url: ValorantProfile.tierIcon(p.tier)) { $0.image?.resizable().scaledToFit() }
+                        .frame(width: 34, height: 34)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(EvalRanks.name(p.tier)) · \(p.rr) RR").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalColors.text)
+                        Text([p.map, p.date?.formatted(.dateTime.day().month(.abbreviated).hour().minute().locale(EvalUI.fr))]
+                            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
+                            .font(.system(size: 14)).foregroundStyle(EvalUI.secondary)
+                    }
+                    Spacer()
+                    Text(p.change > 0 ? "+\(p.change)" : "\(p.change)")
+                        .font(.system(size: 18, weight: .bold).monospacedDigit())
+                        .foregroundStyle(p.change > 0 ? EvalUI.win : (p.change < 0 ? EvalUI.loss : EvalUI.secondary))
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                Divider().overlay(EvalColors.text.opacity(0.08)).padding(.horizontal, 18)
+            }
+            if history.count > 5 {
+                Button { withAnimation { showAllHistory.toggle() } } label: {
+                    HStack {
+                        Text(showAllHistory ? "Afficher moins" : "Afficher tous les matchs")
+                        Spacer()
+                        Image(systemName: showAllHistory ? "chevron.up" : "chevron.down")
+                    }
+                    .font(.system(size: 18))
+                    .foregroundStyle(EvalUI.accent)
+                    .padding(18)
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+            }
+        }
         .background(EvalUI.card, in: .rect(cornerRadius: 22))
     }
 

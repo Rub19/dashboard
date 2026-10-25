@@ -343,7 +343,12 @@ final class RiotSession {
 
 // MARK: - Données de jeu
 
-struct RiotGameSnapshot {
+struct RiotGameSnapshot: Codable {
+    enum CodingKeys: String, CodingKey {
+        case wallet, offers, offersEnd, bundles, accessories, accessoriesEnd, title, cardID, sprays
+        case battlepassLevel, battlepassXP, weeklyMissionsEnd, missions, dailyMilestones, dailyEnd
+    }
+
     var wallet = ValorantWallet(vp: 0, rp: 0, kc: 0)
     var offers: [ValorantDailySkinOffer] = []
     var offersEnd: Date?
@@ -360,6 +365,22 @@ struct RiotGameSnapshot {
     var dailyMilestones: [Bool] = []
     var dailyEnd: Date?
     var party: ValorantParty?
+
+    func merged(with cached: RiotGameSnapshot) -> RiotGameSnapshot {
+        var out = self
+        let now = Date()
+        if wallet.vp == 0, wallet.rp == 0, wallet.kc == 0 { out.wallet = cached.wallet }
+        if offers.isEmpty, (cached.offersEnd ?? .distantPast) > now { out.offers = cached.offers; out.offersEnd = cached.offersEnd }
+        if bundles.isEmpty { out.bundles = cached.bundles.filter { ($0.endsAt ?? .distantFuture) > now } }
+        if accessories.isEmpty, (cached.accessoriesEnd ?? .distantPast) > now { out.accessories = cached.accessories; out.accessoriesEnd = cached.accessoriesEnd }
+        if title.isEmpty { out.title = cached.title }
+        if cardID.isEmpty { out.cardID = cached.cardID }
+        if sprays.allSatisfy({ $0 == nil }) { out.sprays = cached.sprays }
+        if battlepassLevel == nil { out.battlepassLevel = cached.battlepassLevel; out.battlepassXP = cached.battlepassXP }
+        if missions.isEmpty, (cached.weeklyMissionsEnd ?? .distantPast) > now { out.missions = cached.missions; out.weeklyMissionsEnd = cached.weeklyMissionsEnd }
+        if dailyMilestones.isEmpty, (cached.dailyEnd ?? .distantPast) > now { out.dailyMilestones = cached.dailyMilestones; out.dailyEnd = cached.dailyEnd }
+        return out
+    }
 }
 
 struct RiotLiveRank: Hashable, Codable {
@@ -368,7 +389,7 @@ struct RiotLiveRank: Hashable, Codable {
     let leaderboardRank: Int
 }
 
-struct RiotMission: Identifiable, Hashable {
+struct RiotMission: Identifiable, Hashable, Codable {
     let id: String
     let title: String
     let progress: Int

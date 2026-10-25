@@ -61003,4 +61003,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_0_de);
 
+const v1_85_1_fr: ChangelogEntry = {
+  version: "v1.85.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS : affichage instantané",
+  items: [
+    "Le profil s'affiche tout de suite depuis les matchs déjà enregistrés sur l'iPhone, puis se met à jour en arrière-plan",
+    "Boutique, portefeuille, missions, passe de combat, carte et expressions sont mémorisés et s'affichent dès l'ouverture",
+    "Si Riot refuse une partie des requêtes, les dernières données connues restent affichées au lieu d'écrans vides",
+    "Les chargements se font en parallèle : beaucoup moins d'attente à l'ouverture d'E:VAL",
+  ],
+};
+
+const v1_85_1_en: ChangelogEntry = {
+  version: "v1.85.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: instant display",
+  items: [
+    "The profile shows right away from the matches already saved on the iPhone, then updates in the background",
+    "Store, wallet, missions, battle pass, card and expressions are saved and show as soon as E:VAL opens",
+    "If Riot rejects some requests, the last known data stays on screen instead of empty pages",
+    "Loading runs in parallel: far less waiting when E:VAL opens",
+  ],
+};
+
+const v1_85_1_es: ChangelogEntry = {
+  version: "v1.85.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: visualización instantánea",
+  items: [
+    "El perfil se muestra al instante con las partidas ya guardadas en el iPhone y se actualiza en segundo plano",
+    "Tienda, cartera, misiones, pase de batalla, tarjeta y expresiones se guardan y aparecen al abrir E:VAL",
+    "Si Riot rechaza algunas peticiones, se mantienen los últimos datos conocidos en lugar de pantallas vacías",
+    "Las cargas se hacen en paralelo: mucha menos espera al abrir E:VAL",
+  ],
+};
+
+const v1_85_1_de: ChangelogEntry = {
+  version: "v1.85.1",
+  date: "2026-10-25",
+  title: "E:VAL iOS: sofortige Anzeige",
+  items: [
+    "Das Profil erscheint sofort aus den bereits auf dem iPhone gespeicherten Matches und aktualisiert sich im Hintergrund",
+    "Shop, Wallet, Missionen, Battle Pass, Karte und Ausdrücke werden gespeichert und erscheinen beim Öffnen von E:VAL",
+    "Lehnt Riot einige Anfragen ab, bleiben die letzten bekannten Daten sichtbar statt leerer Seiten",
+    "Ladevorgänge laufen parallel: viel weniger Warten beim Öffnen von E:VAL",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

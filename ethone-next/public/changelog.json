@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.85.1",
+    "date": "2026-10-25",
+    "title": "E:VAL iOS : affichage instantané",
+    "items": [
+      "Le profil s'affiche tout de suite depuis les matchs déjà enregistrés sur l'iPhone, puis se met à jour en arrière-plan",
+      "Boutique, portefeuille, missions, passe de combat, carte et expressions sont mémorisés et s'affichent dès l'ouverture",
+      "Si Riot refuse une partie des requêtes, les dernières données connues restent affichées au lieu d'écrans vides",
+      "Les chargements se font en parallèle : beaucoup moins d'attente à l'ouverture d'E:VAL"
+    ]
+  },
+  {
     "version": "v1.85.0",
     "date": "2026-10-25",
     "title": "E:VAL iOS : session Riot permanente comme VALPAW",
@@ -617,15 +628,6 @@
       "Appels : le membre fait appel depuis son MP, l'équipe accepte, refuse ou en discute, sur Discord ou depuis le dashboard.",
       "Signalements enrichis : rôles modérateurs, réaction sur le message, regroupement en 15 minutes, limite de prises en charge, signaleur prévenu, fils de discussion et de tri.",
       "Statistiques de modération sur 7, 30 ou 90 jours."
-    ]
-  },
-  {
-    "version": "v1.75.114",
-    "date": "2026-10-15",
-    "title": "Menus déroulants opaques et chargement après mise à jour",
-    "items": [
-      "Les menus déroulants ne sont plus transparents dans les sections désactivées.",
-      "Le site ne plante plus juste après une mise à jour quand un fichier n'est pas encore disponible : il est redemandé automatiquement."
     ]
   }
 ]

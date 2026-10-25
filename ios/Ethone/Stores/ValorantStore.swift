@@ -174,7 +174,7 @@ struct ValorantDailySkinOffer: Identifiable, Hashable, Codable {
     let tierLabel: String
 }
 
-struct ValorantStoreBundle: Identifiable, Hashable {
+struct ValorantStoreBundle: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let imageURL: String
@@ -192,7 +192,7 @@ struct ValorantAccessoryItem: Identifiable, Hashable, Codable {
     var price: Int = 0
 }
 
-struct ValorantWallet: Hashable {
+struct ValorantWallet: Hashable, Codable {
     var vp: Int = 0
     var rp: Int = 0
     var kc: Int = 0
@@ -384,10 +384,33 @@ final class ValorantStore {
             battlepassCurrentXP = saved[1]
             battlepassLevelXP = battlepassLevels.first { $0.level == saved[0] + 1 }?.xpCost ?? 0
         }
-        let snap = await RiotGameService.load(riot)
+        applyCachedSnapshot()
+        var snap = await RiotGameService.load(riot)
+        if let cached = DiskCache.read(RiotGameSnapshot.self, key: snapshotCacheKey) { snap = snap.merged(with: cached) }
+        DiskCache.write(snap, key: snapshotCacheKey)
+        applySnapshot(snap)
+        recordShop(snap.offers, accessories: snap.accessories)
+        currentParty = snap.party
+        isPlayerOnline = snap.party != nil
+        if acts.isEmpty { await loadActs() }
+        if let live = await RiotGameService.liveRank(riot, seasonID: currentAct?.id) {
+            liveRank = live
+            saveLiveRank(live)
+            applyLiveRank()
+        }
+    }
+
+    private var snapshotCacheKey: String { "valorant-snapshot.\(riot.credentials?.puuid.lowercased() ?? "")" }
+
+    func applyCachedSnapshot() {
+        guard riot.isLinked, storeOffers.isEmpty, wallet.vp == 0,
+              let cached = DiskCache.read(RiotGameSnapshot.self, key: snapshotCacheKey) else { return }
+        applySnapshot(RiotGameSnapshot().merged(with: cached))
+    }
+
+    private func applySnapshot(_ snap: RiotGameSnapshot) {
         wallet = snap.wallet
         storeOffers = snap.offers
-        recordShop(snap.offers, accessories: snap.accessories)
         offersEnd = snap.offersEnd
         bundles = snap.bundles
         accessories = snap.accessories
@@ -410,14 +433,6 @@ final class ValorantStore {
         activeMissions = snap.missions
         dailyMilestones = snap.dailyMilestones
         dailyEnd = snap.dailyEnd
-        currentParty = snap.party
-        isPlayerOnline = snap.party != nil
-        if acts.isEmpty { await loadActs() }
-        if let live = await RiotGameService.liveRank(riot, seasonID: currentAct?.id) {
-            liveRank = live
-            saveLiveRank(live)
-            applyLiveRank()
-        }
     }
 
     /// Remplace le rang HenrikDev par le rang en direct si le compte suivi est le compte Riot connecté.
@@ -638,6 +653,7 @@ final class ValorantStore {
         }
         if let data = Keychain.get(Self.keychainKey), let saved = String(data: data, encoding: .utf8) { apiKey = saved }
         syncAccountData()
+        applyCachedSnapshot()
     }
 
     /// Remet l'état du compte à zéro puis recharge le cache disque du compte actif.
@@ -743,18 +759,20 @@ final class ValorantStore {
         guard isConfigured else { return }
         isLoading = true
         defer { isLoading = false }
-        await loadPersonalSettings()
-        await loadSocial()
-        await loadActs()
-        await loadSeasonGoal()
-        await loadShopData()
-        await loadSnapshots()
+        async let riotData: Void = refreshRiot()
         await syncAndLoadMatches()
-        await loadLeaderboard()
-        await loadUpcomingMissions()
+        async let settings: Void = loadPersonalSettings()
+        async let social: Void = loadSocial()
+        async let actsLoad: Void = loadActs()
+        async let goal: Void = loadSeasonGoal()
+        async let shop: Void = loadShopData()
+        async let snapshots: Void = loadSnapshots()
+        async let board: Void = loadLeaderboard()
+        async let upcoming: Void = loadUpcomingMissions()
+        async let names: Void = refreshNameChanges()
+        _ = await (settings, social, actsLoad, goal, shop, snapshots, board, upcoming, names)
         await loadBattlepass()
-        await refreshNameChanges()
-        await refreshRiot()
+        await riotData
     }
 
     // MARK: Matchs (Worker -> Supabase -> disque)
@@ -781,7 +799,9 @@ final class ValorantStore {
     private struct MatchRow: Decodable { let payload: EvalMatch }
 
     private var accountCacheKey: String {
-        let identity = "\(api.auth.user?.id ?? "anonymous")|\(nameStorage)#\(tag)".lowercased()
+        if let id = api.auth.user?.id { UserDefaults.standard.set(id, forKey: "ethone.valorant.lastAuthUser") }
+        let user = api.auth.user?.id ?? UserDefaults.standard.string(forKey: "ethone.valorant.lastAuthUser") ?? "anonymous"
+        let identity = "\(user)|\(nameStorage)#\(tag)".lowercased()
         let encoded = Data(identity.utf8).base64EncodedString()
             .replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "=", with: "")
         return "valorant-eval.\(encoded)"

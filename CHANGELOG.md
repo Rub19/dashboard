@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.85.1 — 2026-10-25
+
+**E:VAL iOS : affichage instantané**
+
+- Le profil s'affiche tout de suite depuis les matchs déjà enregistrés sur l'iPhone, puis se met à jour en arrière-plan
+- Boutique, portefeuille, missions, passe de combat, carte et expressions sont mémorisés et s'affichent dès l'ouverture
+- Si Riot refuse une partie des requêtes, les dernières données connues restent affichées au lieu d'écrans vides
+- Les chargements se font en parallèle : beaucoup moins d'attente à l'ouverture d'E:VAL
+
 ## v1.85.0 — 2026-10-25
 
 **E:VAL iOS : session Riot permanente comme VALPAW**

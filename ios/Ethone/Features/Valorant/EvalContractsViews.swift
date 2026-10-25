@@ -172,9 +172,8 @@ struct EvalBattlepassContractView: View {
                             .background(EvalAccent.color, in: .circle)
                         Text(title)
                             .font(.system(size: 20, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.6)
-                            .layoutPriority(1)
                         Spacer(minLength: 4)
-                        countdownLabel(store.battlepassEndDate, days: true, size: 17)
+                        countdownLabel(store.battlepassEndDate, days: true, size: 17).fixedSize()
                     }
                     Divider().overlay(EvalColors.text.opacity(0.08))
                     if levelCount > 0 {

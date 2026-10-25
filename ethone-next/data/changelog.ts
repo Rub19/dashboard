@@ -61293,4 +61293,45 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_6_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_6_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_6_de);
 
+const v1_85_7_fr: ChangelogEntry = {
+  version: "v1.85.7",
+  date: "2026-10-25",
+  title: "E:VAL : compte à rebours du passe de combat sur une ligne",
+  items: [
+    "Le compte à rebours de la saison reste sur une ligne, le titre se réduit si besoin",
+  ],
+};
+
+const v1_85_7_en: ChangelogEntry = {
+  version: "v1.85.7",
+  date: "2026-10-25",
+  title: "E:VAL: battle pass countdown on one line",
+  items: [
+    "The season countdown stays on one line, the title shrinks if needed",
+  ],
+};
+
+const v1_85_7_es: ChangelogEntry = {
+  version: "v1.85.7",
+  date: "2026-10-25",
+  title: "E:VAL: cuenta atrás del pase de batalla en una línea",
+  items: [
+    "La cuenta atrás de la temporada se queda en una línea y el título se reduce si hace falta",
+  ],
+};
+
+const v1_85_7_de: ChangelogEntry = {
+  version: "v1.85.7",
+  date: "2026-10-25",
+  title: "E:VAL: Battlepass-Countdown in einer Zeile",
+  items: [
+    "Der Saison-Countdown bleibt in einer Zeile, der Titel wird bei Bedarf verkleinert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_7_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_7_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_7_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_7_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

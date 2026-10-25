@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.85.7",
+    "date": "2026-10-25",
+    "title": "E:VAL : compte à rebours du passe de combat sur une ligne",
+    "items": [
+      "Le compte à rebours de la saison reste sur une ligne, le titre se réduit si besoin"
+    ]
+  },
+  {
     "version": "v1.85.6",
     "date": "2026-10-25",
     "title": "E:VAL : scores des matchs corrigés, projection du passe de combat comme VALPAW",
@@ -611,18 +619,6 @@
     "title": "Activer une fonction active aussi son module",
     "items": [
       "Activer la bienvenue, les départs, les rôles automatiques ou les signalements depuis leur page allume aussi le module : le réglage ne reste plus sans effet quand le module était coupé."
-    ]
-  },
-  {
-    "version": "v1.75.120",
-    "date": "2026-10-16",
-    "title": "Messages de sanction personnalisables et pages rangées",
-    "items": [
-      "Nouvelle page Messages de sanction (gratuite) : réponse de chaque commande (/warn, /mute, /ban…) et message privé au membre, en texte, embed ou container, avec variables et aperçu.",
-      "Messages privés personnalisables aussi pour la fin d'une sanction et la décision d'un appel.",
-      "Annuler une sanction prévient maintenant le membre en message privé.",
-      "Le délai, « Donner maintenant » et le rattrapage des rôles à l'arrivée sont regroupés dans Rôles automatiques ; la page Rôles ne garde que les menus de rôles.",
-      "Les descriptions de commandes écrites en anglais sont traduites aussi sur le site en français, et les textes restés non traduits sont retentés."
     ]
   }
 ]

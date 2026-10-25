@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.85.7 — 2026-10-25
+
+**E:VAL : compte à rebours du passe de combat sur une ligne**
+
+- Le compte à rebours de la saison reste sur une ligne, le titre se réduit si besoin
+
 ## v1.85.6 — 2026-10-25
 
 **E:VAL : scores des matchs corrigés, projection du passe de combat comme VALPAW**

@@ -176,7 +176,7 @@ struct ValorantMatchDetailView: View {
                 targetPUUID = targetPUUID.isEmpty ? (initialTarget ?? loaded.player(store.puuid)?.puuid ?? match.myPlayer?.id ?? "") : targetPUUID
                 evalMatch = loaded
                 if let enriched = await store.riotEnriched(loaded) { evalMatch = enriched }
-                liveTiers = await store.currentTiers(for: (evalMatch ?? loaded).players.filter { $0.tier == 0 }.map(\.puuid))
+                liveTiers = await store.currentTiers(for: (evalMatch ?? loaded).players.map(\.puuid))
             } else {
                 loadFailed = true
             }
@@ -440,9 +440,9 @@ struct ValorantMatchDetailView: View {
     private var divider: some View { Divider().overlay(EvalColors.text.opacity(0.06)) }
 
     private func tier(of p: EvalMatch.Player) -> Int {
-        if p.tier > 0 { return p.tier }
         if p.puuid == model.valorant.puuid, model.valorant.currentTier > 0 { return model.valorant.currentTier }
-        return liveTiers[p.puuid] ?? 0
+        if let live = liveTiers[p.puuid], live > 0 { return live }
+        return p.tier
     }
 
     @ViewBuilder

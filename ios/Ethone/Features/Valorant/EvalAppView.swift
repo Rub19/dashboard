@@ -570,7 +570,7 @@ struct EvalProfileView: View {
 
                         EvalRankDisc(tier: profile.tier, size: 92, progress: 1)
 
-                        Text(profile.rank.isEmpty ? "RANG INDISPONIBLE" : profile.rank.uppercased())
+                        Text(profile.rank.isEmpty ? (store.riot.isLinked ? "CHARGEMENT…" : "RANG INDISPONIBLE") : profile.rank.uppercased())
                             .font(.system(size: 18, weight: .heavy))
                             .foregroundStyle(Color(hex: EvalRanks.color(profile.tier)))
 

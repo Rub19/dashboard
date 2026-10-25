@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.85.0 — 2026-10-25
+
+**E:VAL iOS : session Riot permanente comme VALPAW**
+
+- La session Riot se renouvelle toute seule avec vos cookies Riot, comme dans VALPAW : plus de boutique, de passe de combat, d'équipement ou de roue vides au bout d'une heure
+- Une seule reconnexion à la fois, même quand plusieurs écrans demandent Riot en même temps
+- Votre rang n'affiche plus le Radiant périmé de HenrikDev au chargement : dernier rang Riot connu, ou « Chargement… »
+- Passe de combat : nouvelles tentatives si Riot refuse la requête, et dernier niveau connu affiché tout de suite
+
 ## v1.84.1 — 2026-10-25
 
 **E:VAL iOS : vrai rang, équipement et roue des expressions**

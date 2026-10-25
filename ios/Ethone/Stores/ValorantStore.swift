@@ -378,6 +378,12 @@ final class ValorantStore {
         defer { isLoadingRiot = false }
         if !chat.isConnected { Task { await connectChat() } }
         if battlepassLevels.isEmpty { await loadBattlepass() }
+        if battlepassCurrentLevel == 0, battlepassCurrentXP == 0,
+           let saved = UserDefaults.standard.array(forKey: "ethone.valorant.battlepass.\(riot.credentials?.puuid.lowercased() ?? "")") as? [Int], saved.count == 2 {
+            battlepassCurrentLevel = saved[0]
+            battlepassCurrentXP = saved[1]
+            battlepassLevelXP = battlepassLevels.first { $0.level == saved[0] + 1 }?.xpCost ?? 0
+        }
         let snap = await RiotGameService.load(riot)
         wallet = snap.wallet
         storeOffers = snap.offers
@@ -389,7 +395,13 @@ final class ValorantStore {
         if !snap.title.isEmpty { equipmentTitle = snap.title }
         if !snap.cardID.isEmpty { equipmentBannerURL = "https://media.valorant-api.com/playercards/\(snap.cardID)/wideart.png" }
         equippedSprays = snap.sprays
+        let progressKey = "ethone.valorant.battlepass.\(riot.credentials?.puuid.lowercased() ?? "")"
         if let level = snap.battlepassLevel, let xp = snap.battlepassXP {
+            UserDefaults.standard.set([level, xp], forKey: progressKey)
+        }
+        if let saved = UserDefaults.standard.array(forKey: progressKey) as? [Int], saved.count == 2 {
+            let level = snap.battlepassLevel ?? saved[0]
+            let xp = snap.battlepassXP ?? saved[1]
             battlepassCurrentLevel = level
             battlepassCurrentXP = xp
             battlepassLevelXP = battlepassLevels.first { $0.level == level + 1 }?.xpCost ?? 0
@@ -431,8 +443,17 @@ final class ValorantStore {
            let saved = try? JSONDecoder().decode(RiotLiveRank.self, from: data) {
             liveRank = saved
         }
-        guard let live = liveRank, let creds = riot.credentials, let current = profile,
+        guard let creds = riot.credentials, let current = profile,
               current.handle.lowercased() == "\(creds.gameName)#\(creds.tagLine)".lowercased() else { return }
+        guard let live = liveRank else {
+            profile = ValorantProfile(
+                handle: current.handle, cardURL: current.cardURL, bannerURL: current.bannerURL,
+                tier: 0, rank: "", rr: 0, level: current.level,
+                peakTier: current.peakTier, peakRank: current.peakRank,
+                leaderboardRank: nil, actName: current.actName
+            )
+            return
+        }
         let peak = max(current.peakTier, live.tier)
         profile = ValorantProfile(
             handle: current.handle, cardURL: current.cardURL, bannerURL: current.bannerURL,

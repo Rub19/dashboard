@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.85.0",
+    "date": "2026-10-25",
+    "title": "E:VAL iOS : session Riot permanente comme VALPAW",
+    "items": [
+      "La session Riot se renouvelle toute seule avec vos cookies Riot, comme dans VALPAW : plus de boutique, de passe de combat, d'équipement ou de roue vides au bout d'une heure",
+      "Une seule reconnexion à la fois, même quand plusieurs écrans demandent Riot en même temps",
+      "Votre rang n'affiche plus le Radiant périmé de HenrikDev au chargement : dernier rang Riot connu, ou « Chargement… »",
+      "Passe de combat : nouvelles tentatives si Riot refuse la requête, et dernier niveau connu affiché tout de suite"
+    ]
+  },
+  {
     "version": "v1.84.1",
     "date": "2026-10-25",
     "title": "E:VAL iOS : vrai rang, équipement et roue des expressions",
@@ -615,15 +626,6 @@
     "items": [
       "Les menus déroulants ne sont plus transparents dans les sections désactivées.",
       "Le site ne plante plus juste après une mise à jour quand un fichier n'est pas encore disponible : il est redemandé automatiquement."
-    ]
-  },
-  {
-    "version": "v1.75.113",
-    "date": "2026-10-15",
-    "title": "Badges Nitro mieux détectés et menus corrigés",
-    "items": [
-      "Le compteur de badges repère le Nitro par tous ses avantages visibles : avatar animé, bannière, style de pseudo et profil de serveur.",
-      "Les menus déroulants de la console passent au-dessus des blocs suivants au lieu d'être recouverts."
     ]
   }
 ]

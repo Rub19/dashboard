@@ -100,7 +100,7 @@ private final class RiotSilentAuth: NSObject, WKNavigationDelegate {
             webView = view
             view.load(URLRequest(url: RiotAuthURL.authorize))
             Task { @MainActor in
-                try? await Task.sleep(for: .seconds(12))
+                try? await Task.sleep(for: .seconds(20))
                 self.finish(nil)
             }
         }
@@ -122,9 +122,36 @@ private final class RiotSilentAuth: NSObject, WKNavigationDelegate {
         decisionHandler(.allow)
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // Page de connexion affichée = cookies expirés : il faut se reconnecter à la main.
-        if let host = webView.url?.host, host == "auth.riotgames.com" || host == "authenticate.riotgames.com" { finish(nil) }
+}
+
+private final class RiotRedirectStopper: NSObject, URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest) async -> URLRequest? {
+        nil
+    }
+}
+
+enum RiotCookieReauth {
+    static func run() async -> (String, String, Int)? {
+        let cookies = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
+            .filter { $0.domain.contains("riotgames.com") }
+        guard cookies.contains(where: { $0.name == "ssid" }) else { return nil }
+        var request = URLRequest(url: RiotAuthURL.authorize)
+        request.httpShouldHandleCookies = false
+        request.setValue(cookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; "), forHTTPHeaderField: "Cookie")
+        request.setValue(RiotAuthURL.safariUserAgent, forHTTPHeaderField: "User-Agent")
+        let session = URLSession(configuration: .ephemeral, delegate: RiotRedirectStopper(), delegateQueue: nil)
+        defer { session.finishTasksAndInvalidate() }
+        guard let (_, response) = try? await session.data(for: request),
+              let http = response as? HTTPURLResponse,
+              let location = http.value(forHTTPHeaderField: "Location"),
+              let url = URL(string: location),
+              let tokens = RiotAuthURL.tokens(from: url) else { return nil }
+        if let fields = http.allHeaderFields as? [String: String] {
+            for cookie in HTTPCookie.cookies(withResponseHeaderFields: fields, for: RiotAuthURL.authorize) {
+                await WKWebsiteDataStore.default().httpCookieStore.setCookie(cookie)
+            }
+        }
+        return (tokens.access, tokens.id, tokens.expiresIn)
     }
 }
 
@@ -203,13 +230,25 @@ final class RiotSession {
     private func validCredentials() async -> Credentials? {
         guard let current = credentials else { return nil }
         if current.expiresAt > Date() { return current }
-        guard let tokens = await RiotSilentAuth().run() else {
+        if let running = reauthTask, let fresh = await running.value, fresh.expiresAt > Date() { return fresh }
+        let task = Task<Credentials?, Never> { @MainActor in
+            var reauth = await RiotCookieReauth.run()
+            if reauth == nil { reauth = await RiotSilentAuth().run() }
+            guard let tokens = reauth else { return nil }
+            await self.complete(accessToken: tokens.0, idToken: tokens.1, expiresIn: tokens.2)
+            return self.credentials
+        }
+        reauthTask = task
+        let result = await task.value
+        reauthTask = nil
+        guard let result else {
             lastError = "Session Riot expirée : reconnectez-vous."
             return nil
         }
-        await complete(accessToken: tokens.0, idToken: tokens.1, expiresIn: tokens.2)
-        return credentials
+        return result
     }
+
+    private var reauthTask: Task<Credentials?, Never>?
 
     private func loadClientVersion() async {
         guard clientVersion.isEmpty else { return }
@@ -418,8 +457,8 @@ enum RiotGameService {
             let Missions: [Mission]?
         }
         var contractsResponse: Contracts? = try? await session.game("/contracts/v1/contracts/\(puuid)")
-        if contractsResponse == nil {
-            try? await Task.sleep(for: .seconds(2))
+        for delay in [2.0, 4.0, 8.0] where contractsResponse == nil {
+            try? await Task.sleep(for: .seconds(delay))
             contractsResponse = try? await session.game("/contracts/v1/contracts/\(puuid)")
         }
         if let contracts = contractsResponse {

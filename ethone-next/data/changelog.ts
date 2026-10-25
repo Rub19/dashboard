@@ -60950,4 +60950,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_84_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_84_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_84_1_de);
 
+const v1_85_0_fr: ChangelogEntry = {
+  version: "v1.85.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS : session Riot permanente comme VALPAW",
+  items: [
+    "La session Riot se renouvelle toute seule avec vos cookies Riot, comme dans VALPAW : plus de boutique, de passe de combat, d'équipement ou de roue vides au bout d'une heure",
+    "Une seule reconnexion à la fois, même quand plusieurs écrans demandent Riot en même temps",
+    "Votre rang n'affiche plus le Radiant périmé de HenrikDev au chargement : dernier rang Riot connu, ou « Chargement… »",
+    "Passe de combat : nouvelles tentatives si Riot refuse la requête, et dernier niveau connu affiché tout de suite",
+  ],
+};
+
+const v1_85_0_en: ChangelogEntry = {
+  version: "v1.85.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: permanent Riot session like VALPAW",
+  items: [
+    "The Riot session renews itself with your Riot cookies, like VALPAW: no more empty store, battle pass, loadout or wheel after an hour",
+    "Only one re-authentication at a time, even when several screens call Riot together",
+    "Your rank no longer shows HenrikDev's stale Radiant at launch: last known Riot rank, or \"Loading…\"",
+    "Battle pass: retries when Riot rejects the request, and the last known level shows immediately",
+  ],
+};
+
+const v1_85_0_es: ChangelogEntry = {
+  version: "v1.85.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: sesión de Riot permanente como VALPAW",
+  items: [
+    "La sesión de Riot se renueva sola con tus cookies de Riot, como en VALPAW: ya no hay tienda, pase, equipamiento ni rueda vacíos tras una hora",
+    "Una sola reconexión a la vez, aunque varias pantallas llamen a Riot a la vez",
+    "Tu rango ya no muestra el Radiante caducado de HenrikDev al iniciar: último rango de Riot conocido o «Cargando…»",
+    "Pase de batalla: reintentos si Riot rechaza la petición y el último nivel conocido se muestra al instante",
+  ],
+};
+
+const v1_85_0_de: ChangelogEntry = {
+  version: "v1.85.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: dauerhafte Riot-Sitzung wie VALPAW",
+  items: [
+    "Die Riot-Sitzung erneuert sich mit deinen Riot-Cookies selbst, wie in VALPAW: kein leerer Shop, Battle Pass, Ausrüstung oder Rad mehr nach einer Stunde",
+    "Nur eine Neuanmeldung gleichzeitig, auch wenn mehrere Bildschirme Riot zugleich aufrufen",
+    "Dein Rang zeigt beim Start nicht mehr das veraltete Radiant von HenrikDev: letzter bekannter Riot-Rang oder „Laden…“",
+    "Battle Pass: neue Versuche, wenn Riot die Anfrage ablehnt, und das letzte bekannte Level erscheint sofort",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

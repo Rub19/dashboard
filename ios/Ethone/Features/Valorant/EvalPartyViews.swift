@@ -359,9 +359,8 @@ struct EvalPartyCard: View {
             if leader {
                 Button { Task { await partyModel.toggleMatchmaking(store.riot) } } label: {
                     HStack(spacing: 8) {
-                        Text(party.isQueueing ? "Annuler" : "Démarrer")
-                        if party.isQueueing { queueTimer(party) }
-                        Image(systemName: party.isQueueing ? "stop.fill" : "play.fill")
+                        if party.isQueueing { queueTimer(party) } else { Text("Démarrer") }
+                        Image(systemName: party.isQueueing ? "pause.fill" : "play.fill")
                     }
                     .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(EvalAccent.color)
@@ -396,7 +395,7 @@ struct EvalPartyCard: View {
     private func queueTimer(_ party: RiotPartyState) -> some View {
         TimelineView(.periodic(from: .now, by: 1)) { ctx in
             let seconds = max(0, Int(ctx.date.timeIntervalSince(party.queueEntry ?? ctx.date)))
-            Text(String(format: "%d:%02d", seconds / 60, seconds % 60)).monospacedDigit()
+            Text(String(format: "%02d:%02d", seconds / 60, seconds % 60)).monospacedDigit()
         }
     }
 

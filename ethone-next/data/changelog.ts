@@ -61542,4 +61542,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_86_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_86_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_86_1_de);
 
+const v1_86_2_fr: ChangelogEntry = {
+  version: "v1.86.2",
+  date: "2026-10-25",
+  title: "E:VAL : sélection d'agent comme VALPAW",
+  items: [
+    "En file, le bouton affiche le chrono 00:00 avec pause, comme VALPAW",
+    "Agent verrouillé en image pleine, agent survolé en transparence avec bordure en pointillés",
+    "Cadenas de verrouillage des deux équipes",
+    "Profils d'apparences applicables d'un toucher pendant la sélection, avec Gérer et Surprenez-moi",
+    "Bouton Quitter la partie avec confirmation",
+  ],
+};
+
+const v1_86_2_en: ChangelogEntry = {
+  version: "v1.86.2",
+  date: "2026-10-25",
+  title: "E:VAL: agent select like VALPAW",
+  items: [
+    "While queueing, the button shows a 00:00 timer with pause, like VALPAW",
+    "Locked agent shown in full, hovered agent faded with a dashed border",
+    "Lock icons for both teams",
+    "Appearance profiles applied with one tap during agent select, with Manage and Surprise me",
+    "Leave match button with confirmation",
+  ],
+};
+
+const v1_86_2_es: ChangelogEntry = {
+  version: "v1.86.2",
+  date: "2026-10-25",
+  title: "E:VAL: selección de agente como VALPAW",
+  items: [
+    "En cola, el botón muestra el cronómetro 00:00 con pausa, como VALPAW",
+    "Agente bloqueado a imagen completa, agente en selección translúcido con borde discontinuo",
+    "Candados de bloqueo de ambos equipos",
+    "Perfiles de apariencia aplicables con un toque durante la selección, con Gestionar y Sorpréndeme",
+    "Botón Salir de la partida con confirmación",
+  ],
+};
+
+const v1_86_2_de: ChangelogEntry = {
+  version: "v1.86.2",
+  date: "2026-10-25",
+  title: "E:VAL: Agentenauswahl wie VALPAW",
+  items: [
+    "In der Warteschlange zeigt die Schaltfläche den Timer 00:00 mit Pause, wie VALPAW",
+    "Gesperrter Agent voll angezeigt, ausgewählter Agent transparent mit gestricheltem Rand",
+    "Sperrsymbole für beide Teams",
+    "Erscheinungsprofile während der Auswahl per Tipp anwenden, mit Verwalten und Überrasch mich",
+    "Spiel verlassen mit Bestätigung",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_86_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_86_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_86_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_86_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

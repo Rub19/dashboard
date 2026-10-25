@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.86.2",
+    "date": "2026-10-25",
+    "title": "E:VAL : sélection d'agent comme VALPAW",
+    "items": [
+      "En file, le bouton affiche le chrono 00:00 avec pause, comme VALPAW",
+      "Agent verrouillé en image pleine, agent survolé en transparence avec bordure en pointillés",
+      "Cadenas de verrouillage des deux équipes",
+      "Profils d'apparences applicables d'un toucher pendant la sélection, avec Gérer et Surprenez-moi",
+      "Bouton Quitter la partie avec confirmation"
+    ]
+  },
+  {
     "version": "v1.86.1",
     "date": "2026-10-25",
     "title": "E:VAL : temps de file et sélection d'agent automatique",
@@ -620,15 +632,6 @@
       "Tout le dashboard Discord (console du serveur, modules, sécurité, centre de contrôle du bot, assistant d'installation) s'affiche dans la langue choisie sur le site : français, anglais, espagnol ou allemand.",
       "Les descriptions des commandes slash dans le sélecteur de Discord suivent la langue de chaque membre.",
       "Le rapport de sécurité hebdomadaire et le statut /antiraid suivent la langue du serveur."
-    ]
-  },
-  {
-    "version": "v1.75.125",
-    "date": "2026-10-16",
-    "title": "Tout le bot dans la langue du serveur",
-    "items": [
-      "Les réponses, messages privés, boutons, menus et fenêtres de près de 1 000 textes du bot (musique, économie, jeux, salons vocaux, bienvenue, rappels, tags, starboard, sondages, tickets, Spotify, sécurité…) suivent la langue choisie pour le serveur : français, anglais, espagnol ou allemand.",
-      "Les messages personnalisés écrits par l'équipe restent tels quels."
     ]
   }
 ]

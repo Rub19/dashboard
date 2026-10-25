@@ -41,6 +41,7 @@ struct RiotLivePlayer: Identifiable, Equatable {
     let cardID: String
     let level: Int
     let hideLevel: Bool
+    var locked = true
     var rank: RiotRankLookup.Rank?
     var group = -1
     var stats: Stats?
@@ -56,6 +57,8 @@ struct RiotLiveMatch: Equatable {
     let pod: String
     let myTeam: String
     let phaseEnd: Date?
+    var enemyLocks = 0
+    var enemySize = 0
     var players: [RiotLivePlayer]
 }
 
@@ -124,7 +127,9 @@ final class RiotLiveMatchModel {
             let remaining = Double(data["PhaseTimeRemainingNS"]?.intValue ?? 0) / 1_000_000_000
             return RiotLiveMatch(id: id, isPregame: true, mapPath: data["MapID"]?.stringValue ?? "",
                                  queueID: data["QueueID"]?.stringValue ?? "", pod: data["GamePodID"]?.stringValue ?? "",
-                                 myTeam: team, phaseEnd: remaining > 0 ? Date().addingTimeInterval(remaining) : nil, players: players)
+                                 myTeam: team, phaseEnd: remaining > 0 ? Date().addingTimeInterval(remaining) : nil,
+                                 enemyLocks: data["EnemyTeamLockCount"]?.intValue ?? 0, enemySize: data["EnemyTeamSize"]?.intValue ?? 5,
+                                 players: players)
         }
         return nil
     }
@@ -135,14 +140,15 @@ final class RiotLiveMatchModel {
 
     private static func player(_ p: JSONValue, team: String) -> RiotLivePlayer {
         let identity = p["PlayerIdentity"]
-        let locked = (p["CharacterSelectionState"]?.stringValue ?? "locked").lowercased()
+        let state = (p["CharacterSelectionState"]?.stringValue ?? "locked").lowercased()
         return RiotLivePlayer(
             id: (p["Subject"]?.stringValue ?? "").lowercased(),
             team: team,
-            agentID: locked.isEmpty ? "" : (p["CharacterID"]?.stringValue ?? "").lowercased(),
+            agentID: state.isEmpty ? "" : (p["CharacterID"]?.stringValue ?? "").lowercased(),
             cardID: (identity?["PlayerCardID"]?.stringValue ?? "").lowercased(),
             level: identity?["AccountLevel"]?.intValue ?? 0,
-            hideLevel: identity?["HideAccountLevel"]?.boolValue ?? false
+            hideLevel: identity?["HideAccountLevel"]?.boolValue ?? false,
+            locked: state == "locked"
         )
     }
 
@@ -192,6 +198,12 @@ final class RiotLiveMatchModel {
             assignGroups(&live)
             match = live
         }
+    }
+
+    func quit(_ session: RiotSession) async {
+        guard let match, match.isPregame else { return }
+        _ = try? await session.gameData("/pregame/v1/matches/\(match.id)/quit", host: .glz, method: "POST")
+        self.match = nil
     }
 
     private func loadLoadouts(_ session: RiotSession, matchID: String, pregame: Bool) async {
@@ -258,6 +270,7 @@ struct EvalLiveMatchView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var expanded: Set<String> = []
     @State private var loadoutPlayer: RiotLivePlayer?
+    @State private var confirmQuit = false
 
     private var store: ValorantStore { model.valorant }
     private static let groupColors: [UInt32] = [0x33D1E0, 0x4CD964, 0xFF9F0A, 0xFF5FA2, 0xBF5AF2]
@@ -269,7 +282,6 @@ struct EvalLiveMatchView: View {
                 header(match)
                 ScrollView {
                     VStack(spacing: 12) {
-                        if match.isPregame { loadoutLinks }
                         let allies = match.players.filter { $0.team == match.myTeam }
                         let enemies = match.players.filter { $0.team != match.myTeam }
                         ForEach(allies) { row($0, ally: true) }
@@ -277,6 +289,7 @@ struct EvalLiveMatchView: View {
                             Divider().overlay(EvalColors.text.opacity(0.1)).padding(.vertical, 4)
                             ForEach(enemies) { row($0, ally: false) }
                         }
+                        if match.isPregame { pregameFooter(match, allies: allies) }
                     }
                     .padding(.bottom, 110)
                 }
@@ -300,22 +313,101 @@ struct EvalLiveMatchView: View {
         }
     }
 
-    private var loadoutLinks: some View {
-        HStack(spacing: 10) {
-            NavigationLink { EvalWeaponLoadoutView() } label: { loadoutChip("Armes", "scope") }
-            NavigationLink { EvalSprayLoadoutView() } label: { loadoutChip("Expressions", "circle.grid.cross") }
-            NavigationLink { EvalCardPickerView() } label: { loadoutChip("Carte", "rectangle.portrait") }
+    private func pregameFooter(_ match: RiotLiveMatch, allies: [RiotLivePlayer]) -> some View {
+        let loadout = store.loadout
+        let profiles = loadout.profiles.filter { $0.pinned == true } + loadout.profiles.filter { $0.pinned != true }
+        let enemyCount = max(match.enemySize, match.enemyLocks)
+        return VStack(alignment: .leading, spacing: 16) {
+            Divider().overlay(EvalColors.text.opacity(0.1))
+            HStack(spacing: 10) {
+                ForEach(allies) { player in
+                    Image(systemName: player.locked ? "lock.fill" : "lock.open.fill")
+                        .foregroundStyle(Color(hex: 0x5EC9A5).opacity(player.locked ? 1 : 0.45))
+                }
+                Spacer()
+                ForEach(0..<enemyCount, id: \.self) { index in
+                    let locked = index >= enemyCount - match.enemyLocks
+                    Image(systemName: locked ? "lock.fill" : "lock.open.fill")
+                        .foregroundStyle(Color(hex: 0xFF5A5F).opacity(locked ? 1 : 0.45))
+                }
+            }
+            .font(.system(size: 20))
+            Divider().overlay(EvalColors.text.opacity(0.1))
+            HStack {
+                Label("Profils d'apparences", systemImage: "rectangle.stack.badge.person.crop")
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(EvalColors.text)
+                    .labelStyle(EvalTintedLabelStyle())
+                Spacer()
+                NavigationLink { EvalAppearanceProfilesView() } label: { Text("Gérer").foregroundStyle(EvalAccent.color) }
+                    .font(.system(size: 19))
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(profiles) { profile in
+                        Button { apply(profile) } label: {
+                            profileTile(name: profile.name, pinned: profile.pinned == true) {
+                                AsyncImage(url: profile.cardURL) { $0.image?.resizable().scaledToFill() }
+                                    .frame(width: 46, height: 46)
+                                    .background(EvalColors.card2)
+                                    .clipShape(.rect(cornerRadius: 10))
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(loadout.isSaving)
+                    }
+                    if !profiles.isEmpty {
+                        Button { if let pick = profiles.randomElement() { apply(pick) } } label: {
+                            profileTile(name: "Surprenez-moi", pinned: false) {
+                                Image(systemName: "dice").font(.system(size: 26)).foregroundStyle(EvalAccent.color).frame(height: 46)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(loadout.isSaving)
+                    }
+                }
+            }
+            Label("Votre équipement peut toujours être modifié pendant la sélection de l'agent — touchez un profil pour l'appliquer instantanément.", systemImage: "info.circle")
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: 0x8E8E93))
+            if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(Color(hex: 0x8E8E93)) }
+            Divider().overlay(EvalColors.text.opacity(0.1))
+            Button { confirmQuit = true } label: {
+                Label("Quitter la partie", systemImage: "rectangle.portrait.and.arrow.right")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(Color(hex: 0xFF5A5F))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .background(EvalColors.card, in: .capsule)
+            }
+            .buttonStyle(.plain)
+            .confirmationDialog("Quitter la partie ?", isPresented: $confirmQuit, titleVisibility: .visible) {
+                Button("Quitter", role: .destructive) { Task { await store.live.quit(store.riot) } }
+            } message: {
+                Text("Quitter la sélection d'agent peut entraîner une pénalité de Riot.")
+            }
         }
-        .buttonStyle(.plain)
+        .padding(.top, 4)
+        .task { await loadout.load(store.riot) }
     }
 
-    private func loadoutChip(_ title: String, _ symbol: String) -> some View {
-        Label(title, systemImage: symbol)
-            .font(.system(size: 16, weight: .medium))
-            .foregroundStyle(EvalAccent.color)
-            .frame(maxWidth: .infinity)
-            .frame(height: 44)
-            .background(EvalColors.card, in: .capsule)
+    private func profileTile<Icon: View>(name: String, pinned: Bool, @ViewBuilder icon: () -> Icon) -> some View {
+        VStack(spacing: 8) {
+            icon()
+            HStack(spacing: 4) {
+                if pinned { Image(systemName: "pin.fill").foregroundStyle(Color(hex: 0xFFC83D)) }
+                Text(name).foregroundStyle(EvalColors.text).lineLimit(1)
+            }
+            .font(.system(size: 16))
+        }
+        .padding(.horizontal, 10)
+        .frame(minWidth: 112)
+        .frame(height: 96)
+        .background(EvalColors.card, in: .rect(cornerRadius: 16))
+    }
+
+    private func apply(_ profile: RiotLoadoutModel.AppearanceProfile) {
+        Task { if await store.loadout.applyProfile(profile, session: store.riot) { await store.refreshRiot() } }
     }
 
     private var topBar: some View {
@@ -454,6 +546,12 @@ struct EvalLiveMatchView: View {
         Group {
             if let url = player.agentIconURL {
                 AsyncImage(url: url) { $0.image?.resizable().scaledToFill() }
+                    .opacity(player.locked ? 1 : 0.4)
+                    .overlay {
+                        if !player.locked {
+                            RoundedRectangle(cornerRadius: 12).strokeBorder(Color(hex: 0x5EC9A5).opacity(0.7), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                        }
+                    }
             } else {
                 Image(systemName: "questionmark").font(.system(size: 22, weight: .bold)).foregroundStyle(Color(hex: 0x5EC9A5))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -565,5 +663,14 @@ struct EvalLiveLoadoutSheet: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .task { await model.valorant.loadout.load(model.valorant.riot) }
+    }
+}
+
+struct EvalTintedLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 10) {
+            configuration.icon.foregroundStyle(EvalAccent.color)
+            configuration.title
+        }
     }
 }

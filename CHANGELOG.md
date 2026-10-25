@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.86.2 — 2026-10-25
+
+**E:VAL : sélection d'agent comme VALPAW**
+
+- En file, le bouton affiche le chrono 00:00 avec pause, comme VALPAW
+- Agent verrouillé en image pleine, agent survolé en transparence avec bordure en pointillés
+- Cadenas de verrouillage des deux équipes
+- Profils d'apparences applicables d'un toucher pendant la sélection, avec Gérer et Surprenez-moi
+- Bouton Quitter la partie avec confirmation
+
 ## v1.86.1 — 2026-10-25
 
 **E:VAL : temps de file et sélection d'agent automatique**

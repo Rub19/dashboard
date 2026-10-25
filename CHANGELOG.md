@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.84.0 — 2026-10-25
+
+**E:VAL iOS : onglet Jeu refait comme VALPAW**
+
+- Sections Groupe, Contrats, Équipement et Boutique refaites comme VALPAW, avec ouverture et fermeture animées et indicateur de chargement du groupe
+- Passe de combat réparé : bon niveau, bonne récompense, carte qui ouvre la liste des niveaux avec le niveau en cours mis en avant
+- Boutique : page de détail des packs avec le prix de chaque élément, aperçu de chaque offre du jour (variantes, niveaux, apparitions dans votre boutique), magasin d'accessoires et liste de souhaits refaits
+- Équipement : choix de la carte et du titre avec compteurs et favoris, armes, nouvelle page Expressions avec la roue des sprays, confidentialité et préréglages
+- Cartes de match : icône officielle de l'agent comme VALPAW, rang actuel et pseudo de chaque joueur dans le tableau des scores
+
 ## v1.83.0 — 2026-10-25
 
 **E:VAL iOS : détail de match, Jeu et statistiques comme VALPAW**

@@ -314,8 +314,8 @@ struct RiotGameSnapshot {
     var title = ""
     var cardID = ""
     var sprays: [String?] = [nil, nil, nil, nil]
-    var battlepassLevel = 0
-    var battlepassXP = 0
+    var battlepassLevel: Int?
+    var battlepassXP: Int?
     var weeklyMissionsEnd: Date?
     var missions: [RiotMission] = []
     var dailyMilestones: [Bool] = []
@@ -374,7 +374,7 @@ enum RiotGameService {
                 snap.bundles.append(ValorantStoreBundle(id: bundle.ID, name: meta?.name ?? "Pack", imageURL: meta?.image ?? "",
                                                         description: meta?.description, price: price,
                                                         expiresText: remaining > 0 ? EvalCountdown.text(until: Date().addingTimeInterval(TimeInterval(remaining))) : nil,
-                                                        isOwned: false))
+                                                        isOwned: false, endsAt: remaining > 0 ? Date().addingTimeInterval(TimeInterval(remaining)) : nil))
             }
             let accessory = front.AccessoryStore
             let looks = await LoadoutCatalog.load()

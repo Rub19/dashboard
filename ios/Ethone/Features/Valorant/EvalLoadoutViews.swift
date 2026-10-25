@@ -1,12 +1,5 @@
 import SwiftUI
 
-// Équipement VALORANT depuis le téléphone (comme VALPAW) : lecture de la collection possédée
-// (entitlements) et écriture de l'équipement complet (PUT playerloadout) sur le compte Riot
-// connecté. L'objet renvoyé à Riot est l'équipement reçu, modifié champ par champ, pour ne
-// perdre aucune donnée inconnue de l'app. API non officielle.
-
-// MARK: - Catalogue valorant-api
-
 struct LoadoutCatalog: Codable {
     struct Level: Codable, Hashable { let uuid: String; let displayName: String?; let levelItem: String? }
     struct Chroma: Codable, Hashable { let uuid: String; let displayName: String?; let fullRender: String?; let displayIcon: String?; let swatch: String? }
@@ -48,8 +41,6 @@ struct LoadoutCatalog: Codable {
         return catalog
     }
 }
-
-// MARK: - Modèle
 
 @MainActor
 @Observable
@@ -132,15 +123,19 @@ final class RiotLoadoutModel {
         }
     }
 
-    // MARK: Lecture
-
     var guns: [JSONValue] { raw?["Guns"]?.arrayValue ?? [] }
+
+    var sprays: [JSONValue] { raw?["Sprays"]?.arrayValue ?? [] }
 
     func gun(_ weaponID: String) -> JSONValue? {
         guns.first { $0["ID"]?.stringValue?.lowercased() == weaponID.lowercased() }
     }
 
-    /// Skins possédés d'une arme (le skin par défaut l'est toujours).
+    func spray(_ id: String?) -> LoadoutCatalog.Spray? {
+        guard let id = id?.lowercased() else { return nil }
+        return catalog.sprays.first { $0.uuid.lowercased() == id }
+    }
+
     func ownedSkins(_ weapon: LoadoutCatalog.Weapon) -> [LoadoutCatalog.Skin] {
         weapon.skins.filter { skin in
             skin.uuid.lowercased() == weapon.defaultSkinUuid?.lowercased()
@@ -178,14 +173,11 @@ final class RiotLoadoutModel {
         return catalog.buddies.first { $0.levels.contains { $0.uuid.lowercased() == id } }
     }
 
-    /// Porte-bonheur possédés et pas déjà accrochés à une autre arme.
     func freeBuddies(except weaponID: String) -> [BuddyInstance] {
         let used = Set(guns.filter { $0["ID"]?.stringValue?.lowercased() != weaponID.lowercased() }.compactMap { $0["CharmInstanceID"]?.stringValue })
         var seen = Set<String>()
         return ownedBuddies.filter { !used.contains($0.instanceID) && seen.insert($0.levelID).inserted }
     }
-
-    // MARK: Écriture
 
     private func setGun(_ weaponID: String, _ update: ([String: JSONValue]) -> [String: JSONValue]) {
         guard var root = raw?.objectValue else { return }
@@ -236,7 +228,6 @@ final class RiotLoadoutModel {
         raw = .object(root)
     }
 
-    /// Un skin possédé au hasard (variante de base, niveau maximal possédé) sur chaque arme.
     func randomize() {
         for weapon in catalog.weapons {
             let skins = ownedSkins(weapon)
@@ -247,7 +238,6 @@ final class RiotLoadoutModel {
         }
     }
 
-    /// Envoie l'équipement complet à Riot.
     func save(_ session: RiotSession) async -> Bool {
         guard let puuid = session.credentials?.puuid, let raw, let body = RiotSession.json(raw) else { return false }
         isSaving = true
@@ -263,8 +253,6 @@ final class RiotLoadoutModel {
         }
     }
 
-    // MARK: Profils d'apparence
-
     func saveProfile(name: String) {
         guard let raw else { return }
         profiles.insert(AppearanceProfile(id: UUID(), name: name, loadout: raw, createdAt: Date()), at: 0)
@@ -272,7 +260,6 @@ final class RiotLoadoutModel {
     }
 
     func applyProfile(_ profile: AppearanceProfile, session: RiotSession) async -> Bool {
-        // On garde Subject / Version du compte actuel : seul le contenu du profil est repris.
         guard var current = raw?.objectValue, let saved = profile.loadout.objectValue else { return false }
         for key in ["Guns", "Sprays", "Identity", "Incognito"] { if let v = saved[key] { current[key] = v } }
         raw = .object(current)
@@ -296,7 +283,6 @@ final class RiotLoadoutModel {
         Task { await cache.save(payload, key: "appearance_profiles") }
     }
 
-    /// Résumé texte de l'équipement (bouton Partager).
     var shareText: String {
         catalog.weapons.compactMap { w -> String? in
             guard let g = gun(w.uuid), let s = skin(g["SkinID"]?.stringValue) else { return nil }
@@ -306,12 +292,13 @@ final class RiotLoadoutModel {
     }
 }
 
-// MARK: - Écrans
-
 private enum LUI {
     static let card = EvalColors.card
+    static let card2 = EvalColors.card2
     static let secondary = Color(hex: 0x8E8E93)
     static let accent = EvalAccent.color
+    static let gold = Color(hex: 0xF5C518)
+    static let green = Color(hex: 0x35C26B)
 }
 
 private struct LoadoutScreen<Content: View>: View {
@@ -340,6 +327,108 @@ private func remote(_ string: String?) -> some View {
     AsyncImage(url: string.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFit() }
 }
 
+private func favoriteBadge() -> some View {
+    Image(systemName: "star.circle.fill")
+        .font(.system(size: 22))
+        .symbolRenderingMode(.palette)
+        .foregroundStyle(Color.black, LUI.gold)
+        .accessibilityLabel("Favori")
+}
+
+private func selectedBadge() -> some View {
+    Image(systemName: "checkmark.circle.fill")
+        .font(.system(size: 22))
+        .symbolRenderingMode(.palette)
+        .foregroundStyle(Color.white, LUI.accent)
+        .accessibilityLabel("Équipé")
+}
+
+private func rowDivider(_ leading: CGFloat) -> some View {
+    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, leading)
+}
+
+private func favoritesFirst<T>(_ items: [T], favorites: Set<String>, id: (T) -> String, name: (T) -> String) -> [T] {
+    items.sorted { a, b in
+        let fa = favorites.contains(id(a).lowercased())
+        let fb = favorites.contains(id(b).lowercased())
+        if fa != fb { return fa }
+        return name(a).localizedCaseInsensitiveCompare(name(b)) == .orderedAscending
+    }
+}
+
+private func favoritesOnlyButton(_ isOn: Binding<Bool>) -> AnyView {
+    AnyView(
+        Button { withAnimation { isOn.wrappedValue.toggle() } } label: {
+            Circle().fill(isOn.wrappedValue ? LUI.accent.opacity(0.28) : LUI.card).frame(width: 51, height: 51)
+                .overlay(
+                    Image(systemName: "star.circle.fill").font(.system(size: 26))
+                        .symbolRenderingMode(.palette).foregroundStyle(Color.black, LUI.accent)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isOn.wrappedValue ? "Afficher tout" : "Afficher les favoris")
+    )
+}
+
+private struct PickerCounters: View {
+    let total: Int
+    let shown: Int
+    let favorites: Int
+    let owned: Int
+
+    var body: some View {
+        HStack(spacing: 0) {
+            item(total, "Total", LUI.secondary)
+            item(shown, "Affichés", EvalColors.text)
+            item(favorites, "Favoris", LUI.gold)
+            item(owned, "Possédés", LUI.green)
+        }
+        .padding(.vertical, 8)
+        .background(LUI.card, in: .capsule)
+        .padding(.horizontal, 18)
+    }
+
+    private func item(_ value: Int, _ label: String, _ color: Color) -> some View {
+        VStack(spacing: 1) {
+            Text("\(value)").font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(color)
+            Text(label).font(.system(size: 14)).foregroundStyle(LUI.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct FilterField: View {
+    @Binding var text: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+            TextField("Filtrer", text: $text).autocorrectionDisabled()
+            if !text.isEmpty {
+                Button { text = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain)
+            }
+        }
+        .foregroundStyle(LUI.secondary)
+        .padding(.horizontal, 16)
+        .frame(height: 46)
+        .background(LUI.card, in: .capsule)
+    }
+}
+
+private struct FavoriteMenu: ViewModifier {
+    @Environment(AppModel.self) private var model
+    let itemID: String
+    let isFavorite: Bool
+
+    func body(content: Content) -> some View {
+        content.contextMenu {
+            Button(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: isFavorite ? "star.slash" : "star") {
+                Task { await model.valorant.favorites.toggle(itemID, session: model.valorant.riot) }
+            }
+        }
+    }
+}
+
 struct EvalWeaponLoadoutView: View {
     @Environment(AppModel.self) private var model
     private var loadout: RiotLoadoutModel { model.valorant.loadout }
@@ -356,20 +445,29 @@ struct EvalWeaponLoadoutView: View {
                 let gun = loadout.gun(weapon.uuid)
                 let chroma = loadout.chroma(gun?["ChromaID"]?.stringValue)
                 let skin = loadout.skin(gun?["SkinID"]?.stringValue)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(weapon.displayName).font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.secondary).padding(.leading, 4)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(weapon.displayName).font(.system(size: 21, weight: .semibold)).foregroundStyle(LUI.secondary).padding(.leading, 20)
                     NavigationLink { EvalSkinPickerView(weapon: weapon) } label: {
-                        HStack {
-                            if let level = gun?["CharmLevelID"]?.stringValue {
-                                remote("https://media.valorant-api.com/buddylevels/\(level.lowercased())/displayicon.png").frame(width: 53, height: 53)
+                        HStack(spacing: 8) {
+                            Group {
+                                if let level = gun?["CharmLevelID"]?.stringValue, !level.isEmpty {
+                                    remote("https://media.valorant-api.com/buddylevels/\(level.lowercased())/displayicon.png")
+                                } else {
+                                    Color.clear
+                                }
                             }
-                            remote(chroma?.fullRender ?? skin?.image).frame(height: 80).frame(maxWidth: .infinity)
-                            Image(systemName: "chevron.right").foregroundStyle(LUI.secondary)
+                            .frame(width: 53, height: 64)
+                            remote(chroma?.fullRender ?? skin?.image).frame(height: 85).frame(maxWidth: .infinity)
+                            Image(systemName: "chevron.right").font(.system(size: 17, weight: .semibold)).foregroundStyle(LUI.secondary)
+                                .frame(width: 53, alignment: .trailing)
                         }
-                        .padding(20)
-                        .background(LUI.card, in: .rect(cornerRadius: 22))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
+                        .background(LUI.card, in: .rect(cornerRadius: 30))
+                        .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("\(weapon.displayName), \(skin?.displayName ?? "")")
                 }
             }
         }
@@ -385,36 +483,40 @@ struct EvalSkinPickerView: View {
 
     var body: some View {
         let loadout = model.valorant.loadout
+        let favorites = Set(model.valorant.favorites.current.values)
         let equipped = loadout.gun(weapon.uuid)?["SkinID"]?.stringValue?.lowercased()
+        let skins = loadout.ownedSkins(weapon).filter { query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) }
         LoadoutScreen(title: weapon.displayName) {
-            HStack(spacing: 10) {
-                Image(systemName: "magnifyingglass")
-                TextField("Recherche", text: $query)
-            }
-            .foregroundStyle(LUI.secondary)
-            .padding(.horizontal, 16).frame(height: 50)
-            .background(LUI.card, in: .capsule)
+            FilterField(text: $query)
             VStack(spacing: 0) {
-                ForEach(loadout.ownedSkins(weapon).filter { query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) }) { skin in
+                ForEach(Array(skins.enumerated()), id: \.element.id) { index, skin in
                     Button { selected = skin } label: {
                         VStack(alignment: .leading, spacing: 10) {
                             remote(skin.image).frame(height: 64).frame(maxWidth: .infinity)
-                            HStack {
-                                Text(skin.displayName).font(.system(size: 21)).foregroundStyle(EvalColors.text)
-                                Spacer()
-                                if skin.uuid.lowercased() == equipped { Image(systemName: "checkmark.circle.fill").foregroundStyle(LUI.accent) }
+                            HStack(spacing: 10) {
+                                Text(skin.displayName).font(.system(size: 20)).foregroundStyle(EvalColors.text).multilineTextAlignment(.leading)
+                                Spacer(minLength: 8)
+                                if isFavorite(skin, favorites) { favoriteBadge() }
+                                if skin.uuid.lowercased() == equipped { selectedBadge() }
                             }
                         }
-                        .padding(18)
+                        .padding(20)
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
-                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
+                    if index < skins.count - 1 { rowDivider(20) }
                 }
             }
-            .background(LUI.card, in: .rect(cornerRadius: 22))
+            .background(LUI.card, in: .rect(cornerRadius: 28))
         }
         .sheet(item: $selected) { skin in EvalSkinEquipSheet(weapon: weapon, skin: skin).presentationDetents([.large]) }
+        .task { await model.valorant.favorites.load(model.valorant.riot) }
+    }
+
+    private func isFavorite(_ skin: LoadoutCatalog.Skin, _ favorites: Set<String>) -> Bool {
+        if favorites.contains(skin.uuid.lowercased()) { return true }
+        if skin.levels.contains(where: { favorites.contains($0.uuid.lowercased()) }) { return true }
+        return skin.chromas.contains { favorites.contains($0.uuid.lowercased()) }
     }
 }
 
@@ -463,6 +565,9 @@ struct EvalSkinEquipSheet: View {
                             ForEach(loadout.freeBuddies(except: weapon.uuid), id: \.instanceID) { b in buddyCell(b, current: currentBuddy(loadout)) }
                         }
                     }
+                    if let message = loadout.message, !loadout.isSaving {
+                        Text(message).font(.footnote).foregroundStyle(LUI.secondary)
+                    }
                 }
                 .padding(16)
             }
@@ -472,7 +577,7 @@ struct EvalSkinEquipSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Équiper") {
+                    Button(loadout.isSaving ? "Application…" : "Équiper") {
                         guard let c = chroma ?? chromas.first, let l = level ?? levels.last else { return }
                         loadout.equip(weaponID: weapon.uuid, skin: skin, level: l, chroma: c, buddy: currentBuddy(loadout))
                         Task {
@@ -480,13 +585,12 @@ struct EvalSkinEquipSheet: View {
                             dismiss()
                         }
                     }
-                    .disabled(loadout.isSaving)
+                    .disabled(loadout.isSaving || loadout.raw == nil)
                 }
             }
         }
     }
 
-    /// Porte-bonheur actuellement sur l'arme, sauf si l'utilisateur en a choisi un autre.
     private func currentBuddy(_ loadout: RiotLoadoutModel) -> RiotLoadoutModel.BuddyInstance? {
         if buddyChosen { return buddy }
         guard let id = loadout.gun(weapon.uuid)?["CharmInstanceID"]?.stringValue else { return nil }
@@ -520,44 +624,39 @@ struct EvalTitlePickerView: View {
         let loadout = model.valorant.loadout
         let favorites = Set(model.valorant.favorites.current.values)
         let current = loadout.raw?["Identity"]?["PlayerTitleID"]?.stringValue?.lowercased()
-        let owned = loadout.catalog.titles
-            .filter { loadout.ownedTitles.contains($0.uuid.lowercased()) }
-            .sorted { ($0.titleText ?? "").localizedCaseInsensitiveCompare($1.titleText ?? "") == .orderedAscending }
+        let owned = favoritesFirst(loadout.catalog.titles.filter { loadout.ownedTitles.contains($0.uuid.lowercased()) },
+                                   favorites: favorites, id: { $0.uuid }, name: { $0.titleText ?? "" })
         let shown = owned.filter {
             (!favoritesOnly || favorites.contains($0.uuid.lowercased())) && (query.isEmpty || ($0.titleText ?? "").localizedCaseInsensitiveContains(query))
         }
-        LoadoutScreen(title: "Choisir un titre", trailing: AnyView(
-            Button { withAnimation { favoritesOnly.toggle() } } label: {
-                Circle().fill(LUI.card).frame(width: 51, height: 51)
-                    .overlay(Image(systemName: favoritesOnly ? "star.circle.fill" : "star.circle").font(.system(size: 26)).foregroundStyle(LUI.accent))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Favoris")
-        )) {
-            HStack(spacing: 0) {
-                counter("\(loadout.catalog.titles.count)", "Total", LUI.secondary)
-                counter("\(shown.count)", "Affichés", EvalColors.text)
-                counter("\(owned.filter { favorites.contains($0.uuid.lowercased()) }.count)", "Favoris", Color(hex: 0xF5C518))
-                counter("\(owned.count)", "Possédés", Color(hex: 0x35C26B))
-            }
-            .padding(.vertical, 12)
-            .background(LUI.card, in: .capsule)
-            .padding(.horizontal, 18)
-            HStack(spacing: 10) { Image(systemName: "magnifyingglass"); TextField("Filtrer", text: $query) }
-                .foregroundStyle(LUI.secondary).padding(.horizontal, 16).frame(height: 46).background(LUI.card, in: .capsule)
-            VStack(spacing: 0) {
-                if !favoritesOnly && query.isEmpty {
-                    row(text: "Aucun titre", id: Self.noTitle, selected: current == nil || current == Self.noTitle, muted: true)
-                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 22)
-                }
-                ForEach(Array(shown.enumerated()), id: \.element.id) { index, title in
-                    row(text: title.titleText ?? "", id: title.uuid, selected: title.uuid.lowercased() == current, muted: false)
-                    if index < shown.count - 1 {
-                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 22)
+        let showNone = !favoritesOnly && query.isEmpty
+        LoadoutScreen(title: "Choisir un titre", trailing: favoritesOnlyButton($favoritesOnly)) {
+            PickerCounters(total: loadout.catalog.titles.count, shown: shown.count,
+                           favorites: owned.filter { favorites.contains($0.uuid.lowercased()) }.count, owned: owned.count)
+            FilterField(text: $query)
+            if loadout.isLoading && owned.isEmpty {
+                ProgressView().tint(.white).frame(maxWidth: .infinity).padding(.top, 40)
+            } else if !model.valorant.riot.isLinked {
+                Text("Connectez votre compte Riot dans Paramètres.").font(.system(size: 17)).foregroundStyle(LUI.secondary).padding(.horizontal, 4)
+            } else if showNone || !shown.isEmpty {
+                LazyVStack(spacing: 0) {
+                    if showNone {
+                        row(text: "Aucun titre", id: Self.noTitle, selected: current == nil || current == Self.noTitle, muted: true, favorite: false)
+                        if !shown.isEmpty { rowDivider(22) }
+                    }
+                    ForEach(Array(shown.enumerated()), id: \.element.id) { index, title in
+                        let favorite = favorites.contains(title.uuid.lowercased())
+                        row(text: title.titleText ?? "", id: title.uuid, selected: title.uuid.lowercased() == current, muted: false, favorite: favorite)
+                            .modifier(FavoriteMenu(itemID: title.uuid, isFavorite: favorite))
+                        if index < shown.count - 1 { rowDivider(22) }
                     }
                 }
+                .background(LUI.card, in: .rect(cornerRadius: 28))
+                .padding(.top, 12)
+            } else {
+                Text(favoritesOnly ? "Aucun titre favori." : "Aucun titre trouvé.").font(.system(size: 17)).foregroundStyle(LUI.secondary).frame(maxWidth: .infinity).padding(.top, 30)
             }
-            .background(LUI.card, in: .rect(cornerRadius: 28))
+            if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4) }
         }
         .task {
             await loadout.load(model.valorant.riot)
@@ -565,58 +664,95 @@ struct EvalTitlePickerView: View {
         }
     }
 
-    private func counter(_ value: String, _ label: String, _ color: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(value).font(.system(size: 20, weight: .semibold).monospacedDigit()).foregroundStyle(color)
-            Text(label).font(.system(size: 14)).foregroundStyle(LUI.secondary)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func row(text: String, id: String, selected: Bool, muted: Bool) -> some View {
+    private func row(text: String, id: String, selected: Bool, muted: Bool, favorite: Bool) -> some View {
         let loadout = model.valorant.loadout
         return Button {
+            guard !selected else { return }
             loadout.setIdentity("PlayerTitleID", .string(id))
             Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
         } label: {
-            HStack {
-                Text(text).font(.system(size: 20)).foregroundStyle(muted ? LUI.secondary : EvalColors.text)
-                Spacer()
-                if selected {
-                    Image(systemName: "checkmark.circle.fill").font(.system(size: 22)).symbolRenderingMode(.palette).foregroundStyle(.white, LUI.accent)
-                }
+            HStack(spacing: 10) {
+                Text(text).font(.system(size: 20)).foregroundStyle(muted ? LUI.secondary : EvalColors.text).multilineTextAlignment(.leading)
+                Spacer(minLength: 8)
+                if favorite { favoriteBadge() }
+                if selected { selectedBadge() }
             }
             .padding(.horizontal, 22)
-            .frame(minHeight: 54)
+            .frame(minHeight: 52)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .disabled(loadout.isSaving)
     }
 }
 
 struct EvalCardPickerView: View {
     @Environment(AppModel.self) private var model
+    @State private var query = ""
+    @State private var favoritesOnly = false
 
     var body: some View {
         let loadout = model.valorant.loadout
+        let favorites = Set(model.valorant.favorites.current.values)
         let current = loadout.raw?["Identity"]?["PlayerCardID"]?.stringValue?.lowercased()
-        LoadoutScreen(title: "Carte de joueur") {
-            LazyVStack(spacing: 12) {
-                ForEach(loadout.catalog.cards.filter { loadout.ownedCards.contains($0.uuid.lowercased()) }) { card in
-                    Button {
-                        loadout.setIdentity("PlayerCardID", .string(card.uuid))
-                        Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
-                    } label: {
-                        AsyncImage(url: card.wideArt.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFill() }
-                            .frame(height: 90).frame(maxWidth: .infinity).clipped()
-                            .clipShape(.rect(cornerRadius: 16))
-                            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(LUI.accent, lineWidth: card.uuid.lowercased() == current ? 3 : 0))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+        let owned = favoritesFirst(loadout.catalog.cards.filter { loadout.ownedCards.contains($0.uuid.lowercased()) },
+                                   favorites: favorites, id: { $0.uuid }, name: { $0.displayName })
+        let shown = owned.filter {
+            (!favoritesOnly || favorites.contains($0.uuid.lowercased())) && (query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query))
         }
-        .task { await loadout.load(model.valorant.riot) }
+        LoadoutScreen(title: "Choisir une carte", trailing: favoritesOnlyButton($favoritesOnly)) {
+            PickerCounters(total: loadout.catalog.cards.count, shown: shown.count,
+                           favorites: owned.filter { favorites.contains($0.uuid.lowercased()) }.count, owned: owned.count)
+            FilterField(text: $query)
+            if loadout.isLoading && owned.isEmpty {
+                ProgressView().tint(.white).frame(maxWidth: .infinity).padding(.top, 40)
+            } else if !model.valorant.riot.isLinked {
+                Text("Connectez votre compte Riot dans Paramètres.").font(.system(size: 17)).foregroundStyle(LUI.secondary).padding(.horizontal, 4)
+            } else if shown.isEmpty {
+                Text(favoritesOnly ? "Aucune carte favorite." : "Aucune carte trouvée.").font(.system(size: 17)).foregroundStyle(LUI.secondary).frame(maxWidth: .infinity).padding(.top, 30)
+            } else {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(shown.enumerated()), id: \.element.id) { index, card in
+                        let favorite = favorites.contains(card.uuid.lowercased())
+                        row(card, selected: card.uuid.lowercased() == current, favorite: favorite)
+                            .modifier(FavoriteMenu(itemID: card.uuid, isFavorite: favorite))
+                        if index < shown.count - 1 { rowDivider(82) }
+                    }
+                }
+                .background(LUI.card, in: .rect(cornerRadius: 28))
+                .padding(.top, 12)
+            }
+            if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4) }
+        }
+        .task {
+            await loadout.load(model.valorant.riot)
+            await model.valorant.favorites.load(model.valorant.riot)
+        }
+    }
+
+    private func row(_ card: LoadoutCatalog.Card, selected: Bool, favorite: Bool) -> some View {
+        let loadout = model.valorant.loadout
+        return Button {
+            guard !selected else { return }
+            loadout.setIdentity("PlayerCardID", .string(card.uuid))
+            Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
+        } label: {
+            HStack(spacing: 14) {
+                AsyncImage(url: card.smallArt.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFill() }
+                    .frame(width: 48, height: 48)
+                    .background(LUI.card2)
+                    .clipShape(.rect(cornerRadius: 3))
+                Text(card.displayName).font(.system(size: 19)).foregroundStyle(EvalColors.text).multilineTextAlignment(.leading)
+                Spacer(minLength: 8)
+                if selected { selectedBadge() }
+                if favorite { favoriteBadge() }
+            }
+            .padding(.horizontal, 20)
+            .frame(minHeight: 78)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .disabled(loadout.isSaving)
     }
 }
 
@@ -624,59 +760,154 @@ struct EvalSprayLoadoutView: View {
     @Environment(AppModel.self) private var model
     @State private var slot: Int?
 
-    private let slotNames = ["Haut", "Droite", "Bas", "Gauche"]
+    private let slotNames = ["Haut", "Gauche", "Droite", "Bas"]
+    private let offsets = [CGSize(width: 0, height: -96), CGSize(width: -96, height: 0), CGSize(width: 96, height: 0), CGSize(width: 0, height: 96)]
 
     var body: some View {
         let loadout = model.valorant.loadout
-        let sprays = loadout.raw?["Sprays"]?.arrayValue ?? []
-        LoadoutScreen(title: "Roue des sprays") {
-            VStack(spacing: 0) {
-                ForEach(sprays.indices, id: \.self) { i in
-                    let id = sprays[i]["SprayID"]?.stringValue?.lowercased()
-                    let spray = loadout.catalog.sprays.first { $0.uuid.lowercased() == id }
-                    Button { slot = i } label: {
-                        HStack(spacing: 14) {
-                            remote(spray?.fullTransparentIcon ?? spray?.displayIcon).frame(width: 64, height: 64)
-                            VStack(alignment: .leading) {
-                                Text(i < slotNames.count ? slotNames[i] : "Emplacement \(i + 1)").font(.system(size: 15)).foregroundStyle(LUI.secondary)
-                                Text(spray?.displayName ?? "Aucun").font(.system(size: 20)).foregroundStyle(EvalColors.text)
+        let sprays = loadout.sprays
+        LoadoutScreen(title: "Expressions") {
+            if loadout.isLoading && loadout.raw == nil {
+                ProgressView().tint(.white).frame(maxWidth: .infinity).padding(.top, 60)
+            } else if sprays.isEmpty {
+                ContentUnavailableView("Expressions indisponibles", systemImage: "circle.grid.cross",
+                                       description: Text(model.valorant.riot.isLinked ? (loadout.message ?? "Riot n’a renvoyé aucune expression équipée.") : "Connectez votre compte Riot dans Paramètres."))
+                    .padding(.top, 40)
+            } else {
+                wheel(loadout, sprays)
+                VStack(spacing: 0) {
+                    ForEach(sprays.indices, id: \.self) { i in
+                        let spray = loadout.spray(sprays[i]["SprayID"]?.stringValue)
+                        Button { slot = i } label: {
+                            HStack(spacing: 14) {
+                                remote(spray?.fullTransparentIcon ?? spray?.displayIcon).frame(width: 52, height: 52)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(i < slotNames.count ? slotNames[i] : "Emplacement \(i + 1)").font(.system(size: 15)).foregroundStyle(LUI.secondary)
+                                    Text(spray?.displayName ?? "Aucune").font(.system(size: 19)).foregroundStyle(EvalColors.text).lineLimit(1)
+                                }
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(LUI.secondary)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right").foregroundStyle(LUI.secondary)
+                            .padding(.horizontal, 20)
+                            .frame(minHeight: 72)
+                            .contentShape(.rect)
                         }
-                        .padding(16).contentShape(.rect)
+                        .buttonStyle(.plain)
+                        .disabled(loadout.isSaving)
+                        if i < sprays.count - 1 { rowDivider(86) }
                     }
-                    .buttonStyle(.plain)
-                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 16)
                 }
+                .background(LUI.card, in: .rect(cornerRadius: 28))
+                if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4) }
             }
-            .background(LUI.card, in: .rect(cornerRadius: 22))
         }
         .sheet(item: Binding(get: { slot.map(SlotID.init) }, set: { slot = $0?.value })) { s in
-            NavigationStack {
-                ScrollView {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
-                        ForEach(loadout.catalog.sprays.filter { loadout.ownedSprays.contains($0.uuid.lowercased()) }) { spray in
-                            remote(spray.fullTransparentIcon ?? spray.displayIcon).frame(height: 90).padding(8)
-                                .background(LUI.card, in: .rect(cornerRadius: 14))
-                                .onTapGesture {
-                                    loadout.setSpray(slot: s.value, sprayID: spray.uuid)
-                                    slot = nil
-                                    Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
-                                }
+            EvalSprayPickerSheet(slot: s.value, slotName: s.value < slotNames.count ? slotNames[s.value] : "Emplacement \(s.value + 1)")
+        }
+        .task {
+            await loadout.load(model.valorant.riot)
+            await model.valorant.favorites.load(model.valorant.riot)
+        }
+    }
+
+    private func wheel(_ loadout: RiotLoadoutModel, _ sprays: [JSONValue]) -> some View {
+        ZStack {
+            Circle().fill(LUI.card2)
+                .overlay(Circle().strokeBorder(EvalColors.text.opacity(0.55), lineWidth: 2).padding(10))
+            GeometryReader { geo in
+                let w = geo.size.width
+                let h = geo.size.height
+                Path { path in
+                    path.move(to: CGPoint(x: w * 0.1, y: h * 0.1))
+                    path.addLine(to: CGPoint(x: w * 0.9, y: h * 0.9))
+                    path.move(to: CGPoint(x: w * 0.9, y: h * 0.1))
+                    path.addLine(to: CGPoint(x: w * 0.1, y: h * 0.9))
+                }
+                .stroke(EvalColors.background, lineWidth: 8)
+            }
+            Circle().fill(EvalColors.background).frame(width: 104, height: 104)
+                .overlay(Circle().strokeBorder(EvalColors.text.opacity(0.55), lineWidth: 2).padding(8))
+            ForEach(0..<min(4, sprays.count), id: \.self) { i in
+                let spray = loadout.spray(sprays[i]["SprayID"]?.stringValue)
+                Button { slot = i } label: {
+                    Group {
+                        if let spray {
+                            remote(spray.fullTransparentIcon ?? spray.displayIcon)
+                        } else {
+                            Image(systemName: "plus").font(.system(size: 22, weight: .light)).foregroundStyle(EvalColors.text.opacity(0.25))
                         }
                     }
-                    .padding(16)
+                    .frame(width: 80, height: 80)
+                    .contentShape(.rect)
                 }
-                .background(EvalColors.background.ignoresSafeArea())
-                .navigationTitle("Choisir un spray")
-                .navigationBarTitleDisplayMode(.inline)
+                .buttonStyle(.plain)
+                .disabled(loadout.isSaving)
+                .accessibilityLabel("\(slotNames[i]) : \(spray?.displayName ?? "Aucune")")
+                .offset(offsets[i])
             }
         }
-        .task { await loadout.load(model.valorant.riot) }
+        .frame(width: 320, height: 320)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
     }
 
     private struct SlotID: Identifiable { let value: Int; var id: Int { value } }
+}
+
+private struct EvalSprayPickerSheet: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    let slot: Int
+    let slotName: String
+    @State private var query = ""
+
+    var body: some View {
+        let loadout = model.valorant.loadout
+        let favorites = Set(model.valorant.favorites.current.values)
+        let current = loadout.sprays.indices.contains(slot) ? loadout.sprays[slot]["SprayID"]?.stringValue?.lowercased() : nil
+        let owned = favoritesFirst(loadout.catalog.sprays.filter { loadout.ownedSprays.contains($0.uuid.lowercased()) },
+                                   favorites: favorites, id: { $0.uuid }, name: { $0.displayName })
+        let shown = owned.filter { query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) }
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 14) {
+                    FilterField(text: $query)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
+                        ForEach(shown) { spray in
+                            let favorite = favorites.contains(spray.uuid.lowercased())
+                            let selected = spray.uuid.lowercased() == current
+                            Button {
+                                guard !selected else { dismiss(); return }
+                                loadout.setSpray(slot: slot, sprayID: spray.uuid)
+                                dismiss()
+                                Task { if await loadout.save(model.valorant.riot) { await model.valorant.refreshRiot() } }
+                            } label: {
+                                VStack(spacing: 6) {
+                                    remote(spray.fullTransparentIcon ?? spray.displayIcon).frame(height: 76)
+                                    Text(spray.displayName).font(.system(size: 12)).foregroundStyle(EvalColors.text)
+                                        .lineLimit(2).multilineTextAlignment(.center).frame(height: 30, alignment: .top)
+                                }
+                                .padding(8)
+                                .frame(maxWidth: .infinity)
+                                .background(LUI.card, in: .rect(cornerRadius: 16))
+                                .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(LUI.accent, lineWidth: selected ? 2 : 0))
+                                .overlay(alignment: .topTrailing) { if favorite { favoriteBadge().padding(6) } }
+                                .contentShape(.rect)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(loadout.isSaving)
+                            .modifier(FavoriteMenu(itemID: spray.uuid, isFavorite: favorite))
+                        }
+                    }
+                }
+                .padding(16)
+            }
+            .background(EvalColors.background.ignoresSafeArea())
+            .navigationTitle("Expression · \(slotName)")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } } }
+        }
+    }
 }
 
 struct EvalPrivacySettingsView: View {
@@ -684,25 +915,52 @@ struct EvalPrivacySettingsView: View {
 
     var body: some View {
         let loadout = model.valorant.loadout
+        let identity = loadout.raw?["Identity"]?.objectValue ?? [:]
+        let rankKey = identity.keys.sorted().first { $0.localizedCaseInsensitiveContains("rank") && identity[$0]?.boolValue != nil }
         LoadoutScreen(title: "Confidentialité") {
-            toggle("Mode incognito", "Masque votre nom aux joueurs hors de votre groupe pendant les parties.",
-                   value: loadout.raw?["Incognito"]?.boolValue ?? false) { loadout.setIncognito($0) }
-            toggle("Masquer le niveau du compte", "Votre niveau n’est plus affiché aux autres joueurs.",
-                   value: loadout.raw?["Identity"]?["HideAccountLevel"]?.boolValue ?? false) { loadout.setIdentity("HideAccountLevel", .bool($0)) }
+            if loadout.isLoading && loadout.raw == nil {
+                ProgressView().tint(.white).frame(maxWidth: .infinity).padding(.top, 60)
+            } else if loadout.raw == nil {
+                ContentUnavailableView("Paramètres indisponibles", systemImage: "hand.raised",
+                                       description: Text(model.valorant.riot.isLinked ? (loadout.message ?? "Riot n’a renvoyé aucun équipement.") : "Connectez votre compte Riot dans Paramètres."))
+                    .padding(.top, 40)
+            } else {
+                VStack(spacing: 0) {
+                    toggle("Incognito", "Masque votre nom aux joueurs en dehors de votre groupe.",
+                           value: loadout.raw?["Incognito"]?.boolValue ?? false) { loadout.setIncognito($0) }
+                    rowDivider(18)
+                    toggle("Masquer le niveau de compte", "Masque votre niveau de compte aux autres joueurs.",
+                           value: identity["HideAccountLevel"]?.boolValue ?? false) { loadout.setIdentity("HideAccountLevel", .bool($0)) }
+                    if let rankKey {
+                        rowDivider(18)
+                        toggle("Masquer le rang de l’acte précédent", "Masque votre rang de l’acte précédent sur votre carte de joueur.",
+                               value: identity[rankKey]?.boolValue ?? false) { loadout.setIdentity(rankKey, .bool($0)) }
+                    }
+                }
+                .background(LUI.card, in: .rect(cornerRadius: 22))
+                if let message = loadout.message { Text(message).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4) }
+            }
         }
         .task { await loadout.load(model.valorant.riot) }
     }
 
-    private func toggle(_ title: String, _ footer: String, value: Bool, set: @escaping (Bool) -> Void) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private func toggle(_ title: String, _ subtitle: String, value: Bool, set: @escaping (Bool) -> Void) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.system(size: 20)).foregroundStyle(EvalColors.text).lineLimit(1)
+                Text(subtitle).font(.system(size: 16)).foregroundStyle(LUI.secondary).lineLimit(1)
+            }
+            Spacer(minLength: 8)
             Toggle(title, isOn: Binding(get: { value }, set: { v in
                 set(v)
                 Task { _ = await model.valorant.loadout.save(model.valorant.riot) }
             }))
-            .tint(LUI.accent).foregroundStyle(EvalColors.text)
-            .padding(18).background(LUI.card, in: .rect(cornerRadius: 22))
-            Text(footer).font(.footnote).foregroundStyle(LUI.secondary).padding(.horizontal, 4)
+            .labelsHidden()
+            .tint(LUI.accent)
+            .disabled(model.valorant.loadout.isSaving)
         }
+        .padding(.horizontal, 18)
+        .frame(minHeight: 74)
     }
 }
 
@@ -782,18 +1040,19 @@ struct EvalAppearanceProfilesView: View {
                                 Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF3B30))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Supprimer")
                         }
                         Button { if !editing { toApply = profile } } label: {
                             HStack(spacing: 14) {
                                 AsyncImage(url: profile.cardURL) { $0.image?.resizable().scaledToFill() }
                                     .frame(width: 44, height: 44)
-                                    .background(LUI.card)
+                                    .background(LUI.card2)
                                     .clipShape(.rect(cornerRadius: 9))
                                 VStack(alignment: .leading, spacing: 3) {
                                     HStack(spacing: 6) {
                                         Text(profile.name).font(.system(size: 19)).foregroundStyle(EvalColors.text)
                                         if profile.pinned == true {
-                                            Image(systemName: "pin.fill").font(.system(size: 13)).foregroundStyle(Color(hex: 0xF5C518))
+                                            Image(systemName: "pin.fill").font(.system(size: 13)).foregroundStyle(LUI.gold)
                                         }
                                     }
                                     Text(profile.summary).font(.system(size: 15)).foregroundStyle(LUI.secondary).lineLimit(1)
@@ -804,6 +1063,7 @@ struct EvalAppearanceProfilesView: View {
                                         Image(systemName: profile.pinned == true ? "pin.slash" : "pin").font(.system(size: 18)).foregroundStyle(LUI.accent)
                                     }
                                     .buttonStyle(.plain)
+                                    .accessibilityLabel(profile.pinned == true ? "Désépingler" : "Épingler")
                                 } else {
                                     Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(LUI.secondary)
                                 }
@@ -811,12 +1071,11 @@ struct EvalAppearanceProfilesView: View {
                             .contentShape(.rect)
                         }
                         .buttonStyle(.plain)
+                        .disabled(loadout.isSaving)
                     }
                     .padding(.horizontal, 20)
                     .frame(minHeight: 78)
-                    if index < list.count - 1 {
-                        Divider().overlay(EvalColors.text.opacity(0.1)).padding(.leading, 78)
-                    }
+                    if index < list.count - 1 { rowDivider(78) }
                 }
             }
             .background(LUI.card, in: .rect(cornerRadius: 26))

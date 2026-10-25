@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "1.83.0",
+  "version": "1.84.0",
   "description": "Modern & secure Discord bot with unified slash and prefix command handling in TypeScript with Web Dashboard",
   "main": "dist/index.js",
   "type": "module",

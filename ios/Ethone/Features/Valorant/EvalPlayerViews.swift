@@ -296,13 +296,6 @@ struct EvalShopHistoryView: View {
         }
     }
 
-    private func dayText(_ date: Date) -> String {
-        let calendar = Calendar.current
-        if calendar.isDateInToday(date) { return "Aujourd'hui" }
-        if calendar.isDateInYesterday(date) { return "Hier" }
-        return date.formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: "fr_FR")))
-    }
-
     var body: some View {
         let store = model.valorant
         ScrollView {
@@ -333,7 +326,12 @@ struct EvalShopHistoryView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(day.day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "fr_FR"))).capitalized)
                                 .font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 4)
-                            ForEach(day.offers) { offer in EvalDailyOfferCard(offer: offer) }
+                            ForEach(day.offers) { offer in
+                                NavigationLink { EvalOfferDetailView(offer: offer) } label: {
+                                    EvalDailyOfferCard(offer: offer, wished: store.isWished(offer.id))
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
                     }
                 } else {
@@ -345,7 +343,14 @@ struct EvalShopHistoryView: View {
                     } else {
                         VStack(spacing: 0) {
                             ForEach(Array(list.enumerated()), id: \.element.id) { index, entry in
-                                row(entry, wished: tab == 0 && store.isWished(entry.id))
+                                if tab == 0 {
+                                    NavigationLink { EvalOfferDetailView(levelID: entry.id, name: entry.name) } label: {
+                                        row(entry, wished: store.isWished(entry.id), chevron: true).contentShape(.rect)
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    row(entry, wished: false, chevron: false)
+                                }
                                 if index < list.count - 1 {
                                     Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 106)
                                 }
@@ -365,7 +370,7 @@ struct EvalShopHistoryView: View {
         .toolbar(.hidden, for: .navigationBar)
     }
 
-    private func row(_ entry: Entry, wished: Bool) -> some View {
+    private func row(_ entry: Entry, wished: Bool, chevron: Bool) -> some View {
         HStack(spacing: 14) {
             AsyncImage(url: URL(string: entry.image)) { $0.image?.resizable().scaledToFit() }
                 .frame(width: 62, height: 34)
@@ -381,9 +386,11 @@ struct EvalShopHistoryView: View {
             Spacer(minLength: 8)
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(entry.count)×").font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalColors.text)
-                Text(dayText(entry.last)).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                Text(EvalStoreFormat.day(entry.last)).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
             }
-            Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+            if chevron {
+                Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93))
+            }
         }
         .padding(.horizontal, 20)
         .frame(minHeight: 70)
@@ -393,33 +400,90 @@ struct EvalShopHistoryView: View {
 struct EvalWishlistView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @State private var weaponNames: [String: String] = [:]
+    @State private var showHelp = false
+
+    private let secondary = Color(hex: 0x8E8E93)
+
+    private var lastSeen: [String: Date] {
+        var result: [String: Date] = [:]
+        for day in model.valorant.shopHistory {
+            for offer in day.offers {
+                let id = offer.id.lowercased()
+                result[id] = max(result[id] ?? .distantPast, day.day)
+            }
+        }
+        return result
+    }
 
     var body: some View {
         let store = model.valorant
+        let seen = lastSeen
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                EvalNavHeader(title: "Liste de souhaits") { dismiss() }
+                EvalNavHeader(title: "Liste de souhaits", trailing: AnyView(
+                    HStack(spacing: 10) {
+                        Button { showHelp = true } label: {
+                            Circle().fill(EvalColors.card).frame(width: 51, height: 51)
+                                .overlay(Image(systemName: "questionmark").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalAccent.color))
+                        }
+                        .buttonStyle(.plain)
+                        NavigationLink { EvalWeaponsView() } label: {
+                            Circle().fill(EvalColors.card).frame(width: 51, height: 51)
+                                .overlay(Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalAccent.color))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                )) { dismiss() }
                 if store.wishlist.isEmpty {
                     ContentUnavailableView("Liste vide", systemImage: "heart",
                                            description: Text("Ajoutez des skins avec le cœur depuis Armes → Skins. Ils sont signalés quand ils apparaissent dans votre boutique."))
                         .padding(.top, 40)
-                }
-                ForEach(store.wishlist) { item in
-                    let inShop = store.storeOffers.contains { $0.id.lowercased() == item.id }
-                    HStack(spacing: 14) {
-                        AsyncImage(url: URL(string: item.icon)) { $0.image?.resizable().scaledToFit() }.frame(width: 110, height: 44)
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(item.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text)
-                            if inShop { Text("Dans votre boutique aujourd’hui").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x35C26B)) }
+                } else {
+                    Label("Skins", systemImage: "scope")
+                        .font(.system(size: 21, weight: .semibold))
+                        .foregroundStyle(secondary)
+                        .padding(.leading, 4)
+                        .padding(.top, 8)
+                    VStack(spacing: 0) {
+                        ForEach(Array(store.wishlist.enumerated()), id: \.element.id) { index, item in
+                            let inShop = store.storeOffers.contains { $0.id.lowercased() == item.id }
+                            NavigationLink { EvalOfferDetailView(levelID: item.id, name: item.name) } label: {
+                                HStack(spacing: 14) {
+                                    AsyncImage(url: URL(string: item.icon)) { $0.image?.resizable().interpolation(.high).scaledToFit() }
+                                        .frame(width: 62, height: 34)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(item.name).font(.system(size: 19)).foregroundStyle(EvalColors.text).lineLimit(2)
+                                        if let weapon = weaponNames[item.id] {
+                                            Text(weapon).font(.system(size: 16)).foregroundStyle(secondary)
+                                        }
+                                        if inShop {
+                                            Text("Dans votre boutique aujourd’hui").font(.system(size: 16, weight: .semibold)).foregroundStyle(Color(hex: 0x35C26B))
+                                        } else if let date = seen[item.id] {
+                                            Text("Dernière apparition dans votre boutique : \(EvalStoreFormat.day(date))")
+                                                .font(.system(size: 16)).foregroundStyle(secondary).lineLimit(1)
+                                        }
+                                    }
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right").font(.system(size: 15, weight: .semibold)).foregroundStyle(secondary)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 14)
+                                .contentShape(.rect)
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) { store.toggleWish(id: item.id, name: item.name, icon: item.icon) } label: {
+                                    Label("Retirer de la liste de souhaits", systemImage: "heart.slash")
+                                }
+                            }
+                            if index < store.wishlist.count - 1 {
+                                Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 96)
+                            }
                         }
-                        Spacer()
-                        Button { store.toggleWish(id: item.id, name: item.name, icon: item.icon) } label: {
-                            Image(systemName: "heart.fill").foregroundStyle(EvalAccent.color)
-                        }
-                        .buttonStyle(.plain)
                     }
-                    .padding(16)
-                    .background(EvalColors.card, in: .rect(cornerRadius: 18))
+                    .padding(.vertical, 6)
+                    .background(EvalColors.card, in: .rect(cornerRadius: 28))
                 }
             }
             .padding(.horizontal, 16)
@@ -429,5 +493,18 @@ struct EvalWishlistView: View {
         .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .alert("Liste de souhaits", isPresented: $showHelp) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Ajoutez des skins avec le bouton + ou le cœur d’un skin. Quand l’un d’eux apparaît dans vos offres quotidiennes, il est signalé dans l’onglet Jeu.")
+        }
+        .task {
+            let weapons = await EvalSkinCatalog.load()
+            var names: [String: String] = [:]
+            for item in store.wishlist {
+                if let match = EvalSkinCatalog.find(item.id, in: weapons) { names[item.id] = match.weapon.displayName }
+            }
+            weaponNames = names
+        }
     }
 }

@@ -1374,35 +1374,50 @@ struct EvalSkinDetailView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     let skin: ValorantWeaponItem.WeaponSkin
-    @State private var chroma = 0
     @State private var video: URL?
 
-    private var chromas: [ValorantWeaponItem.WeaponSkin.Chroma] { skin.chromas ?? [] }
+    private var renders: [String] {
+        let list = (skin.chromas ?? []).compactMap { $0.fullRender ?? $0.displayIcon }
+        return list.isEmpty ? [skin.image].compactMap { $0 } : list
+    }
+
+    private var shopDays: [Date] {
+        let ids = Set((skin.levels ?? []).map { $0.uuid.lowercased() })
+        return model.valorant.shopHistory
+            .filter { day in day.offers.contains { ids.contains($0.id.lowercased()) } }
+            .map(\.day)
+            .sorted(by: >)
+    }
+
+    private func recurrence(_ days: [Date]) -> String? {
+        guard days.count >= 3, let first = days.last, let last = days.first else { return nil }
+        let gap = last.timeIntervalSince(first) / 86400 / Double(days.count - 1)
+        if gap < 10 {
+            let n = max(1, Int(gap.rounded()))
+            return n == 1 ? "Environ tous les jours" : "Environ tous les \(n) jours"
+        }
+        let weeks = max(1, Int((gap / 7).rounded()))
+        return weeks == 1 ? "Environ toutes les semaines" : "Environ toutes les \(weeks) semaines"
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 EvalNavHeader(title: skin.displayName, trailing: wishButton) { dismiss() }
-                Text("Variantes de couleur").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
-                VStack(spacing: 14) {
-                    let current = chromas.indices.contains(chroma) ? chromas[chroma] : nil
-                    AsyncImage(url: (current?.fullRender ?? current?.displayIcon ?? skin.image).flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFit() }
-                        .frame(height: 130)
-                    if chromas.count > 1 {
-                        HStack(spacing: 12) {
-                            ForEach(chromas.indices, id: \.self) { i in
-                                AsyncImage(url: chromas[i].swatch.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFill() }
-                                    .frame(width: 39, height: 39)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().strokeBorder(.white, lineWidth: chroma == i ? 2 : 0))
-                                    .onTapGesture { chroma = i }
-                            }
+                if !renders.isEmpty {
+                    Text("Variantes de couleur").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
+                    VStack(spacing: 0) {
+                        ForEach(Array(renders.enumerated()), id: \.offset) { i, render in
+                            AsyncImage(url: URL(string: render)) { $0.image?.resizable().interpolation(.high).scaledToFit() }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 110)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 22)
+                            if i < renders.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.horizontal, 18) }
                         }
                     }
+                    .background(EvalUI.card, in: .rect(cornerRadius: 22))
                 }
-                .padding(24)
-                .frame(maxWidth: .infinity)
-                .background(EvalUI.card, in: .rect(cornerRadius: 22))
                 if let levels = skin.levels, !levels.isEmpty {
                     Text("Niveaux de skin").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
                     VStack(spacing: 0) {
@@ -1410,7 +1425,7 @@ struct EvalSkinDetailView: View {
                             HStack {
                                 Text("Niveau \(i + 1)").font(.system(size: 21)).foregroundStyle(EvalColors.text)
                                 Spacer()
-                                if let item = level.levelItem { Text(Self.levelLabel(item)).foregroundStyle(EvalUI.secondary).lineLimit(1) }
+                                if let item = level.levelItem { Text(Self.levelLabel(item)).font(.system(size: 21)).foregroundStyle(EvalUI.secondary).lineLimit(1).minimumScaleFactor(0.7) }
                                 if let url = level.streamedVideo.flatMap(URL.init(string:)) {
                                     Button { video = url } label: {
                                         Image(systemName: "play.circle").font(.system(size: 25)).foregroundStyle(EvalUI.accent)
@@ -1423,6 +1438,36 @@ struct EvalSkinDetailView: View {
                         }
                     }
                     .background(EvalUI.card, in: .rect(cornerRadius: 22))
+                }
+                let days = shopDays
+                if let lastSeen = days.first {
+                    Text("Dans votre boutique").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Text("Apparences").font(.system(size: 21)).foregroundStyle(EvalColors.text)
+                            Spacer()
+                            Text("\(days.count)×").font(.system(size: 21)).foregroundStyle(EvalUI.secondary)
+                        }
+                        .padding(18)
+                        Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
+                        HStack {
+                            Text("Dernière apparition").font(.system(size: 21)).foregroundStyle(EvalColors.text)
+                            Spacer()
+                            Text(EvalStoreFormat.day(lastSeen)).font(.system(size: 21)).foregroundStyle(EvalUI.secondary)
+                        }
+                        .padding(18)
+                        if let recurrence = recurrence(days) {
+                            Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 18)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Revient généralement").font(.system(size: 21)).foregroundStyle(EvalColors.text)
+                                Text(recurrence).font(.system(size: 21)).foregroundStyle(EvalUI.secondary)
+                            }
+                            .padding(18)
+                        }
+                    }
+                    .background(EvalUI.card, in: .rect(cornerRadius: 22))
+                    Text("Basé sur les rotations quotidiennes enregistrées dans votre historique de boutique.")
+                        .font(.system(size: 16)).foregroundStyle(EvalUI.secondary).padding(.horizontal, 4)
                 }
             }
             .padding(.horizontal, 16)
@@ -1439,7 +1484,6 @@ struct EvalSkinDetailView: View {
 
     private struct IdentifiedURL: Identifiable { let url: URL; var id: String { url.absoluteString } }
 
-    /// La boutique Riot identifie un skin par l'UUID de son premier niveau.
     private var wishButton: AnyView? {
         guard let levelID = skin.levels?.first?.uuid else { return nil }
         let store = model.valorant
@@ -1455,11 +1499,11 @@ struct EvalSkinDetailView: View {
         switch item.components(separatedBy: "::").last ?? item {
         case "SoundEffects": return "Effets sonores"
         case "Animation": return "Animation"
-        case "VFX": return "Effets visuels"
+        case "VFX": return "VFX"
         case "InspectAndKill": return "Effets d'inspection & de tuerie"
-        case "Finisher": return "Effet de fin"
+        case "Finisher": return "Finisseur"
         case "KillBanner": return "Bannière d'élimination"
-        case "KillCounter": return "Compteur d'éliminations"
+        case "KillCounter": return "Compteur de Tueries"
         case "TopFrag": return "Aura du champion"
         case "Voiceover": return "Voix"
         case "Transformation": return "Transformation"

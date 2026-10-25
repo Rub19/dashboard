@@ -46,6 +46,26 @@ final class RiotFavoritesModel {
         }
     }
 
+    func toggle(_ itemID: String, session: RiotSession) async {
+        guard let puuid = session.credentials?.puuid, !isApplying else { return }
+        isApplying = true
+        let id = itemID.lowercased()
+        let removing = current.first { $0.value == id }?.key
+        var failure: String?
+        do {
+            if let key = removing {
+                try await session.gameData("/favorites/v1/players/\(puuid)/favorites/\(key)", method: "DELETE")
+            } else {
+                try await session.gameData("/favorites/v1/players/\(puuid)/favorites", method: "POST", body: RiotSession.json(["ItemID": id]))
+            }
+        } catch {
+            failure = "Favori non modifié : \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
+        }
+        isApplying = false
+        await load(session)
+        if let failure { message = failure }
+    }
+
     func saveCurrent(name: String) {
         guard !current.isEmpty else {
             message = "Vous n’avez aucun favori à enregistrer."
@@ -103,21 +123,24 @@ struct EvalFavoritePresetsView: View {
             VStack(alignment: .leading, spacing: 18) {
                 EvalNavHeader(title: "Préréglages des Favoris") { dismiss() }
                 if favorites.presets.isEmpty {
-                    VStack(spacing: 12) {
+                    VStack(spacing: 6) {
                         Image(systemName: "star.square.on.square")
-                            .font(.system(size: 46))
+                            .font(.system(size: 40))
                             .foregroundStyle(Color(hex: 0x8E8E93))
+                            .padding(.bottom, 14)
                         Text("Aucun préréglage de favoris")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(EvalColors.text)
-                        Text("Enregistrez vos favoris actuels sous forme de préréglage pour pouvoir passer d’un ensemble à l’autre en un toucher.")
-                            .font(.system(size: 17))
+                        Text("Enregistrez vos favoris actuels sous forme de préréglage pour pouvoir passer d’un ensemble complet de favoris à l’autre à tout moment.")
+                            .font(.system(size: 19))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 60)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 34)
+                    .background(EvalColors.card, in: .rect(cornerRadius: 30))
+                    .padding(.top, 20)
                 } else {
                     VStack(spacing: 0) {
                         ForEach(Array(favorites.presets.enumerated()), id: \.element.id) { index, preset in
@@ -155,12 +178,15 @@ struct EvalFavoritePresetsView: View {
                     Text(message).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.horizontal, 6)
                 }
                 Button { name = ""; naming = true } label: {
-                    Text(favorites.isApplying ? "Application…" : "Enregistrer les favoris actuels")
-                        .font(.system(size: 19, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(EvalAccent.color, in: .capsule)
+                    HStack(spacing: 18) {
+                        Image(systemName: "plus").font(.system(size: 24, weight: .regular))
+                        Text(favorites.isApplying ? "Application…" : "Enregistrer les favoris actuels").font(.system(size: 21))
+                        Spacer()
+                    }
+                    .foregroundStyle(EvalAccent.color)
+                    .padding(.horizontal, 22)
+                    .frame(height: 64)
+                    .background(EvalColors.card, in: .capsule)
                 }
                 .buttonStyle(.plain)
                 .disabled(favorites.isApplying || !model.valorant.riot.isLinked)

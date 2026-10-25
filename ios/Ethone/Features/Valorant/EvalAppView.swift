@@ -155,11 +155,6 @@ struct EvalAppView: View {
             Tab(EvalTab.game.rawValue, systemImage: EvalTab.game.icon, value: EvalTab.game) {
                 NavigationStack {
                     EvalGameView()
-                        .safeAreaInset(edge: .bottom) {
-                            if store.riot.isLinked {
-                                EvalWalletBar(wallet: store.wallet).padding(.horizontal, 16).padding(.bottom, 6)
-                            }
-                        }
                         .evalRoot()
                 }
             }
@@ -1357,25 +1352,11 @@ struct EvalDailyOfferCard: View {
     let offer: ValorantDailySkinOffer
     var wished = false
 
+    private var tint: Color { Color(hex: offer.colorHex) }
+
     var body: some View {
         VStack(spacing: 0) {
-            ZStack(alignment: .topLeading) {
-                SkinTierIconView(name: offer.tierIconName, color: Color(hex: offer.colorHex), size: 14)
-                    .padding(14)
-
-                HStack {
-                    Spacer()
-                    if wished {
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(EvalAccent.color)
-                    }
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color(hex: offer.colorHex))
-                        .padding(14)
-                }
-
+            ZStack(alignment: .top) {
                 AsyncImage(url: URL(string: offer.imageURL)) { phase in
                     switch phase {
                     case .success(let image):
@@ -1383,129 +1364,148 @@ struct EvalDailyOfferCard: View {
                             .resizable()
                             .interpolation(.high)
                             .scaledToFit()
-                            .frame(maxWidth: .infinity, maxHeight: 86)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 10)
                     default:
-                        Color.clear.frame(height: 86)
+                        Color.clear
                     }
                 }
-            }
+                .frame(maxWidth: .infinity)
+                .frame(height: 72)
+                .padding(.horizontal, 56)
+                .padding(.top, 12)
 
-            HStack {
-                Text(offer.name)
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(Color(hex: offer.colorHex))
-                    .lineLimit(2)
-
-                Spacer()
-
-                HStack(spacing: 5) {
-                    Text("\(offer.price)")
-                        .font(.system(size: 17, weight: .heavy).monospacedDigit())
-                        .foregroundStyle(Color(hex: offer.colorHex))
-
-                    VPIconView(size: 14, color: Color(hex: offer.colorHex))
+                HStack(alignment: .top) {
+                    SkinTierIconView(name: offer.tierIconName, color: tint, size: 18)
+                    Spacer()
+                    if wished {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(EvalAccent.color)
+                    }
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(tint)
                 }
+                .padding(.horizontal, 14)
+                .padding(.top, 14)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
+
+            HStack(spacing: 8) {
+                Text(offer.name)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(tint)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Spacer(minLength: 8)
+
+                Text("\(offer.price)")
+                    .font(.system(size: 18, weight: .medium).monospacedDigit())
+                    .foregroundStyle(tint)
+
+                VPIconView(size: 20, color: tint)
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 6)
+            .padding(.bottom, 14)
         }
-        .background(Color(hex: offer.colorHex).opacity(0.12))
-        .background(surface, in: .rect(cornerRadius: 20))
-        .clipShape(.rect(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Color(hex: offer.colorHex).opacity(0.35), lineWidth: 1)
-        )
+        .background(tint.opacity(0.2))
+        .background(surface)
+        .clipShape(.rect(cornerRadius: 18))
     }
 }
 
 struct EvalFeaturedBundleCard: View {
+    @Environment(\.evalSurface) private var surface
     let bundle: ValorantStoreBundle
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ZStack(alignment: .center) {
-                AsyncImage(url: URL(string: bundle.imageURL)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        Color.clear.frame(maxWidth: .infinity).frame(height: 180)
-                            .overlay { image.resizable().interpolation(.high).scaledToFill() }
-                            .clipped()
-                    default:
-                        Color(hex: 0x161820).frame(height: 180)
-                    }
-                }
-
-                if bundle.isOwned {
-                    Circle()
-                        .fill(EvalColors.text.opacity(0.85))
-                        .frame(width: 39, height: 39)
-                        .overlay(Image(systemName: "checkmark").font(.system(size: 18, weight: .bold)).foregroundStyle(Color.black))
-                }
-            }
-            .clipShape(.rect(cornerRadius: Theme.cardRadius))
-
-            if let description = bundle.description {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(bundle.name)
-                        .font(.title3.weight(.heavy))
-                        .foregroundStyle(EvalColors.text)
-
-                    Text(description)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineSpacing(3)
-
-                    HStack {
-                        if let price = bundle.price {
-                            HStack(spacing: 5) {
-                                VPIconView(size: 14)
-                                Text("\(price.formatted())")
-                                    .font(.subheadline.weight(.heavy).monospacedDigit())
-                                    .foregroundStyle(EvalColors.text)
-                            }
-                        }
-
-                        Spacer()
-
-                        if let expires = bundle.expiresText {
-                            HStack(spacing: 4) {
-                                Text(expires)
-                                    .font(.caption.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                                Image(systemName: "clock")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
-                            }
+        VStack(spacing: 0) {
+            Color.clear
+                .aspectRatio(16 / 9, contentMode: .fit)
+                .frame(maxWidth: .infinity)
+                .overlay {
+                    AsyncImage(url: URL(string: bundle.imageURL)) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().interpolation(.high).scaledToFill()
+                        default:
+                            EvalColors.text.opacity(0.04)
                         }
                     }
-                    .padding(.top, 4)
                 }
-                .padding(.horizontal, 4)
-            } else {
+                .overlay {
+                    if bundle.isOwned {
+                        Circle()
+                            .fill(EvalColors.text.opacity(0.85))
+                            .frame(width: 39, height: 39)
+                            .overlay(Image(systemName: "checkmark").font(.system(size: 18, weight: .bold)).foregroundStyle(Color.black))
+                    }
+                }
+                .clipped()
+
+            VStack(spacing: 12) {
                 Text(bundle.name)
-                    .font(.subheadline.weight(.bold))
+                    .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(EvalColors.text)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 4)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 14)
+
+                Divider().overlay(EvalColors.text.opacity(0.08))
+
+                if let description = bundle.description, !description.isEmpty {
+                    Text(description)
+                        .font(.system(size: 15).italic())
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                    Divider().overlay(EvalColors.text.opacity(0.08))
+                }
+
+                HStack(spacing: 8) {
+                    if let price = bundle.price {
+                        VPIconView(size: 20, color: Color(hex: 0x8E8E93))
+                        Text("\(price)")
+                            .font(.system(size: 18).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+
+                    Spacer()
+
+                    if let endsAt = bundle.endsAt {
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(EvalCountdown.text(until: endsAt, now: context.date))
+                        }
+                        .font(.system(size: 18).monospacedDigit())
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    } else if let expires = bundle.expiresText, !expires.isEmpty {
+                        Text(expires)
+                            .font(.system(size: 18).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                        Image(systemName: "clock")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                }
+                .padding(.bottom, 14)
             }
+            .padding(.horizontal, 16)
         }
-        .padding(bundle.description != nil ? 12 : 0)
-        .background(bundle.description != nil ? EvalColors.text.opacity(0.03) : Color.clear)
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.cardRadius)
-                .strokeBorder(EvalColors.text.opacity(bundle.description != nil ? 0.08 : 0), lineWidth: 1)
-        )
+        .background(surface)
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
 struct EvalAccessoryBundleCard: View {
+    @Environment(\.evalSurface) private var surface
     let accessories: [ValorantAccessoryItem]
     let timerText: String?
 
@@ -1513,55 +1513,52 @@ struct EvalAccessoryBundleCard: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 ForEach(accessories) { item in
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(EvalColors.text.opacity(0.06))
-                            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(EvalColors.text.opacity(0.12)))
-
+                    Group {
                         if item.imageURL.isEmpty {
-                            EvalTitleBadge(size: 46)
+                            EvalTitleBadge(size: 50)
                         } else {
                             AsyncImage(url: URL(string: item.imageURL)) { phase in
                                 switch phase {
                                 case .success(let image):
-                                    image.resizable().interpolation(.high).scaledToFit().frame(width: 46, height: 46)
+                                    image.resizable().interpolation(.high).scaledToFit()
                                 default:
                                     Color.clear
                                 }
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 58)
+                    .frame(width: 60, height: 60)
                 }
             }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 2)
 
-            HStack {
+            Divider().overlay(EvalColors.text.opacity(0.08))
+
+            HStack(spacing: 8) {
                 Text("Accessoires")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(EvalColors.text)
+                    .font(.system(size: 18))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
 
                 Spacer()
 
                 if let timerText, !timerText.isEmpty {
-                    HStack(spacing: 4) {
-                        Text(timerText)
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                        Image(systemName: "clock")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+                    Text(timerText)
+                        .font(.system(size: 18).monospacedDigit())
+                        .foregroundStyle(Color(hex: 0x8E8E93))
+                    Image(systemName: "clock")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color(hex: 0x8E8E93))
                 }
+
                 Image(systemName: "chevron.right")
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x8E8E93))
             }
         }
-        .padding(14)
-        .glassEffect(.regular, in: .rect(cornerRadius: Theme.cardRadius))
-        .clipShape(.rect(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(EvalColors.text.opacity(0.08), lineWidth: 1))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 14)
+        .background(surface, in: .rect(cornerRadius: 20))
     }
 }
 
@@ -1571,59 +1568,55 @@ struct SprayWheelView: View {
     let rightSprayURL: String?
     let bottomSprayURL: String?
 
+    private let line = Color(hex: 0xA8A8AD)
+    private let gap = Color(hex: 0x141416)
+    private let segment = Color(hex: 0x3A3A3C)
+
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(Color(hex: 0x13151C))
-                .overlay(Circle().strokeBorder(EvalColors.text.opacity(0.18), lineWidth: 2))
-                .shadow(color: Color.black.opacity(0.4), radius: 10)
-
-            Circle()
-                .strokeBorder(EvalColors.text.opacity(0.08), lineWidth: 1.5)
-                .padding(26)
-
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                Path { path in
-                    path.move(to: CGPoint(x: w * 0.14, y: h * 0.14))
-                    path.addLine(to: CGPoint(x: w * 0.86, y: h * 0.86))
-
-                    path.move(to: CGPoint(x: w * 0.86, y: h * 0.14))
-                    path.addLine(to: CGPoint(x: w * 0.14, y: h * 0.86))
-                }
-                .stroke(EvalColors.text.opacity(0.22), lineWidth: 1.5)
-            }
-
+        GeometryReader { geo in
+            let d = min(geo.size.width, geo.size.height)
+            let r = d / 2
             ZStack {
-                Circle()
-                    .fill(Color(hex: 0x13151C))
-                    .frame(width: 60, height: 60)
-                Circle()
-                    .strokeBorder(EvalColors.text.opacity(0.35), lineWidth: 2)
-                    .frame(width: 55, height: 55)
+                Circle().fill(gap)
+                Circle().strokeBorder(line, lineWidth: 2.5)
+                Circle().fill(segment).frame(width: d * 0.94, height: d * 0.94)
+
+                Path { path in
+                    path.move(to: CGPoint(x: r - r * 0.78, y: r - r * 0.78))
+                    path.addLine(to: CGPoint(x: r + r * 0.78, y: r + r * 0.78))
+                    path.move(to: CGPoint(x: r + r * 0.78, y: r - r * 0.78))
+                    path.addLine(to: CGPoint(x: r - r * 0.78, y: r + r * 0.78))
+                }
+                .stroke(gap, lineWidth: r * 0.08)
+
+                Path { path in
+                    path.move(to: CGPoint(x: r - r * 0.78, y: r - r * 0.78))
+                    path.addLine(to: CGPoint(x: r + r * 0.78, y: r + r * 0.78))
+                    path.move(to: CGPoint(x: r + r * 0.78, y: r - r * 0.78))
+                    path.addLine(to: CGPoint(x: r - r * 0.78, y: r + r * 0.78))
+                }
+                .stroke(line, lineWidth: 2)
+
+                Circle().fill(gap).frame(width: d * 0.37, height: d * 0.37)
+                Circle().strokeBorder(line, lineWidth: 2.5).frame(width: d * 0.32, height: d * 0.32)
+
+                sprayItem(url: topSprayURL, size: d * 0.27).offset(y: -r * 0.64)
+                sprayItem(url: leftSprayURL, size: d * 0.27).offset(x: -r * 0.64)
+                sprayItem(url: rightSprayURL, size: d * 0.27).offset(x: r * 0.64)
+                sprayItem(url: bottomSprayURL, size: d * 0.27).offset(y: r * 0.64)
             }
-
-            sprayItem(url: topSprayURL, size: 56)
-                .offset(y: -64)
-
-            sprayItem(url: leftSprayURL, size: 56)
-                .offset(x: -64)
-
-            sprayItem(url: rightSprayURL, size: 56)
-                .offset(x: 64)
-
-            sprayItem(url: bottomSprayURL, size: 56)
-                .offset(y: 64)
+            .frame(width: d, height: d)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(width: 250, height: 250)
-        .padding(.vertical, 14)
+        .aspectRatio(1, contentMode: .fit)
+        .frame(maxWidth: 344)
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
     }
 
     private func sprayItem(url: String?, size: CGFloat) -> some View {
         Group {
-            if let url = url, !url.isEmpty, let imageURL = URL(string: url) {
+            if let url, !url.isEmpty, let imageURL = URL(string: url) {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
                     case .success(let image):
@@ -1631,18 +1624,17 @@ struct SprayWheelView: View {
                             .resizable()
                             .interpolation(.high)
                             .scaledToFit()
-                            .frame(width: size, height: size)
                     default:
-                        Color.clear.frame(width: size, height: size)
+                        Color.clear
                     }
                 }
             } else {
                 Image(systemName: "plus")
-                    .font(.system(size: 17, weight: .light))
-                    .foregroundStyle(EvalColors.text.opacity(0.18))
-                    .frame(width: size, height: size)
+                    .font(.system(size: 20, weight: .light))
+                    .foregroundStyle(EvalColors.text.opacity(0.25))
             }
         }
+        .frame(width: size, height: size)
     }
 }
 
@@ -1650,58 +1642,32 @@ struct EvalWalletBar: View {
     let wallet: ValorantWallet
 
     var body: some View {
-        HStack(spacing: 24) {
-            Spacer()
-
-            HStack(spacing: 6) {
-                Text("\(wallet.vp.formatted())")
-                    .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(EvalColors.text)
-                VPIconView(size: 14)
-            }
-
-            HStack(spacing: 6) {
-                Text("\(wallet.rp.formatted())")
-                    .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(EvalColors.text)
-                RPIconView(size: 14)
-            }
-
-            HStack(spacing: 6) {
-                Text("\(wallet.kc.formatted())")
-                    .font(.system(size: 16, weight: .bold).monospacedDigit())
-                    .foregroundStyle(EvalColors.text)
-                KCIconView(size: 14)
-            }
+        HStack(spacing: 8) {
+            Image(systemName: "wallet.bifold.fill")
+                .font(.system(size: 20))
+                .foregroundStyle(Color(hex: 0x8E8E93))
 
             Spacer()
+
+            Text("\(wallet.vp)")
+            VPIconView(size: 20, color: Color(hex: 0x8E8E93))
+                .padding(.trailing, 12)
+
+            Text("\(wallet.rp)")
+            RPIconView(size: 20, color: Color(hex: 0x8E8E93))
+                .padding(.trailing, 12)
+
+            Text("\(wallet.kc)")
+            Image(systemName: "rhombus")
+                .font(.system(size: 17))
+                .foregroundStyle(Color(hex: 0x8E8E93))
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
-        .background(EvalColors.card.opacity(0.92), in: .capsule)
-        .overlay(Capsule().strokeBorder(EvalColors.text.opacity(0.12), lineWidth: 1))
-    }
-}
-
-struct EvalGroupRefreshWheel: View {
-    var progress: Double
-    var size: CGFloat = 18
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(EvalColors.text.opacity(0.12), lineWidth: 2.2)
-
-            Circle()
-                .trim(from: 0, to: max(0.02, min(progress, 1.0)))
-                .stroke(
-                    Theme.danger,
-                    style: StrokeStyle(lineWidth: 2.2, lineCap: .round)
-                )
-                .rotationEffect(.degrees(-90))
-        }
-        .frame(width: size, height: size)
-        .animation(progress == 0 ? nil : .linear(duration: 0.1), value: progress)
+        .font(.system(size: 18).monospacedDigit())
+        .foregroundStyle(Color(hex: 0x8E8E93))
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .padding(.horizontal, 2)
+        .padding(.vertical, 4)
     }
 }
 
@@ -1712,9 +1678,9 @@ struct EvalGameView: View {
     @State private var contractsExpanded = true
     @State private var equipmentExpanded = true
     @State private var storeExpanded = true
+    @State private var privacyExpanded = false
     @State private var contractsSubtab = 0
     @State private var futureMissionsExpanded = false
-    @State private var groupRefreshProgress: Double = 0.0
     @State private var showingBattlepassSheet = false
     @State private var showingMissionsSheet = false
     @State private var showingAccountSheet = false
@@ -1722,6 +1688,7 @@ struct EvalGameView: View {
     @State private var confirmRandom = false
 
     private var store: ValorantStore { model.valorant }
+    private let secondary = Color(hex: 0x8E8E93)
 
     var body: some View {
         Group {
@@ -1753,26 +1720,17 @@ struct EvalGameView: View {
 
     private var gameContent: some View {
         ScrollView {
-            VStack(spacing: 18) {
+            VStack(spacing: 10) {
                 topBar
 
                 collapsibleSection(
                     title: "Groupe",
                     isExpanded: $groupExpanded,
                     rightContent: {
-                        Button {
-                            var transaction = Transaction()
-                            transaction.disablesAnimations = true
-                            withTransaction(transaction) {
-                                groupRefreshProgress = 0.0
-                            }
-                            Task {
-                                await store.refreshGroup()
-                            }
-                        } label: {
-                            EvalGroupRefreshWheel(progress: groupRefreshProgress)
+                        if store.party.isLoading {
+                            loadingRing
+                                .transition(.opacity)
                         }
-                        .buttonStyle(.plain)
                     }
                 ) {
                     EvalPartyCard()
@@ -1782,21 +1740,14 @@ struct EvalGameView: View {
                     title: "Contrats",
                     isExpanded: $contractsExpanded,
                     rightContent: {
-                        Button {
-                            Task {
-                                await store.refresh()
-                            }
-                        } label: {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(EvalAccent.color)
+                        refreshButton {
+                            await store.contracts.load(store.riot, force: true)
                         }
-                        .buttonStyle(.plain)
                     }
                 ) {
                     VStack(spacing: 12) {
                         ScrollView(.horizontal) {
-                            HStack(spacing: 8) {
+                            HStack(spacing: 4) {
                                 subtabPill(title: "Missions", index: 0)
                                 subtabPill(title: "Passe de combat", index: 1)
                                 subtabPill(title: "Compte", index: 2)
@@ -1822,101 +1773,24 @@ struct EvalGameView: View {
                     title: "Équipement",
                     isExpanded: $equipmentExpanded,
                     rightContent: {
-                        Button {
-                            Task {
-                                await store.refresh()
-                            }
-                        } label: {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(EvalAccent.color)
+                        refreshButton {
+                            await store.refreshRiot()
+                            await store.loadout.load(store.riot)
                         }
-                        .buttonStyle(.plain)
                     }
                 ) {
-                    VStack(spacing: 14) {
-                        if store.isConfigured && !store.equipmentBannerURL.isEmpty {
-                            NavigationLink { EvalCardPickerView() } label: {
-                            ZStack(alignment: .bottomTrailing) {
-                                AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
-                                    switch phase {
-                                    case .success(let image):
-                                        Color.clear.frame(maxWidth: .infinity).frame(height: 104)
-                                            .overlay { image.resizable().interpolation(.high).scaledToFill() }
-                                            .clipped()
-                                    default:
-                                        EvalColors.card.frame(height: 104)
-                                    }
-                                }
-                                .clipShape(.rect(cornerRadius: 16))
-
-                                Circle()
-                                    .fill(EvalColors.text.opacity(0.92))
-                                    .frame(width: 32, height: 32)
-                                    .overlay(
-                                        Image(systemName: "pencil")
-                                            .font(.system(size: 14, weight: .bold))
-                                            .foregroundStyle(Color.black)
-                                    )
-                                    .padding(10)
-                            }
-                            }
-                            .buttonStyle(.plain)
-                        }
-
-                        VStack(spacing: 0) {
-                            NavigationLink { EvalTitlePickerView() } label: {
-                                equipNavRow(icon: "pencil", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle).contentShape(.rect)
-                            }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            NavigationLink { EvalWeaponLoadoutView() } label: {
-                                equipNavRow(icon: "scope", title: "Équipement d'arme").contentShape(.rect)
-                            }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            NavigationLink { EvalPrivacySettingsView() } label: { equipPrivacyRow.contentShape(.rect) }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            let appearanceVal: String? = store.appearanceProfilesCount > 0 ? "\(store.appearanceProfilesCount)" : nil
-                            NavigationLink { EvalAppearanceProfilesView() } label: {
-                                equipNavRow(icon: "shippingbox.fill", title: "Profils d'apparences", value: appearanceVal).contentShape(.rect)
-                            }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            NavigationLink { EvalFavoritePresetsView() } label: {
-                                equipNavRow(icon: "star.square.on.square.fill", title: "Préréglages des Favoris", value: "\(store.favorites.presets.count)").contentShape(.rect)
-                            }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            Button { confirmRandom = true } label: {
-                                equipNavRow(icon: "die.face.5.fill", title: store.loadout.isSaving ? "Application…" : "Aléatoire").contentShape(.rect)
-                            }.buttonStyle(.plain)
-                            Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-                            ShareLink(item: store.loadout.shareText.isEmpty ? "Mon équipement VALORANT" : store.loadout.shareText) {
-                                equipNavRow(icon: "square.and.arrow.up", title: "Partager").contentShape(.rect)
-                            }.buttonStyle(.plain)
-                        }
-                        .background(EvalColors.card2, in: .rect(cornerRadius: 20))
-                        .task { await store.loadout.load(store.riot) }
-                        .confirmationDialog("Équiper un skin possédé au hasard sur chaque arme ?", isPresented: $confirmRandom, titleVisibility: .visible) {
-                            Button("Équiper au hasard") {
-                                Task {
-                                    await store.loadout.load(store.riot)
-                                    store.loadout.randomize()
-                                    if await store.loadout.save(store.riot) { await store.refreshRiot() }
-                                }
-                            }
-                        }
-
-                        NavigationLink { EvalSprayLoadoutView() } label: {
-                        SprayWheelView(
-                            topSprayURL: store.isConfigured ? store.equippedSprays[0] : nil,
-                            leftSprayURL: store.isConfigured ? store.equippedSprays[1] : nil,
-                            rightSprayURL: store.isConfigured ? store.equippedSprays[2] : nil,
-                            bottomSprayURL: store.isConfigured ? store.equippedSprays[3] : nil
-                        )
-                        }
-                        .buttonStyle(.plain)
-                    }
+                    equipmentContent
                 }
 
-                collapsibleSection(title: "Boutique", isExpanded: $storeExpanded, rightContent: { EmptyView() }) {
+                collapsibleSection(
+                    title: "Boutique",
+                    isExpanded: $storeExpanded,
+                    rightContent: {
+                        refreshButton {
+                            await store.refreshRiot()
+                        }
+                    }
+                ) {
                     storeAndAccessoriesSection
                 }
             }
@@ -1932,21 +1806,9 @@ struct EvalGameView: View {
         .task {
             await store.refreshGroup()
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 100_000_000)
+                try? await Task.sleep(nanoseconds: 15_000_000_000)
                 guard !Task.isCancelled else { break }
-                await MainActor.run {
-                    groupRefreshProgress += (0.1 / 15.0)
-                    if groupRefreshProgress >= 1.0 {
-                        var transaction = Transaction()
-                        transaction.disablesAnimations = true
-                        withTransaction(transaction) {
-                            groupRefreshProgress = 0.0
-                        }
-                        Task {
-                            await store.refreshGroup()
-                        }
-                    }
-                }
+                await store.refreshGroup()
             }
         }
     }
@@ -1963,205 +1825,354 @@ struct EvalGameView: View {
         .padding(.vertical, 10)
     }
 
-    private var storeAndAccessoriesSection: some View {
-        VStack(spacing: 18) {
-            ForEach(store.bundles) { bundle in
-                EvalFeaturedBundleCard(bundle: bundle)
+    private var loadingRing: some View {
+        TimelineView(.animation) { context in
+            let angle = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1) * 360
+            ZStack {
+                Circle()
+                    .stroke(EvalColors.text.opacity(0.14), lineWidth: 3)
+                Circle()
+                    .trim(from: 0, to: 0.8)
+                    .stroke(EvalAccent.color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .rotationEffect(.degrees(angle - 90))
+            }
+            .frame(width: 24, height: 24)
+        }
+        .accessibilityLabel("Chargement")
+    }
+
+    private func refreshButton(_ action: @escaping () async -> Void) -> some View {
+        Button {
+            Task { await action() }
+        } label: {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(EvalAccent.color)
+                .frame(width: 32, height: 32)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Actualiser")
+    }
+
+    private var sectionDivider: some View {
+        Divider().overlay(EvalColors.text.opacity(0.1))
+    }
+
+    private var equipmentContent: some View {
+        VStack(spacing: 16) {
+            if (store.isConfigured || store.riot.isLinked) && !store.equipmentBannerURL.isEmpty {
+                NavigationLink { EvalCardPickerView() } label: {
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 106)
+                        .overlay {
+                            AsyncImage(url: URL(string: store.equipmentBannerURL)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().interpolation(.high).scaledToFill()
+                                default:
+                                    EvalColors.card2
+                                }
+                            }
+                        }
+                        .clipShape(.rect(cornerRadius: 16))
+                        .overlay(alignment: .bottomTrailing) {
+                            Circle()
+                                .fill(Color.black.opacity(0.45))
+                                .overlay(Circle().strokeBorder(Color.white.opacity(0.85), lineWidth: 1.5))
+                                .overlay(
+                                    Image(systemName: "pencil")
+                                        .font(.system(size: 15, weight: .semibold))
+                                        .foregroundStyle(Color.white)
+                                )
+                                .frame(width: 30, height: 30)
+                                .padding(8)
+                        }
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Changer de carte de joueur")
+
+                sectionDivider
             }
 
-            NavigationLink {
-                ValorantStoreView()
-            } label: {
-                HStack {
-                    Text("Accessoires")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(EvalColors.text)
-                    Spacer()
-                    HStack(spacing: 6) {
-                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.accessoriesEnd, now: ctx.date)) }
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                        Image(systemName: "clock")
-                            .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .background(EvalColors.card2, in: .rect(cornerRadius: 20))
+            NavigationLink { EvalTitlePickerView() } label: {
+                equipNavRow(icon: "pencil.line", title: "Changer de titre", value: store.equipmentTitle.isEmpty ? nil : store.equipmentTitle)
             }
             .buttonStyle(.plain)
 
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Offres quotidiennes")
-                        .font(.system(size: 23, weight: .bold))
-                        .foregroundStyle(EvalColors.text)
-                    Spacer()
-                    HStack(spacing: 5) {
-                        TimelineView(.periodic(from: .now, by: 1)) { ctx in Text(EvalCountdown.text(until: store.offersEnd, now: ctx.date)) }
-                            .font(.system(size: 16))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                        Image(systemName: "clock")
-                            .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
+            NavigationLink { EvalWeaponLoadoutView() } label: {
+                equipNavRow(icon: "scope", title: "Équipement d’arme")
+            }
+            .buttonStyle(.plain)
+
+            privacyCard
+
+            sectionDivider
+
+            NavigationLink { EvalAppearanceProfilesView() } label: {
+                equipNavRow(icon: "square.stack.3d.up", title: "Profils d'apparences", value: "\(store.appearanceProfilesCount)")
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink { EvalFavoritePresetsView() } label: {
+                equipNavRow(icon: "star.square.on.square", title: "Préréglages des Favoris", value: "\(store.favorites.presets.count)")
+            }
+            .buttonStyle(.plain)
+
+            Button { confirmRandom = true } label: {
+                equipNavRow(icon: "dice", title: store.loadout.isSaving ? "Application…" : "Aléatoire", showsChevron: false)
+            }
+            .buttonStyle(.plain)
+            .disabled(store.loadout.isSaving)
+            .confirmationDialog("Équiper un skin possédé au hasard sur chaque arme ?", isPresented: $confirmRandom, titleVisibility: .visible) {
+                Button("Équiper au hasard") {
+                    Task {
+                        await store.loadout.load(store.riot)
+                        store.loadout.randomize()
+                        if await store.loadout.save(store.riot) { await store.refreshRiot() }
                     }
                 }
-                .padding(.horizontal, 4)
-                .padding(.top, 4)
+            }
+
+            ShareLink(item: store.loadout.shareText.isEmpty ? "Mon équipement VALORANT" : store.loadout.shareText) {
+                equipNavRow(icon: "square.and.arrow.up", title: "Partager")
+            }
+            .buttonStyle(.plain)
+
+            sectionDivider
+
+            NavigationLink { EvalSprayLoadoutView() } label: {
+                SprayWheelView(
+                    topSprayURL: store.equippedSprays.indices.contains(0) ? store.equippedSprays[0] : nil,
+                    leftSprayURL: store.equippedSprays.indices.contains(1) ? store.equippedSprays[1] : nil,
+                    rightSprayURL: store.equippedSprays.indices.contains(2) ? store.equippedSprays[2] : nil,
+                    bottomSprayURL: store.equippedSprays.indices.contains(3) ? store.equippedSprays[3] : nil
+                )
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Expressions équipées")
+        }
+        .task { await store.loadout.load(store.riot) }
+    }
+
+    private var privacyCard: some View {
+        let loadout = store.loadout
+        let incognito = loadout.raw?["Incognito"]?.boolValue ?? false
+        let hideLevel = loadout.raw?["Identity"]?["HideAccountLevel"]?.boolValue ?? false
+        return VStack(spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {
+                    privacyExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "hand.raised")
+                        .font(.system(size: 20))
+                        .foregroundStyle(EvalAccent.color)
+                        .frame(width: 28)
+
+                    Text("Paramètres de confidentialité")
+                        .font(.system(size: 18))
+                        .foregroundStyle(EvalColors.text)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    Spacer(minLength: 6)
+
+                    if !privacyExpanded {
+                        HStack(spacing: 6) {
+                            if incognito { Image(systemName: "eye.slash") }
+                            if hideLevel { Image(systemName: "123.rectangle") }
+                        }
+                        .font(.system(size: 13))
+                        .foregroundStyle(secondary)
+                        .transition(.opacity)
+                    }
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(secondary)
+                        .rotationEffect(.degrees(privacyExpanded ? 0 : -90))
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 52)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+
+            if privacyExpanded {
+                VStack(spacing: 0) {
+                    privacyToggle(
+                        "Incognito",
+                        "Masque votre nom aux joueurs en dehors de votre groupe.",
+                        value: incognito
+                    ) { loadout.setIncognito($0) }
+
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 12)
+
+                    privacyToggle(
+                        "Masquer le niveau de compte",
+                        "Masque votre niveau de compte aux autres joueurs.",
+                        value: hideLevel
+                    ) { loadout.setIdentity("HideAccountLevel", .bool($0)) }
+                }
+                .background(EvalColors.text.opacity(0.06), in: .rect(cornerRadius: 16))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+                .disabled(loadout.raw == nil || loadout.isSaving)
+                .transition(.opacity)
+            }
+        }
+        .background(EvalColors.card2, in: .rect(cornerRadius: 18))
+        .clipShape(.rect(cornerRadius: 18))
+    }
+
+    private func privacyToggle(_ title: String, _ subtitle: String, value: Bool, set: @escaping (Bool) -> Void) -> some View {
+        Toggle(isOn: Binding(get: { value }, set: { newValue in
+            set(newValue)
+            Task { _ = await store.loadout.save(store.riot) }
+        })) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 18))
+                    .foregroundStyle(EvalColors.text)
+                    .lineLimit(1)
+                Text(subtitle)
+                    .font(.system(size: 14))
+                    .foregroundStyle(secondary)
+                    .lineLimit(1)
+            }
+        }
+        .tint(EvalAccent.color)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
+
+    private var storeAndAccessoriesSection: some View {
+        VStack(spacing: 16) {
+            ForEach(store.bundles) { bundle in
+                NavigationLink { EvalBundleDetailView(bundle: bundle) } label: {
+                    EvalFeaturedBundleCard(bundle: bundle)
+                }
+                .buttonStyle(.plain)
+            }
+
+            if !store.accessories.isEmpty {
+                NavigationLink { ValorantStoreView() } label: {
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        EvalAccessoryBundleCard(
+                            accessories: store.accessories,
+                            timerText: EvalCountdown.text(until: store.accessoriesEnd, now: context.date)
+                        )
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+
+            if !store.bundles.isEmpty || !store.accessories.isEmpty {
+                sectionDivider
+            }
+
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 8) {
+                    Text("Offres quotidiennes")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(EvalColors.text)
+                    Spacer()
+                    if store.offersEnd != nil {
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(EvalCountdown.text(until: store.offersEnd, now: context.date))
+                        }
+                        .font(.system(size: 18).monospacedDigit())
+                        .foregroundStyle(secondary)
+                        Image(systemName: "clock")
+                            .font(.system(size: 14))
+                            .foregroundStyle(secondary)
+                    }
+                }
 
                 let wished = store.storeOffers.filter { store.isWished($0.id) }
                 if !wished.isEmpty {
                     Label("\(wished.map(\.name).joined(separator: ", ")) \(wished.count > 1 ? "sont" : "est") dans votre boutique !", systemImage: "heart.fill")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(EvalAccent.color)
-                        .padding(.horizontal, 4)
                 }
+
                 ForEach(store.storeOffers) { offer in
-                    EvalDailyOfferCard(offer: offer, wished: store.isWished(offer.id))
-                }
-            }
-
-            VStack(spacing: 0) {
-                NavigationLink { EvalWishlistView() } label: {
-                HStack {
-                    Image(systemName: "heart")
-                        .font(.system(size: 18))
-                        .foregroundStyle(EvalAccent.color)
-                        .frame(width: 24)
-                    Text("Liste de souhaits")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(EvalColors.text)
-                    Spacer()
-                    Text("\(store.wishlistCount)")
-                        .font(.system(size: 17))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-
-                Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 54)
-
-                NavigationLink {
-                    EvalShopHistoryView()
-                } label: {
-                    HStack {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 18))
-                            .foregroundStyle(EvalAccent.color)
-                            .frame(width: 24)
-                        Text("Historique de la boutique")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(EvalColors.text)
-                        Spacer()
-                        Text("\(store.storeHistoryCount)")
-                            .font(.system(size: 17))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: 0x8E8E93))
+                    NavigationLink { EvalOfferDetailView(offer: offer) } label: {
+                        EvalDailyOfferCard(offer: offer, wished: store.isWished(offer.id))
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
-            .background(EvalColors.card2, in: .rect(cornerRadius: 20))
+
+            sectionDivider
+
+            NavigationLink { EvalWishlistView() } label: {
+                equipNavRow(icon: "heart", title: "Liste de souhaits", value: "\(store.wishlistCount)")
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink { EvalShopHistoryView() } label: {
+                equipNavRow(icon: "clock.arrow.circlepath", title: "Historique de la boutique", value: "\(store.storeHistoryCount)")
+            }
+            .buttonStyle(.plain)
+
+            EvalWalletBar(wallet: store.wallet)
         }
     }
 
-    private var equipPrivacyRow: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "hand.raised.fill")
-                .font(.system(size: 18))
-                .foregroundStyle(EvalAccent.color)
-                .frame(width: 24)
-
-            Text("Paramètres de confidentialité")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(EvalColors.text)
-
-            Spacer()
-
-            HStack(spacing: 6) {
-                Image(systemName: "eye.slash.fill")
-                    .font(.caption2)
-                Image(systemName: "123.rectangle.fill")
-                    .font(.caption2)
-                Image(systemName: "hourglass.badge.slash")
-                    .font(.caption2)
-            }
-            .foregroundStyle(Color(hex: 0x8E8E93))
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x8E8E93))
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-    }
-
-    private func equipNavRow(icon: String, title: String, value: String? = nil) -> some View {
+    private func equipNavRow(icon: String, title: String, value: String? = nil, showsChevron: Bool = true) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(.system(size: 20))
                 .foregroundStyle(EvalAccent.color)
-                .frame(width: 24)
+                .frame(width: 28)
 
             Text(title)
-                .font(.system(size: 18, weight: .medium))
+                .font(.system(size: 18))
                 .foregroundStyle(EvalColors.text)
+                .lineLimit(1)
 
-            Spacer()
+            Spacer(minLength: 8)
 
             if let value {
                 Text(value)
-                    .font(.system(size: 17))
-                    .foregroundStyle(Color(hex: 0x8E8E93))
+                    .font(.system(size: 18))
+                    .foregroundStyle(secondary)
+                    .lineLimit(1)
             }
 
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x8E8E93))
+            if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(secondary)
+            }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .frame(minHeight: 52)
+        .background(EvalColors.card2, in: .rect(cornerRadius: 18))
+        .contentShape(.rect)
     }
 
-    private func subtabPill(title: String, index: Int, hasChevron: Bool = false) -> some View {
+    private func subtabPill(title: String, index: Int) -> some View {
         let isSelected = contractsSubtab == index
         return Button {
-            contractsSubtab = index
-        } label: {
-            HStack(spacing: 4) {
-                Text(title)
-                    .font(.system(size: 19, weight: .medium))
-                    .foregroundStyle(isSelected ? EvalAccent.color : Color(hex: 0x8E8E93))
-
-                if hasChevron {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(isSelected ? EvalAccent.color : Color(hex: 0x8E8E93))
-                }
+            withAnimation(.snappy(duration: 0.25)) {
+                contractsSubtab = index
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(
-                isSelected ? Color(hex: 0x3A3A3C) : Color.clear,
-                in: .capsule
-            )
-            .overlay(
-                Capsule().strokeBorder(isSelected ? EvalColors.text.opacity(0.12) : Color.clear, lineWidth: 1)
-            )
+        } label: {
+            Text(title)
+                .font(.system(size: 17))
+                .foregroundStyle(isSelected ? EvalAccent.color : secondary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(isSelected ? Color(hex: 0x3A3A3C) : Color.clear, in: .capsule)
+                .overlay(Capsule().strokeBorder(isSelected ? EvalColors.text.opacity(0.12) : Color.clear, lineWidth: 1))
+                .contentShape(.capsule)
         }
         .buttonStyle(.plain)
     }
@@ -2172,42 +2183,53 @@ struct EvalGameView: View {
         @ViewBuilder rightContent: () -> Right,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
                 Button {
-                    withAnimation(.snappy(duration: 0.28, extraBounce: 0.02)) {
+                    withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {
                         isExpanded.wrappedValue.toggle()
                     }
                 } label: {
-                    HStack(spacing: 14) {
+                    HStack(spacing: 10) {
                         Image(systemName: "chevron.down")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(EvalAccent.color)
                             .rotationEffect(.degrees(isExpanded.wrappedValue ? 0 : -90))
+                            .frame(width: 22)
 
                         Text(title)
-                            .font(.system(size: 24, weight: .bold))
+                            .font(.system(size: 22, weight: .bold))
                             .foregroundStyle(EvalColors.text)
 
                         Spacer()
                     }
-                    .contentShape(Rectangle())
+                    .frame(minHeight: 32)
+                    .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityValue(isExpanded.wrappedValue ? "Déplié" : "Replié")
 
-                rightContent()
+                if isExpanded.wrappedValue {
+                    rightContent()
+                        .transition(.opacity)
+                }
             }
 
             if isExpanded.wrappedValue {
-                Divider().overlay(EvalColors.text.opacity(0.1))
-                content()
-                    .environment(\.evalSurface, EvalColors.card2)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                VStack(alignment: .leading, spacing: 16) {
+                    sectionDivider
+                    content()
+                        .environment(\.evalSurface, EvalColors.card2)
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
             }
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(EvalColors.card, in: .rect(cornerRadius: 28))
         .clipShape(.rect(cornerRadius: 28))
+        .animation(.easeInOut(duration: 0.2), value: store.party.isLoading)
     }
 
     @ViewBuilder

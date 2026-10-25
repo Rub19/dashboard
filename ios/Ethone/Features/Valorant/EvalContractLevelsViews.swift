@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Page de niveaux (passe de saison, contrat d'agent)
-
 struct ContractLevelRow: Identifiable, Hashable {
     enum State: Hashable { case done, current(Double, String), next, locked, free }
     enum Cost: Hashable { case xp, credits }
@@ -40,25 +38,33 @@ struct EvalContractLevelsPage: View {
             .padding(.horizontal, 18)
             .padding(.vertical, 8)
 
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 14) {
-                    ForEach(chapters, id: \.self) { chapter in
-                        Text("Chapitre \(chapter)").font(.system(size: 19, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 20)
-                        let items = rows.filter { $0.chapter == chapter }
-                        VStack(spacing: 0) {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { index, row in
-                                rowView(row)
-                                if index < items.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 98) }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 14) {
+                        ForEach(chapters, id: \.self) { chapter in
+                            Text("Chapitre \(chapter)").font(.system(size: 19, weight: .semibold)).foregroundStyle(Color(hex: 0x8E8E93)).padding(.leading, 20)
+                            let items = rows.filter { $0.chapter == chapter }
+                            VStack(spacing: 0) {
+                                ForEach(Array(items.enumerated()), id: \.element.id) { index, row in
+                                    rowView(row).id(row.id)
+                                    if index < items.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 98) }
+                                }
                             }
+                            .background(EvalColors.card, in: .rect(cornerRadius: 26))
+                            .clipShape(.rect(cornerRadius: 26))
                         }
-                        .background(EvalColors.card, in: .rect(cornerRadius: 26))
+                        if rows.isEmpty {
+                            Text("Chargement…").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93)).frame(maxWidth: .infinity)
+                        }
                     }
-                    if rows.isEmpty {
-                        Text("Chargement…").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93)).frame(maxWidth: .infinity)
-                    }
+                    .padding(18)
+                    .padding(.bottom, 20)
                 }
-                .padding(18)
-                .padding(.bottom, 20)
+                .task(id: focusID) {
+                    guard let focusID else { return }
+                    try? await Task.sleep(for: .milliseconds(150))
+                    proxy.scrollTo(focusID, anchor: .center)
+                }
             }
         }
         .background(EvalColors.background.ignoresSafeArea())
@@ -68,6 +74,15 @@ struct EvalContractLevelsPage: View {
     }
 
     private var chapters: [Int] { Array(Set(rows.map(\.chapter))).sorted() }
+
+    private var focusID: String? { rows.first { isFocus($0) }?.id }
+
+    private func isFocus(_ row: ContractLevelRow) -> Bool {
+        switch row.state {
+        case .current, .next: true
+        default: false
+        }
+    }
 
     private func resolve() async {
         var pending: [String: String] = [:]
@@ -106,6 +121,7 @@ struct EvalContractLevelsPage: View {
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
+            .background(isFocus(row) ? EvalAccent.color.opacity(0.14) : .clear)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -171,7 +187,6 @@ struct EvalContractLevelsPage: View {
     }
 }
 
-/// Passe de combat de l'acte en cours, chapitre par chapitre.
 struct EvalSeasonPassPage: View {
     @Environment(AppModel.self) private var model
     @State private var contract: RiotContractCatalog.Contract?

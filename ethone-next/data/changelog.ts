@@ -60840,4 +60840,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_83_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_83_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_83_0_de);
 
+const v1_84_0_fr: ChangelogEntry = {
+  version: "v1.84.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS : onglet Jeu refait comme VALPAW",
+  items: [
+    "Sections Groupe, Contrats, Équipement et Boutique refaites comme VALPAW, avec ouverture et fermeture animées et indicateur de chargement du groupe",
+    "Passe de combat réparé : bon niveau, bonne récompense, carte qui ouvre la liste des niveaux avec le niveau en cours mis en avant",
+    "Boutique : page de détail des packs avec le prix de chaque élément, aperçu de chaque offre du jour (variantes, niveaux, apparitions dans votre boutique), magasin d'accessoires et liste de souhaits refaits",
+    "Équipement : choix de la carte et du titre avec compteurs et favoris, armes, nouvelle page Expressions avec la roue des sprays, confidentialité et préréglages",
+    "Cartes de match : icône officielle de l'agent comme VALPAW, rang actuel et pseudo de chaque joueur dans le tableau des scores",
+  ],
+};
+
+const v1_84_0_en: ChangelogEntry = {
+  version: "v1.84.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Play tab rebuilt like VALPAW",
+  items: [
+    "Party, Contracts, Loadout and Store sections rebuilt like VALPAW, with animated expand and collapse and a party loading indicator",
+    "Battle pass fixed: right level, right reward, card opens the level list with the current level highlighted",
+    "Store: bundle detail with each item's price, preview of every daily offer (variants, levels, appearances in your store), accessory store and wishlist rebuilt",
+    "Loadout: card and title pickers with counters and favorites, weapons, new Expressions page with the spray wheel, privacy and presets",
+    "Match cards: official agent icon like VALPAW, current rank and name of every player in the scoreboard",
+  ],
+};
+
+const v1_84_0_es: ChangelogEntry = {
+  version: "v1.84.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: pestaña Juego rehecha como VALPAW",
+  items: [
+    "Secciones Grupo, Contratos, Equipamiento y Tienda rehechas como VALPAW, con apertura y cierre animados e indicador de carga del grupo",
+    "Pase de batalla reparado: nivel y recompensa correctos, la tarjeta abre la lista de niveles con el nivel actual resaltado",
+    "Tienda: detalle de paquetes con el precio de cada objeto, vista previa de cada oferta diaria (variantes, niveles, apariciones en tu tienda), tienda de accesorios y lista de deseos rehechas",
+    "Equipamiento: selección de tarjeta y título con contadores y favoritos, armas, nueva página Expresiones con la rueda de grafitis, privacidad y preajustes",
+    "Tarjetas de partida: icono oficial del agente como VALPAW, rango actual y nombre de cada jugador en el marcador",
+  ],
+};
+
+const v1_84_0_de: ChangelogEntry = {
+  version: "v1.84.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Spiel-Tab wie VALPAW neu gebaut",
+  items: [
+    "Bereiche Gruppe, Verträge, Ausrüstung und Shop wie VALPAW neu gebaut, mit animiertem Auf- und Zuklappen und Ladeanzeige der Gruppe",
+    "Battle Pass repariert: richtiges Level, richtige Belohnung, die Karte öffnet die Levelliste mit hervorgehobenem aktuellem Level",
+    "Shop: Bundle-Details mit dem Preis jedes Inhalts, Vorschau jedes Tagesangebots (Varianten, Stufen, Auftritte in deinem Shop), Zubehörshop und Wunschliste neu",
+    "Ausrüstung: Karten- und Titelauswahl mit Zählern und Favoriten, Waffen, neue Seite Ausdrücke mit dem Spray-Rad, Privatsphäre und Voreinstellungen",
+    "Match-Karten: offizielles Agentensymbol wie VALPAW, aktueller Rang und Name jedes Spielers auf der Anzeigetafel",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_84_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_84_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_84_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_84_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

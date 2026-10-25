@@ -205,10 +205,9 @@ final class RiotPartyModel {
     }
 }
 
-// MARK: - Carte du groupe (onglet Jeu)
-
 struct EvalPartyCard: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.evalSurface) private var surface
     @State private var showingSettings = false
 
     private var store: ValorantStore { model.valorant }
@@ -229,11 +228,13 @@ struct EvalPartyCard: View {
                 }
             } else {
                 Text("Il n'y a actuellement aucun groupe!")
-                    .font(.system(size: 19))
+                    .font(.system(size: 18))
                     .foregroundStyle(Color(hex: 0x8E8E93))
+                    .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 26)
-                    .background(EvalColors.card, in: .rect(cornerRadius: 22))
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 12)
+                    .background(surface, in: .rect(cornerRadius: 18))
             }
         }
         .sheet(isPresented: $showingSettings) { EvalPartySettingsSheet() }
@@ -281,7 +282,7 @@ struct EvalPartyCard: View {
             }
         }
         .padding(14)
-        .background(EvalColors.card2.opacity(0.6), in: .rect(cornerRadius: 22))
+        .background(surface, in: .rect(cornerRadius: 18))
     }
 
     private func controls(_ party: RiotPartyState) -> some View {
@@ -292,7 +293,7 @@ struct EvalPartyCard: View {
                 accessButton(open: false, selected: !party.isOpen, enabled: leader)
             }
             .padding(4)
-            .background(EvalColors.card2.opacity(0.6), in: .capsule)
+            .background(surface, in: .capsule)
 
             Spacer()
 
@@ -306,7 +307,7 @@ struct EvalPartyCard: View {
                     .foregroundStyle(EvalAccent.color)
                     .padding(.horizontal, 22)
                     .padding(.vertical, 12)
-                    .background(EvalColors.card2.opacity(0.6), in: .capsule)
+                    .background(surface, in: .capsule)
                 }
                 .buttonStyle(.plain)
                 .disabled(partyModel.working)
@@ -321,7 +322,7 @@ struct EvalPartyCard: View {
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(EvalAccent.color)
                     .frame(width: 50, height: 50)
-                    .background(EvalColors.card2.opacity(0.6), in: .circle)
+                    .background(surface, in: .circle)
             }
             .buttonStyle(.plain)
         }

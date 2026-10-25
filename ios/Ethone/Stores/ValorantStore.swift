@@ -182,6 +182,7 @@ struct ValorantStoreBundle: Identifiable, Hashable {
     let price: Int?
     let expiresText: String?
     let isOwned: Bool
+    var endsAt: Date? = nil
 }
 
 struct ValorantAccessoryItem: Identifiable, Hashable, Codable {
@@ -388,9 +389,11 @@ final class ValorantStore {
         if !snap.title.isEmpty { equipmentTitle = snap.title }
         if !snap.cardID.isEmpty { equipmentBannerURL = "https://media.valorant-api.com/playercards/\(snap.cardID)/wideart.png" }
         equippedSprays = snap.sprays
-        battlepassCurrentLevel = snap.battlepassLevel
-        battlepassCurrentXP = snap.battlepassXP
-        battlepassLevelXP = battlepassLevels.first { $0.level == snap.battlepassLevel + 1 }?.xpCost ?? 0
+        if let level = snap.battlepassLevel, let xp = snap.battlepassXP {
+            battlepassCurrentLevel = level
+            battlepassCurrentXP = xp
+            battlepassLevelXP = battlepassLevels.first { $0.level == level + 1 }?.xpCost ?? 0
+        }
         weeklyMissionsEnd = snap.weeklyMissionsEnd
         activeMissions = snap.missions
         dailyMilestones = snap.dailyMilestones
@@ -1034,7 +1037,6 @@ final class ValorantStore {
         guard let cache else { return }
         acts = Dictionary(cache.acts.map { ($0.id.lowercased(), EvalAct(id: $0.id, name: $0.name, start: $0.start, end: $0.end)) }, uniquingKeysWith: { a, _ in a })
         battlepassEndDate = currentAct?.end
-        if let current = currentAct { battlepassTitle = current.name }
         if profile != nil { profile?.actName = currentAct?.name ?? "" }
     }
 
@@ -1506,8 +1508,6 @@ final class ValorantStore {
     }
 
     func loadBattlepass() async {
-        guard isConfigured else { return }
-        // Passe de l'acte en cours (l'identifiant change à chaque acte).
         if acts.isEmpty { await loadActs() }
         if let catalog = await RiotContractCatalog.load(), let current = catalog.battlepass(actID: currentAct?.id) {
             RiotGameService.battlepassContract = current.id

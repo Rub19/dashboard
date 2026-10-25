@@ -32,6 +32,7 @@ enum BattlepassRewardResolver {
         case "Currency": path = "currencies"
         case "Title": path = "playertitles"
         case "Character": path = "agents"
+        case "Totem": path = "flex"
         default: return nil
         }
         guard let url = URL(string: "https://valorant-api.com/v1/\(path)/\(uuid)?language=fr-FR"),
@@ -115,53 +116,101 @@ private func remaining(_ date: Date?, now: Date, days: Bool) -> String {
 struct EvalBattlepassContractView: View {
     @Environment(AppModel.self) private var model
     @State private var showingProjection = false
+    @State private var contract: RiotContractCatalog.Contract?
+    @State private var rewardInfo: BattlepassRewardResolver.Info?
 
     private var store: ValorantStore { model.valorant }
     private var xp: RiotAccountXP? { store.contracts.accountXP }
 
+    private var paidLevels: [RiotContractCatalog.Level] { contract?.levels.filter { !$0.isFree } ?? [] }
+    private var levelCount: Int { paidLevels.isEmpty ? store.battlepassLevels.count : paidLevels.count }
+    private var reached: Int { min(store.battlepassCurrentLevel, levelCount) }
+    private var isFinished: Bool { levelCount > 0 && reached >= levelCount }
+    private var targetLevel: RiotContractCatalog.Level? {
+        guard !paidLevels.isEmpty else { return nil }
+        return paidLevels[min(reached, paidLevels.count - 1)]
+    }
+    private var levelXP: Int {
+        if isFinished { return 0 }
+        return targetLevel?.xp ?? store.battlepassLevelXP
+    }
+    private var currentXP: Int { isFinished ? 0 : store.battlepassCurrentXP }
+    private var tierProgress: Double {
+        if isFinished { return 1 }
+        return levelXP > 0 ? min(1, Double(currentXP) / Double(levelXP)) : 0
+    }
+    private var totalXP: Int { paidLevels.isEmpty ? store.totalBattlepassXP : paidLevels.reduce(0) { $0 + $1.xp } }
+    private var earnedXP: Int {
+        guard !paidLevels.isEmpty else { return store.earnedBattlepassXP }
+        return paidLevels.prefix(reached).reduce(0) { $0 + $1.xp } + currentXP
+    }
+    private var remainingXP: Int { max(0, totalXP - earnedXP) }
+    private var completionPercent: Int { totalXP > 0 ? max(0, min(100, Int(Double(earnedXP) / Double(totalXP) * 100))) : 0 }
+    private var title: String {
+        if let name = contract?.name, !name.isEmpty { return name }
+        return store.battlepassTitle.isEmpty ? "Passe de combat" : store.battlepassTitle
+    }
+    private var rewardName: String {
+        if let name = rewardInfo?.name, !name.isEmpty { return name }
+        if let reward = store.battlepassCurrentReward, !reward.name.isEmpty { return reward.name }
+        return "Récompense"
+    }
+    private var rewardIcon: String {
+        if let icon = rewardInfo?.icon, !icon.isEmpty { return icon }
+        return store.battlepassCurrentReward?.iconURL ?? ""
+    }
+
     var body: some View {
         VStack(spacing: 12) {
-            ContractCard {
-                HStack(spacing: 10) {
-                    Image(systemName: "crown.fill")
-                        .font(.system(size: 14))
-                        .foregroundStyle(.black)
-                        .frame(width: 30, height: 30)
-                        .background(EvalAccent.color, in: .circle)
-                    Text(store.battlepassTitle.isEmpty ? "Passe de combat" : store.battlepassTitle)
-                        .font(.system(size: 21, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.7)
-                    Spacer()
-                    countdownLabel(store.battlepassEndDate, days: true)
-                }
-                Divider().overlay(EvalColors.text.opacity(0.08))
-                if let reward = store.battlepassCurrentReward {
-                    HStack(spacing: 14) {
-                        AsyncImage(url: URL(string: reward.iconURL)) { $0.image?.resizable().scaledToFit() }
-                            .frame(width: 58, height: 58)
-                            .background(EvalColors.text.opacity(0.04), in: .rect(cornerRadius: 10))
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(reward.name.isEmpty ? reward.rewardType : reward.name)
-                                .font(.system(size: 20, weight: .medium)).foregroundStyle(EvalColors.text).lineLimit(2)
-                            Text("Niveau \(reward.level) / \(store.battlepassLevels.count)")
-                                .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
+            NavigationLink { EvalSeasonPassPage() } label: {
+                ContractCard {
+                    HStack(spacing: 10) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(.black)
+                            .frame(width: 30, height: 30)
+                            .background(EvalAccent.color, in: .circle)
+                        Text(title)
+                            .font(.system(size: 21, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.7)
+                        Spacer()
+                        countdownLabel(store.battlepassEndDate, days: true)
+                    }
+                    Divider().overlay(EvalColors.text.opacity(0.08))
+                    if levelCount > 0 {
+                        HStack(spacing: 14) {
+                            AsyncImage(url: URL(string: rewardIcon)) { $0.image?.resizable().scaledToFit() }
+                                .frame(width: 58, height: 58)
+                                .background(EvalColors.text.opacity(0.04), in: .rect(cornerRadius: 10))
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(rewardName)
+                                    .font(.system(size: 20, weight: .medium)).foregroundStyle(EvalColors.text).lineLimit(2).multilineTextAlignment(.leading)
+                                Text("Niveau \(reached) / \(levelCount)")
+                                    .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
+                            }
                         }
                     }
+                    ProgressBar(value: tierProgress)
+                    HStack {
+                        if isFinished {
+                            Text("Passe terminé")
+                        } else {
+                            Text("\(Int(tierProgress * 100))%  —  \(contractNumber(currentXP)) / \(contractNumber(levelXP)) XP")
+                        }
+                        Spacer()
+                        Text("\(contractNumber(max(0, levelXP - currentXP))) XP")
+                        Image(systemName: "circle.dotted")
+                    }
+                    .font(.system(size: 16).monospacedDigit())
+                    .foregroundStyle(Color(hex: 0x8E8E93))
                 }
-                ProgressBar(value: Double(store.battlepassCurrentXP) / Double(max(1, store.battlepassLevelXP)))
-                HStack {
-                    Text("\(store.battlepassCurrentTierProgressPercent)%  —  \(contractNumber(store.battlepassCurrentXP)) / \(contractNumber(store.battlepassLevelXP)) XP")
-                    Spacer()
-                    Text("\(contractNumber(max(0, store.battlepassLevelXP - store.battlepassCurrentXP))) XP")
-                    Image(systemName: "circle.dotted")
-                }
-                .font(.system(size: 16).monospacedDigit())
-                .foregroundStyle(Color(hex: 0x8E8E93))
+                .contentShape(.rect)
             }
+            .buttonStyle(.plain)
 
             projection
 
             NavigationLink { EvalSeasonPassPage() } label: {
-                Text("Voir \(store.battlepassTitle.isEmpty ? "le passe" : store.battlepassTitle)")
+                Text("Voir \(title)")
                     .font(.system(size: 20))
                     .foregroundStyle(EvalColors.text)
                     .frame(maxWidth: .infinity)
@@ -170,11 +219,18 @@ struct EvalBattlepassContractView: View {
             }
             .buttonStyle(.plain)
         }
+        .task(id: store.currentAct?.id) {
+            let catalog = await RiotContractCatalog.load()
+            contract = catalog?.battlepass(actID: store.currentAct?.id) ?? catalog?.contracts.first { $0.id == RiotGameService.battlepassContract }
+        }
+        .task(id: targetLevel.map { "\($0.type)-\($0.uuid)" }) {
+            guard let level = targetLevel else { rewardInfo = nil; return }
+            rewardInfo = await BattlepassRewardResolver.info(type: level.type, uuid: level.uuid)
+        }
     }
 
     @ViewBuilder
     private var projection: some View {
-        let remainingXP = store.remainingBattlepassXP
         let reserve = store.missionsReserveXP
         let average = xp?.averageXP ?? 0
         let pace = xp?.matchesPerDay ?? 0
@@ -198,12 +254,12 @@ struct EvalBattlepassContractView: View {
 
             if showingProjection {
                 HStack {
-                    Text("\(store.battlepassCompletionPercent)%").foregroundStyle(EvalAccent.color)
+                    Text("\(completionPercent)%").foregroundStyle(EvalAccent.color)
                     Spacer()
                     Text("Encore \(contractNumber(remainingXP)) XP").foregroundStyle(EvalColors.text)
                 }
                 .font(.system(size: 17, weight: .semibold))
-                ProgressBar(value: Double(store.battlepassCompletionPercent) / 100)
+                ProgressBar(value: Double(completionPercent) / 100)
                 Divider().overlay(EvalColors.text.opacity(0.08))
                 HStack {
                     Label("Missions hebdomadaires à venir", systemImage: "calendar.badge.plus")

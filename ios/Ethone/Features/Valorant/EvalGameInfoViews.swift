@@ -1004,7 +1004,7 @@ struct ValorantWeaponItem: Identifiable, Decodable {
     }
 
     struct WeaponSkin: Decodable, Identifiable, Hashable {
-        struct Chroma: Decodable, Hashable { let uuid: String; let displayName: String?; let displayIcon: String?; let fullRender: String?; let swatch: String? }
+        struct Chroma: Decodable, Hashable { let uuid: String; let displayName: String?; let displayIcon: String?; let fullRender: String?; let swatch: String?; let streamedVideo: String? }
         struct Level: Decodable, Hashable { let uuid: String; let displayName: String?; let levelItem: String?; let streamedVideo: String? }
         let uuid: String?
         let displayName: String

@@ -4033,6 +4033,13 @@ struct EvalSettingsView: View {
                     if let error = store.riot.lastError {
                         Text(error).font(.system(size: 15)).foregroundStyle(EvalAccent.color).padding(.horizontal, 6)
                     }
+                    if let failure = store.riot.lastFailure {
+                        Text("Dernière erreur Riot : \(failure)")
+                            .font(.system(size: 13).monospacedDigit())
+                            .foregroundStyle(Color(hex: 0x8E8E93))
+                            .textSelection(.enabled)
+                            .padding(.horizontal, 6)
+                    }
                     Text("Ajouter un compte ouvre la connexion Riot officielle. Touchez un compte pour l’afficher, glissez vers la gauche pour le retirer.")
                         .font(.system(size: 15))
                         .foregroundStyle(Color(hex: 0x8E8E93))

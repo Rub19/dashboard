@@ -61056,4 +61056,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_1_de);
 
+const v1_85_2_fr: ChangelogEntry = {
+  version: "v1.85.2",
+  date: "2026-10-25",
+  title: "E:VAL iOS : requêtes Riot plus robustes et diagnostic",
+  items: [
+    "Quand Riot répond « trop de requêtes », E:VAL attend le délai demandé puis réessaie au lieu d'afficher des écrans vides",
+    "Paramètres : la dernière erreur Riot (code, adresse, heure) s'affiche sous le compte pour savoir exactement ce qui bloque",
+  ],
+};
+
+const v1_85_2_en: ChangelogEntry = {
+  version: "v1.85.2",
+  date: "2026-10-25",
+  title: "E:VAL iOS: sturdier Riot requests and diagnostics",
+  items: [
+    "When Riot answers \"too many requests\", E:VAL waits the requested delay and retries instead of showing empty screens",
+    "Settings: the last Riot error (code, address, time) shows under the account so you know exactly what is blocking",
+  ],
+};
+
+const v1_85_2_es: ChangelogEntry = {
+  version: "v1.85.2",
+  date: "2026-10-25",
+  title: "E:VAL iOS: peticiones a Riot más robustas y diagnóstico",
+  items: [
+    "Cuando Riot responde «demasiadas peticiones», E:VAL espera el tiempo indicado y reintenta en lugar de mostrar pantallas vacías",
+    "Ajustes: el último error de Riot (código, dirección, hora) aparece bajo la cuenta para saber exactamente qué bloquea",
+  ],
+};
+
+const v1_85_2_de: ChangelogEntry = {
+  version: "v1.85.2",
+  date: "2026-10-25",
+  title: "E:VAL iOS: robustere Riot-Anfragen und Diagnose",
+  items: [
+    "Antwortet Riot mit „zu viele Anfragen“, wartet E:VAL die angegebene Zeit und versucht es erneut statt leerer Seiten",
+    "Einstellungen: der letzte Riot-Fehler (Code, Adresse, Uhrzeit) erscheint unter dem Konto, damit klar ist, was blockiert",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

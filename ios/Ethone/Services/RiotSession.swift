@@ -177,6 +177,7 @@ final class RiotSession {
 
     private(set) var credentials: Credentials?
     private(set) var lastError: String?
+    private(set) var lastFailure: String?
     private var clientVersion = ""
 
     var isLinked: Bool { credentials != nil }
@@ -278,9 +279,19 @@ final class RiotSession {
             request.setValue(clientVersion, forHTTPHeaderField: "X-Riot-ClientVersion")
         }
         request.httpBody = body
-        let (data, response) = try await URLSession.shared.data(for: request)
-        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-        guard (200..<300).contains(status) else { throw RiotError.http(status) }
+        var (data, response) = try await URLSession.shared.data(for: request)
+        var status = (response as? HTTPURLResponse)?.statusCode ?? 0
+        if status == 429 {
+            let wait = Double((response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Retry-After") ?? "") ?? 2
+            try? await Task.sleep(for: .seconds(min(max(wait, 1), 6)))
+            (data, response) = try await URLSession.shared.data(for: request)
+            status = (response as? HTTPURLResponse)?.statusCode ?? 0
+        }
+        guard (200..<300).contains(status) else {
+            let path = URL(string: url)?.path ?? url
+            lastFailure = "Riot \(status) · \(method) \(path) · \(Date().formatted(date: .omitted, time: .standard))"
+            throw RiotError.http(status)
+        }
         return data
     }
 
@@ -296,7 +307,10 @@ final class RiotSession {
 
     /// Appel authentifié à pd.* / glz.* avec les en-têtes du client VALORANT.
     func game<T: Decodable>(_ path: String, host: GameHost = .pd, method: String = "GET", body: Data? = nil) async throws -> T {
-        guard let creds = await validCredentials() else { throw RiotError.http(401) }
+        guard let creds = await validCredentials() else {
+            lastFailure = "Session absente · reconnexion impossible · \(Date().formatted(date: .omitted, time: .standard))"
+            throw RiotError.http(401)
+        }
         await loadClientVersion()
         let base: String
         switch host {
@@ -309,7 +323,10 @@ final class RiotSession {
     /// Variante brute : réponses vides (204) ou au format non documenté.
     @discardableResult
     func gameData(_ path: String, host: GameHost = .pd, method: String = "GET", body: Data? = nil) async throws -> Data {
-        guard let creds = await validCredentials() else { throw RiotError.http(401) }
+        guard let creds = await validCredentials() else {
+            lastFailure = "Session absente · reconnexion impossible · \(Date().formatted(date: .omitted, time: .standard))"
+            throw RiotError.http(401)
+        }
         await loadClientVersion()
         let base: String
         switch host {

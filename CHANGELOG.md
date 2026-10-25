@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.85.2 — 2026-10-25
+
+**E:VAL iOS : requêtes Riot plus robustes et diagnostic**
+
+- Quand Riot répond « trop de requêtes », E:VAL attend le délai demandé puis réessaie au lieu d'afficher des écrans vides
+- Paramètres : la dernière erreur Riot (code, adresse, heure) s'affiche sous le compte pour savoir exactement ce qui bloque
+
 ## v1.85.1 — 2026-10-25
 
 **E:VAL iOS : affichage instantané**

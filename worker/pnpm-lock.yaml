@@ -16,8 +16,8 @@ importers:
         specifier: ^13.3.2
         version: 13.3.2
       postal-mime:
-        specifier: ^4.0.2
-        version: 4.0.6
+        specifier: ^4.0.8
+        version: 4.0.8
     devDependencies:
       wrangler:
         specifier: ^4.149.0
@@ -511,8 +511,8 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
-  postal-mime@4.0.6:
-    resolution: {integrity: sha512-3ULO4UkSkxNURlfq4M8GvFotyJjMtuKT87sYu3OXUy+b/XEFhXne4mNVgcHLoUM6BGGFc8wAUFVchplOIhgV/g==}
+  postal-mime@4.0.8:
+    resolution: {integrity: sha512-nnAgc4a9hn7zYuQmX4C7LU+fN47kR5S8cE8zvB/vZ2NimNDbaj+ISZJ9qe3CKIfn2uOTwwz4nQeIyljvdFNgOA==}
     engines: {node: '>=20'}
 
   pvtsutils@1.3.6:
@@ -1016,7 +1016,7 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  postal-mime@4.0.6: {}
+  postal-mime@4.0.8: {}
 
   pvtsutils@1.3.6:
     dependencies:

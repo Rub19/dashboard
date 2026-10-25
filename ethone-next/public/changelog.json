@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.86.1",
+    "date": "2026-10-25",
+    "title": "E:VAL : temps de file et sélection d'agent automatique",
+    "items": [
+      "Après « Démarrer », le bouton affiche le temps passé en file d'attente",
+      "Le groupe se rafraîchit toutes les 3 secondes en file et en sélection d'agent",
+      "Dès qu'une partie est trouvée, la page de sélection d'agent s'ouvre toute seule",
+      "Raccourcis Armes, Expressions et Carte sur la sélection d'agent pour changer d'équipement"
+    ]
+  },
+  {
     "version": "v1.86.0",
     "date": "2026-10-25",
     "title": "E:VAL : partie en direct comme VALPAW",
@@ -617,15 +628,6 @@
     "title": "Tout le bot dans la langue du serveur",
     "items": [
       "Les réponses, messages privés, boutons, menus et fenêtres de près de 1 000 textes du bot (musique, économie, jeux, salons vocaux, bienvenue, rappels, tags, starboard, sondages, tickets, Spotify, sécurité…) suivent la langue choisie pour le serveur : français, anglais, espagnol ou allemand.",
-      "Les messages personnalisés écrits par l'équipe restent tels quels."
-    ]
-  },
-  {
-    "version": "v1.75.124",
-    "date": "2026-10-16",
-    "title": "Le bot parle la langue du serveur : sanctions et signalements",
-    "items": [
-      "Les sanctions (/warn, /mute, /ban…), leurs messages privés, le bouton Annuler, l'historique, les appels et tout le système de signalement s'affichent dans la langue choisie pour le serveur (français, anglais, espagnol ou allemand).",
       "Les messages personnalisés écrits par l'équipe restent tels quels."
     ]
   }

@@ -61489,4 +61489,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_86_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_86_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_86_0_de);
 
+const v1_86_1_fr: ChangelogEntry = {
+  version: "v1.86.1",
+  date: "2026-10-25",
+  title: "E:VAL : temps de file et sélection d'agent automatique",
+  items: [
+    "Après « Démarrer », le bouton affiche le temps passé en file d'attente",
+    "Le groupe se rafraîchit toutes les 3 secondes en file et en sélection d'agent",
+    "Dès qu'une partie est trouvée, la page de sélection d'agent s'ouvre toute seule",
+    "Raccourcis Armes, Expressions et Carte sur la sélection d'agent pour changer d'équipement",
+  ],
+};
+
+const v1_86_1_en: ChangelogEntry = {
+  version: "v1.86.1",
+  date: "2026-10-25",
+  title: "E:VAL: queue timer and automatic agent select",
+  items: [
+    "After \"Start\", the button shows the time spent in queue",
+    "The party refreshes every 3 seconds while queueing and in agent select",
+    "As soon as a match is found, the agent select page opens by itself",
+    "Weapons, Expressions and Card shortcuts in agent select to change your loadout",
+  ],
+};
+
+const v1_86_1_es: ChangelogEntry = {
+  version: "v1.86.1",
+  date: "2026-10-25",
+  title: "E:VAL: tiempo en cola y selección de agente automática",
+  items: [
+    "Tras «Iniciar», el botón muestra el tiempo en cola",
+    "El grupo se actualiza cada 3 segundos en cola y en selección de agente",
+    "En cuanto se encuentra partida, la página de selección de agente se abre sola",
+    "Atajos Armas, Expresiones y Tarjeta en la selección de agente para cambiar el equipamiento",
+  ],
+};
+
+const v1_86_1_de: ChangelogEntry = {
+  version: "v1.86.1",
+  date: "2026-10-25",
+  title: "E:VAL: Warteschlangenzeit und automatische Agentenauswahl",
+  items: [
+    "Nach „Starten“ zeigt die Schaltfläche die Zeit in der Warteschlange",
+    "Die Gruppe aktualisiert sich in der Warteschlange und Agentenauswahl alle 3 Sekunden",
+    "Sobald ein Spiel gefunden ist, öffnet sich die Agentenauswahl von selbst",
+    "Verknüpfungen zu Waffen, Ausdrücken und Karte in der Agentenauswahl, um die Ausrüstung zu ändern",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_86_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_86_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_86_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_86_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

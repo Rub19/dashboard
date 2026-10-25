@@ -1827,7 +1827,7 @@ struct EvalGameView: View {
             await store.refreshGroup()
             groupCycleStart = Date()
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(Self.groupRefreshInterval))
+                try? await Task.sleep(for: .seconds(store.party.party?.isQueueing == true || store.live.match?.isPregame == true ? 3 : Self.groupRefreshInterval))
                 guard !Task.isCancelled else { break }
                 await store.refreshGroup()
                 groupCycleStart = Date()

@@ -24,6 +24,7 @@ struct RiotPartyState: Equatable {
     let eligibleQueues: [String]
     let preferredPods: [String]
     let inviteCode: String?
+    let queueEntry: Date?
     var members: [Member]
 
     var isQueueing: Bool { state.uppercased() == "MATCHMAKING" }
@@ -110,6 +111,7 @@ final class RiotPartyModel {
             )
         }
         let code = json["InviteCode"]?.stringValue ?? json["inviteCode"]?.stringValue
+        let entry = json["QueueEntryTime"]?.stringValue.flatMap { Self.riotDate.date(from: $0) }
         return RiotPartyState(
             id: json["ID"]?.stringValue ?? "",
             state: json["State"]?.stringValue ?? "",
@@ -118,9 +120,18 @@ final class RiotPartyModel {
             eligibleQueues: (json["EligibleQueues"]?.arrayValue ?? []).compactMap(\.stringValue),
             preferredPods: (json["MatchmakingData"]?["PreferredGamePods"]?.arrayValue ?? []).compactMap(\.stringValue),
             inviteCode: (code?.isEmpty ?? true) ? nil : code,
+            queueEntry: (entry?.timeIntervalSince1970 ?? 0) > 86400 ? entry : nil,
             members: members
         )
     }
+
+    private static let riotDate: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone(identifier: "UTC")
+        f.dateFormat = "yyyy.MM.dd-HH.mm.ss"
+        return f
+    }()
 
     // MARK: Actions
 
@@ -349,6 +360,7 @@ struct EvalPartyCard: View {
                 Button { Task { await partyModel.toggleMatchmaking(store.riot) } } label: {
                     HStack(spacing: 8) {
                         Text(party.isQueueing ? "Annuler" : "Démarrer")
+                        if party.isQueueing { queueTimer(party) }
                         Image(systemName: party.isQueueing ? "stop.fill" : "play.fill")
                     }
                     .font(.system(size: 20, weight: .medium))
@@ -360,7 +372,12 @@ struct EvalPartyCard: View {
                 .buttonStyle(.plain)
                 .disabled(partyModel.working)
             } else if party.isQueueing {
-                Text("Recherche…").font(.system(size: 17)).foregroundStyle(Color(hex: 0x8E8E93))
+                HStack(spacing: 6) {
+                    Text("Recherche…")
+                    queueTimer(party)
+                }
+                .font(.system(size: 17))
+                .foregroundStyle(Color(hex: 0x8E8E93))
             }
 
             Spacer()
@@ -373,6 +390,13 @@ struct EvalPartyCard: View {
                     .background(surface, in: .circle)
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    private func queueTimer(_ party: RiotPartyState) -> some View {
+        TimelineView(.periodic(from: .now, by: 1)) { ctx in
+            let seconds = max(0, Int(ctx.date.timeIntervalSince(party.queueEntry ?? ctx.date)))
+            Text(String(format: "%d:%02d", seconds / 60, seconds % 60)).monospacedDigit()
         }
     }
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.86.1 — 2026-10-25
+
+**E:VAL : temps de file et sélection d'agent automatique**
+
+- Après « Démarrer », le bouton affiche le temps passé en file d'attente
+- Le groupe se rafraîchit toutes les 3 secondes en file et en sélection d'agent
+- Dès qu'une partie est trouvée, la page de sélection d'agent s'ouvre toute seule
+- Raccourcis Armes, Expressions et Carte sur la sélection d'agent pour changer d'équipement
+
 ## v1.86.0 — 2026-10-25
 
 **E:VAL : partie en direct comme VALPAW**

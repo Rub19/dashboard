@@ -214,10 +214,23 @@ final class RiotLiveMatchModel {
 struct EvalLiveMatchCard: View {
     @Environment(AppModel.self) private var model
     @Environment(\.evalSurface) private var surface
+    @State private var showing = false
+    @State private var openedFor = ""
 
     var body: some View {
+        content
+            .navigationDestination(isPresented: $showing) { EvalLiveMatchView() }
+            .onChange(of: model.valorant.live.match?.id) { _, id in
+                guard let id, model.valorant.live.match?.isPregame == true, openedFor != id else { return }
+                openedFor = id
+                showing = true
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         if let match = model.valorant.live.match {
-            NavigationLink { EvalLiveMatchView() } label: {
+            Button { showing = true } label: {
                 HStack(spacing: 14) {
                     Image(systemName: match.isPregame ? "person.crop.square.badge.camera" : "list.bullet.rectangle")
                         .font(.system(size: 24))
@@ -256,6 +269,7 @@ struct EvalLiveMatchView: View {
                 header(match)
                 ScrollView {
                     VStack(spacing: 12) {
+                        if match.isPregame { loadoutLinks }
                         let allies = match.players.filter { $0.team == match.myTeam }
                         let enemies = match.players.filter { $0.team != match.myTeam }
                         ForEach(allies) { row($0, ally: true) }
@@ -284,6 +298,24 @@ struct EvalLiveMatchView: View {
                 try? await Task.sleep(for: .seconds(5))
             }
         }
+    }
+
+    private var loadoutLinks: some View {
+        HStack(spacing: 10) {
+            NavigationLink { EvalWeaponLoadoutView() } label: { loadoutChip("Armes", "scope") }
+            NavigationLink { EvalSprayLoadoutView() } label: { loadoutChip("Expressions", "circle.grid.cross") }
+            NavigationLink { EvalCardPickerView() } label: { loadoutChip("Carte", "rectangle.portrait") }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func loadoutChip(_ title: String, _ symbol: String) -> some View {
+        Label(title, systemImage: symbol)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundStyle(EvalAccent.color)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+            .background(EvalColors.card, in: .capsule)
     }
 
     private var topBar: some View {

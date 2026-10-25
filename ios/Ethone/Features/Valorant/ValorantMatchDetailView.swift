@@ -112,6 +112,7 @@ struct ValorantMatchDetailView: View {
     var initialTarget: String? = nil
 
     @State private var evalMatch: EvalMatch?
+    @State private var liveTiers: [String: Int] = [:]
     @State private var loadFailed = false
     @State private var selectedTab: MatchDetailTab = .summary
     @State private var sortBy: PlayerSortCriteria = .acs
@@ -174,6 +175,8 @@ struct ValorantMatchDetailView: View {
             if let loaded = await store.evalMatch(id: match.id) {
                 targetPUUID = targetPUUID.isEmpty ? (initialTarget ?? loaded.player(store.puuid)?.puuid ?? match.myPlayer?.id ?? "") : targetPUUID
                 evalMatch = loaded
+                if let enriched = await store.riotEnriched(loaded) { evalMatch = enriched }
+                liveTiers = await store.currentTiers(for: (evalMatch ?? loaded).players.filter { $0.tier == 0 }.map(\.puuid))
             } else {
                 loadFailed = true
             }
@@ -438,6 +441,7 @@ struct ValorantMatchDetailView: View {
 
     private func tier(of p: EvalMatch.Player) -> Int {
         if p.tier > 0 { return p.tier }
+        if let live = liveTiers[p.puuid], live > 0 { return live }
         return p.puuid == model.valorant.puuid ? model.valorant.currentTier : 0
     }
 

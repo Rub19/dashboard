@@ -1039,6 +1039,52 @@ final class ValorantStore {
     }
 
     /// Match complet pour l'écran de détail (disque d'abord, sinon Supabase).
+    func riotEnriched(_ match: EvalMatch) async -> EvalMatch? {
+        guard riot.isLinked, match.kills.allSatisfy({ $0.vp == nil }),
+              let catalog = await RiotMatches.catalog(),
+              let fresh = try? await RiotMatches.match(riot, id: match.id, catalog: catalog),
+              fresh.kills.contains(where: { $0.vp != nil }) else { return nil }
+        if evalMatches[match.id] != nil {
+            evalMatches[match.id] = fresh
+            if let cached = DiskCache.read(AccountCache.self, key: accountCacheKey) {
+                let updated = cached.matches.map { $0.id == fresh.id ? fresh : $0 }
+                DiskCache.write(AccountCache(account: cached.account, syncedAt: cached.syncedAt, matches: updated), key: accountCacheKey)
+            }
+        }
+        return fresh
+    }
+
+    private var playerTierCache: [String: (tier: Int, at: Date)] = [:]
+
+    func currentTiers(for puuids: [String]) async -> [String: Int] {
+        guard riot.isLinked else { return [:] }
+        var result: [String: Int] = [:]
+        var missing: [String] = []
+        for id in Set(puuids) {
+            if let hit = playerTierCache[id], Date().timeIntervalSince(hit.at) < 3600 { result[id] = hit.tier } else { missing.append(id) }
+        }
+        let session = riot
+        let season = currentAct?.id.lowercased()
+        await withTaskGroup(of: (String, Int).self) { group in
+            for id in missing {
+                group.addTask {
+                    guard let raw = try? await session.gameData("/mmr/v1/players/\(id)"),
+                          let json = try? JSONDecoder().decode(JSONValue.self, from: raw) else { return (id, 0) }
+                    let latest = json["LatestCompetitiveUpdate"]?["TierAfterUpdate"]?.intValue ?? 0
+                    if latest > 0 { return (id, latest) }
+                    let seasons = json["QueueSkills"]?["competitive"]?["SeasonalInfoBySeasonID"]?.objectValue ?? [:]
+                    let info = season.flatMap { s in seasons.first { $0.key.lowercased() == s }?.value }
+                    return (id, info?["CompetitiveTier"]?.intValue ?? 0)
+                }
+            }
+            for await (id, tier) in group {
+                playerTierCache[id] = (tier, Date())
+                result[id] = tier
+            }
+        }
+        return result
+    }
+
     func evalMatch(id: String) async -> EvalMatch? {
         if let match = evalMatches[id] { return match }
         let rows: [MatchRow]? = try? await api.list("ethone_valorant_matches", query: [

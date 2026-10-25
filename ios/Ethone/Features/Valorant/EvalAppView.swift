@@ -1362,6 +1362,7 @@ struct SkinTierIconView: View {
 }
 
 struct EvalDailyOfferCard: View {
+    @Environment(\.evalSurface) private var surface
     let offer: ValorantDailySkinOffer
     var wished = false
 
@@ -1420,7 +1421,7 @@ struct EvalDailyOfferCard: View {
             .padding(.bottom, 16)
         }
         .background(Color(hex: offer.colorHex).opacity(0.12))
-        .background(EvalColors.card, in: .rect(cornerRadius: 20))
+        .background(surface, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -1900,7 +1901,7 @@ struct EvalGameView: View {
                                 equipNavRow(icon: "square.and.arrow.up", title: "Partager").contentShape(.rect)
                             }.buttonStyle(.plain)
                         }
-                        .background(EvalColors.card, in: .rect(cornerRadius: 20))
+                        .background(EvalColors.card2, in: .rect(cornerRadius: 20))
                         .task { await store.loadout.load(store.riot) }
                         .confirmationDialog("Équiper un skin possédé au hasard sur chaque arme ?", isPresented: $confirmRandom, titleVisibility: .visible) {
                             Button("Équiper au hasard") {
@@ -1999,7 +2000,7 @@ struct EvalGameView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
-                .background(EvalColors.card, in: .rect(cornerRadius: 20))
+                .background(EvalColors.card2, in: .rect(cornerRadius: 20))
             }
             .buttonStyle(.plain)
 
@@ -2083,7 +2084,7 @@ struct EvalGameView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(EvalColors.card, in: .rect(cornerRadius: 20))
+            .background(EvalColors.card2, in: .rect(cornerRadius: 20))
         }
     }
 
@@ -2152,7 +2153,7 @@ struct EvalGameView: View {
         } label: {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(.system(size: 16, weight: isSelected ? .bold : .medium))
+                    .font(.system(size: 19, weight: .medium))
                     .foregroundStyle(isSelected ? EvalAccent.color : Color(hex: 0x8E8E93))
 
                 if hasChevron {
@@ -2164,11 +2165,11 @@ struct EvalGameView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
-                isSelected ? EvalAccent.color.opacity(0.16) : EvalColors.card,
+                isSelected ? Color(hex: 0x3A3A3C) : Color.clear,
                 in: .capsule
             )
             .overlay(
-                Capsule().strokeBorder(isSelected ? EvalAccent.color.opacity(0.4) : Color.clear, lineWidth: 1)
+                Capsule().strokeBorder(isSelected ? EvalColors.text.opacity(0.12) : Color.clear, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -2180,21 +2181,21 @@ struct EvalGameView: View {
         @ViewBuilder rightContent: () -> Right,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Button {
                     withAnimation(.snappy(duration: 0.28, extraBounce: 0.02)) {
                         isExpanded.wrappedValue.toggle()
                     }
                 } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .bold))
+                    HStack(spacing: 14) {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(EvalAccent.color)
-                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 0 : -90))
 
                         Text(title)
-                            .font(.headline.weight(.bold))
+                            .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(EvalColors.text)
 
                         Spacer()
@@ -2207,11 +2208,15 @@ struct EvalGameView: View {
             }
 
             if isExpanded.wrappedValue {
+                Divider().overlay(EvalColors.text.opacity(0.1))
                 content()
+                    .environment(\.evalSurface, EvalColors.card2)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .clipped()
+        .padding(16)
+        .background(EvalColors.card, in: .rect(cornerRadius: 28))
+        .clipShape(.rect(cornerRadius: 28))
     }
 
     @ViewBuilder
@@ -2257,7 +2262,7 @@ struct EvalGameView: View {
                 .padding(.vertical, 4)
             }
             .padding(16)
-            .background(EvalColors.card, in: .rect(cornerRadius: 20))
+            .background(EvalColors.card2, in: .rect(cornerRadius: 20))
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
@@ -2290,20 +2295,27 @@ struct EvalGameView: View {
                 ForEach(pending) { mission in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text(mission.title).font(.system(size: 16, weight: .medium)).foregroundStyle(EvalColors.text)
+                            Text(mission.title).font(.system(size: 18)).foregroundStyle(EvalColors.text)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            Text("+\(mission.xp.formatted()) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                            Text("+\(mission.xp.formatted(.number.locale(Locale(identifier: "fr_FR")))) XP").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
-                        ProgressView(value: Double(min(mission.progress, mission.target)), total: Double(max(1, mission.target)))
-                            .tint(EvalAccent.color)
-                        Text("\(mission.progress.formatted()) / \(mission.target.formatted())").font(.system(size: 14)).foregroundStyle(Color(hex: 0x8E8E93))
+                        Capsule()
+                            .fill(EvalColors.text.opacity(0.12))
+                            .frame(height: 4)
+                            .overlay(alignment: .leading) {
+                                GeometryReader { geo in
+                                    Capsule().fill(EvalAccent.color)
+                                        .frame(width: geo.size.width * min(1, Double(mission.progress) / Double(max(1, mission.target))))
+                                }
+                            }
+                        Text("\(mission.progress)/\(mission.target)").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                     }
                     .padding(.top, 4)
                 }
             }
             .padding(16)
-            .background(EvalColors.card, in: .rect(cornerRadius: 20))
+            .background(EvalColors.card2, in: .rect(cornerRadius: 20))
 
             EvalUpcomingMissionsCard()
         }

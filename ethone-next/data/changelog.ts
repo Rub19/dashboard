@@ -60783,4 +60783,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_82_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_82_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_82_0_de);
 
+const v1_83_0_fr: ChangelogEntry = {
+  version: "v1.83.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS : détail de match, Jeu et statistiques comme VALPAW",
+  items: [
+    "Détail de match : onglets Résumé, Tableau des scores, Manches, Duels, Performance et Économie refaits comme VALPAW, avec comparaison dépliable joueur par joueur, analyse de chaque duel, préférence de site, armes utilisées, types d'achat et avantage d'équipement",
+    "Nouvelle carte des kills dans Manches, à partir des positions renvoyées par Riot",
+    "Icône propre à chaque mode de jeu, et rang du match pour les parties classées",
+    "Onglet Jeu : sections en cartes, missions avec barre de progression, Passe de combat et XP du compte alignés sur VALPAW",
+    "Statistiques : filtres par mode, agent et carte, « Charger rapidement 20 matchs » et liste des changements de rang",
+  ],
+};
+
+const v1_83_0_en: ChangelogEntry = {
+  version: "v1.83.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: match details, Play and statistics like VALPAW",
+  items: [
+    "Match details: Summary, Scoreboard, Rounds, Duels, Performance and Economy tabs rebuilt like VALPAW, with expandable player comparisons, duel analysis, site preference, weapons used, buy types and loadout advantage",
+    "New kill map in Rounds, from the positions returned by Riot",
+    "Each game mode gets its own icon, and ranked games show the match rank",
+    "Play tab: card sections, missions with a progress bar, Battle pass and account XP aligned with VALPAW",
+    "Statistics: filters by mode, agent and map, \"Quick-load 20 matches\" and the list of rank changes",
+  ],
+};
+
+const v1_83_0_es: ChangelogEntry = {
+  version: "v1.83.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: detalle de partida, Juego y estadísticas como VALPAW",
+  items: [
+    "Detalle de partida: pestañas Resumen, Marcador, Rondas, Duelos, Rendimiento y Economía rehechas como VALPAW, con comparación desplegable por jugador, análisis de duelos, preferencia de sitio, armas usadas, tipos de compra y ventaja de equipamiento",
+    "Nuevo mapa de bajas en Rondas, con las posiciones que devuelve Riot",
+    "Cada modo de juego tiene su propio icono y las competitivas muestran el rango de la partida",
+    "Pestaña Juego: secciones en tarjetas, misiones con barra de progreso, pase de batalla y XP de cuenta como en VALPAW",
+    "Estadísticas: filtros por modo, agente y mapa, «Cargar rápido 20 partidas» y lista de cambios de rango",
+  ],
+};
+
+const v1_83_0_de: ChangelogEntry = {
+  version: "v1.83.0",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Match-Details, Spiel und Statistiken wie VALPAW",
+  items: [
+    "Match-Details: Tabs Übersicht, Anzeigetafel, Runden, Duelle, Leistung und Wirtschaft wie VALPAW neu aufgebaut, mit aufklappbarem Spielervergleich, Duellanalyse, Spot-Präferenz, genutzten Waffen, Kauftypen und Ausrüstungsvorteil",
+    "Neue Kill-Karte in Runden, aus den von Riot gelieferten Positionen",
+    "Jeder Spielmodus hat sein eigenes Symbol, gewertete Spiele zeigen den Rang des Matches",
+    "Spiel-Tab: Bereiche als Karten, Missionen mit Fortschrittsbalken, Battle Pass und Konto-XP wie in VALPAW",
+    "Statistiken: Filter nach Modus, Agent und Karte, „Schnell 20 Matches laden“ und Liste der Rangänderungen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_83_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_83_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_83_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_83_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

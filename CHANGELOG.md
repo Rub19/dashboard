@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.83.0 — 2026-10-25
+
+**E:VAL iOS : détail de match, Jeu et statistiques comme VALPAW**
+
+- Détail de match : onglets Résumé, Tableau des scores, Manches, Duels, Performance et Économie refaits comme VALPAW, avec comparaison dépliable joueur par joueur, analyse de chaque duel, préférence de site, armes utilisées, types d'achat et avantage d'équipement
+- Nouvelle carte des kills dans Manches, à partir des positions renvoyées par Riot
+- Icône propre à chaque mode de jeu, et rang du match pour les parties classées
+- Onglet Jeu : sections en cartes, missions avec barre de progression, Passe de combat et XP du compte alignés sur VALPAW
+- Statistiques : filtres par mode, agent et carte, « Charger rapidement 20 matchs » et liste des changements de rang
+
 ## v1.82.0 — 2026-10-23
 
 **E:VAL iOS : matchs chargés directement depuis Riot**

@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Récompenses du passe (nom + image via valorant-api, cache permanent par objet)
-
 enum BattlepassRewardResolver {
     struct Info: Codable, Hashable { let name: String; let icon: String }
 
@@ -48,15 +46,14 @@ enum BattlepassRewardResolver {
     }
 }
 
-// MARK: - Éléments communs
-
 private struct ContractCard<Content: View>: View {
+    @Environment(\.evalSurface) private var surface
     @ViewBuilder var content: Content
     var body: some View {
         VStack(alignment: .leading, spacing: 12) { content }
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(EvalColors.card, in: .rect(cornerRadius: 24))
+            .background(surface, in: .rect(cornerRadius: 24))
     }
 }
 
@@ -73,14 +70,38 @@ private struct ProgressBar: View {
     }
 }
 
-private func countdownLabel(_ date: Date?, days: Bool = false) -> some View {
+private let contractLocale = Locale(identifier: "fr_FR")
+
+private func contractNumber(_ value: Int) -> String {
+    value.formatted(.number.locale(contractLocale))
+}
+
+private func contractNumber(_ value: Double) -> String {
+    value.formatted(.number.precision(.fractionLength(0...1)).locale(contractLocale))
+}
+
+private let contractDateFormatter: DateFormatter = {
+    let f = DateFormatter()
+    f.locale = Locale(identifier: "fr_FR")
+    f.dateFormat = "dd/MM/yy · HH:mm"
+    return f
+}()
+
+private func contractAgo(_ date: Date, now: Date) -> String {
+    let s = Int(now.timeIntervalSince(date))
+    guard s >= 0, s < 86400 else { return contractDateFormatter.string(from: date) }
+    if s < 3600 { return "il y a \(max(1, s / 60))min" }
+    return "il y a \(s / 3600)h \((s % 3600) / 60)min"
+}
+
+private func countdownLabel(_ date: Date?, days: Bool = false, size: CGFloat = 19) -> some View {
     HStack(spacing: 6) {
         TimelineView(.periodic(from: .now, by: 1)) { ctx in
             Text(remaining(date, now: ctx.date, days: days))
         }
         Image(systemName: "clock")
     }
-    .font(.system(size: 19).monospacedDigit())
+    .font(.system(size: size).monospacedDigit())
     .foregroundStyle(Color(hex: 0x8E8E93))
 }
 
@@ -90,8 +111,6 @@ private func remaining(_ date: Date?, now: Date, days: Bool) -> String {
     let hms = "\(days ? (s % 86400) / 3600 : s / 3600):\(String(format: "%02d", (s % 3600) / 60)):\(String(format: "%02d", s % 60))"
     return days && s >= 86400 ? "\(s / 86400)j \(hms)" : hms
 }
-
-// MARK: - Passe de combat
 
 struct EvalBattlepassContractView: View {
     @Environment(AppModel.self) private var model
@@ -123,16 +142,16 @@ struct EvalBattlepassContractView: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(reward.name.isEmpty ? reward.rewardType : reward.name)
                                 .font(.system(size: 20, weight: .medium)).foregroundStyle(EvalColors.text).lineLimit(2)
-                            Text("Niveau \(store.battlepassCurrentLevel) / \(store.battlepassLevels.count)")
+                            Text("Niveau \(reward.level) / \(store.battlepassLevels.count)")
                                 .font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
                         }
                     }
                 }
                 ProgressBar(value: Double(store.battlepassCurrentXP) / Double(max(1, store.battlepassLevelXP)))
                 HStack {
-                    Text("\(store.battlepassCurrentTierProgressPercent)% — \(store.battlepassCurrentXP.formatted()) / \(store.battlepassLevelXP.formatted()) XP")
+                    Text("\(store.battlepassCurrentTierProgressPercent)%  —  \(contractNumber(store.battlepassCurrentXP)) / \(contractNumber(store.battlepassLevelXP)) XP")
                     Spacer()
-                    Text("\(max(0, store.battlepassLevelXP - store.battlepassCurrentXP).formatted()) XP")
+                    Text("\(contractNumber(max(0, store.battlepassLevelXP - store.battlepassCurrentXP))) XP")
                     Image(systemName: "circle.dotted")
                 }
                 .font(.system(size: 16).monospacedDigit())
@@ -168,7 +187,7 @@ struct EvalBattlepassContractView: View {
             Button { withAnimation(.snappy) { showingProjection.toggle() } } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "clock").font(.system(size: 20)).foregroundStyle(EvalAccent.color)
-                    Text(needed.map { "Encore ~\($0.formatted()) parties (\(pace.formatted(.number.precision(.fractionLength(1)))) / jour)" } ?? "Projection indisponible")
+                    Text(needed.map { "Encore ~\(contractNumber($0)) parties (\(contractNumber(pace)) / jour)" } ?? "Projection indisponible")
                         .font(.system(size: 19, weight: .medium)).foregroundStyle(EvalColors.text)
                     Spacer()
                     Image(systemName: showingProjection ? "chevron.up" : "chevron.down").foregroundStyle(Color(hex: 0x8E8E93))
@@ -179,9 +198,9 @@ struct EvalBattlepassContractView: View {
 
             if showingProjection {
                 HStack {
-                    Text("\(store.battlepassCompletionPercent) %").foregroundStyle(EvalAccent.color)
+                    Text("\(store.battlepassCompletionPercent)%").foregroundStyle(EvalAccent.color)
                     Spacer()
-                    Text("Encore \(remainingXP.formatted()) XP").foregroundStyle(EvalColors.text)
+                    Text("Encore \(contractNumber(remainingXP)) XP").foregroundStyle(EvalColors.text)
                 }
                 .font(.system(size: 17, weight: .semibold))
                 ProgressBar(value: Double(store.battlepassCompletionPercent) / 100)
@@ -189,16 +208,16 @@ struct EvalBattlepassContractView: View {
                 HStack {
                     Label("Missions hebdomadaires à venir", systemImage: "calendar.badge.plus")
                     Spacer()
-                    Text("\(reserve.formatted()) XP")
+                    Text("+\(contractNumber(reserve)) XP")
                 }
                 .font(.system(size: 16))
                 .foregroundStyle(Color(hex: 0x8E8E93))
 
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                    tile("XP moy./Match", "chart.xyaxis.line", average > 0 ? average.formatted() : "—")
-                    tile("Votre rythme", "figure.run", pace > 0 ? "\(pace.formatted(.number.precision(.fractionLength(1)))) / jour" : "—")
-                    tile("Matchs restants", "flag.checkered", needed.map { "≈ \($0.formatted())" } ?? "—")
-                    tile("Rythme requis", "clock", required.map { "\($0.formatted(.number.precision(.fractionLength(1)))) / jour" } ?? "—")
+                    tile("XP moy./Match", "chart.xyaxis.line", average > 0 ? contractNumber(average) : "—")
+                    tile("Votre rythme", "figure.run", pace > 0 ? "\(contractNumber(pace)) / jour" : "—")
+                    tile("Matchs restants", "flag.checkered", needed.map { "≈ \(contractNumber($0))" } ?? "—")
+                    tile("Rythme requis", "clock", required.map { "\(contractNumber($0)) / jour" } ?? "—")
                 }
 
                 if let needed, let required {
@@ -209,7 +228,7 @@ struct EvalBattlepassContractView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(onTrack ? "Dans les temps" : "En retard").font(.system(size: 19, weight: .semibold)).foregroundStyle(EvalAccent.color)
                             if let finishDays, needed > 0 {
-                                Text("À ce rythme, vous devriez terminer vers le \(Date().addingTimeInterval(finishDays * 86400).formatted(.dateTime.day().month(.wide))).")
+                                Text("À ce rythme, vous devriez terminer vers le \(Date().addingTimeInterval(finishDays * 86400).formatted(.dateTime.day().month(.wide).locale(contractLocale))).")
                                     .font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
                             } else if needed == 0 {
                                 Text("Les missions à venir suffisent pour finir le passe.").font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
@@ -238,8 +257,6 @@ struct EvalBattlepassContractView: View {
     }
 }
 
-// MARK: - Compte
-
 struct EvalAccountXPView: View {
     @Environment(AppModel.self) private var model
     @State private var expanded = false
@@ -258,9 +275,9 @@ struct EvalAccountXPView: View {
                     Divider().overlay(EvalColors.text.opacity(0.08))
                     ProgressBar(value: Double(xp.xp) / Double(RiotAccountXP.xpPerLevel))
                     HStack {
-                        Text("\(xp.xp.formatted()) / \(RiotAccountXP.xpPerLevel.formatted()) XP")
+                        Text("\(contractNumber(xp.xp)) / \(contractNumber(RiotAccountXP.xpPerLevel)) XP")
                         Spacer()
-                        Text("\(max(0, RiotAccountXP.xpPerLevel - xp.xp).formatted()) restants")
+                        Text("\(contractNumber(max(0, RiotAccountXP.xpPerLevel - xp.xp))) restants")
                     }
                     .font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
                     Divider().overlay(EvalColors.text.opacity(0.08))
@@ -268,7 +285,7 @@ struct EvalAccountXPView: View {
                         Text("Première victoire du jour").font(.system(size: 16)).foregroundStyle(Color(hex: 0x8E8E93))
                         Spacer()
                         if let next = xp.nextFirstWin, next > Date() {
-                            countdownLabel(next)
+                            countdownLabel(next, size: 16)
                         } else {
                             Text("Disponible").font(.system(size: 16, weight: .semibold)).foregroundStyle(EvalAccent.color)
                         }
@@ -290,21 +307,27 @@ struct EvalAccountXPView: View {
                                     Text("+\(entry.delta) XP").font(.system(size: 20, weight: .medium).monospacedDigit()).foregroundStyle(EvalColors.text)
                                     Spacer()
                                     if let date = entry.date {
-                                        Text(date, format: .relative(presentation: .named)).font(.system(size: 15)).foregroundStyle(Color(hex: 0x8E8E93))
+                                        TimelineView(.periodic(from: .now, by: 60)) { ctx in
+                                            Text(contractAgo(date, now: ctx.date))
+                                        }
+                                        .font(.system(size: 15).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
                                     }
                                 }
                                 if !entry.sources.isEmpty {
                                     VStack(spacing: 0) {
-                                        ForEach(entry.sources) { source in
+                                        ForEach(Array(entry.sources.enumerated()), id: \.element.id) { index, source in
+                                            if index > 0 {
+                                                Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 44)
+                                            }
                                             HStack {
-                                                Label(source.label, systemImage: source.icon)
+                                                Label(sourceLabel(source), systemImage: sourceIcon(source))
                                                 Spacer()
                                                 Text("+\(source.amount)").monospacedDigit()
                                             }
                                             .font(.system(size: 16))
                                             .foregroundStyle(Color(hex: 0xAEAEB2))
                                             .padding(.horizontal, 14)
-                                            .padding(.vertical, 8)
+                                            .padding(.vertical, 6)
                                         }
                                     }
                                     .background(EvalColors.card2, in: .rect(cornerRadius: 12))
@@ -331,6 +354,14 @@ struct EvalAccountXPView: View {
             }
         }
     }
+
+    private func sourceLabel(_ source: RiotAccountXP.Source) -> String {
+        source.id == "first-win-of-the-day" ? "Première victoire" : source.label
+    }
+
+    private func sourceIcon(_ source: RiotAccountXP.Source) -> String {
+        source.id == "first-win-of-the-day" ? "star.fill" : source.icon
+    }
 }
 
 private struct TrailingIconLabel: LabelStyle {
@@ -338,8 +369,6 @@ private struct TrailingIconLabel: LabelStyle {
         HStack(spacing: 6) { configuration.title; configuration.icon }
     }
 }
-
-// MARK: - Agents
 
 private let kingdomCreditsIcon = URL(string: "https://media.valorant-api.com/currencies/85ca954a-41f2-ce94-9b45-8ca3dd39a00d/displayicon.png")
 
@@ -367,10 +396,10 @@ struct EvalAgentContractsSummary: View {
                 ProgressBar(value: Double(contracts.creditsSpent) / Double(max(1, contracts.creditsTotal)))
                 HStack {
                     CreditsIcon()
-                    Text("\(contracts.creditsSpent.formatted()) / \(contracts.creditsTotal.formatted())")
+                    Text("\(contractNumber(contracts.creditsSpent)) / \(contractNumber(contracts.creditsTotal))")
                     Spacer()
                     CreditsIcon()
-                    Text(max(0, contracts.creditsTotal - contracts.creditsSpent).formatted()).fontWeight(.semibold).foregroundStyle(EvalColors.text)
+                    Text(contractNumber(max(0, contracts.creditsTotal - contracts.creditsSpent))).fontWeight(.semibold).foregroundStyle(EvalColors.text)
                 }
                 .font(.system(size: 17).monospacedDigit())
                 .foregroundStyle(Color(hex: 0x8E8E93))
@@ -412,7 +441,7 @@ struct EvalAgentContractsView: View {
                 Text("Contrats des agents").font(.system(size: 21, weight: .bold)).foregroundStyle(EvalColors.text)
                 Spacer()
                 HStack(spacing: 8) {
-                    Text(store.wallet.kc.formatted()).font(.system(size: 19, weight: .medium).monospacedDigit())
+                    Text(contractNumber(store.wallet.kc)).font(.system(size: 19, weight: .medium).monospacedDigit())
                     CreditsIcon(size: 22)
                 }
                 .foregroundStyle(EvalColors.text)
@@ -438,7 +467,7 @@ struct EvalAgentContractsView: View {
                                     if let cost = agent.nextCost {
                                         Image(systemName: "arrow.right.circle.fill")
                                         CreditsIcon(size: 14)
-                                        Text(cost.formatted()).monospacedDigit()
+                                        Text(contractNumber(cost)).monospacedDigit()
                                     } else {
                                         Image(systemName: "checkmark.circle.fill")
                                         Text("Terminé")

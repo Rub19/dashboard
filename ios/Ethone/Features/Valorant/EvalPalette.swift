@@ -82,3 +82,14 @@ private struct EvalColorSchemeModifier: ViewModifier {
         content.preferredColorScheme((EvalTheme(rawValue: theme) ?? .system).scheme)
     }
 }
+
+private struct EvalSurfaceKey: EnvironmentKey {
+    static let defaultValue: Color = EvalColors.card
+}
+
+extension EnvironmentValues {
+    var evalSurface: Color {
+        get { self[EvalSurfaceKey.self] }
+        set { self[EvalSurfaceKey.self] = newValue }
+    }
+}

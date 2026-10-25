@@ -253,6 +253,7 @@ struct EvalAgentContractPage: View {
 // MARK: - Missions hebdomadaires à venir (dépliable, groupées par semaine)
 
 struct EvalUpcomingMissionsCard: View {
+    @Environment(\.evalSurface) private var surface
     @Environment(AppModel.self) private var model
     @State private var expanded = false
 
@@ -316,7 +317,7 @@ struct EvalUpcomingMissionsCard: View {
             }
         }
         .padding(18)
-        .background(EvalColors.card, in: .rect(cornerRadius: 24))
+        .background(surface, in: .rect(cornerRadius: 24))
     }
 }
 

@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.83.0",
+    "date": "2026-10-25",
+    "title": "E:VAL iOS : détail de match, Jeu et statistiques comme VALPAW",
+    "items": [
+      "Détail de match : onglets Résumé, Tableau des scores, Manches, Duels, Performance et Économie refaits comme VALPAW, avec comparaison dépliable joueur par joueur, analyse de chaque duel, préférence de site, armes utilisées, types d'achat et avantage d'équipement",
+      "Nouvelle carte des kills dans Manches, à partir des positions renvoyées par Riot",
+      "Icône propre à chaque mode de jeu, et rang du match pour les parties classées",
+      "Onglet Jeu : sections en cartes, missions avec barre de progression, Passe de combat et XP du compte alignés sur VALPAW",
+      "Statistiques : filtres par mode, agent et carte, « Charger rapidement 20 matchs » et liste des changements de rang"
+    ]
+  },
+  {
     "version": "v1.82.0",
     "date": "2026-10-23",
     "title": "E:VAL iOS : matchs chargés directement depuis Riot",
@@ -613,17 +625,6 @@
       "Publication au nom du serveur, mention du membre, notification des rôles et suppression automatique du message.",
       "Ghost ping dans les salons choisis, attente de la vérification, départ rapide et limite de 10 messages par minute pendant une vague d'arrivées.",
       "Nouvelle page Rôles automatiques : rôles à l'arrivée pour les membres et les bots, rôle temporaire retiré automatiquement et rôles en vocal avec filtres de rôles et de salons. Tout est gratuit."
-    ]
-  },
-  {
-    "version": "v1.75.110",
-    "date": "2026-10-15",
-    "title": "Commande /server et compteur de badges",
-    "items": [
-      "Nouvelle commande /server avec 4 pages : Aperçu, Membres, Salons & rôles et Badges.",
-      "La page Badges compte les vrais badges Discord des membres (Staff, Partenaire, HypeSquad, Bug Hunter, Early Supporter, développeurs, modérateur certifié) et chaque palier de boost, de 1 mois à 2 ans.",
-      "Nouvel onglet Badges dans la page Serveur du dashboard, avec relance de l'analyse.",
-      "Le Nitro n'est compté que via l'avatar animé, et le badge Quête n'est pas visible : Discord ne les montre pas aux bots."
     ]
   }
 ]

@@ -534,8 +534,13 @@ final class ValorantStore {
     }
 
     var weeklyMissionsXP: Int { upcomingMissions.reduce(0) { $0 + $1.xpGrant } }
-    var missionsReserveXP: Int { weeklyMissionsXP }
-    var dailyPaliersMaxXP: Int { 0 }
+    var currentWeeklyXP: Int { activeMissions.filter { !$0.complete }.reduce(0) { $0 + $1.xp } }
+    var dailyPaliersXP: Int { dailyMilestones.filter { !$0 }.count * 1000 }
+    var missionsReserveXP: Int { weeklyMissionsXP + currentWeeklyXP + dailyPaliersXP }
+    var dailyPaliersMaxXP: Int {
+        guard let end = battlepassEndDate else { return 0 }
+        return max(0, Int(end.timeIntervalSinceNow / 86400)) * 4000
+    }
 
     var avgXPPerMatch: Int {
         let scores = matches.prefix(20).compactMap(\.scoreValue)

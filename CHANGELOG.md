@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.85.6 — 2026-10-25
+
+**E:VAL : scores des matchs corrigés, projection du passe de combat comme VALPAW**
+
+- Le score d'un match est recompté à partir des manches réelles : fini les victoires affichées 4–8
+- La projection du passe de combat compte les missions hebdo en cours, celles à venir et les paliers du jour, avec le même détail que VALPAW
+- Le titre de la saison n'est plus coupé
+- Plus d'alerte Riot quand vous n'êtes simplement pas en groupe ou en partie
+
 ## v1.85.5 — 2026-10-25
 
 **E:VAL iOS : connexion Riot réparée (code de vérification, « Oups »)**

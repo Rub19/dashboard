@@ -171,9 +171,10 @@ struct EvalBattlepassContractView: View {
                             .frame(width: 30, height: 30)
                             .background(EvalAccent.color, in: .circle)
                         Text(title)
-                            .font(.system(size: 21, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.7)
-                        Spacer()
-                        countdownLabel(store.battlepassEndDate, days: true)
+                            .font(.system(size: 20, weight: .bold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.6)
+                            .layoutPriority(1)
+                        Spacer(minLength: 4)
+                        countdownLabel(store.battlepassEndDate, days: true, size: 17)
                     }
                     Divider().overlay(EvalColors.text.opacity(0.08))
                     if levelCount > 0 {
@@ -229,6 +230,14 @@ struct EvalBattlepassContractView: View {
         }
     }
 
+    private func reserveRow(_ label: String, _ symbol: String, _ value: String) -> some View {
+        HStack {
+            Label(label, systemImage: symbol).padding(.leading, 4)
+            Spacer()
+            Text(value).monospacedDigit()
+        }
+    }
+
     @ViewBuilder
     private var projection: some View {
         let reserve = store.missionsReserveXP
@@ -261,10 +270,17 @@ struct EvalBattlepassContractView: View {
                 .font(.system(size: 17, weight: .semibold))
                 ProgressBar(value: Double(completionPercent) / 100)
                 Divider().overlay(EvalColors.text.opacity(0.08))
-                HStack {
-                    Label("Missions hebdomadaires à venir", systemImage: "calendar.badge.plus")
-                    Spacer()
-                    Text("+\(contractNumber(reserve)) XP")
+                VStack(spacing: 10) {
+                    HStack {
+                        Text("En réserve dans les missions")
+                        Spacer()
+                        Text("\(contractNumber(reserve)) XP").foregroundStyle(EvalColors.text).fontWeight(.semibold)
+                    }
+                    reserveRow("Missions hebdomadaires", "list.bullet.circle", contractNumber(store.currentWeeklyXP) + " XP")
+                    reserveRow("Hebdomadaires à venir", "calendar.badge.plus", contractNumber(store.weeklyMissionsXP) + " XP")
+                    reserveRow("Paliers du jour", "sun.max", contractNumber(store.dailyPaliersXP) + " XP")
+                    reserveRow("Paliers quotidiens à venir", "sun.horizon", "jusqu'à " + contractNumber(store.dailyPaliersMaxXP) + " XP")
+                        .opacity(0.6)
                 }
                 .font(.system(size: 16))
                 .foregroundStyle(Color(hex: 0x8E8E93))
@@ -296,7 +312,7 @@ struct EvalBattlepassContractView: View {
                     .background(EvalColors.card2, in: .rect(cornerRadius: 18))
                 }
 
-                Text("Basé sur vos \(min(20, xp?.history.count ?? 0)) dernières parties (XP réellement gagnée d’après Riot). Les missions hebdomadaires à venir sont déduites du total restant.")
+                Text("Basé sur vos \(min(20, xp?.history.count ?? 0)) dernières parties (XP réellement gagnée d’après Riot). Les missions en cours, à venir et les paliers du jour sont déduits du total restant.")
                     .font(.system(size: 14)).foregroundStyle(Color(hex: 0x636366))
             }
         }

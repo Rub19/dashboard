@@ -297,7 +297,7 @@ struct EvalUpcomingMissionsCard: View {
                     Text("\(store.upcomingMissions.count) missions hebdomadaires futures")
                         .font(.system(size: 19, weight: .semibold)).foregroundStyle(EvalColors.text).lineLimit(1).minimumScaleFactor(0.75)
                     Spacer(minLength: 6)
-                    Text("+\(store.missionsReserveXP.formatted()) XP").font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
+                    Text("+\(store.weeklyMissionsXP.formatted()) XP").font(.system(size: 16).monospacedDigit()).foregroundStyle(Color(hex: 0x8E8E93))
                     Image(systemName: expanded ? "chevron.up" : "chevron.down").font(.system(size: 16, weight: .semibold)).foregroundStyle(EvalColors.text)
                 }
                 .contentShape(.rect)

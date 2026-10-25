@@ -343,6 +343,7 @@ final class RiotSession {
         }
         guard (200..<300).contains(status) else {
             let path = URL(string: url)?.path ?? url
+            if status == 404, ["/parties/", "/pregame/", "/core-game/"].contains(where: path.contains) { throw RiotError.http(status) }
             lastFailure = "Riot \(status) · \(method) \(path) · \(Date().formatted(date: .omitted, time: .standard))"
             throw RiotError.http(status)
         }

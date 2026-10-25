@@ -157,8 +157,8 @@ export function compactMatch(match) {
     // v3 renvoie game_length en secondes (anciennes réponses en millisecondes).
     lengthSec: num(meta.game_length) > 100000 ? Math.round(num(meta.game_length) / 1000) : num(meta.game_length),
     teams: {
-      Red: { won: Boolean(match?.teams?.red?.has_won), rounds: num(match?.teams?.red?.rounds_won) },
-      Blue: { won: Boolean(match?.teams?.blue?.has_won), rounds: num(match?.teams?.blue?.rounds_won) }
+      Red: { won: Boolean(match?.teams?.red?.has_won), rounds: rounds.length > 1 ? rounds.filter((r) => r.winner === "Red").length : num(match?.teams?.red?.rounds_won) },
+      Blue: { won: Boolean(match?.teams?.blue?.has_won), rounds: rounds.length > 1 ? rounds.filter((r) => r.winner === "Blue").length : num(match?.teams?.blue?.rounds_won) }
     },
     players,
     rounds,

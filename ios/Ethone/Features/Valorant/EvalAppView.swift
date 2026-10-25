@@ -2678,8 +2678,8 @@ struct EvalUpcomingMissionsSheet: View {
 
                                 Spacer()
 
-                                if store.missionsReserveXP > 0 {
-                                    Text("+\(store.missionsReserveXP.formatted()) XP")
+                                if store.weeklyMissionsXP > 0 {
+                                    Text("+\(store.weeklyMissionsXP.formatted()) XP")
                                         .font(.subheadline.weight(.heavy))
                                         .foregroundStyle(Theme.danger)
                                         .padding(.horizontal, 10)

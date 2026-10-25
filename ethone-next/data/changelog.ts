@@ -61240,4 +61240,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_5_de);
 
+const v1_85_6_fr: ChangelogEntry = {
+  version: "v1.85.6",
+  date: "2026-10-25",
+  title: "E:VAL : scores des matchs corrigés, projection du passe de combat comme VALPAW",
+  items: [
+    "Le score d'un match est recompté à partir des manches réelles : fini les victoires affichées 4–8",
+    "La projection du passe de combat compte les missions hebdo en cours, celles à venir et les paliers du jour, avec le même détail que VALPAW",
+    "Le titre de la saison n'est plus coupé",
+    "Plus d'alerte Riot quand vous n'êtes simplement pas en groupe ou en partie",
+  ],
+};
+
+const v1_85_6_en: ChangelogEntry = {
+  version: "v1.85.6",
+  date: "2026-10-25",
+  title: "E:VAL: match scores fixed, battle pass projection like VALPAW",
+  items: [
+    "A match score is recounted from the actual rounds: no more wins shown as 4–8",
+    "The battle pass projection counts current weekly missions, upcoming ones and today's checkpoints, with the same breakdown as VALPAW",
+    "The season title is no longer cut off",
+    "No more Riot warning when you are simply not in a party or a game",
+  ],
+};
+
+const v1_85_6_es: ChangelogEntry = {
+  version: "v1.85.6",
+  date: "2026-10-25",
+  title: "E:VAL: marcadores corregidos, proyección del pase de batalla como VALPAW",
+  items: [
+    "El marcador de una partida se recuenta a partir de las rondas reales: se acabaron las victorias mostradas como 4–8",
+    "La proyección del pase de batalla cuenta las misiones semanales en curso, las próximas y los hitos del día, con el mismo desglose que VALPAW",
+    "El título de la temporada ya no se corta",
+    "Ya no aparece la alerta de Riot cuando simplemente no estás en grupo ni en partida",
+  ],
+};
+
+const v1_85_6_de: ChangelogEntry = {
+  version: "v1.85.6",
+  date: "2026-10-25",
+  title: "E:VAL: Spielergebnisse korrigiert, Battlepass-Prognose wie VALPAW",
+  items: [
+    "Das Ergebnis eines Spiels wird aus den tatsächlichen Runden neu gezählt: keine als 4–8 angezeigten Siege mehr",
+    "Die Battlepass-Prognose zählt laufende und kommende Wochenmissionen sowie die heutigen Meilensteine, mit derselben Aufschlüsselung wie VALPAW",
+    "Der Saisontitel wird nicht mehr abgeschnitten",
+    "Keine Riot-Warnung mehr, wenn du einfach in keiner Gruppe oder keinem Spiel bist",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_6_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_6_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_6_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_6_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -107,7 +107,11 @@ struct EvalMatch: Codable, Identifiable, Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 
     func player(_ puuid: String) -> Player? { players.first { $0.puuid == puuid } }
-    func team(_ name: String) -> Team { name == "Red" ? teams.Red : teams.Blue }
+    func team(_ name: String) -> Team {
+        let stored = name == "Red" ? teams.Red : teams.Blue
+        guard rounds.count > 1, rounds.allSatisfy({ $0.winner == "Red" || $0.winner == "Blue" }) else { return stored }
+        return Team(won: stored.won, rounds: rounds.filter { $0.winner == name }.count)
+    }
     func opponent(of team: String) -> String { team == "Red" ? "Blue" : "Red" }
     var roundCount: Int { max(1, rounds.count) }
 

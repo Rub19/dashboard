@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.85.4 — 2026-10-25
+
+**E:VAL iOS : session Riot conservée après une réinstallation**
+
+- Le cookie de session Riot est aussi gardé dans le trousseau de l'iPhone : la session se renouvelle même après une réinstallation de l'app
+- Il est effacé quand vous déconnectez votre compte Riot
+
 ## v1.85.3 — 2026-10-25
 
 **E:VAL iOS : alerte de session et glisser pour retirer**

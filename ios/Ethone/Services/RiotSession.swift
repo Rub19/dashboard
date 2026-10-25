@@ -130,8 +130,42 @@ private final class RiotRedirectStopper: NSObject, URLSessionTaskDelegate {
     }
 }
 
+enum RiotCookieVault {
+    private static let key = "riot-auth-cookies"
+
+    private struct Stored: Codable { let name: String; let value: String; let domain: String; let path: String }
+
+    static func save() async {
+        let cookies = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
+            .filter { $0.domain.contains("riotgames.com") }
+        guard cookies.contains(where: { $0.name == "ssid" }) else { return }
+        let stored = cookies.map { Stored(name: $0.name, value: $0.value, domain: $0.domain, path: $0.path) }
+        if let data = try? JSONEncoder().encode(stored) { Keychain.set(data, for: key) }
+    }
+
+    static func load() -> [HTTPCookie] {
+        guard let data = Keychain.get(key), let stored = try? JSONDecoder().decode([Stored].self, from: data) else { return [] }
+        return stored.compactMap { item in
+            HTTPCookie(properties: [.name: item.name, .value: item.value, .domain: item.domain, .path: item.path,
+                                    .secure: "TRUE", .expires: Date().addingTimeInterval(60 * 60 * 24 * 30)])
+        }
+    }
+
+    static func restore() async {
+        let store = WKWebsiteDataStore.default().httpCookieStore
+        let present = await store.allCookies().contains { $0.domain.contains("riotgames.com") && $0.name == "ssid" }
+        guard !present else { return }
+        for cookie in load() { await store.setCookie(cookie) }
+    }
+
+    static func clear() {
+        Keychain.remove(key)
+    }
+}
+
 enum RiotCookieReauth {
     static func run() async -> (String, String, Int)? {
+        await RiotCookieVault.restore()
         let cookies = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
             .filter { $0.domain.contains("riotgames.com") }
         guard cookies.contains(where: { $0.name == "ssid" }) else { return nil }
@@ -194,6 +228,7 @@ final class RiotSession {
             credentials = try await buildCredentials(accessToken: accessToken, idToken: idToken, expiresIn: expiresIn)
             persist()
             lastError = nil
+            await RiotCookieVault.save()
         } catch {
             lastError = "Connexion Riot impossible : \(error.localizedDescription)"
         }
@@ -202,6 +237,7 @@ final class RiotSession {
     func signOut() async {
         credentials = nil
         Keychain.remove(Self.keychainKey)
+        RiotCookieVault.clear()
         await RiotWebData.clear()
     }
 

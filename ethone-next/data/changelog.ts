@@ -61146,4 +61146,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_3_de);
 
+const v1_85_4_fr: ChangelogEntry = {
+  version: "v1.85.4",
+  date: "2026-10-25",
+  title: "E:VAL iOS : session Riot conservée après une réinstallation",
+  items: [
+    "Le cookie de session Riot est aussi gardé dans le trousseau de l'iPhone : la session se renouvelle même après une réinstallation de l'app",
+    "Il est effacé quand vous déconnectez votre compte Riot",
+  ],
+};
+
+const v1_85_4_en: ChangelogEntry = {
+  version: "v1.85.4",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Riot session kept after reinstalling",
+  items: [
+    "The Riot session cookie is also kept in the iPhone keychain: the session renews even after the app is reinstalled",
+    "It is erased when you sign out of your Riot account",
+  ],
+};
+
+const v1_85_4_es: ChangelogEntry = {
+  version: "v1.85.4",
+  date: "2026-10-25",
+  title: "E:VAL iOS: sesión de Riot conservada tras reinstalar",
+  items: [
+    "La cookie de sesión de Riot también se guarda en el llavero del iPhone: la sesión se renueva incluso tras reinstalar la app",
+    "Se borra al cerrar la sesión de tu cuenta Riot",
+  ],
+};
+
+const v1_85_4_de: ChangelogEntry = {
+  version: "v1.85.4",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Riot-Sitzung bleibt nach Neuinstallation erhalten",
+  items: [
+    "Das Riot-Sitzungscookie wird auch im iPhone-Schlüsselbund gespeichert: die Sitzung erneuert sich sogar nach einer Neuinstallation der App",
+    "Es wird gelöscht, wenn du dich von deinem Riot-Konto abmeldest",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

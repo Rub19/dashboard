@@ -1013,7 +1013,7 @@ struct ValorantWeaponItem: Identifiable, Decodable {
         let levels: [Level]?
         var id: String { uuid ?? displayName }
         /// Icône utilisable : celle du skin, sinon le rendu du premier chroma.
-        var image: String? { displayIcon ?? chromas?.first?.fullRender ?? chromas?.first?.displayIcon }
+        var image: String? { chromas?.first?.fullRender ?? displayIcon ?? chromas?.first?.displayIcon }
     }
 
     struct ShopData: Decodable {

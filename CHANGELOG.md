@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.85.8 — 2026-10-25
+
+**E:VAL : vidéos des variantes et favoris Valorant dans la collection**
+
+- Chaque variante de couleur d'un skin a son bouton vidéo, comme les niveaux
+- L'étoile de la fiche skin affiche et modifie vos favoris Valorant
+- Les skins Standard montrent l'arme au lieu d'une croix
+
 ## v1.85.7 — 2026-10-25
 
 **E:VAL : compte à rebours du passe de combat sur une ligne**

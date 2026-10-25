@@ -61334,4 +61334,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_7_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_7_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_7_de);
 
+const v1_85_8_fr: ChangelogEntry = {
+  version: "v1.85.8",
+  date: "2026-10-25",
+  title: "E:VAL : vidéos des variantes et favoris Valorant dans la collection",
+  items: [
+    "Chaque variante de couleur d'un skin a son bouton vidéo, comme les niveaux",
+    "L'étoile de la fiche skin affiche et modifie vos favoris Valorant",
+    "Les skins Standard montrent l'arme au lieu d'une croix",
+  ],
+};
+
+const v1_85_8_en: ChangelogEntry = {
+  version: "v1.85.8",
+  date: "2026-10-25",
+  title: "E:VAL: variant videos and Valorant favorites in the collection",
+  items: [
+    "Each color variant of a skin has its video button, like the levels",
+    "The star on the skin page shows and changes your Valorant favorites",
+    "Standard skins show the weapon instead of a cross",
+  ],
+};
+
+const v1_85_8_es: ChangelogEntry = {
+  version: "v1.85.8",
+  date: "2026-10-25",
+  title: "E:VAL: vídeos de variantes y favoritos de Valorant en la colección",
+  items: [
+    "Cada variante de color de un skin tiene su botón de vídeo, como los niveles",
+    "La estrella de la ficha del skin muestra y cambia tus favoritos de Valorant",
+    "Los skins Estándar muestran el arma en lugar de una cruz",
+  ],
+};
+
+const v1_85_8_de: ChangelogEntry = {
+  version: "v1.85.8",
+  date: "2026-10-25",
+  title: "E:VAL: Varianten-Videos und Valorant-Favoriten in der Sammlung",
+  items: [
+    "Jede Farbvariante eines Skins hat ihren Video-Button, wie die Stufen",
+    "Der Stern auf der Skin-Seite zeigt und ändert deine Valorant-Favoriten",
+    "Standard-Skins zeigen die Waffe statt eines Kreuzes",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_8_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_8_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_8_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_8_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

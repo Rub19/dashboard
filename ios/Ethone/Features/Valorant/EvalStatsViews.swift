@@ -1376,9 +1376,13 @@ struct EvalSkinDetailView: View {
     let skin: ValorantWeaponItem.WeaponSkin
     @State private var video: URL?
 
-    private var renders: [String] {
-        let list = (skin.chromas ?? []).compactMap { $0.fullRender ?? $0.displayIcon }
-        return list.isEmpty ? [skin.image].compactMap { $0 } : list
+    private var renders: [(image: String, video: URL?)] {
+        let list = (skin.chromas ?? []).compactMap { c in (c.fullRender ?? c.displayIcon).map { (image: $0, video: c.streamedVideo.flatMap(URL.init(string:))) } }
+        return list.isEmpty ? [skin.image].compactMap { $0 }.map { (image: $0, video: nil) } : list
+    }
+
+    private var favoriteIDs: [String] {
+        ([skin.uuid].compactMap { $0 } + (skin.levels ?? []).map(\.uuid) + (skin.chromas ?? []).map(\.uuid)).map { $0.lowercased() }
     }
 
     private var shopDays: [Date] {
@@ -1403,16 +1407,25 @@ struct EvalSkinDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                EvalNavHeader(title: skin.displayName, trailing: wishButton) { dismiss() }
+                EvalNavHeader(title: skin.displayName, trailing: AnyView(HStack(spacing: 10) { favoriteButton; wishButton })) { dismiss() }
                 if !renders.isEmpty {
                     Text("Variantes de couleur").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.secondary).padding(.leading, 4)
                     VStack(spacing: 0) {
                         ForEach(Array(renders.enumerated()), id: \.offset) { i, render in
-                            AsyncImage(url: URL(string: render)) { $0.image?.resizable().interpolation(.high).scaledToFit() }
+                            AsyncImage(url: URL(string: render.image)) { $0.image?.resizable().interpolation(.high).scaledToFit() }
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 110)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 22)
+                                .overlay(alignment: .bottomTrailing) {
+                                    if let url = render.video {
+                                        Button { video = url } label: {
+                                            Image(systemName: "play.circle").font(.system(size: 25)).foregroundStyle(EvalUI.accent)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .padding(14)
+                                    }
+                                }
                             if i < renders.count - 1 { Divider().overlay(EvalColors.text.opacity(0.08)).padding(.horizontal, 18) }
                         }
                     }
@@ -1483,6 +1496,25 @@ struct EvalSkinDetailView: View {
     }
 
     private struct IdentifiedURL: Identifiable { let url: URL; var id: String { url.absoluteString } }
+
+    @ViewBuilder
+    private var favoriteButton: some View {
+        let store = model.valorant
+        let ids = favoriteIDs
+        let current = Set(store.favorites.current.values)
+        let matched = ids.first { current.contains($0) }
+        if store.riot.isLinked, let target = matched ?? skin.levels?.first?.uuid.lowercased() {
+            Button {
+                Task { await store.favorites.toggle(target, session: store.riot) }
+            } label: {
+                Circle().fill(EvalUI.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: matched != nil ? "star.fill" : "star").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalUI.accent))
+            }
+            .buttonStyle(.plain)
+            .disabled(store.favorites.isApplying)
+            .task { if store.favorites.current.isEmpty { await store.favorites.load(store.riot) } }
+        }
+    }
 
     private var wishButton: AnyView? {
         guard let levelID = skin.levels?.first?.uuid else { return nil }

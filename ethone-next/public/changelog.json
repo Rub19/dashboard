@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.85.8",
+    "date": "2026-10-25",
+    "title": "E:VAL : vidéos des variantes et favoris Valorant dans la collection",
+    "items": [
+      "Chaque variante de couleur d'un skin a son bouton vidéo, comme les niveaux",
+      "L'étoile de la fiche skin affiche et modifie vos favoris Valorant",
+      "Les skins Standard montrent l'arme au lieu d'une croix"
+    ]
+  },
+  {
     "version": "v1.85.7",
     "date": "2026-10-25",
     "title": "E:VAL : compte à rebours du passe de combat sur une ligne",
@@ -611,14 +621,6 @@
     "title": "/report ouvert à tous les membres",
     "items": [
       "/report user n'est plus refusé aux membres sans rôle de modération : tout le monde peut signaler, seuls setup et status restent réservés à l'équipe."
-    ]
-  },
-  {
-    "version": "v1.75.121",
-    "date": "2026-10-16",
-    "title": "Activer une fonction active aussi son module",
-    "items": [
-      "Activer la bienvenue, les départs, les rôles automatiques ou les signalements depuis leur page allume aussi le module : le réglage ne reste plus sans effet quand le module était coupé."
     ]
   }
 ]

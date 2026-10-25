@@ -6,7 +6,7 @@ struct LoadoutCatalog: Codable {
     struct Skin: Codable, Hashable, Identifiable {
         let uuid: String; let displayName: String; let displayIcon: String?; let levels: [Level]; let chromas: [Chroma]
         var id: String { uuid }
-        var image: String? { displayIcon ?? chromas.first?.fullRender ?? chromas.first?.displayIcon }
+        var image: String? { chromas.first?.fullRender ?? displayIcon ?? chromas.first?.displayIcon }
     }
     struct Weapon: Codable, Identifiable { let uuid: String; let displayName: String; let defaultSkinUuid: String?; let skins: [Skin]; var id: String { uuid } }
     struct Buddy: Codable, Hashable { let uuid: String; let displayName: String; let displayIcon: String?; let levels: [Level] }

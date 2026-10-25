@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.85.9 — 2026-10-25
+
+**E:VAL : groupe, armes et roue des expressions comme VALPAW**
+
+- Groupe : rang de chaque membre (horloge si le rang date d'un acte précédent), icône ami, chargement au lieu de « aucun groupe » au démarrage
+- La fiche d'une arme s'ouvre en page : la liste de ses skins est de nouveau accessible, avec le bon nombre de skins, le prix formaté et l'écart de la première balle
+- Les armes équipées suivent l'ordre du jeu
+- La roue des expressions suit le sens horaire (haut, droite, bas, gauche) avec des images à la bonne taille
+
 ## v1.85.8 — 2026-10-25
 
 **E:VAL : vidéos des variantes et favoris Valorant dans la collection**

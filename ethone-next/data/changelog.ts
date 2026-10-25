@@ -61383,4 +61383,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_8_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_8_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_8_de);
 
+const v1_85_9_fr: ChangelogEntry = {
+  version: "v1.85.9",
+  date: "2026-10-25",
+  title: "E:VAL : groupe, armes et roue des expressions comme VALPAW",
+  items: [
+    "Groupe : rang de chaque membre (horloge si le rang date d'un acte précédent), icône ami, chargement au lieu de « aucun groupe » au démarrage",
+    "La fiche d'une arme s'ouvre en page : la liste de ses skins est de nouveau accessible, avec le bon nombre de skins, le prix formaté et l'écart de la première balle",
+    "Les armes équipées suivent l'ordre du jeu",
+    "La roue des expressions suit le sens horaire (haut, droite, bas, gauche) avec des images à la bonne taille",
+  ],
+};
+
+const v1_85_9_en: ChangelogEntry = {
+  version: "v1.85.9",
+  date: "2026-10-25",
+  title: "E:VAL: party, weapons and expression wheel like VALPAW",
+  items: [
+    "Party: each member's rank (clock when it comes from a previous act), friend icon, loading instead of \"no party\" at launch",
+    "A weapon's page now opens as a screen: its skin list is reachable again, with the right skin count, formatted price and first bullet spread",
+    "Equipped weapons follow the in-game order",
+    "The expression wheel goes clockwise (top, right, bottom, left) with correctly sized images",
+  ],
+};
+
+const v1_85_9_es: ChangelogEntry = {
+  version: "v1.85.9",
+  date: "2026-10-25",
+  title: "E:VAL: grupo, armas y rueda de expresiones como VALPAW",
+  items: [
+    "Grupo: rango de cada miembro (reloj si viene de un acto anterior), icono de amigo, carga en lugar de «sin grupo» al iniciar",
+    "La ficha de un arma se abre como página: su lista de skins vuelve a estar accesible, con el número correcto, el precio formateado y la dispersión de la primera bala",
+    "Las armas equipadas siguen el orden del juego",
+    "La rueda de expresiones va en sentido horario (arriba, derecha, abajo, izquierda) con imágenes del tamaño correcto",
+  ],
+};
+
+const v1_85_9_de: ChangelogEntry = {
+  version: "v1.85.9",
+  date: "2026-10-25",
+  title: "E:VAL: Gruppe, Waffen und Ausdrucksrad wie VALPAW",
+  items: [
+    "Gruppe: Rang jedes Mitglieds (Uhr, wenn er aus einem früheren Akt stammt), Freundes-Symbol, Laden statt „keine Gruppe“ beim Start",
+    "Die Waffenseite öffnet sich als Seite: die Skin-Liste ist wieder erreichbar, mit richtiger Anzahl, formatiertem Preis und Streuung der ersten Kugel",
+    "Ausgerüstete Waffen folgen der Reihenfolge im Spiel",
+    "Das Ausdrucksrad läuft im Uhrzeigersinn (oben, rechts, unten, links) mit richtig großen Bildern",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_9_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_9_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_9_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_9_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

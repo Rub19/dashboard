@@ -750,6 +750,7 @@ final class ValorantStore {
     // Groupe / présence : seul le client Riot les connaît, HenrikDev non.
     func refreshGroup() async {
         guard riot.isLinked else { currentParty = nil; isPlayerOnline = false; return }
+        party.currentSeason = currentAct?.id
         await party.load(riot)
         await contracts.load(riot)
     }

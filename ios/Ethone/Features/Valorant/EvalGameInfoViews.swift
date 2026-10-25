@@ -1198,8 +1198,10 @@ struct EvalWeaponsView: View {
         .refreshable {
             await store.fetchWeapons()
         }
-        .sheet(item: $selectedWeapon) { weapon in
+        .navigationDestination(item: $selectedWeapon) { weapon in
             EvalWeaponDetailView(weapon: weapon)
+                .navigationBarBackButtonHidden(true)
+                .toolbar(.hidden, for: .navigationBar)
         }
     }
 
@@ -1378,7 +1380,7 @@ struct EvalWeaponDetailView: View {
 
                 Divider().overlay(EvalColors.text.opacity(0.06))
 
-                let costText = "\(weapon.shopData?.cost ?? 0) crédits"
+                let costText = "\((weapon.shopData?.cost ?? 0).formatted()) crédits"
                 infoRow(title: "Prix", value: costText)
 
                 Divider().overlay(EvalColors.text.opacity(0.06))
@@ -1387,10 +1389,10 @@ struct EvalWeaponDetailView: View {
                 HStack {
                     Text("Skins")
                         .font(.system(size: 17))
-                        .foregroundStyle(Color(hex: 0x8E8E93))
+                        .foregroundStyle(EvalColors.text)
                     Spacer()
                     HStack(spacing: 6) {
-                        Text("\(weapon.skins.count)")
+                        Text("\(weapon.skins.filter { $0.image != nil && !$0.displayName.lowercased().contains("standard") }.count)")
                             .font(.system(size: 17))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")
@@ -1466,6 +1468,11 @@ struct EvalWeaponDetailView: View {
 
                 if let runSpeed = stats.runSpeedMultiplier {
                     infoRow(title: "Vitesse de course", value: "\(Int(round(runSpeed * 100))) %")
+                }
+
+                if let spread = stats.firstBulletAccuracy {
+                    Divider().overlay(EvalColors.text.opacity(0.06))
+                    infoRow(title: "Écart initial de la première balle", value: "\(formatFrenchNumber(spread))°")
                 }
             } else {
                 Text("Arme sans statistiques de tir.")
@@ -2572,3 +2579,8 @@ struct EvalPlayerSettingsView: View {
     }
 }
 
+
+extension ValorantWeaponItem: Hashable {
+    static func == (lhs: ValorantWeaponItem, rhs: ValorantWeaponItem) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+}

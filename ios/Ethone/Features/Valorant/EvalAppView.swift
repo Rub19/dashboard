@@ -1616,10 +1616,10 @@ struct SprayWheelView: View {
                 Circle().fill(gap).frame(width: d * 0.37, height: d * 0.37)
                 Circle().strokeBorder(line, lineWidth: 2.5).frame(width: d * 0.32, height: d * 0.32)
 
-                sprayItem(url: topSprayURL, size: d * 0.27).offset(y: -r * 0.64)
-                sprayItem(url: leftSprayURL, size: d * 0.27).offset(x: -r * 0.64)
-                sprayItem(url: rightSprayURL, size: d * 0.27).offset(x: r * 0.64)
-                sprayItem(url: bottomSprayURL, size: d * 0.27).offset(y: r * 0.64)
+                sprayItem(url: topSprayURL, size: d * 0.22).offset(y: -r * 0.64)
+                sprayItem(url: leftSprayURL, size: d * 0.22).offset(x: -r * 0.64)
+                sprayItem(url: rightSprayURL, size: d * 0.22).offset(x: r * 0.64)
+                sprayItem(url: bottomSprayURL, size: d * 0.22).offset(y: r * 0.64)
             }
             .frame(width: d, height: d)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1967,9 +1967,9 @@ struct EvalGameView: View {
             NavigationLink { EvalSprayLoadoutView() } label: {
                 SprayWheelView(
                     topSprayURL: store.equippedSprays.indices.contains(0) ? store.equippedSprays[0] : nil,
-                    leftSprayURL: store.equippedSprays.indices.contains(1) ? store.equippedSprays[1] : nil,
-                    rightSprayURL: store.equippedSprays.indices.contains(2) ? store.equippedSprays[2] : nil,
-                    bottomSprayURL: store.equippedSprays.indices.contains(3) ? store.equippedSprays[3] : nil
+                    leftSprayURL: store.equippedSprays.indices.contains(3) ? store.equippedSprays[3] : nil,
+                    rightSprayURL: store.equippedSprays.indices.contains(1) ? store.equippedSprays[1] : nil,
+                    bottomSprayURL: store.equippedSprays.indices.contains(2) ? store.equippedSprays[2] : nil
                 )
                 .contentShape(.rect)
             }

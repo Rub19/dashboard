@@ -449,7 +449,7 @@ struct EvalWeaponLoadoutView: View {
                                        description: Text(model.valorant.riot.isLinked ? (loadout.message ?? "Riot n’a renvoyé aucune arme équipée.") : "Connectez votre compte Riot dans Paramètres."))
                     .padding(.top, 40)
             }
-            ForEach(loadout.catalog.weapons.filter { loadout.gun($0.uuid) != nil }) { weapon in
+            ForEach(loadout.catalog.weapons.filter { loadout.gun($0.uuid) != nil }.sorted { Self.rank($0) < Self.rank($1) }) { weapon in
                 let gun = loadout.gun(weapon.uuid)
                 let chroma = loadout.chroma(gun?["ChromaID"]?.stringValue)
                 let skin = loadout.skin(gun?["SkinID"]?.stringValue)
@@ -480,6 +480,13 @@ struct EvalWeaponLoadoutView: View {
             }
         }
         .task { await model.valorant.loadout.load(model.valorant.riot) }
+    }
+
+    private static let order = ["classic", "shorty", "frenzy", "ghost", "bandit", "sheriff", "stinger", "spectre", "bucky", "judge",
+                                "bulldog", "guardian", "phantom", "vandal", "marshal", "outlaw", "operator", "ares", "odin"]
+
+    private static func rank(_ weapon: LoadoutCatalog.Weapon) -> Int {
+        order.firstIndex(of: weapon.displayName.lowercased()) ?? order.count
     }
 }
 
@@ -768,8 +775,8 @@ struct EvalSprayLoadoutView: View {
     @Environment(AppModel.self) private var model
     @State private var slot: Int?
 
-    private let slotNames = ["Haut", "Gauche", "Droite", "Bas"]
-    private let offsets = [CGSize(width: 0, height: -96), CGSize(width: -96, height: 0), CGSize(width: 96, height: 0), CGSize(width: 0, height: 96)]
+    private let slotNames = ["Haut", "Droite", "Bas", "Gauche"]
+    private let offsets = [CGSize(width: 0, height: -96), CGSize(width: 96, height: 0), CGSize(width: 0, height: 96), CGSize(width: -96, height: 0)]
 
     var body: some View {
         let loadout = model.valorant.loadout

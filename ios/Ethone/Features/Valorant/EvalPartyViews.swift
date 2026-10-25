@@ -13,6 +13,8 @@ struct RiotPartyState: Equatable {
         let level: Int
         /// Ping par serveur (GamePodID -> ms).
         let pings: [String: Int]
+        var tier = 0
+        var tierIsCurrent = true
     }
 
     let id: String
@@ -34,7 +36,10 @@ final class RiotPartyModel {
     private(set) var party: RiotPartyState?
     private(set) var isLoading = false
     private(set) var working = false
+    private(set) var loaded = false
     var message: String?
+    var currentSeason: String?
+    private var tierCache: [String: (tier: Int, current: Bool)] = [:]
 
     func me(_ session: RiotSession) -> RiotPartyState.Member? {
         guard let puuid = session.credentials?.puuid else { return nil }
@@ -51,7 +56,7 @@ final class RiotPartyModel {
     func load(_ session: RiotSession) async {
         guard session.isLinked, let puuid = session.credentials?.puuid else { party = nil; return }
         isLoading = true
-        defer { isLoading = false }
+        defer { isLoading = false; loaded = true }
         guard let raw = try? await session.gameData("/parties/v1/players/\(puuid)", host: .glz),
               let player = try? JSONDecoder().decode(JSONValue.self, from: raw),
               let partyID = player["CurrentPartyID"]?.stringValue,
@@ -68,6 +73,32 @@ final class RiotPartyModel {
                 guard let subject = entry["Subject"]?.stringValue, let index = state.members.firstIndex(where: { $0.id == subject }) else { continue }
                 state.members[index].name = entry["GameName"]?.stringValue ?? ""
                 state.members[index].tag = entry["TagLine"]?.stringValue ?? ""
+            }
+        }
+        let season = currentSeason?.lowercased()
+        let missing = ids.filter { $0 != puuid && tierCache[$0] == nil }
+        await withTaskGroup(of: (String, Int, Bool)?.self) { group in
+            for id in missing {
+                group.addTask {
+                    guard let raw = try? await session.gameData("/mmr/v1/players/\(id)"),
+                          let json = try? JSONDecoder().decode(JSONValue.self, from: raw) else { return nil }
+                    let seasons = json["QueueSkills"]?["competitive"]?["SeasonalInfoBySeasonID"]?.objectValue ?? [:]
+                    if let season, let info = seasons.first(where: { $0.key.lowercased() == season })?.value,
+                       let tier = info["CompetitiveTier"]?.intValue, tier > 0 {
+                        return (id, tier, true)
+                    }
+                    let latest = json["LatestCompetitiveUpdate"]?["TierAfterUpdate"]?.intValue ?? 0
+                    return (id, latest, false)
+                }
+            }
+            for await result in group {
+                if case let (id, tier, current)? = result { tierCache[id] = (tier, current) }
+            }
+        }
+        for index in state.members.indices {
+            if let hit = tierCache[state.members[index].id] {
+                state.members[index].tier = hit.tier
+                state.members[index].tierIsCurrent = hit.current
             }
         }
         party = state
@@ -215,7 +246,9 @@ struct EvalPartyCard: View {
 
     var body: some View {
         Group {
-            if let party = partyModel.party {
+            if partyModel.party == nil, !partyModel.loaded {
+                ProgressView().tint(EvalColors.text).frame(maxWidth: .infinity).padding(.vertical, 24)
+            } else if let party = partyModel.party {
                 VStack(spacing: 0) {
                     VStack(spacing: 10) {
                         ForEach(party.members) { member in memberRow(member) }
@@ -271,6 +304,14 @@ struct EvalPartyCard: View {
                 }
             }
             Spacer()
+            if !isMe {
+                if store.friends.contains(where: { $0.id.lowercased() == member.id.lowercased() }) {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(EvalAccent.color)
+                }
+                rankBadge(member)
+            }
             if isMe {
                 Toggle("Prêt", isOn: Binding(
                     get: { member.isReady },
@@ -283,6 +324,25 @@ struct EvalPartyCard: View {
         }
         .padding(14)
         .background(surface, in: .rect(cornerRadius: 18))
+    }
+
+    private func rankBadge(_ member: RiotPartyState.Member) -> some View {
+        ZStack {
+            Circle().fill(Color.black)
+            Circle().strokeBorder(Color.white.opacity(0.18), lineWidth: 2)
+            if let url = ValorantProfile.tierIcon(member.tier) {
+                AsyncImage(url: url) { $0.image?.resizable().scaledToFit() }.padding(10)
+            }
+            if !member.tierIsCurrent, member.tier > 0 {
+                Image(systemName: "clock")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(2)
+                    .background(Color.black, in: .circle)
+                    .offset(y: 13)
+            }
+        }
+        .frame(width: 46, height: 46)
     }
 
     private func controls(_ party: RiotPartyState) -> some View {

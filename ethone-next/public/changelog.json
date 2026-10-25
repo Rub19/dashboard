@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.85.9",
+    "date": "2026-10-25",
+    "title": "E:VAL : groupe, armes et roue des expressions comme VALPAW",
+    "items": [
+      "Groupe : rang de chaque membre (horloge si le rang date d'un acte précédent), icône ami, chargement au lieu de « aucun groupe » au démarrage",
+      "La fiche d'une arme s'ouvre en page : la liste de ses skins est de nouveau accessible, avec le bon nombre de skins, le prix formaté et l'écart de la première balle",
+      "Les armes équipées suivent l'ordre du jeu",
+      "La roue des expressions suit le sens horaire (haut, droite, bas, gauche) avec des images à la bonne taille"
+    ]
+  },
+  {
     "version": "v1.85.8",
     "date": "2026-10-25",
     "title": "E:VAL : vidéos des variantes et favoris Valorant dans la collection",
@@ -613,14 +624,6 @@
     "title": "Fils de signalement archivés à la clôture",
     "items": [
       "Quand un signalement est résolu ou refusé (dashboard ou boutons Discord), son fil est archivé au lieu de rester ouvert dans le salon de l'équipe."
-    ]
-  },
-  {
-    "version": "v1.75.122",
-    "date": "2026-10-16",
-    "title": "/report ouvert à tous les membres",
-    "items": [
-      "/report user n'est plus refusé aux membres sans rôle de modération : tout le monde peut signaler, seuls setup et status restent réservés à l'équipe."
     ]
   }
 ]

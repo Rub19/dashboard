@@ -1042,8 +1042,10 @@ final class ValorantStore {
     func riotEnriched(_ match: EvalMatch) async -> EvalMatch? {
         guard riot.isLinked, match.kills.allSatisfy({ $0.vp == nil }),
               let catalog = await RiotMatches.catalog(),
-              let fresh = try? await RiotMatches.match(riot, id: match.id, catalog: catalog),
-              fresh.kills.contains(where: { $0.vp != nil }) else { return nil }
+              let loaded = try? await RiotMatches.match(riot, id: match.id, catalog: catalog),
+              loaded.kills.contains(where: { $0.vp != nil }) else { return nil }
+        let known = Dictionary(match.players.filter { !$0.name.isEmpty }.map { ($0.puuid.lowercased(), (name: $0.name, tag: $0.tag)) }, uniquingKeysWith: { a, _ in a })
+        let fresh = RiotMatches.withPlayers(loaded, names: known, tiers: [:])
         if evalMatches[match.id] != nil {
             evalMatches[match.id] = fresh
             if let cached = DiskCache.read(AccountCache.self, key: accountCacheKey) {

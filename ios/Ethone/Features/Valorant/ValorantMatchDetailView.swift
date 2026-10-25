@@ -441,8 +441,8 @@ struct ValorantMatchDetailView: View {
 
     private func tier(of p: EvalMatch.Player) -> Int {
         if p.tier > 0 { return p.tier }
-        if let live = liveTiers[p.puuid], live > 0 { return live }
-        return p.puuid == model.valorant.puuid ? model.valorant.currentTier : 0
+        if p.puuid == model.valorant.puuid, model.valorant.currentTier > 0 { return model.valorant.currentTier }
+        return liveTiers[p.puuid] ?? 0
     }
 
     @ViewBuilder

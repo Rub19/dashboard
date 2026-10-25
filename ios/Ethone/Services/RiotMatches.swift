@@ -36,7 +36,39 @@ enum RiotMatches {
 
     static func match(_ session: RiotSession, id: String, catalog: Catalog) async throws -> EvalMatch {
         let raw: Raw = try await session.game("/match-details/v1/matches/\(id)")
-        return convert(raw, catalog: catalog)
+        let match = convert(raw, catalog: catalog)
+        let unnamed = match.players.filter { $0.name.isEmpty }.map(\.puuid)
+        guard !unnamed.isEmpty else { return match }
+        return withPlayers(match, names: await names(session, puuids: unnamed), tiers: [:])
+    }
+
+    static func names(_ session: RiotSession, puuids: [String]) async -> [String: (name: String, tag: String)] {
+        struct Entry: Decodable { let Subject: String; let GameName: String?; let TagLine: String? }
+        guard !puuids.isEmpty,
+              let entries: [Entry] = try? await session.game("/name-service/v2/players", method: "PUT", body: RiotSession.json(puuids)) else { return [:] }
+        var out: [String: (name: String, tag: String)] = [:]
+        for entry in entries where !(entry.GameName ?? "").isEmpty {
+            out[entry.Subject.lowercased()] = (entry.GameName ?? "", entry.TagLine ?? "")
+        }
+        return out
+    }
+
+    static func withPlayers(_ match: EvalMatch, names: [String: (name: String, tag: String)], tiers: [String: Int]) -> EvalMatch {
+        let players = match.players.map { p -> EvalMatch.Player in
+            let named = p.name.isEmpty ? names[p.puuid.lowercased()] : nil
+            let tier = p.tier > 0 ? p.tier : (tiers[p.puuid.lowercased()] ?? 0)
+            return EvalMatch.Player(
+                puuid: p.puuid, name: named?.name ?? p.name, tag: named?.tag ?? p.tag, team: p.team,
+                agent: p.agent, agentId: p.agentId, tier: tier, card: p.card, title: p.title, level: p.level,
+                party: p.party, score: p.score, kills: p.kills, deaths: p.deaths, assists: p.assists,
+                hs: p.hs, bs: p.bs, ls: p.ls, dmg: p.dmg, dmgIn: p.dmgIn, spent: p.spent, loadout: p.loadout
+            )
+        }
+        return EvalMatch(
+            v: match.v, id: match.id, map: match.map, mapId: match.mapId, mode: match.mode, queue: match.queue,
+            season: match.season, version: match.version, cluster: match.cluster, startedAt: match.startedAt,
+            lengthSec: match.lengthSec, teams: match.teams, players: players, rounds: match.rounds, kills: match.kills
+        )
     }
 
     private struct Raw: Decodable {

@@ -873,15 +873,13 @@ struct EvalProfileView: View {
                 LinearGradient(colors: [Color.black.opacity(0.55), Color.black.opacity(0.05), Color.black.opacity(0.35)], startPoint: .leading, endPoint: .trailing)
 
                 HStack(spacing: 0) {
-                    if let portrait = Self.portraitURL(match.myPlayer?.agentIconURL) {
-                        // Portrait détouré, cadré sur le visage : pas de bord coupé net sur la carte.
+                    if let icon = match.myPlayer?.agentIconURL {
                         Color.clear
-                            .frame(width: 128, height: 86)
-                            .overlay(alignment: .topLeading) {
-                                AsyncImage(url: portrait) { $0.image?.resizable().scaledToFit() }
-                                    // fullportrait 2048×1860 : tête vers 45-56 % en largeur, 12-25 % en hauteur.
-                                    .frame(width: 560, height: 509)
-                                    .offset(x: -214, y: -53)
+                            .frame(width: 96, height: 86)
+                            .overlay(alignment: .bottomLeading) {
+                                AsyncImage(url: icon) { $0.image?.resizable().scaledToFit() }
+                                    .frame(width: 100, height: 100)
+                                    .offset(x: -2, y: 6)
                             }
                             .clipped()
                     }
@@ -973,13 +971,6 @@ struct EvalProfileView: View {
         case "": return "Partie"
         default: return mode
         }
-    }
-
-    /// Portrait en buste de l'agent (même UUID que l'icône renvoyée pour le match).
-    static func portraitURL(_ icon: URL?) -> URL? {
-        guard let icon, icon.pathComponents.count >= 3 else { return icon }
-        let uuid = icon.pathComponents[icon.pathComponents.count - 2]
-        return URL(string: "https://media.valorant-api.com/agents/\(uuid)/fullportrait.png")
     }
 
     /// MVP réel : meilleur ACS du match, sinon de l'équipe.

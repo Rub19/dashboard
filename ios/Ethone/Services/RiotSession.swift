@@ -421,7 +421,12 @@ enum RiotGameService {
             let MissionMetadata: Meta?
             let Missions: [Mission]?
         }
-        if let contracts: Contracts = try? await session.game("/contracts/v1/contracts/\(puuid)") {
+        var contractsResponse: Contracts? = try? await session.game("/contracts/v1/contracts/\(puuid)")
+        if contractsResponse == nil {
+            try? await Task.sleep(for: .seconds(2))
+            contractsResponse = try? await session.game("/contracts/v1/contracts/\(puuid)")
+        }
+        if let contracts = contractsResponse {
             if let bp = contracts.Contracts?.first(where: { $0.ContractDefinitionID.lowercased() == battlepassContract }) {
                 snap.battlepassLevel = bp.ProgressionLevelReached ?? 0
                 snap.battlepassXP = bp.ProgressionTowardsNextLevel ?? 0
@@ -438,7 +443,12 @@ enum RiotGameService {
             struct Rewards: Decodable { struct Milestone: Decodable { let Progress: Int?; let BonusApplied: Bool? }; let RemainingLifetimeSeconds: Int?; let Milestones: [Milestone]? }
             let DailyRewards: Rewards?
         }
-        if let daily: Daily = try? await session.game("/daily-ticket/v1/\(puuid)") {
+        var dailyResponse: Daily? = try? await session.game("/daily-ticket/v1/\(puuid)")
+        if dailyResponse == nil {
+            try? await Task.sleep(for: .seconds(2))
+            dailyResponse = try? await session.game("/daily-ticket/v1/\(puuid)")
+        }
+        if let daily = dailyResponse {
             snap.dailyMilestones = (daily.DailyRewards?.Milestones ?? []).map { ($0.BonusApplied ?? false) || ($0.Progress ?? 0) >= 4 }
             snap.dailyEnd = daily.DailyRewards?.RemainingLifetimeSeconds.map { Date().addingTimeInterval(TimeInterval($0)) }
         }

@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.85.5 — 2026-10-25
+
+**E:VAL iOS : connexion Riot réparée (code de vérification, « Oups »)**
+
+- Plus de reconnexion en arrière-plan pendant que la page de connexion Riot est ouverte : le code reçu par e-mail est de nouveau accepté
+- Seul le cookie de session Riot est gardé dans le trousseau, et il est supprimé dès que Riot le refuse : plus de page « Oups » à cause d'une ancienne session
+- Après un échec, la reconnexion automatique attend 5 minutes au lieu de se relancer en boucle
+
 ## v1.85.4 — 2026-10-25
 
 **E:VAL iOS : session Riot conservée après une réinstallation**

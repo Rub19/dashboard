@@ -61191,4 +61191,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_85_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_85_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_85_4_de);
 
+const v1_85_5_fr: ChangelogEntry = {
+  version: "v1.85.5",
+  date: "2026-10-25",
+  title: "E:VAL iOS : connexion Riot réparée (code de vérification, « Oups »)",
+  items: [
+    "Plus de reconnexion en arrière-plan pendant que la page de connexion Riot est ouverte : le code reçu par e-mail est de nouveau accepté",
+    "Seul le cookie de session Riot est gardé dans le trousseau, et il est supprimé dès que Riot le refuse : plus de page « Oups » à cause d'une ancienne session",
+    "Après un échec, la reconnexion automatique attend 5 minutes au lieu de se relancer en boucle",
+  ],
+};
+
+const v1_85_5_en: ChangelogEntry = {
+  version: "v1.85.5",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Riot sign-in fixed (verification code, \"Oops\")",
+  items: [
+    "No more background reconnection while the Riot sign-in page is open: the code received by email is accepted again",
+    "Only the Riot session cookie is kept in the keychain, and it is deleted as soon as Riot rejects it: no more \"Oops\" page caused by an old session",
+    "After a failure, automatic reconnection waits 5 minutes instead of looping",
+  ],
+};
+
+const v1_85_5_es: ChangelogEntry = {
+  version: "v1.85.5",
+  date: "2026-10-25",
+  title: "E:VAL iOS: inicio de sesión de Riot reparado (código de verificación, «Ups»)",
+  items: [
+    "Ya no hay reconexión en segundo plano mientras la página de inicio de sesión de Riot está abierta: el código recibido por correo vuelve a aceptarse",
+    "Solo se guarda la cookie de sesión de Riot en el llavero, y se borra en cuanto Riot la rechaza: se acabó la página «Ups» por una sesión antigua",
+    "Tras un fallo, la reconexión automática espera 5 minutos en lugar de repetirse en bucle",
+  ],
+};
+
+const v1_85_5_de: ChangelogEntry = {
+  version: "v1.85.5",
+  date: "2026-10-25",
+  title: "E:VAL iOS: Riot-Anmeldung repariert (Bestätigungscode, „Hoppla“)",
+  items: [
+    "Keine Hintergrund-Neuverbindung mehr, solange die Riot-Anmeldeseite offen ist: der per E-Mail erhaltene Code wird wieder akzeptiert",
+    "Nur das Riot-Sitzungscookie wird im Schlüsselbund gespeichert und gelöscht, sobald Riot es ablehnt: keine „Hoppla“-Seite mehr wegen einer alten Sitzung",
+    "Nach einem Fehler wartet die automatische Neuverbindung 5 Minuten, statt sich ständig zu wiederholen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_85_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_85_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_85_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_85_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

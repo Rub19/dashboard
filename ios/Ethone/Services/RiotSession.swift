@@ -44,6 +44,7 @@ struct RiotLoginView: UIViewRepresentable {
         let view = WKWebView(frame: .zero, configuration: config)
         view.customUserAgent = RiotAuthURL.safariUserAgent
         view.navigationDelegate = context.coordinator
+        RiotSession.loginOpen = true
         if fresh || UserDefaults.standard.bool(forKey: "eval.clearWebLoginOnOpen") {
             Task { @MainActor in
                 await RiotWebData.clear()
@@ -56,6 +57,10 @@ struct RiotLoginView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {}
+
+    static func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
+        RiotSession.loginOpen = false
+    }
 
     @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
@@ -133,33 +138,38 @@ private final class RiotRedirectStopper: NSObject, URLSessionTaskDelegate {
 enum RiotCookieVault {
     private static let key = "riot-auth-cookies"
 
-    private struct Stored: Codable { let name: String; let value: String; let domain: String; let path: String }
+    private struct Stored: Codable { let value: String; let domain: String; let path: String; let expires: Date }
 
     static func save() async {
         let cookies = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
-            .filter { $0.domain.contains("riotgames.com") }
-        guard cookies.contains(where: { $0.name == "ssid" }) else { return }
-        let stored = cookies.map { Stored(name: $0.name, value: $0.value, domain: $0.domain, path: $0.path) }
+        guard let ssid = cookies.first(where: { $0.domain.contains("riotgames.com") && $0.name == "ssid" }) else { return }
+        let stored = Stored(value: ssid.value, domain: ssid.domain, path: ssid.path,
+                            expires: ssid.expiresDate ?? Date().addingTimeInterval(60 * 60 * 24 * 30))
         if let data = try? JSONEncoder().encode(stored) { Keychain.set(data, for: key) }
     }
 
-    static func load() -> [HTTPCookie] {
-        guard let data = Keychain.get(key), let stored = try? JSONDecoder().decode([Stored].self, from: data) else { return [] }
-        return stored.compactMap { item in
-            HTTPCookie(properties: [.name: item.name, .value: item.value, .domain: item.domain, .path: item.path,
-                                    .secure: "TRUE", .expires: Date().addingTimeInterval(60 * 60 * 24 * 30)])
-        }
-    }
-
     static func restore() async {
+        guard let data = Keychain.get(key), let stored = try? JSONDecoder().decode(Stored.self, from: data) else { return }
+        guard stored.expires > Date() else { clear(); return }
         let store = WKWebsiteDataStore.default().httpCookieStore
         let present = await store.allCookies().contains { $0.domain.contains("riotgames.com") && $0.name == "ssid" }
-        guard !present else { return }
-        for cookie in load() { await store.setCookie(cookie) }
+        guard !present, let cookie = HTTPCookie(properties: [
+            .name: "ssid", .value: stored.value, .domain: stored.domain, .path: stored.path,
+            .secure: "TRUE", .expires: stored.expires, HTTPCookiePropertyKey("HttpOnly"): "TRUE",
+        ]) else { return }
+        await store.setCookie(cookie)
     }
 
     static func clear() {
         Keychain.remove(key)
+    }
+
+    static func discardDead() async {
+        clear()
+        let store = WKWebsiteDataStore.default().httpCookieStore
+        for cookie in await store.allCookies() where cookie.domain.contains("riotgames.com") && cookie.name == "ssid" {
+            await store.deleteCookie(cookie)
+        }
     }
 }
 
@@ -178,8 +188,11 @@ enum RiotCookieReauth {
         guard let (_, response) = try? await session.data(for: request),
               let http = response as? HTTPURLResponse,
               let location = http.value(forHTTPHeaderField: "Location"),
-              let url = URL(string: location),
-              let tokens = RiotAuthURL.tokens(from: url) else { return nil }
+              let url = URL(string: location) else { return nil }
+        guard let tokens = RiotAuthURL.tokens(from: url) else {
+            await RiotCookieVault.discardDead()
+            return nil
+        }
         if let fields = http.allHeaderFields as? [String: String] {
             for cookie in HTTPCookie.cookies(withResponseHeaderFields: fields, for: RiotAuthURL.authorize) {
                 await WKWebsiteDataStore.default().httpCookieStore.setCookie(cookie)
@@ -228,6 +241,7 @@ final class RiotSession {
             credentials = try await buildCredentials(accessToken: accessToken, idToken: idToken, expiresIn: expiresIn)
             persist()
             lastError = nil
+            reauthBlockedUntil = nil
             await RiotCookieVault.save()
         } catch {
             lastError = "Connexion Riot impossible : \(error.localizedDescription)"
@@ -267,6 +281,7 @@ final class RiotSession {
     private func validCredentials() async -> Credentials? {
         guard let current = credentials else { return nil }
         if current.expiresAt > Date() { return current }
+        guard !Self.loginOpen, (reauthBlockedUntil ?? .distantPast) < Date() else { return nil }
         if let running = reauthTask, let fresh = await running.value, fresh.expiresAt > Date() { return fresh }
         let task = Task<Credentials?, Never> { @MainActor in
             var reauth = await RiotCookieReauth.run()
@@ -279,6 +294,7 @@ final class RiotSession {
         let result = await task.value
         reauthTask = nil
         guard let result else {
+            reauthBlockedUntil = Date().addingTimeInterval(300)
             lastError = "Session Riot expirée : reconnectez-vous."
             return nil
         }
@@ -286,6 +302,8 @@ final class RiotSession {
     }
 
     private var reauthTask: Task<Credentials?, Never>?
+    private var reauthBlockedUntil: Date?
+    static var loginOpen = false
 
     private func loadClientVersion() async {
         guard clientVersion.isEmpty else { return }

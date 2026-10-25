@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.85.5",
+    "date": "2026-10-25",
+    "title": "E:VAL iOS : connexion Riot réparée (code de vérification, « Oups »)",
+    "items": [
+      "Plus de reconnexion en arrière-plan pendant que la page de connexion Riot est ouverte : le code reçu par e-mail est de nouveau accepté",
+      "Seul le cookie de session Riot est gardé dans le trousseau, et il est supprimé dès que Riot le refuse : plus de page « Oups » à cause d'une ancienne session",
+      "Après un échec, la reconnexion automatique attend 5 minutes au lieu de se relancer en boucle"
+    ]
+  },
+  {
     "version": "v1.85.4",
     "date": "2026-10-25",
     "title": "E:VAL iOS : session Riot conservée après une réinstallation",
@@ -611,15 +621,6 @@
     "items": [
       "Si un fichier du site manque juste après une mise à jour, la page se recharge jusqu'à 3 fois au lieu de rester noire.",
       "Le rôle d'Etho n'est plus signalé « Au-dessus d'Etho » dans Rôles et membres."
-    ]
-  },
-  {
-    "version": "v1.75.118",
-    "date": "2026-10-16",
-    "title": "Membres des rôles sensibles et catégories de commandes repliables",
-    "items": [
-      "Rôles et membres : chaque rôle sensible affiche son nombre de membres et, au clic, la liste des membres qui l'ont, avec un bouton Inspecter.",
-      "Commandes : la catégorie de la commande choisie se replie à nouveau."
     ]
   }
 ]

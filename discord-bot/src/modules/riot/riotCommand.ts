@@ -4,7 +4,8 @@ import { SLASH_DESTINATION_TYPES } from '../../utils/channelSend.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { trg } from '../../utils/tr.js';
 import { riotStorage } from './riotStorage.js';
-import { rankName, riotService } from './riotService.js';
+import { MODE_FILTERS, rankName, riotService } from './riotService.js';
+import { RiotModeFilter } from './riotStorage.js';
 
 export const riotCommand: Command = {
   name: 'riot',
@@ -28,6 +29,11 @@ export const riotCommand: Command = {
         .setDescription('[Admin] Salon des récaps et publication automatique')
         .addChannelOption((o) => o.setName('salon').setDescription('Salon où publier les récaps').addChannelTypes(...SLASH_DESTINATION_TYPES))
         .addBooleanOption((o) => o.setName('auto').setDescription('Publier automatiquement après chaque partie'))
+        .addStringOption((o) =>
+          o.setName('modes').setDescription('Quelles parties publier automatiquement').addChoices(
+            ...Object.entries(MODE_FILTERS).map(([value, name]) => ({ name, value })),
+          )
+        )
         .addBooleanOption((o) => o.setName('actif').setDescription('Activer / désactiver le module'))
     ),
 
@@ -49,10 +55,12 @@ export const riotCommand: Command = {
       const channel = options.getChannel('salon');
       const auto = options.getBoolean('auto');
       const enabled = options.getBoolean('actif');
+      const modes = options.getString('modes') as RiotModeFilter | null;
       const updated = riotStorage.updateConfig(guildId, {
         ...(channel ? { channelId: channel.id } : {}),
         ...(auto !== null ? { auto } : {}),
-        ...(enabled !== null ? { enabled } : channel || auto !== null ? { enabled: true } : {}),
+        ...(modes && modes in MODE_FILTERS ? { modes } : {}),
+        ...(enabled !== null ? { enabled } : channel || auto !== null || modes ? { enabled: true } : {}),
       });
       emitConfigUpdated('riot', guildId, updated, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
@@ -61,6 +69,7 @@ export const riotCommand: Command = {
             { name: trg(guildId, 'Module'), value: updated.enabled ? trg(guildId, '✅ Actif') : trg(guildId, '⛔ Désactivé'), inline: true },
             { name: trg(guildId, 'Salon'), value: updated.channelId ? `<#${updated.channelId}>` : trg(guildId, 'Aucun'), inline: true },
             { name: trg(guildId, 'Automatique'), value: updated.auto ? trg(guildId, '✅ Après chaque partie') : trg(guildId, '❌ Non'), inline: true },
+            { name: trg(guildId, 'Parties publiées'), value: trg(guildId, MODE_FILTERS[updated.modes]), inline: true },
           ).setDescription(trg(guildId, 'Les membres lient leur compte avec `/riot link Pseudo#TAG`.')),
         ],
         ephemeral: true,

@@ -2,10 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { logger } from '../../utils/logger.js';
 
+export type RiotModeFilter = 'all' | 'competitive' | 'competitive_premier' | 'no_deathmatch';
+
 export interface RiotGuildConfig {
   enabled: boolean;
   channelId: string | null;
   auto: boolean;
+  modes: RiotModeFilter;
 }
 
 export interface RiotLink {
@@ -19,7 +22,7 @@ export interface RiotLink {
   linkedAt: number;
 }
 
-const DEFAULT_CONFIG: RiotGuildConfig = { enabled: false, channelId: null, auto: false };
+const DEFAULT_CONFIG: RiotGuildConfig = { enabled: false, channelId: null, auto: false, modes: 'all' };
 
 class RiotStorage {
   private dataDir = path.resolve(process.cwd(), 'data');

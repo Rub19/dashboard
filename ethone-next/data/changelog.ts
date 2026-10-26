@@ -62138,4 +62138,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_89_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_89_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_89_0_de);
 
+const v1_89_1_fr: ChangelogEntry = {
+  version: "v1.89.1",
+  date: "2026-10-26",
+  title: "Etho : choisir quelles parties Valorant publier",
+  items: [
+    "/riot config modes : tous les modes, compétition uniquement, compétition et Premier, ou tous sauf combat à mort",
+    "Le filtre s'applique aux récaps automatiques ; /riot last publie toujours la dernière partie",
+  ],
+};
+
+const v1_89_1_en: ChangelogEntry = {
+  version: "v1.89.1",
+  date: "2026-10-26",
+  title: "Etho: choose which Valorant matches to post",
+  items: [
+    "/riot config modes: all modes, competitive only, competitive and Premier, or everything except deathmatch",
+    "The filter applies to automatic recaps; /riot last always posts the latest match",
+  ],
+};
+
+const v1_89_1_es: ChangelogEntry = {
+  version: "v1.89.1",
+  date: "2026-10-26",
+  title: "Etho: elige qué partidas de Valorant publicar",
+  items: [
+    "/riot config modes: todos los modos, solo competitivo, competitivo y Premier, o todo menos combate a muerte",
+    "El filtro se aplica a los resúmenes automáticos; /riot last siempre publica la última partida",
+  ],
+};
+
+const v1_89_1_de: ChangelogEntry = {
+  version: "v1.89.1",
+  date: "2026-10-26",
+  title: "Etho: festlegen, welche Valorant-Spiele gepostet werden",
+  items: [
+    "/riot config modes: alle Modi, nur gewertet, gewertet und Premier, oder alles außer Deathmatch",
+    "Der Filter gilt für automatische Zusammenfassungen; /riot last postet immer das letzte Spiel",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_89_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_89_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_89_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_89_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

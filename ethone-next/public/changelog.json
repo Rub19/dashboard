@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.89.1",
+    "date": "2026-10-26",
+    "title": "Etho : choisir quelles parties Valorant publier",
+    "items": [
+      "/riot config modes : tous les modes, compétition uniquement, compétition et Premier, ou tous sauf combat à mort",
+      "Le filtre s'applique aux récaps automatiques ; /riot last publie toujours la dernière partie"
+    ]
+  },
+  {
     "version": "v1.89.0",
     "date": "2026-10-26",
     "title": "Etho : récaps Valorant automatiques avec /riot",
@@ -620,15 +629,6 @@
       "Nouveautés : titre ETHONE avec la version installée ; double authentification redessinée.",
       "Plugins, Clip et Bouclier owner : sélecteurs en onglets, états vides natifs, bouclier animé quand il est actif.",
       "Équipe et Personas : statuts en point de couleur, application d'une persona en fondu."
-    ]
-  },
-  {
-    "version": "v1.75.137",
-    "date": "2026-10-17",
-    "title": "Déconnexion complète et commandes propriétaire protégées",
-    "items": [
-      "Se déconnecter du site déconnecte aussi la session du bot Discord : le compte suivant connecté dans le même navigateur n'hérite plus des droits du précédent.",
-      "Le panneau « Pilotage Etho » (redémarrage, outils du bot) est masqué quand la session du bot appartient à un autre compte que celui connecté sur le site."
     ]
   }
 ]

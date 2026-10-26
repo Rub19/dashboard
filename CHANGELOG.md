@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.89.1 — 2026-10-26
+
+**Etho : choisir quelles parties Valorant publier**
+
+- /riot config modes : tous les modes, compétition uniquement, compétition et Premier, ou tous sauf combat à mort
+- Le filtre s'applique aux récaps automatiques ; /riot last publie toujours la dernière partie
+
 ## v1.89.0 — 2026-10-26
 
 **Etho : récaps Valorant automatiques avec /riot**

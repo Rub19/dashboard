@@ -6,7 +6,7 @@ import { BotJobSchedulerService } from '../botControl/services/botJobSchedulerSe
 import { canBotSendTo, isSendableTarget, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { isModuleEnabled } from '../../services/moduleRegistry.js';
 import { RecapPlayer, recapButtons, valorantRecapStore } from '../valorantRecap/valorantRecapService.js';
-import { riotStorage, RiotLink } from './riotStorage.js';
+import { riotStorage, RiotLink, RiotModeFilter } from './riotStorage.js';
 
 export interface RiotAccount {
   puuid: string;
@@ -60,6 +60,21 @@ const MODES: Record<string, string> = {
 const RECENT_MS = 3 * 3600 * 1000;
 
 export const rankName = (tier: number): string => RANKS[tier] ?? 'Non classé';
+
+export const MODE_FILTERS: Record<RiotModeFilter, string> = {
+  all: 'Tous les modes',
+  competitive: 'Compétition uniquement',
+  competitive_premier: 'Compétition et Premier',
+  no_deathmatch: 'Tous sauf combat à mort',
+};
+
+export function modeAllowed(filter: RiotModeFilter, mode: string): boolean {
+  const m = mode.toLowerCase();
+  if (filter === 'competitive') return m === 'competitive';
+  if (filter === 'competitive_premier') return m === 'competitive' || m === 'premier';
+  if (filter === 'no_deathmatch') return !m.includes('deathmatch');
+  return true;
+}
 
 class RiotService {
   private client?: Client;
@@ -118,7 +133,7 @@ class RiotService {
         if (!channel || !isSendableTarget(channel) || !canBotSendTo(channel, guild.members.me)) continue;
         for (const link of riotStorage.listLinks(guild.id)) {
           try {
-            if (await this.checkLink(link, channel)) posted++;
+            if (await this.checkLink(link, channel, settings.modes)) posted++;
           } catch (error) {
             logger.warn(`[Riot] Suivi impossible pour ${link.name}#${link.tag} : ${(error as Error).message}`);
           }
@@ -130,13 +145,13 @@ class RiotService {
     return { posted };
   }
 
-  private async checkLink(link: RiotLink, channel: unknown): Promise<boolean> {
+  private async checkLink(link: RiotLink, channel: unknown, modes: RiotModeFilter): Promise<boolean> {
     await this.sync({ puuid: link.puuid }, true);
     const match = await this.latestMatch(link.puuid);
     if (!match || match.id === link.lastMatchId) return false;
     riotStorage.setLink({ ...link, lastMatchId: match.id });
     const started = match.startedAt ? Date.parse(match.startedAt) : 0;
-    if (!started || Date.now() - started > RECENT_MS) return false;
+    if (!started || Date.now() - started > RECENT_MS || !modeAllowed(modes, match.mode)) return false;
     const payload = this.recap(match, link);
     if (!payload) return false;
     await sendToConfiguredChannel(channel, payload, { reason: 'Récap de partie Riot' });

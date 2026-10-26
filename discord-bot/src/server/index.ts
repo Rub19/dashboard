@@ -63,6 +63,7 @@ import { serverStatsService } from '../modules/serverStats/services/serverStatsS
 import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
 import { createHighlightsRouter } from './routes/highlightsRoutes.js';
 import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
+import { riotService } from '../modules/riot/riotService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
@@ -539,6 +540,7 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des anniversaires (tick 15 min)
   birthdayService.initialize(client);
+  riotService.initialize(client);
 
   // Scheduler des salons compteurs (tick 5 min)
   serverStatsService.initialize(client);

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.89.0 — 2026-10-26
+
+**Etho : récaps Valorant automatiques avec /riot**
+
+- Nouveau module Récaps Valorant (désactivé par défaut) : /riot config pour choisir le salon et activer la publication automatique
+- /riot link Pseudo#TAG pour lier son compte, /riot unlink, /riot list et /riot last
+- Après chaque partie d'un membre lié, Etho publie le récap : résultat, score, K/D/A, ACS, ADR, HS%, first kills, rang, avec les boutons Tableau des scores et Manches
+- Seules les données publiques du compte Riot sont utilisées, aucun mot de passe
+
 ## v1.88.5 — 2026-10-26
 
 **E:VAL : récap Discord plus complet avec boutons**

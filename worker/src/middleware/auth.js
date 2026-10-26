@@ -1,4 +1,4 @@
-import { base64UrlBytes, decodeJwtPart } from "../utils/crypto.js";
+import { base64UrlBytes, decodeJwtPart, timingSafeEqual } from "../utils/crypto.js";
 import { httpError } from "./errors.js";
 import { getDeviceBySession } from "../services/security-identity-client.js";
 
@@ -200,7 +200,18 @@ export function requireRole(auth, ...allowed) {
   return auth;
 }
 
+function botKeyAuth(request, env, route) {
+  const provided = String(request.headers.get("x-ethone-bot-key") || "");
+  const expected = String(env.ETHONE_BOT_KEY || "");
+  if (!route?.botKey || !provided || expected.length < 32) return null;
+  const encoder = new TextEncoder();
+  if (!timingSafeEqual(encoder.encode(provided), encoder.encode(expected))) throw httpError("AUTH_INVALID", 401);
+  return { userId: "ethone-bot", appRole: "service", sessionId: null, bot: true };
+}
+
 export async function authenticateRequest(request, env, route) {
+  const bot = botKeyAuth(request, env, route);
+  if (bot) return bot;
   const token = bearerToken(request);
   const segments = token.split(".");
   if (segments.length !== 3 || segments.some((segment) => !segment)) throw httpError("AUTH_INVALID", 401);

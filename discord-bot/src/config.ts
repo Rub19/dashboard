@@ -54,6 +54,8 @@ const envSchema = z.object({
   // Vide = fonctionnalité désactivée (le dashboard retombe sur l'API REST du bot).
   SUPABASE_URL: z.string().optional().default(''),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(''),
+  ETHONE_WORKER_URL: z.string().optional().default('https://raspy-fog-bf5b.rub19-mailpro.workers.dev'),
+  ETHONE_BOT_KEY: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -102,4 +104,6 @@ export const config = {
   ytResolverToken: parsed.data.YT_RESOLVER_TOKEN,
   supabaseUrl: parsed.data.SUPABASE_URL,
   supabaseServiceRoleKey: parsed.data.SUPABASE_SERVICE_ROLE_KEY,
+  workerUrl: parsed.data.ETHONE_WORKER_URL.replace(/\/+$/, ''),
+  workerBotKey: parsed.data.ETHONE_BOT_KEY,
 };

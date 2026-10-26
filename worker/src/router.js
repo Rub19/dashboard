@@ -159,7 +159,8 @@ function route(id, path, handler, options = {}) {
     // securityHeaders() in index.js) instead of the default DENY/'none' —
     // an explicit, per-route opt-in for the handful of routes meant to be
     // embedded in an <iframe>, never a global relaxation.
-    embeddable: options.embeddable === true
+    embeddable: options.embeddable === true,
+    botKey: options.botKey === true
   });
 }
 
@@ -182,7 +183,7 @@ export const ROUTES = Object.freeze([
   route("tracker.lol-profile", "/api/stats/lol-profile", trackerLolRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.apex-matches", "/api/stats/apex-matches", trackerApexMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-matches", "/api/stats/valorant-matches", trackerValorantMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
-  route("valorant.eval-sync", "/api/valorant/eval/sync", valorantEvalSyncRoute, { service: "tracker", rateLimit: "standard" }),
+  route("valorant.eval-sync", "/api/valorant/eval/sync", valorantEvalSyncRoute, { service: "tracker", rateLimit: "standard", botKey: true }),
   route("valorant.eval-history", "/api/valorant/eval/history", valorantEvalHistoryRoute, { service: "tracker", rateLimit: "strict" }),
   route("tracker.valorant-mmr", "/api/stats/valorant-mmr", trackerValorantMmrRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-leaderboard", "/api/stats/valorant-leaderboard", trackerValorantLeaderboardRoute, { public: true, service: "tracker", rateLimit: "edge" }),

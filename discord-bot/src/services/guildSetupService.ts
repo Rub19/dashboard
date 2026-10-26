@@ -53,11 +53,11 @@ function persist(): void {
 
 /** Les deux familles de modules proposées dans les menus (36 modules → deux menus de 25 options maximum). */
 const GROUPS: Array<{ id: 'protect' | 'community'; placeholder: string; moduleIds: string[] }> = [
-  { id: 'protect', placeholder: '🛡️ Protection & gestion', moduleIds: ['moderation', 'security', 'anti-nuke', 'automod', 'logs', 'tickets', 'reports', 'secureroles', 'backups', 'invites', 'serverstats'] },
+  { id: 'protect', placeholder: '🛡️ Protection, gestion & jeux', moduleIds: ['moderation', 'security', 'anti-nuke', 'automod', 'logs', 'tickets', 'reports', 'secureroles', 'backups', 'invites', 'serverstats', 'games', 'riot'] },
   {
     id: 'community',
     placeholder: '🎉 Communauté & animation',
-    moduleIds: ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'music', 'voice', 'commands', 'tags', 'reminders', 'sticky', 'afk', 'counting', 'stats', 'statroles', 'ai', 'streamers', 'games'],
+    moduleIds: ['welcome', 'roles', 'leveling', 'economy', 'suggestions', 'polls', 'giveaways', 'events', 'forms', 'starboard', 'highlights', 'birthdays', 'music', 'voice', 'commands', 'tags', 'reminders', 'sticky', 'afk', 'counting', 'stats', 'statroles', 'ai', 'streamers'],
   },
 ];
 

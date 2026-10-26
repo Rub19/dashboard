@@ -11,6 +11,7 @@ import { levelingStorage } from '../modules/leveling/storage/levelingStorage.js'
 import { suggestionStorage } from '../modules/suggestions/storage/suggestionStorage.js';
 import { starboardStorage } from '../modules/starboard/storage/starboardStorage.js';
 import { birthdayStorage } from '../modules/birthdays/storage/birthdayStorage.js';
+import { riotStorage } from '../modules/riot/riotStorage.js';
 import { economyStorage } from '../modules/economy/storage/economyStorage.js';
 import { afkStorage } from '../modules/afk/storage/afkStorage.js';
 import { countingStorage } from '../modules/counting/storage/countingStorage.js';
@@ -186,6 +187,14 @@ export const MODULES: ModuleDef[] = [
     description: 'Annonce quotidienne et rôle du jour.',
     commands: ['birthday'],
     own: { get: (g) => birthdayStorage.getConfig(g).enabled, set: (g, enabled) => void birthdayStorage.updateConfig(g, { enabled }) },
+  },
+  {
+    id: 'riot',
+    label: 'Récaps Valorant',
+    emoji: '🎮',
+    description: 'Comptes Riot liés et récap automatique de chaque partie.',
+    commands: ['riot'],
+    own: { get: (g) => riotStorage.getConfig(g).enabled, set: (g, enabled) => void riotStorage.updateConfig(g, { enabled }) },
   },
   {
     id: 'music',

@@ -62085,4 +62085,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_88_5_en);
 CHANGELOG_BY_LANG.es.unshift(v1_88_5_es);
 CHANGELOG_BY_LANG.de.unshift(v1_88_5_de);
 
+const v1_89_0_fr: ChangelogEntry = {
+  version: "v1.89.0",
+  date: "2026-10-26",
+  title: "Etho : récaps Valorant automatiques avec /riot",
+  items: [
+    "Nouveau module Récaps Valorant (désactivé par défaut) : /riot config pour choisir le salon et activer la publication automatique",
+    "/riot link Pseudo#TAG pour lier son compte, /riot unlink, /riot list et /riot last",
+    "Après chaque partie d'un membre lié, Etho publie le récap : résultat, score, K/D/A, ACS, ADR, HS%, first kills, rang, avec les boutons Tableau des scores et Manches",
+    "Seules les données publiques du compte Riot sont utilisées, aucun mot de passe",
+  ],
+};
+
+const v1_89_0_en: ChangelogEntry = {
+  version: "v1.89.0",
+  date: "2026-10-26",
+  title: "Etho: automatic Valorant recaps with /riot",
+  items: [
+    "New Valorant Recaps module (off by default): /riot config to pick the channel and turn on automatic posting",
+    "/riot link Name#TAG to link your account, /riot unlink, /riot list and /riot last",
+    "After each match of a linked member, Etho posts the recap: result, score, K/D/A, ACS, ADR, HS%, first kills, rank, with Scoreboard and Rounds buttons",
+    "Only public Riot account data is used, no password",
+  ],
+};
+
+const v1_89_0_es: ChangelogEntry = {
+  version: "v1.89.0",
+  date: "2026-10-26",
+  title: "Etho: resúmenes automáticos de Valorant con /riot",
+  items: [
+    "Nuevo módulo Resúmenes Valorant (desactivado por defecto): /riot config para elegir el canal y activar la publicación automática",
+    "/riot link Nombre#TAG para vincular tu cuenta, /riot unlink, /riot list y /riot last",
+    "Tras cada partida de un miembro vinculado, Etho publica el resumen: resultado, marcador, K/D/A, ACS, ADR, HS%, first kills, rango, con los botones Tabla de puntuaciones y Rondas",
+    "Solo se usan datos públicos de la cuenta Riot, sin contraseña",
+  ],
+};
+
+const v1_89_0_de: ChangelogEntry = {
+  version: "v1.89.0",
+  date: "2026-10-26",
+  title: "Etho: automatische Valorant-Zusammenfassungen mit /riot",
+  items: [
+    "Neues Modul Valorant-Zusammenfassungen (standardmäßig aus): /riot config, um den Kanal zu wählen und automatisches Posten einzuschalten",
+    "/riot link Name#TAG zum Verknüpfen, /riot unlink, /riot list und /riot last",
+    "Nach jedem Spiel eines verknüpften Mitglieds postet Etho die Zusammenfassung: Ergebnis, Spielstand, K/D/A, ACS, ADR, HS%, First Kills, Rang, mit den Schaltflächen Punktetabelle und Runden",
+    "Es werden nur öffentliche Daten des Riot-Kontos genutzt, kein Passwort",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_89_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_89_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_89_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_89_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

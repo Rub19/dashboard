@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.89.0",
+    "date": "2026-10-26",
+    "title": "Etho : récaps Valorant automatiques avec /riot",
+    "items": [
+      "Nouveau module Récaps Valorant (désactivé par défaut) : /riot config pour choisir le salon et activer la publication automatique",
+      "/riot link Pseudo#TAG pour lier son compte, /riot unlink, /riot list et /riot last",
+      "Après chaque partie d'un membre lié, Etho publie le récap : résultat, score, K/D/A, ACS, ADR, HS%, first kills, rang, avec les boutons Tableau des scores et Manches",
+      "Seules les données publiques du compte Riot sont utilisées, aucun mot de passe"
+    ]
+  },
+  {
     "version": "v1.88.5",
     "date": "2026-10-26",
     "title": "E:VAL : récap Discord plus complet avec boutons",
@@ -618,15 +629,6 @@
     "items": [
       "Se déconnecter du site déconnecte aussi la session du bot Discord : le compte suivant connecté dans le même navigateur n'hérite plus des droits du précédent.",
       "Le panneau « Pilotage Etho » (redémarrage, outils du bot) est masqué quand la session du bot appartient à un autre compte que celui connecté sur le site."
-    ]
-  },
-  {
-    "version": "v1.75.136",
-    "date": "2026-10-17",
-    "title": "Dashboard du bot : compte Discord cohérent",
-    "items": [
-      "Quand la session du bot appartient à un autre compte Discord que celui connecté sur le site, le dashboard le signale et propose de reconnecter le bot avec le bon compte.",
-      "La photo affichée sur « Mes serveurs » correspond désormais au compte connecté, et non à l'ancienne session du bot."
     ]
   }
 ]

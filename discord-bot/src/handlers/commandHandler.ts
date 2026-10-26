@@ -84,6 +84,7 @@ import { elevateCommand } from '../modules/secureroles/commands/elevateCommand.j
 import { previewMessagesCommand } from '../modules/preview/commands/previewMessagesCommand.js';
 import { reportCommand, REPORT_CONTEXT_MENUS } from '../modules/reports/commands/reportCommands.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
+import { riotCommand } from '../modules/riot/riotCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
@@ -268,6 +269,7 @@ class CommandRegistry {
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)
     this.register(birthdayCommand);
+    this.register(riotCommand);
 
     // Tags (réponses réutilisables du serveur)
     this.register(tagCommand);

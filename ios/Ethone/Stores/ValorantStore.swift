@@ -1125,7 +1125,7 @@ final class ValorantStore {
         var body: [String: JSONValue] = [
             "channelId": .string(channel),
             "won": .bool(match.won),
-            "title": .string("\(match.won ? "Victoire" : "Défaite") · \(match.mode) — \(match.map)"),
+            "title": .string("\(match.won ? "Victoire" : "Défaite") · \(EvalProfileView.modeName(match.mode)) — \(match.map)"),
             "description": .string("\(playerName.isEmpty ? (riot.credentials?.gameName ?? "") : playerName) a joué \(match.agent)."),
             "fields": .array(fields),
             "footer": .string("E:VAL"),

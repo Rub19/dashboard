@@ -1323,7 +1323,7 @@ struct EvalWeaponSkinsView: View {
 
     private var skins: [ValorantWeaponItem.WeaponSkin] {
         weapon.skins
-            .filter { $0.image != nil && !$0.displayName.lowercased().contains("standard") }
+            .filter(\.isCollectible)
             .filter { query.isEmpty || $0.displayName.localizedCaseInsensitiveContains(query) }
             .sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
     }

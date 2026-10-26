@@ -1014,6 +1014,10 @@ struct ValorantWeaponItem: Identifiable, Decodable {
         var id: String { uuid ?? displayName }
         /// Icône utilisable : celle du skin, sinon le rendu du premier chroma.
         var image: String? { chromas?.first?.fullRender ?? displayIcon ?? chromas?.first?.displayIcon }
+        var isCollectible: Bool {
+            let name = displayName.lowercased()
+            return image != nil && !["standard", "aléatoire", "random"].contains { name.contains($0) }
+        }
     }
 
     struct ShopData: Decodable {
@@ -1392,7 +1396,7 @@ struct EvalWeaponDetailView: View {
                         .foregroundStyle(EvalColors.text)
                     Spacer()
                     HStack(spacing: 6) {
-                        Text("\(weapon.skins.filter { $0.image != nil && !$0.displayName.lowercased().contains("standard") }.count)")
+                        Text("\(weapon.skins.filter(\.isCollectible).count)")
                             .font(.system(size: 17))
                             .foregroundStyle(Color(hex: 0x8E8E93))
                         Image(systemName: "chevron.right")

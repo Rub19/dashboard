@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.86.4 — 2026-10-26
+
+**E:VAL : prix du bundle, nombre de skins et cartes de match**
+
+- La carte, le graffiti et le porte-bonheur d'un bundle affichent leur vrai prix au lieu de 0 VP
+- « Skin favori aléatoire » n'est plus compté comme un skin : 105 skins pour le Vandal, comme VALPAW
+- « VICTOIRE » ne se coupe plus sur deux lignes à côté d'un badge MVP
+
 ## v1.86.3 — 2026-10-26
 
 **E:VAL : MVP de l'équipe et boutons d'actualisation comme VALPAW**

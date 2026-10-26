@@ -339,7 +339,7 @@ struct EvalBundleDetailView: View {
         let looks = await LoadoutCatalog.load()
         lines = (entry.Items ?? []).compactMap { (item: Front.Entry) -> Line? in
             let id = item.Item.ItemID.lowercased()
-            let price = item.DiscountedPrice ?? item.BasePrice ?? 0
+            let price = (item.DiscountedPrice ?? 0) > 0 ? item.DiscountedPrice ?? 0 : item.BasePrice ?? 0
             switch item.Item.ItemTypeID.lowercased() {
             case "e7c63390-eda7-46e0-bb7a-a6abdacd2433", "3ad1b2b2-acdb-4524-852f-954a76ddae0a":
                 guard let match = EvalSkinCatalog.find(id, in: weapons) else { return nil }

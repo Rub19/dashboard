@@ -61644,4 +61644,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_86_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_86_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_86_3_de);
 
+const v1_86_4_fr: ChangelogEntry = {
+  version: "v1.86.4",
+  date: "2026-10-26",
+  title: "E:VAL : prix du bundle, nombre de skins et cartes de match",
+  items: [
+    "La carte, le graffiti et le porte-bonheur d'un bundle affichent leur vrai prix au lieu de 0 VP",
+    "« Skin favori aléatoire » n'est plus compté comme un skin : 105 skins pour le Vandal, comme VALPAW",
+    "« VICTOIRE » ne se coupe plus sur deux lignes à côté d'un badge MVP",
+  ],
+};
+
+const v1_86_4_en: ChangelogEntry = {
+  version: "v1.86.4",
+  date: "2026-10-26",
+  title: "E:VAL: bundle prices, skin count and match cards",
+  items: [
+    "A bundle's card, spray and buddy show their real price instead of 0 VP",
+    "\"Random Favorite Skin\" is no longer counted as a skin: 105 skins for the Vandal, like VALPAW",
+    "\"VICTORY\" no longer wraps onto two lines next to an MVP badge",
+  ],
+};
+
+const v1_86_4_es: ChangelogEntry = {
+  version: "v1.86.4",
+  date: "2026-10-26",
+  title: "E:VAL: precios del lote, número de skins y tarjetas de partida",
+  items: [
+    "La tarjeta, el grafiti y el colgante de un lote muestran su precio real en lugar de 0 VP",
+    "«Skin favorita aleatoria» ya no cuenta como skin: 105 skins para la Vandal, como VALPAW",
+    "«VICTORIA» ya no se parte en dos líneas junto a una insignia MVP",
+  ],
+};
+
+const v1_86_4_de: ChangelogEntry = {
+  version: "v1.86.4",
+  date: "2026-10-26",
+  title: "E:VAL: Bundle-Preise, Skin-Anzahl und Spielkarten",
+  items: [
+    "Karte, Spray und Anhänger eines Bundles zeigen ihren echten Preis statt 0 VP",
+    "„Zufälliger Lieblingsskin“ zählt nicht mehr als Skin: 105 Skins für die Vandal, wie bei VALPAW",
+    "„SIEG“ bricht neben einem MVP-Abzeichen nicht mehr in zwei Zeilen um",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_86_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_86_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_86_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_86_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

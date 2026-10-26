@@ -901,7 +901,7 @@ struct EvalProfileView: View {
                             }
                         }
                         .lineLimit(1)
-                        .fixedSize()
+                        .minimumScaleFactor(0.7)
                         .font(.system(size: 14, weight: .semibold))
                         .padding(.vertical, 3)
                         .background(.black.opacity(0.45), in: .capsule)
@@ -911,6 +911,8 @@ struct EvalProfileView: View {
                     Spacer(minLength: 6)
                     Text(match.won ? "VICTOIRE" : "DÉFAITE")
                         .font(.system(size: 15, weight: .heavy))
+                        .lineLimit(1)
+                        .fixedSize()
                         .foregroundStyle(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 7)

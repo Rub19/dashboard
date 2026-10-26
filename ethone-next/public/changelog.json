@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.86.4",
+    "date": "2026-10-26",
+    "title": "E:VAL : prix du bundle, nombre de skins et cartes de match",
+    "items": [
+      "La carte, le graffiti et le porte-bonheur d'un bundle affichent leur vrai prix au lieu de 0 VP",
+      "« Skin favori aléatoire » n'est plus compté comme un skin : 105 skins pour le Vandal, comme VALPAW",
+      "« VICTOIRE » ne se coupe plus sur deux lignes à côté d'un badge MVP"
+    ]
+  },
+  {
     "version": "v1.86.3",
     "date": "2026-10-26",
     "title": "E:VAL : MVP de l'équipe et boutons d'actualisation comme VALPAW",
@@ -622,15 +632,6 @@
       "Les noms des permissions sensibles sont traduits.",
       "Messages de sanction et Bienvenue : le contenu ne disparaît plus quand on change d'onglet.",
       "Inspection d'un membre : la carte s'affiche correctement et la page défile jusqu'à elle."
-    ]
-  },
-  {
-    "version": "v1.75.127",
-    "date": "2026-10-16",
-    "title": "La pièce du serveur partout dans Jeux et casino",
-    "items": [
-      "Jeux et casino affiche partout la monnaie choisie dans Économie (pièce Etho, emoji ou image personnalisée) : cagnotte, mises, redistributions, meilleurs joueurs et dernières parties.",
-      "Retrait de chiffres inventés dans le dashboard : nombre de commandes, latence affichée en dur, heure figée dans l'aperçu des messages de sanction."
     ]
   }
 ]

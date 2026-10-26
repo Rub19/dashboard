@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.88.1 — 2026-10-26
+
+**E:VAL : Line-Ups et amis corrigés**
+
+- Line-Ups se charge de nouveau (les 278 line-ups de la communauté)
+- Amis : vraie date de dernière connexion lue depuis Riot
+- Amis : les comptes seulement connectés sur l'app mobile Riot ne sont plus comptés comme en ligne
+- Amis : icône d'invocateur pour les amis sur League of Legends
+
 ## v1.88.0 — 2026-10-26
 
 **E:VAL : widgets, alerte boutique, récap Discord, line-ups perso et amis comme VALPAW**

@@ -13,6 +13,8 @@ struct EvalLineup: Codable, Identifiable, Hashable {
     let credits: String
     var isMine = false
 
+    enum CodingKeys: String, CodingKey { case id, name, description, agent, ability, mapId, tags, images, video, credits }
+
     var videoURL: URL? {
         let parts = video.split(separator: "?", maxSplits: 1)
         guard let id = parts.first, !id.isEmpty else { return nil }

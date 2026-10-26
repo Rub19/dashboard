@@ -1513,7 +1513,7 @@ final class ValorantStore {
                 }()
                 return ValorantFriend(
                     id: friend.id, name: friend.name, tag: friend.tag,
-                    avatarURL: card.map { "https://media.valorant-api.com/playercards/\($0)/smallart.png" },
+                    avatarURL: card.map { "https://media.valorant-api.com/playercards/\($0)/smallart.png" } ?? p?.iconURL,
                     isOnline: p != nil, isInGame: inGame, isPartyLeader: false,
                     partyCurrent: inValorant ? p?.partySize ?? 1 : 1, partyMax: p?.maxPartySize ?? 5,
                     queueState: inValorant ? stateText : nil,

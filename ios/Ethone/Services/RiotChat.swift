@@ -18,6 +18,7 @@ struct RiotChatPresence: Hashable {
     var isIdle = false
     var product = ""
     var playing = false
+    var iconURL: String?
 }
 
 struct RiotChatFriend: Identifiable, Hashable {
@@ -38,7 +39,6 @@ final class RiotChat {
     private(set) var selfPresence: RiotChatPresence?
     var error: String?
     private var selfID = ""
-    private var rawPresences: [String] = []
 
     private var connection: NWConnection?
     private var buffer = ""
@@ -218,7 +218,6 @@ final class RiotChat {
     }
 
     private func parseRoster(_ xml: String) {
-        DiskCache.write(String(xml.prefix(300_000)), key: "riot-chat-roster-raw")
         let ns = xml as NSString
         for match in Self.itemRegex.matches(in: xml, range: NSRange(location: 0, length: ns.length)) {
             let attrRange = match.range(at: 1).location != NSNotFound ? match.range(at: 1) : match.range(at: 3)
@@ -246,18 +245,21 @@ final class RiotChat {
             presences[puuid] = nil
             return
         }
-        if rawPresences.count < 80 {
-            rawPresences.append(stanza)
-            DiskCache.write(rawPresences, key: "riot-chat-presence-raw")
-        }
         var presence = RiotChatPresence()
         presence.show = Self.text("show", in: stanza) ?? "chat"
-        if presence.show == "offline" { presences[puuid] = nil; return }
+        if let seen = Self.text("last_online", in: stanza).flatMap(Self.date) { roster[puuid]?.lastOnline = seen }
         let games = Self.section("games", in: stanza) ?? ""
+        if presence.show == "offline" || (presence.show == "mobile" && games.isEmpty) { presences[puuid] = nil; return }
         presence.product = ["valorant", "league_of_legends", "bacon", "lion", "tft", "keystone"].first { games.contains("<\($0)>") } ?? ""
         if presence.product == "league_of_legends" {
-            let lol = Self.section("league_of_legends", in: games) ?? ""
+            let lol = (Self.section("league_of_legends", in: games) ?? "").replacingOccurrences(of: "&quot;", with: "\"")
             presence.playing = lol.contains("inGame") || lol.contains("championSelect")
+            if let range = lol.range(of: "profileIcon\\\\?\"\\s*:\\s*\\\\?\"(\\d+)", options: .regularExpression) {
+                let icon = lol[range].filter(\.isNumber)
+                if !icon.isEmpty {
+                    presence.iconURL = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/\(icon).jpg"
+                }
+            }
         }
         if let valorant = Self.section("valorant", in: stanza), let p = Self.text("p", in: valorant),
            let data = Data(base64Encoded: p), let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
@@ -326,6 +328,11 @@ final class RiotChat {
         if let number = Double(raw.trimmingCharacters(in: .whitespaces)), number > 0 {
             return Date(timeIntervalSince1970: number > 10_000_000_000 ? number / 1000 : number)
         }
+        let plain = DateFormatter()
+        plain.locale = Locale(identifier: "en_US_POSIX")
+        plain.timeZone = TimeZone(identifier: "UTC")
+        plain.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        if let date = plain.date(from: raw.trimmingCharacters(in: .whitespaces)) { return date }
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter.date(from: raw) ?? ISO8601DateFormatter().date(from: raw)

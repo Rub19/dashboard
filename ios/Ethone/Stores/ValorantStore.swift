@@ -1114,24 +1114,59 @@ final class ValorantStore {
     private func postRecap(_ match: ValorantMatch) async throws {
         guard let guild = Self.recapGuildId, let channel = Self.recapChannelId else { return }
         let me = match.myPlayer
+        let eval = evalMatches[match.id]
+        let analysis = eval.flatMap { EvalMatchAnalysis(match: $0, targetPUUID: puuid) }
+        let summary = analysis?.targetSummary
+        let rounds = max(1, match.teamRounds + match.opponentRounds)
+        func field(_ name: String, _ value: String, inline: Bool = true) -> JSONValue {
+            .object(["name": .string(name), "value": .string(value), "inline": .bool(inline)])
+        }
         var fields: [JSONValue] = [
-            .object(["name": .string("Score"), "value": .string("\(match.teamRounds) — \(match.opponentRounds)")]),
-            .object(["name": .string("K / D / A"), "value": .string("\(match.kills) / \(match.deaths) / \(match.assists)")]),
-            .object(["name": .string("HS%"), "value": .string("\(match.headshotPercent) %")]),
+            field("🎯 K / D / A", "**\(match.kills) / \(match.deaths) / \(match.assists)**"),
+            field("⚖️ Ratio K/D", String(format: "%.2f", match.kd)),
+            field("📈 \(match.scoreLabel)", "\(summary?.acs ?? match.scoreValue ?? 0)"),
+            field("💥 ADR", "\(summary?.adr ?? me?.adr ?? 0)"),
+            field("🧠 HS%", "\(summary?.hsPercent ?? match.headshotPercent) %"),
         ]
-        if let score = match.scoreValue { fields.append(.object(["name": .string(match.scoreLabel), "value": .string("\(score)")])) }
-        if let me, me.tierNumber > 0 { fields.append(.object(["name": .string("Rang"), "value": .string(me.tierText)])) }
-        if let mvp = EvalProfileView.mvpLabel(match) { fields.append(.object(["name": .string("Distinction"), "value": .string(mvp)])) }
+        if let summary {
+            fields.append(field("🤝 KAST", "\(summary.kast) %"))
+            fields.append(field("⚡ First kills", "\(summary.firstKills) · \(summary.firstDeaths) morts en premier"))
+            if summary.plants + summary.defuses > 0 { fields.append(field("💣 Spike", "\(summary.plants) pose · \(summary.defuses) désamorçage")) }
+        }
+        if let me, me.tierNumber > 0 { fields.append(field("🏅 Rang", me.tierText)) }
+        if let length = match.gameLengthSeconds, length > 0 { fields.append(field("⏱️ Durée", "\(length / 60) min · \(rounds) manches")) }
+        let ally = me?.team.lowercased()
+        let players: [JSONValue] = match.players.map { p in
+            .object([
+                "name": .string(p.name), "tag": .string(p.tag), "agent": .string(p.character),
+                "ally": .bool(p.team.lowercased() == ally), "me": .bool(p.isMe),
+                "acs": .number(Double(p.score / rounds)), "kills": .number(Double(p.kills)), "deaths": .number(Double(p.deaths)),
+                "assists": .number(Double(p.assists)), "hs": .number(Double(p.headshotPercent)), "adr": .number(Double(p.adr)),
+                "rank": .string(p.tierText),
+            ])
+        }
+        let name = riot.credentials.map { "\($0.gameName)#\($0.tagLine)" } ?? playerName
+        let mvp = EvalProfileView.mvpLabel(match)
         var body: [String: JSONValue] = [
             "channelId": .string(channel),
             "won": .bool(match.won),
-            "title": .string("\(match.won ? "Victoire" : "Défaite") · \(EvalProfileView.modeName(match.mode)) — \(match.map)"),
-            "description": .string("\(playerName.isEmpty ? (riot.credentials?.gameName ?? "") : playerName) a joué \(match.agent)."),
+            "author": .string(name + (mvp.map { " · ⭐ \($0)" } ?? "")),
+            "title": .string("\(match.won ? "🟢 VICTOIRE" : "🔴 DÉFAITE")  \(match.teamRounds) — \(match.opponentRounds)"),
+            "description": .string("**\(match.agent)** · \(EvalProfileView.modeName(match.mode)) · \(match.map)"),
             "fields": .array(fields),
-            "footer": .string("E:VAL"),
+            "players": .array(players),
+            "rounds": .string(match.rounds.map { $0.won ? "W" : "L" }.joined()),
+            "footer": .string("E:VAL · ETHONE"),
         ]
+        if let card = profile?.cardURL?.absoluteString { body["authorIcon"] = .string(card) }
         if let icon = me?.agentIconURL?.absoluteString { body["thumbnail"] = .string(icon) }
         if let splash = ValorantAssets.shared.splashes[match.map.lowercased()]?.absoluteString { body["image"] = .string(splash) }
+        if let creds = riot.credentials, let handle = "\(creds.gameName)#\(creds.tagLine)".addingPercentEncoding(withAllowedCharacters: .alphanumerics) {
+            body["links"] = .array([
+                .object(["label": .string("Match tracker.gg"), "url": .string("https://tracker.gg/valorant/match/\(match.id)")]),
+                .object(["label": .string("Profil"), "url": .string("https://tracker.gg/valorant/profile/riot/\(handle)/overview")]),
+            ])
+        }
         _ = try await AppModel.shared.discord.call("api/guilds/\(guild)/valorant/recap", method: "POST", body: body)
     }
 

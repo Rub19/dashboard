@@ -64,6 +64,7 @@ const botCommandStatsService = BotCommandStatsService.getInstance();
 const botTelemetryService = BotTelemetryService.getInstance();
 import { formatString, getTranslation } from '../utils/i18n.js';
 import { trg } from '../utils/tr.js';
+import { handleRecapButton } from '../modules/valorantRecap/valorantRecapService.js';
 
 // Component/modal handlers (buttons, select menus, modals) previously ran
 // with no try/catch at all, unlike the slash-command path below — a throw
@@ -158,6 +159,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('evr:')) {
+      await safeHandleComponent(interaction, 'valorant_recap', () => handleRecapButton(interaction));
+      return;
+    }
     if (interaction.customId.startsWith('appeal:')) {
       await safeHandleComponent(interaction, 'appeal_button', () => appealService.handleButton(interaction));
       return;

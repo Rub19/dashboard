@@ -3055,6 +3055,7 @@ struct EvalFriendsView: View {
                                         EvalFriendCard(friend: friend)
                                     }
                                     .buttonStyle(PressScaleStyle())
+                                    .onAppear { store.ensureFriendCard(friend) }
                                 }
                             }
 
@@ -3135,6 +3136,7 @@ struct EvalFriendsView: View {
                 ForEach(Array(list.enumerated()), id: \.element.id) { index, friend in
                     Button { selectedFriend = friend } label: { row(friend) }
                         .buttonStyle(PressScaleStyle())
+                        .onAppear { store.ensureFriendCard(friend) }
                     if index < list.count - 1 {
                         Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 77)
                     }

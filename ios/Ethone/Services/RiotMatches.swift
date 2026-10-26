@@ -42,6 +42,16 @@ enum RiotMatches {
         return withPlayers(match, names: await names(session, puuids: unnamed), tiers: [:])
     }
 
+    static func latestCard(_ session: RiotSession, puuid: String) async -> String? {
+        struct Detail: Decodable {
+            struct Player: Decodable { let subject: String; let playerCard: String? }
+            let players: [Player]?
+        }
+        guard let id = try? await history(session, puuid: puuid, count: 1).first,
+              let detail: Detail = try? await session.game("/match-details/v1/matches/\(id)") else { return nil }
+        return detail.players?.first { $0.subject.lowercased() == puuid.lowercased() }?.playerCard?.lowercased()
+    }
+
     static func names(_ session: RiotSession, puuids: [String]) async -> [String: (name: String, tag: String)] {
         struct Entry: Decodable { let Subject: String; let GameName: String?; let TagLine: String? }
         guard !puuids.isEmpty,

@@ -61901,4 +61901,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_88_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_88_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_88_1_de);
 
+const v1_88_2_fr: ChangelogEntry = {
+  version: "v1.88.2",
+  date: "2026-10-26",
+  title: "E:VAL : avatars des amis et connexion Discord du récap",
+  items: [
+    "Amis : la carte de joueur de chaque ami se charge depuis sa dernière partie, comme VALPAW, et reste en cache",
+    "Récap sur Discord : bouton pour se connecter à Discord directement depuis l'écran",
+  ],
+};
+
+const v1_88_2_en: ChangelogEntry = {
+  version: "v1.88.2",
+  date: "2026-10-26",
+  title: "E:VAL: friend avatars and Discord sign-in for recaps",
+  items: [
+    "Friends: each friend's player card loads from their last match, like VALPAW, and stays cached",
+    "Discord recap: button to sign in to Discord right from the screen",
+  ],
+};
+
+const v1_88_2_es: ChangelogEntry = {
+  version: "v1.88.2",
+  date: "2026-10-26",
+  title: "E:VAL: avatares de amigos e inicio de sesión de Discord para el resumen",
+  items: [
+    "Amigos: la tarjeta de jugador de cada amigo se carga desde su última partida, como VALPAW, y queda en caché",
+    "Resumen en Discord: botón para conectarse a Discord desde la propia pantalla",
+  ],
+};
+
+const v1_88_2_de: ChangelogEntry = {
+  version: "v1.88.2",
+  date: "2026-10-26",
+  title: "E:VAL: Freundes-Avatare und Discord-Anmeldung für Zusammenfassungen",
+  items: [
+    "Freunde: die Spielerkarte jedes Freundes wird aus seinem letzten Spiel geladen, wie bei VALPAW, und zwischengespeichert",
+    "Discord-Zusammenfassung: Schaltfläche zur Anmeldung bei Discord direkt auf dem Bildschirm",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_88_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_88_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_88_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_88_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

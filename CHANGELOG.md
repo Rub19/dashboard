@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.88.2 — 2026-10-26
+
+**E:VAL : avatars des amis et connexion Discord du récap**
+
+- Amis : la carte de joueur de chaque ami se charge depuis sa dernière partie, comme VALPAW, et reste en cache
+- Récap sur Discord : bouton pour se connecter à Discord directement depuis l'écran
+
 ## v1.88.1 — 2026-10-26
 
 **E:VAL : Line-Ups et amis corrigés**

@@ -203,7 +203,7 @@ struct ValorantFriend: Identifiable, Hashable {
     let id: String
     let name: String
     let tag: String
-    let avatarURL: String?
+    var avatarURL: String?
     var isOnline: Bool
     var isInGame: Bool
     var isPartyLeader: Bool
@@ -1457,6 +1457,37 @@ final class ValorantStore {
     }
 
     private static let friendCardsKey = "ethone.valorant.friendCards"
+    private static let friendCardTriedKey = "ethone.valorant.friendCardTried"
+    private var cardQueue: [String] = []
+    private var cardWorker: Task<Void, Never>?
+
+    func ensureFriendCard(_ friend: ValorantFriend) {
+        guard friend.avatarURL == nil || friend.avatarURL?.contains("communitydragon") == true, riot.isLinked else { return }
+        let tried = UserDefaults.standard.dictionary(forKey: Self.friendCardTriedKey) as? [String: Double] ?? [:]
+        if let at = tried[friend.id], Date().timeIntervalSince1970 - at < 7 * 86400 { return }
+        guard !cardQueue.contains(friend.id) else { return }
+        cardQueue.append(friend.id)
+        guard cardWorker == nil else { return }
+        cardWorker = Task { @MainActor in
+            while !cardQueue.isEmpty {
+                let id = cardQueue.removeFirst()
+                let card = await RiotMatches.latestCard(riot, puuid: id)
+                var tried = UserDefaults.standard.dictionary(forKey: Self.friendCardTriedKey) as? [String: Double] ?? [:]
+                tried[id] = Date().timeIntervalSince1970
+                UserDefaults.standard.set(tried, forKey: Self.friendCardTriedKey)
+                if let card {
+                    var cards = UserDefaults.standard.dictionary(forKey: Self.friendCardsKey) as? [String: String] ?? [:]
+                    cards[id] = card
+                    UserDefaults.standard.set(cards, forKey: Self.friendCardsKey)
+                    if let index = friends.firstIndex(where: { $0.id == id }) {
+                        friends[index].avatarURL = "https://media.valorant-api.com/playercards/\(card)/smallart.png"
+                    }
+                }
+                try? await Task.sleep(for: .milliseconds(400))
+            }
+            cardWorker = nil
+        }
+    }
     private static let friendSeenKey = "ethone.valorant.friendSeen"
 
     static func lastOnlineText(_ date: Date) -> String {

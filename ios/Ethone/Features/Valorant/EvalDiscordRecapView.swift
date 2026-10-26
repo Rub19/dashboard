@@ -18,10 +18,22 @@ struct EvalDiscordRecapView: View {
                 Text("Après chaque partie, le bot ETHONE publie le résultat (score, K/D/A, ACS, HS%, agent, rang) dans le salon choisi.")
                     .font(.system(size: 16)).foregroundStyle(EvalUI.secondary)
                 if !model.discord.isConnected {
-                    Text("Connectez Discord dans ETHONE (Plus › Discord) pour choisir un serveur.")
-                        .font(.system(size: 16)).foregroundStyle(EvalColors.text)
-                        .padding(16).frame(maxWidth: .infinity, alignment: .leading)
-                        .background(EvalUI.card, in: .rect(cornerRadius: 18))
+                    Button {
+                        Task {
+                            await model.discord.signIn()
+                            if model.discord.isConnected { await model.discord.refresh() }
+                        }
+                    } label: {
+                        Label(model.discord.isLoading ? "Connexion…" : "Se connecter à Discord", systemImage: "person.badge.key")
+                            .font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).frame(height: 50)
+                            .background(Color(hex: 0x5865F2), in: .capsule)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(model.discord.isLoading)
+                    if let error = model.discord.errorMessage {
+                        Text(error).font(.footnote).foregroundStyle(EvalUI.secondary)
+                    }
                 } else {
                     VStack(spacing: 0) {
                         picker("Serveur", selection: guildId, options: guilds.map { ($0.id, $0.name) }) { id in

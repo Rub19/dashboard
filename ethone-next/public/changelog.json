@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.88.2",
+    "date": "2026-10-26",
+    "title": "E:VAL : avatars des amis et connexion Discord du récap",
+    "items": [
+      "Amis : la carte de joueur de chaque ami se charge depuis sa dernière partie, comme VALPAW, et reste en cache",
+      "Récap sur Discord : bouton pour se connecter à Discord directement depuis l'écran"
+    ]
+  },
+  {
     "version": "v1.88.1",
     "date": "2026-10-26",
     "title": "E:VAL : Line-Ups et amis corrigés",
@@ -626,16 +635,6 @@
       "Accueil : grand titre avec la date, chiffres du jour réunis dans un seul panneau, raccourcis qui défilent sans être coupés.",
       "Tâches, Focus et Notes alignés sur la même direction : titres ETHONE, listes groupées, chronomètre redessiné, ouverture des notes en zoom.",
       "Titres de section en minuscules dans toute l'app et animations respectant « Réduire les animations »."
-    ]
-  },
-  {
-    "version": "v1.75.132",
-    "date": "2026-10-16",
-    "title": "App iOS : écran Plus réorganisé",
-    "items": [
-      "L'écran Plus de l'app iOS est regroupé par thème (Au quotidien, Automatisation, Partage, Discord, Jeux, Suivi, Appareil, Compte) avec des icônes en couleur et une recherche.",
-      "La carte du compte en haut ouvre le profil ; les entrées en double (Notifications, Journal des modifications) sont fusionnées.",
-      "« Jeux » devient « Mini-jeux » pour ne plus être confondu avec les trackers."
     ]
   }
 ]

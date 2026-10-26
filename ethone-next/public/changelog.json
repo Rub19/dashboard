@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.87.0",
+    "date": "2026-10-26",
+    "title": "E:VAL : Line-Ups",
+    "items": [
+      "Nouvelle page Line-Ups dans le Hub : 278 line-ups de la communauté valorant-lineups.com",
+      "Filtres par agent, carte et camp, et recherche",
+      "Chaque line-up affiche les étapes en images, les instructions, la vidéo YouTube et les crédits de son auteur"
+    ]
+  },
+  {
     "version": "v1.86.4",
     "date": "2026-10-26",
     "title": "E:VAL : prix du bundle, nombre de skins et cartes de match",
@@ -620,18 +630,6 @@
     "items": [
       "Rôles et membres : les membres d'un rôle s'affichent à nouveau en cliquant sur le rôle.",
       "Nombre de membres, rôles au-dessus d'Etho, dates « il y a … » et whitelist sont traduits dans la langue du dashboard."
-    ]
-  },
-  {
-    "version": "v1.75.128",
-    "date": "2026-10-16",
-    "title": "Traduction des réponses du bot, rôles et membres, messages de sanction",
-    "items": [
-      "Les messages d'erreur et de confirmation renvoyés par le bot au dashboard sont traduits dans la langue choisie (anglais, espagnol, allemand).",
-      "Rôles et membres : les membres de chaque rôle sensible s'affichent directement sous le rôle ; un clic sur un membre ouvre son inspection.",
-      "Les noms des permissions sensibles sont traduits.",
-      "Messages de sanction et Bienvenue : le contenu ne disparaît plus quand on change d'onglet.",
-      "Inspection d'un membre : la carte s'affiche correctement et la page défile jusqu'à elle."
     ]
   }
 ]

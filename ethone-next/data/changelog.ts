@@ -61693,4 +61693,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_86_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_86_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_86_4_de);
 
+const v1_87_0_fr: ChangelogEntry = {
+  version: "v1.87.0",
+  date: "2026-10-26",
+  title: "E:VAL : Line-Ups",
+  items: [
+    "Nouvelle page Line-Ups dans le Hub : 278 line-ups de la communauté valorant-lineups.com",
+    "Filtres par agent, carte et camp, et recherche",
+    "Chaque line-up affiche les étapes en images, les instructions, la vidéo YouTube et les crédits de son auteur",
+  ],
+};
+
+const v1_87_0_en: ChangelogEntry = {
+  version: "v1.87.0",
+  date: "2026-10-26",
+  title: "E:VAL: Line-Ups",
+  items: [
+    "New Line-Ups page in the Hub: 278 community line-ups from valorant-lineups.com",
+    "Filter by agent, map and side, plus search",
+    "Each line-up shows step images, instructions, the YouTube video and its author's credits",
+  ],
+};
+
+const v1_87_0_es: ChangelogEntry = {
+  version: "v1.87.0",
+  date: "2026-10-26",
+  title: "E:VAL: Line-Ups",
+  items: [
+    "Nueva página Line-Ups en el Hub: 278 line-ups de la comunidad valorant-lineups.com",
+    "Filtros por agente, mapa y lado, y búsqueda",
+    "Cada line-up muestra los pasos en imágenes, las instrucciones, el vídeo de YouTube y los créditos de su autor",
+  ],
+};
+
+const v1_87_0_de: ChangelogEntry = {
+  version: "v1.87.0",
+  date: "2026-10-26",
+  title: "E:VAL: Line-Ups",
+  items: [
+    "Neue Line-Ups-Seite im Hub: 278 Community-Line-ups von valorant-lineups.com",
+    "Filter nach Agent, Karte und Seite, plus Suche",
+    "Jedes Line-up zeigt Schrittbilder, Anleitung, das YouTube-Video und die Credits des Autors",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_87_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_87_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_87_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_87_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

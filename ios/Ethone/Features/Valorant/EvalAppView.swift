@@ -2862,6 +2862,15 @@ struct EvalHubView: View {
                             Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 72)
 
                             NavigationLink {
+                                EvalLineupsView()
+                            } label: {
+                                hubRowView(icon: "location.north.line", title: "Line-Ups")
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 72)
+
+                            NavigationLink {
                                 EvalContractsArchiveView()
                             } label: {
                                 hubRowView(icon: "doc.text.magnifyingglass", title: "Contrats")

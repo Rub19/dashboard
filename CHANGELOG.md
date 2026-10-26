@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.87.0 — 2026-10-26
+
+**E:VAL : Line-Ups**
+
+- Nouvelle page Line-Ups dans le Hub : 278 line-ups de la communauté valorant-lineups.com
+- Filtres par agent, carte et camp, et recherche
+- Chaque line-up affiche les étapes en images, les instructions, la vidéo YouTube et les crédits de son auteur
+
 ## v1.86.4 — 2026-10-26
 
 **E:VAL : prix du bundle, nombre de skins et cartes de match**

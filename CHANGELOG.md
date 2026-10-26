@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.88.5 — 2026-10-26
+
+**E:VAL : récap Discord plus complet avec boutons**
+
+- Récap Discord refait : résultat et score en titre, joueur et MVP en en-tête, K/D/A, ratio, ACS, ADR, HS%, KAST, first kills, spike, rang et durée
+- Bouton « Tableau des scores » : les 10 joueurs avec agent, ACS, K/D/A et HS%, visibles en privé
+- Bouton « Manches » : chaque manche gagnée ou perdue et la meilleure série
+- Liens vers le match et le profil sur tracker.gg
+
 ## v1.88.4 — 2026-10-26
 
 **E:VAL : mode de jeu en français dans le récap Discord**

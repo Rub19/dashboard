@@ -62032,4 +62032,57 @@ CHANGELOG_BY_LANG.en.unshift(v1_88_4_en);
 CHANGELOG_BY_LANG.es.unshift(v1_88_4_es);
 CHANGELOG_BY_LANG.de.unshift(v1_88_4_de);
 
+const v1_88_5_fr: ChangelogEntry = {
+  version: "v1.88.5",
+  date: "2026-10-26",
+  title: "E:VAL : récap Discord plus complet avec boutons",
+  items: [
+    "Récap Discord refait : résultat et score en titre, joueur et MVP en en-tête, K/D/A, ratio, ACS, ADR, HS%, KAST, first kills, spike, rang et durée",
+    "Bouton « Tableau des scores » : les 10 joueurs avec agent, ACS, K/D/A et HS%, visibles en privé",
+    "Bouton « Manches » : chaque manche gagnée ou perdue et la meilleure série",
+    "Liens vers le match et le profil sur tracker.gg",
+  ],
+};
+
+const v1_88_5_en: ChangelogEntry = {
+  version: "v1.88.5",
+  date: "2026-10-26",
+  title: "E:VAL: richer Discord recap with buttons",
+  items: [
+    "Redesigned Discord recap: result and score as title, player and MVP in the header, K/D/A, ratio, ACS, ADR, HS%, KAST, first kills, spike, rank and duration",
+    "\"Scoreboard\" button: all 10 players with agent, ACS, K/D/A and HS%, shown privately",
+    "\"Rounds\" button: each round won or lost and the best streak",
+    "Links to the match and profile on tracker.gg",
+  ],
+};
+
+const v1_88_5_es: ChangelogEntry = {
+  version: "v1.88.5",
+  date: "2026-10-26",
+  title: "E:VAL: resumen de Discord más completo con botones",
+  items: [
+    "Resumen de Discord rediseñado: resultado y marcador en el título, jugador y MVP en la cabecera, K/D/A, ratio, ACS, ADR, HS%, KAST, first kills, spike, rango y duración",
+    "Botón «Tabla de puntuaciones»: los 10 jugadores con agente, ACS, K/D/A y HS%, en privado",
+    "Botón «Rondas»: cada ronda ganada o perdida y la mejor racha",
+    "Enlaces a la partida y al perfil en tracker.gg",
+  ],
+};
+
+const v1_88_5_de: ChangelogEntry = {
+  version: "v1.88.5",
+  date: "2026-10-26",
+  title: "E:VAL: ausführlichere Discord-Zusammenfassung mit Schaltflächen",
+  items: [
+    "Neue Discord-Zusammenfassung: Ergebnis und Spielstand als Titel, Spieler und MVP im Kopf, K/D/A, Quote, ACS, ADR, HS%, KAST, First Kills, Spike, Rang und Dauer",
+    "Schaltfläche „Punktetabelle“: alle 10 Spieler mit Agent, ACS, K/D/A und HS%, privat angezeigt",
+    "Schaltfläche „Runden“: jede gewonnene oder verlorene Runde und die beste Serie",
+    "Links zum Spiel und Profil auf tracker.gg",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_88_5_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_88_5_en);
+CHANGELOG_BY_LANG.es.unshift(v1_88_5_es);
+CHANGELOG_BY_LANG.de.unshift(v1_88_5_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

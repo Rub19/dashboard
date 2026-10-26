@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.88.5",
+    "date": "2026-10-26",
+    "title": "E:VAL : récap Discord plus complet avec boutons",
+    "items": [
+      "Récap Discord refait : résultat et score en titre, joueur et MVP en en-tête, K/D/A, ratio, ACS, ADR, HS%, KAST, first kills, spike, rang et durée",
+      "Bouton « Tableau des scores » : les 10 joueurs avec agent, ACS, K/D/A et HS%, visibles en privé",
+      "Bouton « Manches » : chaque manche gagnée ou perdue et la meilleure série",
+      "Liens vers le match et le profil sur tracker.gg"
+    ]
+  },
+  {
     "version": "v1.88.4",
     "date": "2026-10-26",
     "title": "E:VAL : mode de jeu en français dans le récap Discord",
@@ -616,17 +627,6 @@
     "items": [
       "Quand la session du bot appartient à un autre compte Discord que celui connecté sur le site, le dashboard le signale et propose de reconnecter le bot avec le bon compte.",
       "La photo affichée sur « Mes serveurs » correspond désormais au compte connecté, et non à l'ancienne session du bot."
-    ]
-  },
-  {
-    "version": "v1.75.135",
-    "date": "2026-10-16",
-    "title": "App iOS : grands titres, bandes de chiffres et widgets ETHONE",
-    "items": [
-      "Les écrans principaux ouverts depuis Plus retrouvent le grand titre ETHONE.",
-      "Les chiffres de Valorant, LoL, TFT, Activité, Analytique, Discord, Interactions, Système et Fichiers sont réunis dans une seule bande au lieu de tuiles séparées.",
-      "Météo : barre d'amplitude min/max sur 7 jours ; Soundscape : sélecteur en onglets et préréglage en cours animé ; RSS : dates relatives.",
-      "Widgets, Activités en direct et Apple Watch aux couleurs ETHONE ; les widgets suivent le thème choisi dans l'app."
     ]
   }
 ]

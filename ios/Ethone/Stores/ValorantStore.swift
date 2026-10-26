@@ -1097,12 +1097,22 @@ final class ValorantStore {
     }
 
     private func postRecapIfNeeded() {
-        guard let guild = Self.recapGuildId, let channel = Self.recapChannelId,
+        guard Self.recapGuildId != nil, Self.recapChannelId != nil,
               let match = matches.first, let started = match.startedAt,
               Date().timeIntervalSince(started) < 3 * 3600 else { return }
         let key = "ethone.valorant.recapLast"
         guard UserDefaults.standard.string(forKey: key) != match.id else { return }
         UserDefaults.standard.set(match.id, forKey: key)
+        Task { try? await postRecap(match) }
+    }
+
+    func postTestRecap() async throws {
+        guard let match = matches.first else { throw APIError.http(status: 404, code: nil, message: "Aucune partie à publier.") }
+        try await postRecap(match)
+    }
+
+    private func postRecap(_ match: ValorantMatch) async throws {
+        guard let guild = Self.recapGuildId, let channel = Self.recapChannelId else { return }
         let me = match.myPlayer
         var fields: [JSONValue] = [
             .object(["name": .string("Score"), "value": .string("\(match.teamRounds) — \(match.opponentRounds)")]),
@@ -1122,7 +1132,7 @@ final class ValorantStore {
         ]
         if let icon = me?.agentIconURL?.absoluteString { body["thumbnail"] = .string(icon) }
         if let splash = ValorantAssets.shared.splashes[match.map.lowercased()]?.absoluteString { body["image"] = .string(splash) }
-        Task { _ = try? await AppModel.shared.discord.call("api/guilds/\(guild)/valorant/recap", method: "POST", body: body) }
+        _ = try await AppModel.shared.discord.call("api/guilds/\(guild)/valorant/recap", method: "POST", body: body)
     }
 
     private func apply(account: Account) {

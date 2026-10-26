@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.88.3",
+    "date": "2026-10-26",
+    "title": "E:VAL : bouton « Publier un test » pour le récap Discord",
+    "items": [
+      "Récap sur Discord : bouton pour publier tout de suite le récap de votre dernière partie et vérifier le salon",
+      "La fenêtre de connexion Discord s'ouvre sur la bonne scène de l'app"
+    ]
+  },
+  {
     "version": "v1.88.2",
     "date": "2026-10-26",
     "title": "E:VAL : avatars des amis et connexion Discord du récap",
@@ -623,18 +632,6 @@
       "Brain : nouvelle introduction, bulles qui apparaissent du bas et indicateur de réflexion animé.",
       "Mail : nom du dossier et nombre de non-lus en titre, dates relatives ; Discord : nouvel écran de connexion ; Apparence : changement de thème en fondu.",
       "iOS 27 : sélecteurs en onglets natifs pour Modération, Tickets, Liens partagés et Mini-jeux."
-    ]
-  },
-  {
-    "version": "v1.75.133",
-    "date": "2026-10-16",
-    "title": "App iOS : direction artistique ETHONE",
-    "items": [
-      "Connexion refaite comme sur le site : titre « Votre espace, réinventé pour vous. », les six modules, sélecteur en Liquid Glass et entrée animée.",
-      "Le faux bouton « Passkey » (qui ouvrait Google) est retiré.",
-      "Accueil : grand titre avec la date, chiffres du jour réunis dans un seul panneau, raccourcis qui défilent sans être coupés.",
-      "Tâches, Focus et Notes alignés sur la même direction : titres ETHONE, listes groupées, chronomètre redessiné, ouverture des notes en zoom.",
-      "Titres de section en minuscules dans toute l'app et animations respectant « Réduire les animations »."
     ]
   }
 ]

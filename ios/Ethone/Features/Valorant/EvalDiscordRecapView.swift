@@ -56,6 +56,22 @@ struct EvalDiscordRecapView: View {
                     .disabled(guildId.isEmpty || channelId.isEmpty)
                     .opacity(guildId.isEmpty || channelId.isEmpty ? 0.5 : 1)
                     if ValorantStore.recapChannelId != nil {
+                        Button {
+                            Task {
+                                do {
+                                    try await model.valorant.postTestRecap()
+                                    message = "Récap de test publié."
+                                } catch {
+                                    message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                                }
+                            }
+                        } label: {
+                            Label("Publier un test", systemImage: "paperplane")
+                                .font(.system(size: 17, weight: .semibold)).foregroundStyle(EvalAccent.color)
+                                .frame(maxWidth: .infinity).frame(height: 46)
+                                .background(EvalUI.card, in: .capsule)
+                        }
+                        .buttonStyle(.plain)
                         Button("Désactiver le récap", role: .destructive) {
                             ValorantStore.setRecap(guild: nil, channel: nil, latestMatch: nil)
                             guildId = ""

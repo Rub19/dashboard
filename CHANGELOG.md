@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.88.3 — 2026-10-26
+
+**E:VAL : bouton « Publier un test » pour le récap Discord**
+
+- Récap sur Discord : bouton pour publier tout de suite le récap de votre dernière partie et vérifier le salon
+- La fenêtre de connexion Discord s'ouvre sur la bonne scène de l'app
+
 ## v1.88.2 — 2026-10-26
 
 **E:VAL : avatars des amis et connexion Discord du récap**

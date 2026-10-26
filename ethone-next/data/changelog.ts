@@ -61946,4 +61946,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_88_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_88_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_88_2_de);
 
+const v1_88_3_fr: ChangelogEntry = {
+  version: "v1.88.3",
+  date: "2026-10-26",
+  title: "E:VAL : bouton « Publier un test » pour le récap Discord",
+  items: [
+    "Récap sur Discord : bouton pour publier tout de suite le récap de votre dernière partie et vérifier le salon",
+    "La fenêtre de connexion Discord s'ouvre sur la bonne scène de l'app",
+  ],
+};
+
+const v1_88_3_en: ChangelogEntry = {
+  version: "v1.88.3",
+  date: "2026-10-26",
+  title: "E:VAL: \"Post a test\" button for the Discord recap",
+  items: [
+    "Discord recap: button to post your last match recap right away and check the channel",
+    "The Discord sign-in window opens on the right app scene",
+  ],
+};
+
+const v1_88_3_es: ChangelogEntry = {
+  version: "v1.88.3",
+  date: "2026-10-26",
+  title: "E:VAL: botón «Publicar una prueba» para el resumen de Discord",
+  items: [
+    "Resumen en Discord: botón para publicar ya el resumen de tu última partida y comprobar el canal",
+    "La ventana de inicio de sesión de Discord se abre en la escena correcta de la app",
+  ],
+};
+
+const v1_88_3_de: ChangelogEntry = {
+  version: "v1.88.3",
+  date: "2026-10-26",
+  title: "E:VAL: Schaltfläche „Test posten“ für die Discord-Zusammenfassung",
+  items: [
+    "Discord-Zusammenfassung: Schaltfläche, um die Zusammenfassung deines letzten Spiels sofort zu posten und den Kanal zu prüfen",
+    "Das Discord-Anmeldefenster öffnet sich in der richtigen App-Szene",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_88_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_88_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_88_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_88_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

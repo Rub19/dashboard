@@ -16,12 +16,15 @@ struct RiotChatPresence: Hashable {
     var cardID = ""
     var tier = 0
     var isIdle = false
+    var product = ""
+    var playing = false
 }
 
 struct RiotChatFriend: Identifiable, Hashable {
     let id: String
     var name: String
     var tag: String
+    var lastOnline: Date?
     var presence: RiotChatPresence?
 }
 
@@ -35,6 +38,7 @@ final class RiotChat {
     private(set) var selfPresence: RiotChatPresence?
     var error: String?
     private var selfID = ""
+    private var rawPresences: [String] = []
 
     private var connection: NWConnection?
     private var buffer = ""
@@ -214,6 +218,7 @@ final class RiotChat {
     }
 
     private func parseRoster(_ xml: String) {
+        DiskCache.write(String(xml.prefix(300_000)), key: "riot-chat-roster-raw")
         let ns = xml as NSString
         for match in Self.itemRegex.matches(in: xml, range: NSRange(location: 0, length: ns.length)) {
             let attrRange = match.range(at: 1).location != NSNotFound ? match.range(at: 1) : match.range(at: 3)
@@ -226,7 +231,8 @@ final class RiotChat {
             let name = Self.attribute("name", in: idTag) ?? Self.attribute("name", in: attrs) ?? ""
             let tag = Self.attribute("tagline", in: idTag) ?? ""
             guard !name.isEmpty else { continue }
-            roster[puuid.lowercased()] = RiotChatFriend(id: puuid.lowercased(), name: Self.unescape(name), tag: Self.unescape(tag))
+            let lastOnline = (Self.attribute("last_online", in: attrs) ?? Self.text("last_online", in: body)).flatMap(Self.date)
+            roster[puuid.lowercased()] = RiotChatFriend(id: puuid.lowercased(), name: Self.unescape(name), tag: Self.unescape(tag), lastOnline: lastOnline)
         }
         rebuild()
     }
@@ -240,9 +246,19 @@ final class RiotChat {
             presences[puuid] = nil
             return
         }
+        if rawPresences.count < 80 {
+            rawPresences.append(stanza)
+            DiskCache.write(rawPresences, key: "riot-chat-presence-raw")
+        }
         var presence = RiotChatPresence()
         presence.show = Self.text("show", in: stanza) ?? "chat"
         if presence.show == "offline" { presences[puuid] = nil; return }
+        let games = Self.section("games", in: stanza) ?? ""
+        presence.product = ["valorant", "league_of_legends", "bacon", "lion", "tft", "keystone"].first { games.contains("<\($0)>") } ?? ""
+        if presence.product == "league_of_legends" {
+            let lol = Self.section("league_of_legends", in: games) ?? ""
+            presence.playing = lol.contains("inGame") || lol.contains("championSelect")
+        }
         if let valorant = Self.section("valorant", in: stanza), let p = Self.text("p", in: valorant),
            let data = Data(base64Encoded: p), let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
             presence.inValorant = true
@@ -304,6 +320,15 @@ final class RiotChat {
     private static func section(_ name: String, in text: String) -> String? {
         guard let start = text.range(of: "<\(name)>"), let end = text.range(of: "</\(name)>", range: start.upperBound..<text.endIndex) else { return nil }
         return String(text[start.upperBound..<end.lowerBound])
+    }
+
+    private static func date(_ raw: String) -> Date? {
+        if let number = Double(raw.trimmingCharacters(in: .whitespaces)), number > 0 {
+            return Date(timeIntervalSince1970: number > 10_000_000_000 ? number / 1000 : number)
+        }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter.date(from: raw) ?? ISO8601DateFormatter().date(from: raw)
     }
 
     private static func unescape(_ text: String) -> String {

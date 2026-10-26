@@ -181,7 +181,8 @@ enum NotificationManager {
             case "bill":
                 model.morePath = NavigationPath([MoreDestination.bills])
                 model.requestedTab = .more
-            default: model.requestedTab = .home
+            default:
+                if let url = (info["url"] as? String).flatMap(URL.init(string:)) { model.handle(url: url) } else { model.requestedTab = .home }
             }
         }
     }

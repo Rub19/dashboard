@@ -1,5 +1,17 @@
 [
   {
+    "version": "v1.88.0",
+    "date": "2026-10-26",
+    "title": "E:VAL : widgets, alerte boutique, récap Discord, line-ups perso et amis comme VALPAW",
+    "items": [
+      "Widget E:VAL : rang et RR, passe de combat et boutique du jour (écran d'accueil et écran verrouillé)",
+      "Notification quand un skin de votre liste de souhaits apparaît dans votre boutique",
+      "Récap sur Discord : après chaque partie, le bot ETHONE publie le résultat dans le salon de votre choix (Paramètres d'E:VAL)",
+      "Line-Ups : ajoutez vos propres line-ups, enregistrés sur votre compte, et filtrez-les",
+      "Amis : sections Valorant, League of Legends, Riot Client et Hors ligne comme VALPAW, dernière connexion, plus de faux groupes, et vous apparaissez en ligne"
+    ]
+  },
+  {
     "version": "v1.87.1",
     "date": "2026-10-26",
     "title": "E:VAL : file, sélection d'agent et partie dans la Dynamic Island",
@@ -621,16 +633,6 @@
     "title": "Messages de test dans la langue du serveur",
     "items": [
       "Les messages de test envoyés dans Discord depuis le dashboard (anniversaire, starboard, panneau de tickets) et le journal de déploiement des panels de rôles sont écrits dans la langue du serveur, plus dans celle du dashboard."
-    ]
-  },
-  {
-    "version": "v1.75.130",
-    "date": "2026-10-16",
-    "title": "Connexion depuis la page du bot",
-    "items": [
-      "Se connecter depuis la page de présentation d'Etho mène directement au dashboard du bot.",
-      "Un compte créé depuis la page du bot n'ouvre que le dashboard d'Etho ; le bouton « Retour à ETHONE » n'apparaît que pour les comptes ETHONE OS.",
-      "Sur discord.ethone.dev, la déconnexion ramène à la connexion du bot."
     ]
   }
 ]

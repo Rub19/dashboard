@@ -30,6 +30,7 @@ import { createAutoModRouter } from './routes/autoModRoutes.js';
 import { createLevelingRouter } from './routes/levelingRoutes.js';
 import { createEconomyRouter } from './routes/economyRoutes.js';
 import { createGiveawayRouter } from './routes/giveawayRoutes.js';
+import { createValorantRecapRouter } from './routes/valorantRecapRoutes.js';
 import { createSharedSpaceRouter } from './routes/sharedSpaceRoutes.js';
 import { createInternalSharedSpaceRouter } from './routes/internalSharedSpaceRoutes.js';
 import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
@@ -272,6 +273,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createGiveawayRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/valorant',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createValorantRecapRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/shared-space',

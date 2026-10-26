@@ -11,6 +11,7 @@ struct EvalLineup: Codable, Identifiable, Hashable {
     let images: [String]
     let video: String
     let credits: String
+    var isMine = false
 
     var videoURL: URL? {
         let parts = video.split(separator: "?", maxSplits: 1)
@@ -23,6 +24,23 @@ struct EvalLineup: Codable, Identifiable, Hashable {
         if let first = images.first { return URL(string: first) }
         guard let id = video.split(separator: "?").first, !id.isEmpty else { return nil }
         return URL(string: "https://img.youtube.com/vi/\(id)/hqdefault.jpg")
+    }
+}
+
+struct EvalOwnLineupRow: Decodable {
+    let id: String
+    let name: String
+    let description: String
+    let agent: Int
+    let ability: Int
+    let map_id: Int
+    let tags: [Int]
+    let images: [String]
+    let video: String
+
+    var lineup: EvalLineup {
+        EvalLineup(id: id, name: name, description: description, agent: agent, ability: ability, mapId: map_id, tags: tags,
+                   images: images, video: video, credits: "", isMine: true)
     }
 }
 
@@ -89,8 +107,12 @@ enum EvalLineupCatalog {
 }
 
 struct EvalLineupsView: View {
+    @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var lineups: [EvalLineup] = []
+    @State private var mine: [EvalLineup] = []
+    @State private var adding = false
+    @State private var onlyMine = false
     @State private var icons = EvalLineupCatalog.Icons()
     @State private var loading = true
     @State private var failed = false
@@ -100,7 +122,7 @@ struct EvalLineupsView: View {
     @State private var side: Int?
 
     private var filtered: [EvalLineup] {
-        lineups.filter { l in
+        (onlyMine ? mine : mine + lineups).filter { l in
             (agent == nil || l.agent == agent) && (map == nil || l.mapId == map) && (side == nil || l.tags.contains(side!))
                 && (query.isEmpty || l.name.localizedCaseInsensitiveContains(query) || l.description.localizedCaseInsensitiveContains(query))
         }
@@ -108,7 +130,11 @@ struct EvalLineupsView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            EvalNavHeader(title: "Line-Ups") { dismiss() }
+            EvalNavHeader(title: "Line-Ups", trailing: AnyView(Button { adding = true } label: {
+                Circle().fill(EvalUI.card).frame(width: 51, height: 51)
+                    .overlay(Image(systemName: "plus").font(.system(size: 21, weight: .semibold)).foregroundStyle(EvalAccent.color))
+            }
+            .buttonStyle(.plain))) { dismiss() }
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
                 TextField("Rechercher des line-ups…", text: $query).autocorrectionDisabled()
@@ -125,6 +151,9 @@ struct EvalLineupsView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task { await load(force: false) }
+        .sheet(isPresented: $adding) {
+            EvalLineupEditor { await loadMine() }
+        }
     }
 
     @ViewBuilder
@@ -148,6 +177,16 @@ struct EvalLineupsView: View {
                     ForEach(filtered) { lineup in
                         NavigationLink { EvalLineupDetailView(lineup: lineup, icons: icons) } label: { card(lineup) }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                if lineup.isMine {
+                                    Button("Supprimer", systemImage: "trash", role: .destructive) {
+                                        Task {
+                                            try? await model.api.remove("ethone_valorant_lineups", id: lineup.id)
+                                            await loadMine()
+                                        }
+                                    }
+                                }
+                            }
                     }
                     Link(destination: URL(string: "https://valorant-lineups.com")!) {
                         Text("Line-ups de la communauté valorant-lineups.com").font(.system(size: 14)).foregroundStyle(EvalUI.secondary)
@@ -190,8 +229,11 @@ struct EvalLineupsView: View {
                     chip(side.flatMap { EvalLineupCatalog.tags[$0] } ?? "Camp", icon: nil,
                          symbol: side == 2 ? "shield" : "circle.fill", active: side != nil)
                 }
-                if agent != nil || map != nil || side != nil {
-                    Button { agent = nil; map = nil; side = nil } label: { chip("Effacer", icon: nil, symbol: "xmark", active: false) }
+                if !mine.isEmpty {
+                    Button { onlyMine.toggle() } label: { chip("Mes line-ups", icon: nil, symbol: "person.crop.circle", active: onlyMine) }
+                }
+                if agent != nil || map != nil || side != nil || onlyMine {
+                    Button { agent = nil; map = nil; side = nil; onlyMine = false } label: { chip("Effacer", icon: nil, symbol: "xmark", active: false) }
                 }
             }
         }
@@ -233,7 +275,10 @@ struct EvalLineupsView: View {
                     .padding(10)
                 }
             VStack(alignment: .leading, spacing: 8) {
-                Text(lineup.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text).lineLimit(2)
+                HStack(spacing: 6) {
+                    if lineup.isMine { Image(systemName: "person.crop.circle.fill").foregroundStyle(EvalAccent.color) }
+                    Text(lineup.name).font(.system(size: 18, weight: .semibold)).foregroundStyle(EvalColors.text).lineLimit(2)
+                }
                 Text([EvalLineupCatalog.maps[lineup.mapId], abilityName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
                     .font(.system(size: 15)).foregroundStyle(EvalUI.secondary)
                 EvalLineupTags(tags: lineup.tags)
@@ -248,8 +293,14 @@ struct EvalLineupsView: View {
         AsyncImage(url: url.flatMap(URL.init(string:))) { $0.image?.resizable().scaledToFit() }.frame(width: size, height: size)
     }
 
+    private func loadMine() async {
+        guard let rows: [EvalOwnLineupRow] = try? await model.api.list("ethone_valorant_lineups", query: [URLQueryItem(name: "order", value: "created_at.desc")]) else { return }
+        mine = rows.map(\.lineup)
+    }
+
     private func load(force: Bool) async {
         loading = true
+        await loadMine()
         async let fetched = EvalLineupCatalog.load(force: force)
         async let fetchedIcons = EvalLineupCatalog.icons()
         let result = await fetched
@@ -342,5 +393,111 @@ struct EvalLineupDetailView: View {
         .background(EvalColors.background.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+    }
+}
+
+struct EvalLineupEditor: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    let onSaved: () async -> Void
+    @State private var name = ""
+    @State private var description = ""
+    @State private var agent = 13
+    @State private var ability = 1
+    @State private var map = 1
+    @State private var side = 1
+    @State private var site = 0
+    @State private var video = ""
+    @State private var images = ""
+    @State private var saving = false
+    @State private var error: String?
+
+    private var videoID: String? {
+        let raw = video.trimmingCharacters(in: .whitespaces)
+        guard !raw.isEmpty else { return "" }
+        if let url = URLComponents(string: raw) {
+            if let v = url.queryItems?.first(where: { $0.name == "v" })?.value { return v }
+            if url.host?.contains("youtu.be") == true { return String(url.path.dropFirst()) }
+            if url.path.contains("/shorts/") { return url.path.components(separatedBy: "/shorts/").last }
+        }
+        return raw.range(of: "^[A-Za-z0-9_-]{11}$", options: .regularExpression) != nil ? raw : nil
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Line-up") {
+                    TextField("Titre", text: $name)
+                    TextField("Instructions", text: $description, axis: .vertical).lineLimit(3...8)
+                }
+                Section("Jeu") {
+                    Picker("Agent", selection: $agent) {
+                        ForEach(EvalLineupCatalog.agents.sorted { $0.value < $1.value }, id: \.key) { Text($0.value).tag($0.key) }
+                    }
+                    .onChange(of: agent) { ability = 1 }
+                    Picker("Compétence", selection: $ability) {
+                        ForEach((EvalLineupCatalog.abilities[agent] ?? [:]).sorted { $0.key < $1.key }, id: \.key) { Text($0.value).tag($0.key) }
+                    }
+                    Picker("Carte", selection: $map) {
+                        ForEach(EvalLineupCatalog.maps.sorted { $0.value < $1.value }, id: \.key) { Text($0.value).tag($0.key) }
+                    }
+                    Picker("Camp", selection: $side) {
+                        Text("Attaque").tag(1)
+                        Text("Défense").tag(2)
+                    }
+                    Picker("Site", selection: $site) {
+                        Text("Aucun").tag(0)
+                        Text("Site A").tag(5)
+                        Text("Site B").tag(6)
+                        Text("Site C").tag(7)
+                        Text("Mid").tag(8)
+                    }
+                }
+                Section {
+                    TextField("Lien YouTube", text: $video).textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
+                    TextField("Liens d'images (un par ligne)", text: $images, axis: .vertical)
+                        .textInputAutocapitalization(.never).autocorrectionDisabled().lineLimit(2...6)
+                } header: {
+                    Text("Médias")
+                } footer: {
+                    Text("Vos line-ups restent privés : seul votre compte ETHONE les voit.")
+                }
+                if let error { Text(error).foregroundStyle(.red) }
+            }
+            .navigationTitle("Nouveau line-up")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Annuler") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(saving ? "Enregistrement…" : "Enregistrer") { Task { await save() } }
+                        .disabled(saving || name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func save() async {
+        guard let videoID else { error = "Lien YouTube invalide."; return }
+        let urls = images.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { $0.hasPrefix("https://") }.prefix(8)
+        saving = true
+        defer { saving = false }
+        do {
+            struct Created: Decodable { let id: String }
+            let _: Created = try await model.api.insert("ethone_valorant_lineups", fields: [
+                "name": .string(name.trimmingCharacters(in: .whitespaces)),
+                "description": .string(description),
+                "agent": .number(Double(agent)),
+                "ability": .number(Double(ability)),
+                "map_id": .number(Double(map)),
+                "tags": .array(([side] + (site > 0 ? [site] : [])).map { .number(Double($0)) }),
+                "images": .array(urls.map { .string($0) }),
+                "video": .string(videoID),
+            ])
+            await onSaved()
+            dismiss()
+        } catch {
+            self.error = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 }

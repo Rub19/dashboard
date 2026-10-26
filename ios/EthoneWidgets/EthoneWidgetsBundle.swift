@@ -7,6 +7,7 @@ struct EthoneWidgetsBundle: WidgetBundle {
         FocusLiveActivity()
         EventLiveActivity()
         ValorantLiveActivity()
+        ValorantWidget()
         SummaryWidget()
         FocusControl()
         NewTaskControl()

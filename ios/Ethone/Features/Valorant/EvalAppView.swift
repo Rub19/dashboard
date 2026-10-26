@@ -2980,10 +2980,18 @@ struct EvalFriendsView: View {
         }
     }
 
+    private var otherPlatforms: [(String, [ValorantFriend])] {
+        let online = filteredFriends.filter { $0.isOnline && $0.platform != nil && $0.platform != "Valorant" }
+        let order = ["League of Legends", "Teamfight Tactics", "Legends of Runeterra", "2XKO", "Riot Client"]
+        return Dictionary(grouping: online) { $0.platform ?? "" }
+            .map { ($0.key, $0.value.sorted { ($0.isInGame ? 0 : 1, $0.name.lowercased()) < ($1.isInGame ? 0 : 1, $1.name.lowercased()) }) }
+            .sorted { (order.firstIndex(of: $0.0) ?? order.count) < (order.firstIndex(of: $1.0) ?? order.count) }
+    }
+
     private var onlineFriends: [ValorantFriend] {
         var seen = Set<String>()
         return filteredFriends
-            .filter { $0.isOnline || $0.isInGame }
+            .filter { $0.platform == "Valorant" || ($0.platform == nil && ($0.isOnline || $0.isInGame)) }
             .sorted { ($0.isInGame ? 0 : 1, $0.name.lowercased()) < ($1.isInGame ? 0 : 1, $1.name.lowercased()) }
             .filter { friend in
                 guard let party = friend.partyID else { return true }
@@ -2992,7 +3000,7 @@ struct EvalFriendsView: View {
     }
 
     private var offlineFriends: [ValorantFriend] {
-        let list = filteredFriends.filter { !$0.isOnline && !$0.isInGame }
+        let list = filteredFriends.filter { !$0.isOnline && !$0.isInGame && $0.platform == nil }
         if store.sortOfflineByLastSeen {
             return list.sorted { $0.lastOnlineSecondsAgo < $1.lastOnlineSecondsAgo }
         } else {
@@ -3021,7 +3029,7 @@ struct EvalFriendsView: View {
 
                     if !store.isConfigured {
                         disconnectedConnectCard
-                    } else if onlineFriends.isEmpty && offlineFriends.isEmpty {
+                    } else if onlineFriends.isEmpty && offlineFriends.isEmpty && otherPlatforms.isEmpty {
                         emptyFriendsCard
                     } else {
                         VStack(spacing: 18) {
@@ -3050,24 +3058,12 @@ struct EvalFriendsView: View {
                                 }
                             }
 
-                            if !offlineFriends.isEmpty {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Hors ligne — \(offlineFriends.count)")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(.secondary)
-                                        .padding(.leading, 4)
+                            ForEach(otherPlatforms, id: \.0) { platform, list in
+                                friendSection("\(platform) — \(list.count)", list) { EvalFriendCard(friend: $0, plain: true) }
+                            }
 
-                                    VStack(spacing: 8) {
-                                        ForEach(offlineFriends) { friend in
-                                            Button {
-                                                selectedFriend = friend
-                                            } label: {
-                                                EvalOfflineFriendCard(friend: friend)
-                                            }
-                                            .buttonStyle(PressScaleStyle())
-                                        }
-                                    }
-                                }
+                            if !offlineFriends.isEmpty {
+                                friendSection("Hors ligne — \(offlineFriends.count)", offlineFriends) { EvalOfflineFriendCard(friend: $0, plain: true) }
                             }
                         }
                     }
@@ -3126,6 +3122,26 @@ struct EvalFriendsView: View {
         }
         .sheet(isPresented: $showingAccountSheet) {
             ValorantSettingsSheet()
+        }
+    }
+
+    private func friendSection<Row: View>(_ title: String, _ list: [ValorantFriend], @ViewBuilder row: @escaping (ValorantFriend) -> Row) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.leading, 4)
+            LazyVStack(spacing: 0) {
+                ForEach(Array(list.enumerated()), id: \.element.id) { index, friend in
+                    Button { selectedFriend = friend } label: { row(friend) }
+                        .buttonStyle(PressScaleStyle())
+                    if index < list.count - 1 {
+                        Divider().overlay(EvalColors.text.opacity(0.06)).padding(.leading, 77)
+                    }
+                }
+            }
+            .background(EvalColors.card, in: .rect(cornerRadius: 20))
+            .clipShape(.rect(cornerRadius: 20))
         }
     }
 
@@ -3340,6 +3356,7 @@ struct EvalFriendsView: View {
 
 struct EvalFriendCard: View {
     let friend: ValorantFriend
+    var plain = false
 
     private func tierRingColor(tier: Int) -> Color {
         switch tier {
@@ -3450,7 +3467,7 @@ struct EvalFriendCard: View {
                     Spacer()
 
                     HStack(spacing: 8) {
-                        if let url = friend.rankIconURL {
+                        if friend.tierNumber > 0, let url = friend.rankIconURL {
                             AsyncImage(url: url) { phase in
                                 if let image = phase.image {
                                     image
@@ -3463,10 +3480,6 @@ struct EvalFriendCard: View {
                                         .foregroundStyle(tierRingColor(tier: friend.tierNumber))
                                 }
                             }
-                        } else {
-                            Image(systemName: "rhombus.fill")
-                                .font(.system(size: 23))
-                                .foregroundStyle(tierRingColor(tier: friend.tierNumber))
                         }
 
                         Image(systemName: "chevron.right")
@@ -3492,13 +3505,14 @@ struct EvalFriendCard: View {
                 }
             }
         }
-        .background(EvalColors.card, in: .rect(cornerRadius: 20))
+        .background(plain ? .clear : EvalColors.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 }
 
 struct EvalOfflineFriendCard: View {
     let friend: ValorantFriend
+    var plain = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -3514,7 +3528,7 @@ struct EvalOfflineFriendCard: View {
                             .overlay(Image(systemName: "person.fill").foregroundStyle(.secondary))
                     }
                 }
-                .opacity(0.65)
+                .opacity(plain ? 1 : 0.65)
 
                 Circle()
                     .fill(Color(hex: 0x64748B))
@@ -3561,7 +3575,7 @@ struct EvalOfflineFriendCard: View {
             }
         }
         .padding(14)
-        .background(EvalColors.card, in: .rect(cornerRadius: 20))
+        .background(plain ? .clear : EvalColors.card, in: .rect(cornerRadius: 20))
         .clipShape(.rect(cornerRadius: 20))
     }
 }
@@ -4108,6 +4122,15 @@ struct EvalSettingsView: View {
                         EvalAdvancedSettingsView()
                     } label: {
                         settingsNavRow(icon: "slider.horizontal.2.square", title: "Paramètres avancés")
+                    }
+                    .buttonStyle(.plain)
+
+                    Divider().overlay(EvalColors.text.opacity(0.08)).padding(.leading, 72)
+
+                    NavigationLink {
+                        EvalDiscordRecapView()
+                    } label: {
+                        settingsNavRow(icon: "bubble.left.and.text.bubble.right", title: "Récap sur Discord")
                     }
                     .buttonStyle(.plain)
                 }

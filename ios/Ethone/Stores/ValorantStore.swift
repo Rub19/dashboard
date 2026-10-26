@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 import Observation
 
 enum ScoringSystem: Codable {
@@ -217,6 +218,7 @@ struct ValorantFriend: Identifiable, Hashable {
     let lastOnlineText: String?
     var lastOnlineSecondsAgo: Int
     var partyID: String? = nil
+    var platform: String? = nil
 
     var handle: String { "\(name)#\(tag)" }
     var rankIconURL: URL? { ValorantProfile.tierIcon(tierNumber) }
@@ -392,6 +394,8 @@ final class ValorantStore {
         DiskCache.write(snap, key: snapshotCacheKey)
         applySnapshot(snap)
         recordShop(snap.offers, accessories: snap.accessories)
+        notifyWishedOffers(snap.offers)
+        Task { await ValorantWidgetPublisher.publish(self) }
         currentParty = snap.party
         isPlayerOnline = snap.party != nil
         if acts.isEmpty { await loadActs() }
@@ -453,6 +457,7 @@ final class ValorantStore {
         liveRank = live
         saveLiveRank(live)
         applyLiveRank()
+        await ValorantWidgetPublisher.publish(self)
     }
 
     private func applyLiveRank() {
@@ -1046,6 +1051,21 @@ final class ValorantStore {
         if let payload = ValorantPersonalCache.encode(shopHistory) { Task { await cache.save(payload, key: "shop_history") } }
     }
 
+    private func notifyWishedOffers(_ offers: [ValorantDailySkinOffer]) {
+        let hits = offers.filter { isWished($0.id) }
+        guard !hits.isEmpty else { return }
+        let key = "ethone.valorant.wishNotified"
+        let stamp = "\(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970)|" + hits.map(\.id).sorted().joined(separator: ",")
+        guard UserDefaults.standard.string(forKey: key) != stamp else { return }
+        UserDefaults.standard.set(stamp, forKey: key)
+        let content = UNMutableNotificationContent()
+        content.title = hits.count == 1 ? "Un skin de ta liste est en boutique" : "\(hits.count) skins de ta liste sont en boutique"
+        content.body = hits.map { "\($0.name) · \($0.price.formatted()) VP" }.joined(separator: "\n")
+        content.sound = .default
+        content.userInfo = ["url": "ethone://valorantStore"]
+        Task { try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "valorant-wish-\(stamp.hashValue)", content: content, trigger: nil)) }
+    }
+
     func isWished(_ id: String) -> Bool { wishlist.contains { $0.id.lowercased() == id.lowercased() } }
 
     func toggleWish(id: String, name: String, icon: String) {
@@ -1063,6 +1083,46 @@ final class ValorantStore {
         matches = evalMatches.values
             .compactMap { $0.summary(for: puuid) }
             .sorted { ($0.startedAt ?? .distantPast) > ($1.startedAt ?? .distantPast) }
+        postRecapIfNeeded()
+    }
+
+    static var recapGuildId: String? { UserDefaults.standard.string(forKey: "ethone.valorant.recapGuild") }
+    static var recapChannelId: String? { UserDefaults.standard.string(forKey: "ethone.valorant.recapChannel") }
+
+    static func setRecap(guild: String?, channel: String?, latestMatch: String?) {
+        let defaults = UserDefaults.standard
+        defaults.set(guild, forKey: "ethone.valorant.recapGuild")
+        defaults.set(channel, forKey: "ethone.valorant.recapChannel")
+        defaults.set(latestMatch, forKey: "ethone.valorant.recapLast")
+    }
+
+    private func postRecapIfNeeded() {
+        guard let guild = Self.recapGuildId, let channel = Self.recapChannelId,
+              let match = matches.first, let started = match.startedAt,
+              Date().timeIntervalSince(started) < 3 * 3600 else { return }
+        let key = "ethone.valorant.recapLast"
+        guard UserDefaults.standard.string(forKey: key) != match.id else { return }
+        UserDefaults.standard.set(match.id, forKey: key)
+        let me = match.myPlayer
+        var fields: [JSONValue] = [
+            .object(["name": .string("Score"), "value": .string("\(match.teamRounds) — \(match.opponentRounds)")]),
+            .object(["name": .string("K / D / A"), "value": .string("\(match.kills) / \(match.deaths) / \(match.assists)")]),
+            .object(["name": .string("HS%"), "value": .string("\(match.headshotPercent) %")]),
+        ]
+        if let score = match.scoreValue { fields.append(.object(["name": .string(match.scoreLabel), "value": .string("\(score)")])) }
+        if let me, me.tierNumber > 0 { fields.append(.object(["name": .string("Rang"), "value": .string(me.tierText)])) }
+        if let mvp = EvalProfileView.mvpLabel(match) { fields.append(.object(["name": .string("Distinction"), "value": .string(mvp)])) }
+        var body: [String: JSONValue] = [
+            "channelId": .string(channel),
+            "won": .bool(match.won),
+            "title": .string("\(match.won ? "Victoire" : "Défaite") · \(match.mode) — \(match.map)"),
+            "description": .string("\(playerName.isEmpty ? (riot.credentials?.gameName ?? "") : playerName) a joué \(match.agent)."),
+            "fields": .array(fields),
+            "footer": .string("E:VAL"),
+        ]
+        if let icon = me?.agentIconURL?.absoluteString { body["thumbnail"] = .string(icon) }
+        if let splash = ValorantAssets.shared.splashes[match.map.lowercased()]?.absoluteString { body["image"] = .string(splash) }
+        Task { _ = try? await AppModel.shared.discord.call("api/guilds/\(guild)/valorant/recap", method: "POST", body: body) }
     }
 
     private func apply(account: Account) {
@@ -1396,11 +1456,53 @@ final class ValorantStore {
         await refreshNameChanges()
     }
 
+    private static let friendCardsKey = "ethone.valorant.friendCards"
+    private static let friendSeenKey = "ethone.valorant.friendSeen"
+
+    static func lastOnlineText(_ date: Date) -> String {
+        let minutes = max(1, Int(Date().timeIntervalSince(date) / 60))
+        func plural(_ n: Int, _ word: String) -> String { "\(n) \(word)\(n > 1 ? "s" : "")" }
+        if minutes < 60 { return "Dernière connexion il y a \(plural(minutes, "minute"))" }
+        let hours = minutes / 60
+        if hours < 24 {
+            let rest = minutes % 60
+            return "Dernière connexion il y a \(plural(hours, "heure"))" + (rest > 0 ? " et \(plural(rest, "minute"))" : "")
+        }
+        let days = hours / 24
+        if days < 30 { return "Dernière connexion il y a \(plural(days, "jour"))" }
+        return "Dernière connexion le \(date.formatted(.dateTime.day().month(.wide).year()))"
+    }
+
+    private static func platformName(_ product: String) -> String {
+        switch product {
+        case "valorant": "Valorant"
+        case "league_of_legends": "League of Legends"
+        case "tft": "Teamfight Tactics"
+        case "bacon": "Legends of Runeterra"
+        case "lion": "2XKO"
+        default: "Riot Client"
+        }
+    }
+
     private func rebuildFriends() {
         if chat.isConnected || !chat.friends.isEmpty {
+            let defaults = UserDefaults.standard
+            var cards = defaults.dictionary(forKey: Self.friendCardsKey) as? [String: String] ?? [:]
+            var seen = defaults.dictionary(forKey: Self.friendSeenKey) as? [String: Double] ?? [:]
+            let now = Date().timeIntervalSince1970
+            for friend in chat.friends {
+                if let card = friend.presence?.cardID, !card.isEmpty { cards[friend.id] = card.lowercased() }
+                if friend.presence != nil { seen[friend.id] = now }
+            }
+            defaults.set(cards, forKey: Self.friendCardsKey)
+            defaults.set(seen, forKey: Self.friendSeenKey)
+            isPlayerOnline = chat.isConnected
             friends = chat.friends.map { friend in
                 let p = friend.presence
-                let inGame = p?.state == "INGAME"
+                let inValorant = p?.inValorant == true && p?.product != "league_of_legends"
+                let inGame = inValorant ? p?.state == "INGAME" : p?.playing == true
+                let lastOnline = p != nil ? nil : friend.lastOnline ?? seen[friend.id].map { Date(timeIntervalSince1970: $0) }
+                let card = (p?.cardID).flatMap { $0.isEmpty ? nil : $0.lowercased() } ?? cards[friend.id]
                 let stateText: String? = {
                     guard let p, p.inValorant else { return nil }
                     switch p.state {
@@ -1411,17 +1513,19 @@ final class ValorantStore {
                 }()
                 return ValorantFriend(
                     id: friend.id, name: friend.name, tag: friend.tag,
-                    avatarURL: (p?.cardID).flatMap { $0.isEmpty ? nil : "https://media.valorant-api.com/playercards/\($0)/smallart.png" },
+                    avatarURL: card.map { "https://media.valorant-api.com/playercards/\($0)/smallart.png" },
                     isOnline: p != nil, isInGame: inGame, isPartyLeader: false,
-                    partyCurrent: p?.partySize ?? 1, partyMax: p?.maxPartySize ?? 5,
-                    queueState: stateText,
-                    gameMode: (p?.queueID).flatMap { $0.isEmpty ? nil : RiotPartyModel.queueName($0) },
-                    map: (p?.mapPath).flatMap { chat.mapName($0) },
-                    scoreRounds: inGame ? "\(p?.allyScore ?? 0) — \(p?.enemyScore ?? 0)" : nil,
-                    tierNumber: p?.tier ?? 0,
-                    otherPartyMembersCount: max(0, (p?.partySize ?? 1) - 1),
-                    lastOnlineText: nil, lastOnlineSecondsAgo: Int.max,
-                    partyID: (p?.partyID).flatMap { $0.isEmpty ? nil : $0 }
+                    partyCurrent: inValorant ? p?.partySize ?? 1 : 1, partyMax: p?.maxPartySize ?? 5,
+                    queueState: inValorant ? stateText : nil,
+                    gameMode: inValorant ? (p?.queueID).flatMap { $0.isEmpty ? nil : RiotPartyModel.queueName($0) } : nil,
+                    map: inValorant ? (p?.mapPath).flatMap { chat.mapName($0) } : nil,
+                    scoreRounds: inValorant && inGame ? "\(p?.allyScore ?? 0) — \(p?.enemyScore ?? 0)" : nil,
+                    tierNumber: inValorant ? p?.tier ?? 0 : 0,
+                    otherPartyMembersCount: inValorant ? max(0, (p?.partySize ?? 1) - 1) : 0,
+                    lastOnlineText: lastOnline.map(Self.lastOnlineText),
+                    lastOnlineSecondsAgo: lastOnline.map { Int(Date().timeIntervalSince($0)) } ?? Int.max,
+                    partyID: inValorant ? (p?.partyID).flatMap { $0.isEmpty ? nil : $0 } : nil,
+                    platform: p == nil ? nil : (inValorant ? "Valorant" : Self.platformName(p?.product ?? ""))
                 )
             }
             return

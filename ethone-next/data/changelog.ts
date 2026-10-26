@@ -61791,4 +61791,61 @@ CHANGELOG_BY_LANG.en.unshift(v1_87_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_87_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_87_1_de);
 
+const v1_88_0_fr: ChangelogEntry = {
+  version: "v1.88.0",
+  date: "2026-10-26",
+  title: "E:VAL : widgets, alerte boutique, récap Discord, line-ups perso et amis comme VALPAW",
+  items: [
+    "Widget E:VAL : rang et RR, passe de combat et boutique du jour (écran d'accueil et écran verrouillé)",
+    "Notification quand un skin de votre liste de souhaits apparaît dans votre boutique",
+    "Récap sur Discord : après chaque partie, le bot ETHONE publie le résultat dans le salon de votre choix (Paramètres d'E:VAL)",
+    "Line-Ups : ajoutez vos propres line-ups, enregistrés sur votre compte, et filtrez-les",
+    "Amis : sections Valorant, League of Legends, Riot Client et Hors ligne comme VALPAW, dernière connexion, plus de faux groupes, et vous apparaissez en ligne",
+  ],
+};
+
+const v1_88_0_en: ChangelogEntry = {
+  version: "v1.88.0",
+  date: "2026-10-26",
+  title: "E:VAL: widgets, store alert, Discord recap, personal line-ups and friends like VALPAW",
+  items: [
+    "E:VAL widget: rank and RR, battle pass and today's store (Home Screen and Lock Screen)",
+    "Notification when a skin from your wishlist shows up in your store",
+    "Discord recap: after each match, the ETHONE bot posts the result in the channel you choose (E:VAL Settings)",
+    "Line-Ups: add your own line-ups, saved to your account, and filter them",
+    "Friends: Valorant, League of Legends, Riot Client and Offline sections like VALPAW, last seen, no more fake parties, and you show as online",
+  ],
+};
+
+const v1_88_0_es: ChangelogEntry = {
+  version: "v1.88.0",
+  date: "2026-10-26",
+  title: "E:VAL: widgets, alerta de tienda, resumen en Discord, line-ups propios y amigos como VALPAW",
+  items: [
+    "Widget E:VAL: rango y RR, pase de batalla y tienda del día (pantalla de inicio y de bloqueo)",
+    "Notificación cuando una skin de tu lista de deseos aparece en tu tienda",
+    "Resumen en Discord: tras cada partida, el bot ETHONE publica el resultado en el canal que elijas (Ajustes de E:VAL)",
+    "Line-Ups: añade tus propios line-ups, guardados en tu cuenta, y fíltralos",
+    "Amigos: secciones Valorant, League of Legends, Riot Client y Desconectados como VALPAW, última conexión, sin grupos falsos, y apareces en línea",
+  ],
+};
+
+const v1_88_0_de: ChangelogEntry = {
+  version: "v1.88.0",
+  date: "2026-10-26",
+  title: "E:VAL: Widgets, Shop-Alarm, Discord-Zusammenfassung, eigene Line-ups und Freunde wie VALPAW",
+  items: [
+    "E:VAL-Widget: Rang und RR, Battlepass und heutiger Shop (Home- und Sperrbildschirm)",
+    "Benachrichtigung, wenn ein Skin deiner Wunschliste in deinem Shop erscheint",
+    "Discord-Zusammenfassung: nach jedem Spiel postet der ETHONE-Bot das Ergebnis im gewählten Kanal (E:VAL-Einstellungen)",
+    "Line-Ups: eigene Line-ups hinzufügen, in deinem Konto gespeichert, und filtern",
+    "Freunde: Abschnitte Valorant, League of Legends, Riot Client und Offline wie VALPAW, zuletzt online, keine falschen Gruppen mehr, und du wirst online angezeigt",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_88_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_88_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_88_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_88_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

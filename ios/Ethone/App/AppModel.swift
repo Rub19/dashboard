@@ -158,6 +158,7 @@ final class AppModel {
         if auth.phase == .launching { await auth.restore() }
         guard auth.phase == .signedIn else { return false }
         await refreshAll()
+        if valorant.riot.isLinked { await valorant.refreshRiot() }
         return !Task.isCancelled
     }
 

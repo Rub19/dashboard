@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.88.0 — 2026-10-26
+
+**E:VAL : widgets, alerte boutique, récap Discord, line-ups perso et amis comme VALPAW**
+
+- Widget E:VAL : rang et RR, passe de combat et boutique du jour (écran d'accueil et écran verrouillé)
+- Notification quand un skin de votre liste de souhaits apparaît dans votre boutique
+- Récap sur Discord : après chaque partie, le bot ETHONE publie le résultat dans le salon de votre choix (Paramètres d'E:VAL)
+- Line-Ups : ajoutez vos propres line-ups, enregistrés sur votre compte, et filtrez-les
+- Amis : sections Valorant, League of Legends, Riot Client et Hors ligne comme VALPAW, dernière connexion, plus de faux groupes, et vous apparaissez en ligne
+
 ## v1.87.1 — 2026-10-26
 
 **E:VAL : file, sélection d'agent et partie dans la Dynamic Island**

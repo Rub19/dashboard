@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.86.3 — 2026-10-26
+
+**E:VAL : MVP de l'équipe et boutons d'actualisation comme VALPAW**
+
+- « MVP de l'équipe » s'affiche en blanc, « MVP du match » reste en jaune, comme VALPAW
+- Les boutons d'actualisation de l'onglet Jeu tournent et vibrent légèrement quand on les touche
+
 ## v1.86.2 — 2026-10-25
 
 **E:VAL : sélection d'agent comme VALPAW**

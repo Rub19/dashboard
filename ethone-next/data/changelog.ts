@@ -61599,4 +61599,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_86_2_en);
 CHANGELOG_BY_LANG.es.unshift(v1_86_2_es);
 CHANGELOG_BY_LANG.de.unshift(v1_86_2_de);
 
+const v1_86_3_fr: ChangelogEntry = {
+  version: "v1.86.3",
+  date: "2026-10-26",
+  title: "E:VAL : MVP de l'équipe et boutons d'actualisation comme VALPAW",
+  items: [
+    "« MVP de l'équipe » s'affiche en blanc, « MVP du match » reste en jaune, comme VALPAW",
+    "Les boutons d'actualisation de l'onglet Jeu tournent et vibrent légèrement quand on les touche",
+  ],
+};
+
+const v1_86_3_en: ChangelogEntry = {
+  version: "v1.86.3",
+  date: "2026-10-26",
+  title: "E:VAL: team MVP and refresh buttons like VALPAW",
+  items: [
+    "\"Team MVP\" now shows in white, \"Match MVP\" stays yellow, like VALPAW",
+    "Refresh buttons in the Game tab spin and give a light haptic when tapped",
+  ],
+};
+
+const v1_86_3_es: ChangelogEntry = {
+  version: "v1.86.3",
+  date: "2026-10-26",
+  title: "E:VAL: MVP del equipo y botones de actualizar como VALPAW",
+  items: [
+    "«MVP del equipo» aparece en blanco y «MVP de la partida» sigue en amarillo, como VALPAW",
+    "Los botones de actualizar de la pestaña Juego giran y vibran levemente al tocarlos",
+  ],
+};
+
+const v1_86_3_de: ChangelogEntry = {
+  version: "v1.86.3",
+  date: "2026-10-26",
+  title: "E:VAL: Team-MVP und Aktualisieren-Schaltflächen wie VALPAW",
+  items: [
+    "„Team-MVP“ wird weiß angezeigt, „Match-MVP“ bleibt gelb, wie bei VALPAW",
+    "Die Aktualisieren-Schaltflächen im Spiel-Tab drehen sich und vibrieren leicht beim Tippen",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_86_3_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_86_3_en);
+CHANGELOG_BY_LANG.es.unshift(v1_86_3_es);
+CHANGELOG_BY_LANG.de.unshift(v1_86_3_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -896,7 +896,7 @@ struct EvalProfileView: View {
                             if let mvp = Self.mvpLabel(match) {
                                 Rectangle().fill(.white.opacity(0.3)).frame(width: 1, height: 14)
                                 Text(mvp)
-                                    .foregroundStyle(Color(hex: 0xF2E24A))
+                                    .foregroundStyle(mvp == "MVP du match" ? Color(hex: 0xF2E24A) : .white)
                                     .padding(.horizontal, 9)
                             }
                         }
@@ -1866,17 +1866,7 @@ struct EvalGameView: View {
     }
 
     private func refreshButton(_ action: @escaping () async -> Void) -> some View {
-        Button {
-            Task { await action() }
-        } label: {
-            Image(systemName: "arrow.triangle.2.circlepath")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(EvalAccent.color)
-                .frame(width: 32, height: 32)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Actualiser")
+        EvalRefreshButton(action: action)
     }
 
     private var sectionDivider: some View {
@@ -4339,5 +4329,37 @@ struct EvalRiotAccountRow: View {
         .confirmationDialog("Déconnecter le compte Riot ?", isPresented: $confirmSignOut, titleVisibility: .visible) {
             Button("Déconnecter", role: .destructive) { Task { await model.valorant.unlinkRiot() } }
         }
+    }
+}
+
+struct EvalRefreshButton: View {
+    let action: () async -> Void
+    @State private var turns = 0.0
+    @State private var running = false
+
+    var body: some View {
+        Button {
+            guard !running else { return }
+            running = true
+            withAnimation(.easeInOut(duration: 0.6)) { turns += 1 }
+            Task {
+                let start = Date()
+                await action()
+                let left = 0.6 - Date().timeIntervalSince(start)
+                if left > 0 { try? await Task.sleep(for: .seconds(left)) }
+                running = false
+            }
+        } label: {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(EvalAccent.color)
+                .rotationEffect(.degrees(turns * 360))
+                .opacity(running ? 0.6 : 1)
+                .frame(width: 32, height: 32)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.impact(weight: .light), trigger: turns)
+        .accessibilityLabel("Actualiser")
     }
 }

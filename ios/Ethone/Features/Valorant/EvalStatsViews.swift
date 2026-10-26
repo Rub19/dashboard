@@ -6,7 +6,7 @@ import AVKit
 // skins et réglages du tracker E:VAL. Tout est calculé à partir des matchs réellement
 // stockés (EvalMatch), du MMR HenrikDev et des catalogues valorant-api.com.
 
-private enum EvalUI {
+enum EvalUI {
     static let card = EvalColors.card
     static let tile = Color(hex: 0x2A2A2E)
     static let secondary = Color(hex: 0x8E8E93)

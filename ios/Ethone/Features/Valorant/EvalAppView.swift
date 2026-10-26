@@ -414,6 +414,13 @@ struct EvalProfileView: View {
                 await store.refreshLiveRank()
             }
         }
+        .task {
+            while !Task.isCancelled {
+                await store.refreshGroup()
+                let active = store.party.party?.isQueueing == true || store.live.match != nil
+                try? await Task.sleep(for: .seconds(active ? 5 : 20))
+            }
+        }
     }
 
     private var topNavHeader: some View {

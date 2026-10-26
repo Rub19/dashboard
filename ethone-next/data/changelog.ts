@@ -61742,4 +61742,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_87_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_87_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_87_0_de);
 
+const v1_87_1_fr: ChangelogEntry = {
+  version: "v1.87.1",
+  date: "2026-10-26",
+  title: "E:VAL : file, sélection d'agent et partie dans la Dynamic Island",
+  items: [
+    "Live Activity sur l'écran verrouillé et dans la Dynamic Island : temps de file, compte à rebours de la sélection d'agent, puis carte, agent et score de la partie",
+    "Elle s'ouvre seule quand vous lancez une file et disparaît quand la partie se termine",
+    "E:VAL vérifie le groupe toutes les 5 secondes en file et en partie, même hors de l'onglet Jeu",
+  ],
+};
+
+const v1_87_1_en: ChangelogEntry = {
+  version: "v1.87.1",
+  date: "2026-10-26",
+  title: "E:VAL: queue, agent select and match in the Dynamic Island",
+  items: [
+    "Live Activity on the Lock Screen and in the Dynamic Island: queue time, agent select countdown, then map, agent and match score",
+    "It starts when you queue and goes away when the match ends",
+    "E:VAL checks your party every 5 seconds while queueing and in a match, even outside the Game tab",
+  ],
+};
+
+const v1_87_1_es: ChangelogEntry = {
+  version: "v1.87.1",
+  date: "2026-10-26",
+  title: "E:VAL: cola, selección de agente y partida en la Dynamic Island",
+  items: [
+    "Live Activity en la pantalla de bloqueo y en la Dynamic Island: tiempo en cola, cuenta atrás de la selección de agente y luego mapa, agente y marcador",
+    "Se abre sola al entrar en cola y desaparece al terminar la partida",
+    "E:VAL revisa el grupo cada 5 segundos en cola y en partida, incluso fuera de la pestaña Juego",
+  ],
+};
+
+const v1_87_1_de: ChangelogEntry = {
+  version: "v1.87.1",
+  date: "2026-10-26",
+  title: "E:VAL: Warteschlange, Agentenauswahl und Spiel in der Dynamic Island",
+  items: [
+    "Live-Aktivität auf dem Sperrbildschirm und in der Dynamic Island: Wartezeit, Countdown der Agentenauswahl, dann Karte, Agent und Spielstand",
+    "Sie startet beim Einreihen und verschwindet am Spielende",
+    "E:VAL prüft die Gruppe in der Warteschlange und im Spiel alle 5 Sekunden, auch außerhalb des Spiel-Tabs",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_87_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_87_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_87_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_87_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

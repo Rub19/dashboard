@@ -755,6 +755,8 @@ final class ValorantStore {
         party.currentSeason = currentAct?.id
         await party.load(riot)
         await refreshLive()
+        if live.match?.isPregame == false { await connectChat() }
+        await ValorantActivityManager.sync(self)
         await contracts.load(riot)
     }
 
@@ -767,6 +769,7 @@ final class ValorantStore {
 
     func mapUUID(forPath path: String) -> String? { mapCatalog?.maps[path.lowercased()]?.last }
     func mapName(forPath path: String) -> String? { mapCatalog?.maps[path.lowercased()]?.first }
+    func agentName(id: String) -> String? { id.isEmpty ? nil : mapCatalog?.agents[id.lowercased()] }
     func actName(id: String) -> String? { acts.values.first { $0.id.lowercased() == id.lowercased() }?.name }
 
     func setPlayerOnline(_ online: Bool) {

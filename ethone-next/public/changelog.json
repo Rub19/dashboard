@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.87.1",
+    "date": "2026-10-26",
+    "title": "E:VAL : file, sélection d'agent et partie dans la Dynamic Island",
+    "items": [
+      "Live Activity sur l'écran verrouillé et dans la Dynamic Island : temps de file, compte à rebours de la sélection d'agent, puis carte, agent et score de la partie",
+      "Elle s'ouvre seule quand vous lancez une file et disparaît quand la partie se termine",
+      "E:VAL vérifie le groupe toutes les 5 secondes en file et en partie, même hors de l'onglet Jeu"
+    ]
+  },
+  {
     "version": "v1.87.0",
     "date": "2026-10-26",
     "title": "E:VAL : Line-Ups",
@@ -621,15 +631,6 @@
       "Se connecter depuis la page de présentation d'Etho mène directement au dashboard du bot.",
       "Un compte créé depuis la page du bot n'ouvre que le dashboard d'Etho ; le bouton « Retour à ETHONE » n'apparaît que pour les comptes ETHONE OS.",
       "Sur discord.ethone.dev, la déconnexion ramène à la connexion du bot."
-    ]
-  },
-  {
-    "version": "v1.75.129",
-    "date": "2026-10-16",
-    "title": "Rôles et membres : membres au clic, textes traduits",
-    "items": [
-      "Rôles et membres : les membres d'un rôle s'affichent à nouveau en cliquant sur le rôle.",
-      "Nombre de membres, rôles au-dessus d'Etho, dates « il y a … » et whitelist sont traduits dans la langue du dashboard."
     ]
   }
 ]

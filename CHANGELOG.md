@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.87.1 — 2026-10-26
+
+**E:VAL : file, sélection d'agent et partie dans la Dynamic Island**
+
+- Live Activity sur l'écran verrouillé et dans la Dynamic Island : temps de file, compte à rebours de la sélection d'agent, puis carte, agent et score de la partie
+- Elle s'ouvre seule quand vous lancez une file et disparaît quand la partie se termine
+- E:VAL vérifie le groupe toutes les 5 secondes en file et en partie, même hors de l'onglet Jeu
+
 ## v1.87.0 — 2026-10-26
 
 **E:VAL : Line-Ups**

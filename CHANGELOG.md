@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.88.4 — 2026-10-26
+
+**E:VAL : mode de jeu en français dans le récap Discord**
+
+- Le récap Discord affiche le mode en français (Vélocité, Compétition…)
+
 ## v1.88.3 — 2026-10-26
 
 **E:VAL : bouton « Publier un test » pour le récap Discord**

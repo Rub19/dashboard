@@ -61991,4 +61991,45 @@ CHANGELOG_BY_LANG.en.unshift(v1_88_3_en);
 CHANGELOG_BY_LANG.es.unshift(v1_88_3_es);
 CHANGELOG_BY_LANG.de.unshift(v1_88_3_de);
 
+const v1_88_4_fr: ChangelogEntry = {
+  version: "v1.88.4",
+  date: "2026-10-26",
+  title: "E:VAL : mode de jeu en français dans le récap Discord",
+  items: [
+    "Le récap Discord affiche le mode en français (Vélocité, Compétition…)",
+  ],
+};
+
+const v1_88_4_en: ChangelogEntry = {
+  version: "v1.88.4",
+  date: "2026-10-26",
+  title: "E:VAL: localized game mode in the Discord recap",
+  items: [
+    "The Discord recap shows the game mode with the app's names (Vélocité, Compétition…)",
+  ],
+};
+
+const v1_88_4_es: ChangelogEntry = {
+  version: "v1.88.4",
+  date: "2026-10-26",
+  title: "E:VAL: modo de juego traducido en el resumen de Discord",
+  items: [
+    "El resumen de Discord muestra el modo con los nombres de la app (Vélocité, Compétition…)",
+  ],
+};
+
+const v1_88_4_de: ChangelogEntry = {
+  version: "v1.88.4",
+  date: "2026-10-26",
+  title: "E:VAL: übersetzter Spielmodus in der Discord-Zusammenfassung",
+  items: [
+    "Die Discord-Zusammenfassung zeigt den Modus mit den Namen der App (Vélocité, Compétition…)",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_88_4_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_88_4_en);
+CHANGELOG_BY_LANG.es.unshift(v1_88_4_es);
+CHANGELOG_BY_LANG.de.unshift(v1_88_4_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

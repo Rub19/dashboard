@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.88.4",
+    "date": "2026-10-26",
+    "title": "E:VAL : mode de jeu en français dans le récap Discord",
+    "items": [
+      "Le récap Discord affiche le mode en français (Vélocité, Compétition…)"
+    ]
+  },
+  {
     "version": "v1.88.3",
     "date": "2026-10-26",
     "title": "E:VAL : bouton « Publier un test » pour le récap Discord",
@@ -619,19 +627,6 @@
       "Les chiffres de Valorant, LoL, TFT, Activité, Analytique, Discord, Interactions, Système et Fichiers sont réunis dans une seule bande au lieu de tuiles séparées.",
       "Météo : barre d'amplitude min/max sur 7 jours ; Soundscape : sélecteur en onglets et préréglage en cours animé ; RSS : dates relatives.",
       "Widgets, Activités en direct et Apple Watch aux couleurs ETHONE ; les widgets suivent le thème choisi dans l'app."
-    ]
-  },
-  {
-    "version": "v1.75.134",
-    "date": "2026-10-16",
-    "title": "App iOS : direction artistique ETHONE sur toute l'app",
-    "items": [
-      "Tous les écrans : listes groupées en un seul bloc translucide, titres de navigation au style ETHONE, entrée animée et accents qui suivent le thème choisi.",
-      "Calendrier : la sélection glisse d'un jour à l'autre et on change de mois d'un balayage.",
-      "Habitudes : titre avec la progression du jour, coches à la couleur du thème et flamme de série animée.",
-      "Brain : nouvelle introduction, bulles qui apparaissent du bas et indicateur de réflexion animé.",
-      "Mail : nom du dossier et nombre de non-lus en titre, dates relatives ; Discord : nouvel écran de connexion ; Apparence : changement de thème en fondu.",
-      "iOS 27 : sélecteurs en onglets natifs pour Modération, Tickets, Liens partagés et Mini-jeux."
     ]
   }
 ]

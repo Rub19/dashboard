@@ -40,7 +40,7 @@
     "opusscript": "^0.1.1",
     "play-dl": "^1.9.7",
     "shoukaku": "^4.3.0",
-    "zod": "^3.24.2"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",

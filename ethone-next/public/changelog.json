@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.90.0",
+    "date": "2026-10-28",
+    "title": "Commande /orbyx",
+    "items": [
+      "Nouvelle commande /orbyx : affiche la collection Orbyx d’un membre (persos, raretés, meilleures cartes) avec un lien vers son profil sur packs.ethone.dev."
+    ]
+  },
+  {
     "version": "v1.89.1",
     "date": "2026-10-26",
     "title": "Etho : choisir quelles parties Valorant publier",
@@ -617,18 +625,6 @@
       "Tickets : statut en point de couleur ; Musique : titre en cours mis en avant avec une onde animée.",
       "Les écrans d'administration Discord retrouvent le grand titre ETHONE.",
       "Fini les « élément(s) », « membre(s) »… : l'app accorde maintenant les mots au nombre."
-    ]
-  },
-  {
-    "version": "v1.75.138",
-    "date": "2026-10-17",
-    "title": "App iOS : suite de la refonte ETHONE",
-    "items": [
-      "Factures : titre avec le montant à payer ce mois-ci et coches animées.",
-      "Flows, Macros, Sécurité et Connexions : icônes en tuiles de couleur, statuts plus sobres, lancement avec retour haptique.",
-      "Nouveautés : titre ETHONE avec la version installée ; double authentification redessinée.",
-      "Plugins, Clip et Bouclier owner : sélecteurs en onglets, états vides natifs, bouclier animé quand il est actif.",
-      "Équipe et Personas : statuts en point de couleur, application d'une persona en fondu."
     ]
   }
 ]

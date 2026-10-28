@@ -62183,4 +62183,45 @@ CHANGELOG_BY_LANG.en.unshift(v1_89_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_89_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_89_1_de);
 
+const v1_90_0_fr: ChangelogEntry = {
+  version: "v1.90.0",
+  date: "2026-10-28",
+  title: "Commande /orbyx",
+  items: [
+    "Nouvelle commande /orbyx : affiche la collection Orbyx d’un membre (persos, raretés, meilleures cartes) avec un lien vers son profil sur packs.ethone.dev.",
+  ],
+};
+
+const v1_90_0_en: ChangelogEntry = {
+  version: "v1.90.0",
+  date: "2026-10-28",
+  title: "/orbyx command",
+  items: [
+    "New /orbyx command: shows a member's Orbyx collection (characters, rarities, best cards) with a link to their profile on packs.ethone.dev.",
+  ],
+};
+
+const v1_90_0_es: ChangelogEntry = {
+  version: "v1.90.0",
+  date: "2026-10-28",
+  title: "Comando /orbyx",
+  items: [
+    "Nuevo comando /orbyx: muestra la colección de Orbyx de un miembro (personajes, rarezas, mejores cartas) con un enlace a su perfil en packs.ethone.dev.",
+  ],
+};
+
+const v1_90_0_de: ChangelogEntry = {
+  version: "v1.90.0",
+  date: "2026-10-28",
+  title: "Befehl /orbyx",
+  items: [
+    "Neuer Befehl /orbyx: zeigt die Orbyx-Sammlung eines Mitglieds (Figuren, Seltenheiten, beste Karten) mit Link zum Profil auf packs.ethone.dev.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_90_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_90_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_90_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_90_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

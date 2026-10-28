@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.90.0 — 2026-10-28
+
+**Commande /orbyx**
+
+- Nouvelle commande /orbyx : affiche la collection Orbyx d’un membre (persos, raretés, meilleures cartes) avec un lien vers son profil sur packs.ethone.dev.
+
 ## v1.89.1 — 2026-10-26
 
 **Etho : choisir quelles parties Valorant publier**

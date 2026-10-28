@@ -1397,5 +1397,15 @@
  "🧪 Test des contacts d’urgence": "🧪 Prueba de los contactos de emergencia",
  "🧪 Test — {label}": "🧪 Prueba — {label}",
  "🧹 Toutes les statistiques de ce serveur ont été effacées.": "🧹 Se borraron todas las estadísticas de este servidor.",
- "🪙 Total des mises": "🪙 Total de apuestas"
+ "🪙 Total des mises": "🪙 Total de apuestas",
+ "Ouvrir Orbyx": "Abrir Orbyx",
+ "{name} n’a pas encore de collection Orbyx. Connecte-toi avec Discord pour ouvrir tes premiers boosters.": "{name} todavía no tiene colección en Orbyx. Inicia sesión con Discord para abrir tus primeros sobres.",
+ "Orbyx ne répond pas pour le moment, réessaie dans un instant.": "Orbyx no responde ahora mismo, inténtalo de nuevo en un momento.",
+ "Collection Orbyx": "Colección de Orbyx",
+ "Persos": "Personajes",
+ "Boosters ouverts": "Sobres abiertos",
+ "Cartes": "Cartas",
+ "Raretés": "Rarezas",
+ "Meilleures cartes": "Mejores cartas",
+ "Aucune carte pour l’instant": "Aún no hay cartas"
 }

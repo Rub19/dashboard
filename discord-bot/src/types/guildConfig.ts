@@ -137,6 +137,7 @@ export const GuildConfigSchema = z.object({
   commandRules: z.record(z.string(), CommandRuleSchema).default({}),
   captcha: CaptchaConfigSchema.default({}),
   supporters: SupportersConfigSchema.default({}),
+  orbyxChannelId: z.string().nullable().default(null),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -194,6 +195,7 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   commandRules: {},
   captcha: CaptchaConfigSchema.parse({}),
   supporters: SupportersConfigSchema.parse({}),
+  orbyxChannelId: null,
 };
 
 /**

@@ -1407,5 +1407,11 @@
  "Cartes": "Cards",
  "Raretés": "Rarities",
  "Meilleures cartes": "Best cards",
- "Aucune carte pour l’instant": "No cards yet"
+ "Aucune carte pour l’instant": "No cards yet",
+ "🌈 Carte Mythique obtenue !": "🌈 Mythic card pulled!",
+ "{user} vient d’obtenir **{card}** · {series}": "{user} just pulled **{card}** · {series}",
+ "Voir la collection": "View collection",
+ "Annonces Mythiques Orbyx désactivées.": "Orbyx Mythic announcements disabled.",
+ "Je ne peux pas écrire dans {channel}. Donne-moi les permissions Envoyer des messages et Intégrer des liens.": "I can't write in {channel}. Give me the Send Messages and Embed Links permissions.",
+ "Les cartes Mythiques obtenues par les membres du serveur seront annoncées dans {channel}.": "Mythic cards pulled by server members will be announced in {channel}."
 }

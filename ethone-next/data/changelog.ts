@@ -62224,4 +62224,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_90_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_90_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_90_0_de);
 
+const v1_91_0_fr: ChangelogEntry = {
+  version: "v1.91.0",
+  date: "2026-10-28",
+  title: "Annonces Mythiques Orbyx",
+  items: [
+    "Nouvelle commande /orbyx-annonces (gestion du serveur) : choisis un salon où Etho annonce les cartes Mythiques obtenues sur packs.ethone.dev par les membres du serveur.",
+    "Désactivée par défaut, sans mention ni message privé ; relance la commande sans salon pour l’arrêter.",
+  ],
+};
+
+const v1_91_0_en: ChangelogEntry = {
+  version: "v1.91.0",
+  date: "2026-10-28",
+  title: "Orbyx Mythic announcements",
+  items: [
+    "New /orbyx-annonces command (Manage Server): pick a channel where Etho announces Mythic cards pulled on packs.ethone.dev by server members.",
+    "Off by default, no pings and no DMs; run the command without a channel to stop it.",
+  ],
+};
+
+const v1_91_0_es: ChangelogEntry = {
+  version: "v1.91.0",
+  date: "2026-10-28",
+  title: "Anuncios Míticos de Orbyx",
+  items: [
+    "Nuevo comando /orbyx-annonces (Gestionar servidor): elige un canal donde Etho anuncia las cartas Míticas obtenidas en packs.ethone.dev por los miembros del servidor.",
+    "Desactivado por defecto, sin menciones ni mensajes privados; ejecuta el comando sin canal para detenerlo.",
+  ],
+};
+
+const v1_91_0_de: ChangelogEntry = {
+  version: "v1.91.0",
+  date: "2026-10-28",
+  title: "Orbyx-Ankündigungen für Mythische Karten",
+  items: [
+    "Neuer Befehl /orbyx-annonces (Server verwalten): Wähle einen Kanal, in dem Etho Mythische Karten ankündigt, die Servermitglieder auf packs.ethone.dev ziehen.",
+    "Standardmäßig aus, ohne Erwähnungen und ohne DMs; führe den Befehl ohne Kanal aus, um ihn zu beenden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_91_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_91_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_91_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_91_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

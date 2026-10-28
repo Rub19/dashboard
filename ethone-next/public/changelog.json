@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.91.0",
+    "date": "2026-10-28",
+    "title": "Annonces Mythiques Orbyx",
+    "items": [
+      "Nouvelle commande /orbyx-annonces (gestion du serveur) : choisis un salon où Etho annonce les cartes Mythiques obtenues sur packs.ethone.dev par les membres du serveur.",
+      "Désactivée par défaut, sans mention ni message privé ; relance la commande sans salon pour l’arrêter."
+    ]
+  },
+  {
     "version": "v1.90.0",
     "date": "2026-10-28",
     "title": "Commande /orbyx",
@@ -613,18 +622,6 @@
       "Performance : retour haptique quand le cache est vidé et mesures animées.",
       "Messages de confirmation raccourcis (« Profil enregistré. », « Ajouté à vos notes. »).",
       "Scratchpad : l'indicateur d'enregistrement change en douceur."
-    ]
-  },
-  {
-    "version": "v1.75.139",
-    "date": "2026-10-17",
-    "title": "App iOS : administration Discord refaite",
-    "items": [
-      "Page d'un serveur Discord : outils regroupés en Modération, Communauté, Divertissement et Avancé, avec des icônes aux couleurs de Discord et le nom du serveur en grand titre.",
-      "Modération : dates relatives, messages quand il n'y a aucune sanction ou aucun banni, changement d'onglet animé.",
-      "Tickets : statut en point de couleur ; Musique : titre en cours mis en avant avec une onde animée.",
-      "Les écrans d'administration Discord retrouvent le grand titre ETHONE.",
-      "Fini les « élément(s) », « membre(s) »… : l'app accorde maintenant les mots au nombre."
     ]
   }
 ]

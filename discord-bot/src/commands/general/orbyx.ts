@@ -1,9 +1,10 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
+import { ORBYX_URL } from '../../services/orbyxFeedService.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { trg } from '../../utils/tr.js';
 
-const ORBYX_URL = 'https://packs.ethone.dev';
 const RARITY_EMOJI: Record<string, string> = { mythique: '🌈', legendaire: '🟧', epique: '🟪', rare: '🟦', commune: '⬜' };
 
 interface OrbyxSummary {
@@ -63,5 +64,35 @@ export const orbyxCommand: Command = {
       );
     if (data.best[0]) embed.setThumbnail(data.best[0].i);
     await ctx.editReply({ embeds: [embed], components: [button] });
+  },
+};
+
+export const orbyxAnnouncementsCommand: Command = {
+  name: 'orbyx-annonces',
+  description: 'Annonce dans un salon les cartes Mythiques Orbyx obtenues par les membres',
+  category: 'Administration',
+  userPermissions: [PermissionFlagsBits.ManageGuild],
+  slashData: new SlashCommandBuilder()
+    .setName('orbyx-annonces')
+    .setDescription('Annonce dans un salon les cartes Mythiques Orbyx obtenues par les membres')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+    .addChannelOption((o) => o.setName('salon').setDescription('Salon des annonces (vide = désactiver)').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setRequired(false)),
+  execute: async (ctx: CommandContext) => {
+    if (!ctx.guild) return;
+    const channel = ctx.interaction?.options.getChannel('salon') ?? ctx.message?.mentions.channels.first() ?? null;
+    const embed = baseEmbed('success', { color: ctx.guildConfig.primaryColor || null }).setTitle('Orbyx');
+    if (!channel) {
+      guildConfigService.updateConfig(ctx.guild.id, { orbyxChannelId: null });
+      await ctx.reply({ embeds: [embed.setDescription(trg(ctx, 'Annonces Mythiques Orbyx désactivées.'))] });
+      return;
+    }
+    const target = ctx.guild.channels.cache.get(channel.id);
+    const me = ctx.guild.members.me;
+    if (!target?.isTextBased() || !me || !target.permissionsFor(me)?.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) {
+      await ctx.reply({ embeds: [baseEmbed('error').setDescription(trg(ctx, 'Je ne peux pas écrire dans {channel}. Donne-moi les permissions Envoyer des messages et Intégrer des liens.', { channel: `<#${channel.id}>` }))] });
+      return;
+    }
+    guildConfigService.updateConfig(ctx.guild.id, { orbyxChannelId: channel.id });
+    await ctx.reply({ embeds: [embed.setDescription(trg(ctx, 'Les cartes Mythiques obtenues par les membres du serveur seront annoncées dans {channel}.', { channel: `<#${channel.id}>` }))] });
   },
 };

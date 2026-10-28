@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.91.0 — 2026-10-28
+
+**Annonces Mythiques Orbyx**
+
+- Nouvelle commande /orbyx-annonces (gestion du serveur) : choisis un salon où Etho annonce les cartes Mythiques obtenues sur packs.ethone.dev par les membres du serveur.
+- Désactivée par défaut, sans mention ni message privé ; relance la commande sans salon pour l’arrêter.
+
 ## v1.90.0 — 2026-10-28
 
 **Commande /orbyx**

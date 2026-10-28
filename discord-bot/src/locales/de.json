@@ -1407,5 +1407,11 @@
  "Cartes": "Karten",
  "Raretés": "Seltenheiten",
  "Meilleures cartes": "Beste Karten",
- "Aucune carte pour l’instant": "Noch keine Karten"
+ "Aucune carte pour l’instant": "Noch keine Karten",
+ "🌈 Carte Mythique obtenue !": "🌈 Mythische Karte gezogen!",
+ "{user} vient d’obtenir **{card}** · {series}": "{user} hat gerade **{card}** gezogen · {series}",
+ "Voir la collection": "Sammlung ansehen",
+ "Annonces Mythiques Orbyx désactivées.": "Orbyx-Mythisch-Ankündigungen deaktiviert.",
+ "Je ne peux pas écrire dans {channel}. Donne-moi les permissions Envoyer des messages et Intégrer des liens.": "Ich kann in {channel} nicht schreiben. Gib mir die Rechte Nachrichten senden und Links einbetten.",
+ "Les cartes Mythiques obtenues par les membres du serveur seront annoncées dans {channel}.": "Mythische Karten von Servermitgliedern werden in {channel} angekündigt."
 }

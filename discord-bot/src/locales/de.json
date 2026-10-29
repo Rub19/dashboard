@@ -1398,10 +1398,10 @@
  "🧪 Test — {label}": "🧪 Test — {label}",
  "🧹 Toutes les statistiques de ce serveur ont été effacées.": "🧹 Alle Statistiken dieses Servers wurden gelöscht.",
  "🪙 Total des mises": "🪙 Einsätze insgesamt",
- "Ouvrir Orbyx": "Orbyx öffnen",
- "{name} n’a pas encore de collection Orbyx. Connecte-toi avec Discord pour ouvrir tes premiers boosters.": "{name} hat noch keine Orbyx-Sammlung. Melde dich mit Discord an, um deine ersten Booster zu öffnen.",
- "Orbyx ne répond pas pour le moment, réessaie dans un instant.": "Orbyx antwortet gerade nicht, versuch es gleich noch einmal.",
- "Collection Orbyx": "Orbyx-Sammlung",
+ "Ouvrir Pullverse": "Pullverse öffnen",
+ "{name} n’a pas encore de collection Pullverse. Connecte-toi avec Discord pour ouvrir tes premiers boosters.": "{name} hat noch keine Pullverse-Sammlung. Melde dich mit Discord an, um deine ersten Booster zu öffnen.",
+ "Pullverse ne répond pas pour le moment, réessaie dans un instant.": "Pullverse antwortet gerade nicht, versuch es gleich noch einmal.",
+ "Collection Pullverse": "Pullverse-Sammlung",
  "Persos": "Figuren",
  "Boosters ouverts": "Geöffnete Booster",
  "Cartes": "Karten",
@@ -1411,7 +1411,7 @@
  "🌈 Carte Mythique obtenue !": "🌈 Mythische Karte gezogen!",
  "{user} vient d’obtenir **{card}** · {series}": "{user} hat gerade **{card}** gezogen · {series}",
  "Voir la collection": "Sammlung ansehen",
- "Annonces Mythiques Orbyx désactivées.": "Orbyx-Mythisch-Ankündigungen deaktiviert.",
+ "Annonces Mythiques Pullverse désactivées.": "Pullverse-Mythisch-Ankündigungen deaktiviert.",
  "Je ne peux pas écrire dans {channel}. Donne-moi les permissions Envoyer des messages et Intégrer des liens.": "Ich kann in {channel} nicht schreiben. Gib mir die Rechte Nachrichten senden und Links einbetten.",
  "Les cartes Mythiques obtenues par les membres du serveur seront annoncées dans {channel}.": "Mythische Karten von Servermitgliedern werden in {channel} angekündigt."
 }

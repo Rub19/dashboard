@@ -1,7 +1,7 @@
 import { Collection, REST, Routes } from 'discord.js';
 import { helpCommand } from '../commands/general/help.js';
 import { pingCommand } from '../commands/general/ping.js';
-import { orbyxCommand, orbyxAnnouncementsCommand } from '../commands/general/orbyx.js';
+import { pullverseCommand, pullverseAnnouncementsCommand } from '../commands/general/pullverse.js';
 import { botCommand } from '../commands/general/bot.js';
 import { ticketCommand } from '../commands/general/ticket.js';
 import { askCommand } from '../commands/general/ask.js';
@@ -146,8 +146,8 @@ class CommandRegistry {
     // Utilitaires
     this.register(botCommand);
     this.register(pingCommand);
-    this.register(orbyxCommand);
-    this.register(orbyxAnnouncementsCommand);
+    this.register(pullverseCommand);
+    this.register(pullverseAnnouncementsCommand);
     this.register(prefixCommand);
     this.register(helpCommand);
     this.register(settingsCommand);

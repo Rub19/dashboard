@@ -1398,10 +1398,10 @@
  "🧪 Test — {label}": "🧪 Test — {label}",
  "🧹 Toutes les statistiques de ce serveur ont été effacées.": "🧹 All statistics for this server were cleared.",
  "🪙 Total des mises": "🪙 Total bets",
- "Ouvrir Orbyx": "Open Orbyx",
- "{name} n’a pas encore de collection Orbyx. Connecte-toi avec Discord pour ouvrir tes premiers boosters.": "{name} doesn't have an Orbyx collection yet. Log in with Discord to open your first boosters.",
- "Orbyx ne répond pas pour le moment, réessaie dans un instant.": "Orbyx isn't responding right now, try again in a moment.",
- "Collection Orbyx": "Orbyx collection",
+ "Ouvrir Pullverse": "Open Pullverse",
+ "{name} n’a pas encore de collection Pullverse. Connecte-toi avec Discord pour ouvrir tes premiers boosters.": "{name} doesn't have an Pullverse collection yet. Log in with Discord to open your first boosters.",
+ "Pullverse ne répond pas pour le moment, réessaie dans un instant.": "Pullverse isn't responding right now, try again in a moment.",
+ "Collection Pullverse": "Pullverse collection",
  "Persos": "Characters",
  "Boosters ouverts": "Boosters opened",
  "Cartes": "Cards",
@@ -1411,7 +1411,7 @@
  "🌈 Carte Mythique obtenue !": "🌈 Mythic card pulled!",
  "{user} vient d’obtenir **{card}** · {series}": "{user} just pulled **{card}** · {series}",
  "Voir la collection": "View collection",
- "Annonces Mythiques Orbyx désactivées.": "Orbyx Mythic announcements disabled.",
+ "Annonces Mythiques Pullverse désactivées.": "Pullverse Mythic announcements disabled.",
  "Je ne peux pas écrire dans {channel}. Donne-moi les permissions Envoyer des messages et Intégrer des liens.": "I can't write in {channel}. Give me the Send Messages and Embed Links permissions.",
  "Les cartes Mythiques obtenues par les membres du serveur seront annoncées dans {channel}.": "Mythic cards pulled by server members will be announced in {channel}."
 }

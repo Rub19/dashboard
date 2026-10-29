@@ -62269,4 +62269,49 @@ CHANGELOG_BY_LANG.en.unshift(v1_91_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_91_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_91_0_de);
 
+const v1_92_0_fr: ChangelogEntry = {
+  version: "v1.92.0",
+  date: "2026-10-29",
+  title: "Orbyx devient Pullverse",
+  items: [
+    "Le jeu de cartes packs.ethone.dev s’appelle désormais Pullverse : nouvelles commandes /pullverse et /pullverse-annonces (l’ancien préfixe !orbyx marche toujours).",
+    "Les salons d’annonces Mythiques déjà configurés sont conservés.",
+  ],
+};
+
+const v1_92_0_en: ChangelogEntry = {
+  version: "v1.92.0",
+  date: "2026-10-29",
+  title: "Orbyx is now Pullverse",
+  items: [
+    "The packs.ethone.dev card game is now called Pullverse: new /pullverse and /pullverse-annonces commands (the old !orbyx prefix still works).",
+    "Mythic announcement channels already set up are kept.",
+  ],
+};
+
+const v1_92_0_es: ChangelogEntry = {
+  version: "v1.92.0",
+  date: "2026-10-29",
+  title: "Orbyx ahora es Pullverse",
+  items: [
+    "El juego de cartas packs.ethone.dev ahora se llama Pullverse: nuevos comandos /pullverse y /pullverse-annonces (el antiguo prefijo !orbyx sigue funcionando).",
+    "Se conservan los canales de anuncios Míticos ya configurados.",
+  ],
+};
+
+const v1_92_0_de: ChangelogEntry = {
+  version: "v1.92.0",
+  date: "2026-10-29",
+  title: "Orbyx heißt jetzt Pullverse",
+  items: [
+    "Das Kartenspiel packs.ethone.dev heißt jetzt Pullverse: neue Befehle /pullverse und /pullverse-annonces (der alte Präfix !orbyx funktioniert weiterhin).",
+    "Bereits eingerichtete Kanäle für Mythisch-Ankündigungen bleiben erhalten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_92_0_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_92_0_en);
+CHANGELOG_BY_LANG.es.unshift(v1_92_0_es);
+CHANGELOG_BY_LANG.de.unshift(v1_92_0_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

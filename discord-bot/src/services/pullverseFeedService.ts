@@ -3,7 +3,7 @@ import { guildConfigService } from './guildConfigService.js';
 import { baseEmbed } from '../utils/embeds.js';
 import { trg } from '../utils/tr.js';
 
-export const ORBYX_URL = 'https://packs.ethone.dev';
+export const PULLVERSE_URL = 'https://packs.ethone.dev';
 
 interface MythicPull {
   at: number;
@@ -11,7 +11,7 @@ interface MythicPull {
   card: { n: string; s: string; i: string };
 }
 
-export function startOrbyxFeed(client: Client): void {
+export function startPullverseFeed(client: Client): void {
   let since = Date.now();
   const tick = async () => {
     const guilds = [...client.guilds.cache.values()].filter((g) => guildConfigService.getConfig(g.id).orbyxChannelId);
@@ -19,7 +19,7 @@ export function startOrbyxFeed(client: Client): void {
       since = Date.now();
       return;
     }
-    const res = await fetch(`${ORBYX_URL}/api/feed/mythics?since=${since}`, { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(`${PULLVERSE_URL}/api/feed/mythics?since=${since}`, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return;
     const pulls = (await res.json()) as MythicPull[];
     for (const pull of pulls) {
@@ -36,7 +36,7 @@ export function startOrbyxFeed(client: Client): void {
           .setDescription(trg(guild, '{user} vient d’obtenir **{card}** · {series}', { user: `<@${member.id}>`, card: pull.card.n, series: pull.card.s }))
           .setImage(pull.card.i);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(`${ORBYX_URL}/#joueur/${member.id}`).setLabel(trg(guild, 'Voir la collection'))
+          new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(`${PULLVERSE_URL}/#joueur/${member.id}`).setLabel(trg(guild, 'Voir la collection'))
         );
         await channel.send({ embeds: [embed], components: [row], allowedMentions: { parse: [] } }).catch(() => {});
       }

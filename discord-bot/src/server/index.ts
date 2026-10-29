@@ -74,7 +74,7 @@ import { createConsoleRouter } from './routes/consoleRoutes.js';
 import { createProtectionRouter } from './routes/protectionRoutes.js';
 import { startOffsiteBackups } from '../services/offsiteBackupService.js';
 import { startWeeklySecurityReports } from '../services/weeklySecurityReportService.js';
-import { startOrbyxFeed } from '../services/orbyxFeedService.js';
+import { startPullverseFeed } from '../services/pullverseFeedService.js';
 import { autoScanScheduler } from '../modules/server/services/securityScanService.js';
 import { gamesService } from '../modules/games/services/gamesService.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
@@ -562,7 +562,7 @@ export function startWebServer(client: Client): http.Server {
   startBotTelemetrySync(client);
   startOffsiteBackups();
   startWeeklySecurityReports(client);
-  startOrbyxFeed(client);
+  startPullverseFeed(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

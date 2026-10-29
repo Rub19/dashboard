@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.92.0 — 2026-10-29
+
+**Orbyx devient Pullverse**
+
+- Le jeu de cartes packs.ethone.dev s’appelle désormais Pullverse : nouvelles commandes /pullverse et /pullverse-annonces (l’ancien préfixe !orbyx marche toujours).
+- Les salons d’annonces Mythiques déjà configurés sont conservés.
+
 ## v1.91.0 — 2026-10-28
 
 **Annonces Mythiques Orbyx**

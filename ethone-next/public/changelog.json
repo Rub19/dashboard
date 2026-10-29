@@ -1,5 +1,14 @@
 [
   {
+    "version": "v1.92.0",
+    "date": "2026-10-29",
+    "title": "Orbyx devient Pullverse",
+    "items": [
+      "Le jeu de cartes packs.ethone.dev s’appelle désormais Pullverse : nouvelles commandes /pullverse et /pullverse-annonces (l’ancien préfixe !orbyx marche toujours).",
+      "Les salons d’annonces Mythiques déjà configurés sont conservés."
+    ]
+  },
+  {
     "version": "v1.91.0",
     "date": "2026-10-28",
     "title": "Annonces Mythiques Orbyx",
@@ -611,17 +620,6 @@
     "items": [
       "« Tous les modules » : icônes en tuiles aux couleurs de Discord et grand titre ETHONE, aussi sur chaque écran de module.",
       "Listes des modules : dates relatives et message clair quand une liste est vide ou qu'un filtre ne trouve rien."
-    ]
-  },
-  {
-    "version": "v1.75.140",
-    "date": "2026-10-17",
-    "title": "App iOS : profil et finitions",
-    "items": [
-      "Profil : en-tête agrandi et bouton « Enregistrer » dans la barre du haut, avec un retour haptique de réussite.",
-      "Performance : retour haptique quand le cache est vidé et mesures animées.",
-      "Messages de confirmation raccourcis (« Profil enregistré. », « Ajouté à vos notes. »).",
-      "Scratchpad : l'indicateur d'enregistrement change en douceur."
     ]
   }
 ]

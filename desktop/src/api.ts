@@ -107,12 +107,12 @@ export const apiData = async <T,>(path: string, method: Method = "GET", body?: u
 };
 export const restCall = <T,>(path: string, method: Method = "GET", body?: unknown, prefer?: string) => invoke<T>("rest_call", { method, path, body: body ?? null, prefer: prefer ?? null });
 export const catalogGet = <T,>(path: string) => cached<T>(`catalog:${path}`, 24 * 60 * 60 * 1000, () => invoke<{ data: T }>("catalog_get", { path }).then(({ data }) => data), true);
-export interface RiotFriend { id: string; name: string; tag: string; online: boolean; product: string; state: string; queue: string; tier: number; partySize: number; card: string }
-export const riotFriends = () => invoke<RiotFriend[]>("riot_friends");
+export type { FriendRow as RiotFriend } from "./friends";
+export const riotFriends = () => invoke<import("./friends").FriendRow[]>("riot_friends");
 export const lineupsGet = <T,>() => invoke<T>("lineups_get");
-export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz" | "prefs"; method?: Method; body?: unknown } = {}) => {
+export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz" | "prefs"; method?: Method; body?: unknown; fresh?: boolean } = {}) => {
   const send = () => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
-  if ((options.host ?? "pd") !== "pd") return send();
+  if ((options.host ?? "pd") !== "pd" || options.fresh) return send();
   if ((options.method ?? "GET") === "GET") return cached<T>(`riot:${path}`, 5 * 60 * 1000, send);
   clearCache("riot:");
   return send();

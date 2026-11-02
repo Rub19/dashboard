@@ -1,6 +1,8 @@
-import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users } from "lucide-react";
+import { FormEvent, useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, ChevronRight, Minus, Moon, RefreshCw } from "lucide-react";
 import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
+import { readCache, writeCache } from "./cache";
+import { boardOf, cardImage, lastSeenText, presenceKind } from "./friends";
 import { flattenEntries, Json } from "./generic";
 import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
@@ -46,8 +48,8 @@ function Leaderboard() {
   );
 }
 
-function Players() {
-  const [value, setValue] = useState("");
+function Players({ target }: { target?: string }) {
+  const [value, setValue] = useState(target ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [found, setFound] = useState<{ account: EvalAccount; matches: EvalMatch[] } | null>(null);
@@ -74,6 +76,10 @@ function Players() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    if (target) void search(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     void search(value);
@@ -443,26 +449,190 @@ function DiscordRecap({ account, matches }: { account: EvalAccount | null; match
   );
 }
 
-const STATE_LABELS: Record<string, () => string> = { MENUS: () => tr("Dans les menus", "In menus"), PREGAME: () => tr("Sélection d'agent", "Agent select"), INGAME: () => tr("En partie", "In game") };
+const CARD_KEY = "ethone-friend-cards";
+const TRIED_KEY = "ethone-friend-cards-tried";
+const WEEK = 7 * 24 * 60 * 60 * 1000;
 
-function Friends({ linked }: { linked: boolean }) {
-  const state = useLoad(async () => (linked ? riotFriends() : []), [linked]);
-  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
-  const online = (state.data ?? []).filter((friend) => friend.online);
-  const offline = (state.data ?? []).filter((friend) => !friend.online);
-  const row = (friend: RiotFriend) => (
-    <li key={friend.id} className={friend.online ? "online" : ""}>
-      <span className="friend-dot" />
-      <span className="friend-name"><b>{friend.name}<small>#{friend.tag}</small></b><small>{friend.online ? (friend.product === "valorant" ? (STATE_LABELS[friend.state]?.() ?? "VALORANT") + (friend.queue ? `, ${modeName(friend.queue)}` : "") + (friend.partySize > 1 ? tr(`, groupe de ${friend.partySize}`, `, party of ${friend.partySize}`) : "") : friend.product ? friend.product.replace(/_/g, " ") : tr("En ligne", "Online")) : tr("Hors ligne", "Offline")}</small></span>
-      {friend.tier > 0 && <img src={tierIcon(friend.tier)} alt={rankName(friend.tier)} title={rankName(friend.tier)} />}
+function useFriendCards(friends: RiotFriend[]) {
+  const [cards, setCards] = useState<Record<string, string>>(() => readJson<Record<string, string>>(CARD_KEY) ?? {});
+  const queue = useRef<string[]>([]);
+  const running = useRef(false);
+  const remember = (id: string, card: string) => setCards((current) => {
+    const next = { ...current, [id]: card };
+    write(CARD_KEY, JSON.stringify(next));
+    return next;
+  });
+  useEffect(() => {
+    for (const friend of friends) if (friend.card && cards[friend.id] !== friend.card) remember(friend.id, friend.card);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [friends]);
+  const work = async () => {
+    if (running.current) return;
+    running.current = true;
+    while (queue.current.length > 0) {
+      const id = queue.current.shift() as string;
+      const history = await riotCall<{ History?: { MatchID: string }[] }>(`/match-history/v1/history/${id}?startIndex=0&endIndex=1`, { fresh: true }).catch(() => null);
+      const match = history?.History?.[0]?.MatchID;
+      const details = match ? await riotCall<{ players?: { subject: string; playerCard?: string }[] }>(`/match-details/v1/matches/${match}`).catch(() => null) : null;
+      const card = details?.players?.find((player) => player.subject.toLowerCase() === id)?.playerCard;
+      if (card) remember(id, card);
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+    running.current = false;
+  };
+  const request = (id: string) => {
+    if (cards[id] || queue.current.includes(id)) return;
+    const tried = readJson<Record<string, number>>(TRIED_KEY) ?? {};
+    if (Date.now() - (tried[id] ?? 0) < WEEK) return;
+    write(TRIED_KEY, JSON.stringify({ ...tried, [id]: Date.now() }));
+    queue.current.push(id);
+    void work();
+  };
+  return { cards, request };
+}
+
+function FriendAvatar({ friend, image, onVisible }: { friend: RiotFriend; image: string; onVisible: () => void }) {
+  const box = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (image || !box.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) onVisible();
+    });
+    observer.observe(box.current);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [image]);
+  const kind = presenceKind(friend);
+  return (
+    <span ref={box} className="friend-avatar">
+      {image ? <img src={image} alt="" loading="lazy" /> : <i>{friend.name.charAt(0).toUpperCase()}</i>}
+      <span className={`friend-status ${kind}`} title={{ online: tr("En ligne", "Online"), away: tr("Inactif", "Away"), busy: tr("Occupé", "Busy"), offline: tr("Hors ligne", "Offline") }[kind]}>{kind === "busy" ? <Minus size={10} strokeWidth={4} /> : kind === "away" ? <Moon size={10} strokeWidth={3} /> : null}</span>
+    </span>
+  );
+}
+
+function friendLines(friend: RiotFriend, maps: Record<string, string>): [string, string] {
+  if (!friend.online) return [lastSeenText(friend.lastOnline), ""];
+  if (friend.product !== "valorant") {
+    if (friend.playing) return [tr("En jeu", "In game"), ""];
+    if (friend.show === "dnd") return [tr("Occupé", "Busy"), ""];
+    return [friend.idle || friend.show === "away" ? tr("Inactif", "Away") : tr("En ligne", "Online"), ""];
+  }
+  const mode = friend.queue ? modeName(friend.queue) : "";
+  const place = [mode, maps[friend.map.toLowerCase()]].filter(Boolean).join(" • ");
+  if (friend.state === "INGAME") return [tr(`En jeu | ${friend.allyScore} — ${friend.enemyScore}`, `In game | ${friend.allyScore} — ${friend.enemyScore}`), place];
+  if (friend.state === "PREGAME") return [tr("Sélection d'agent", "Agent select"), place];
+  if (friend.partyState === "MATCHMAKING") return [tr("Recherche de partie", "In queue"), mode];
+  if (friend.idle) return [tr("Inactif", "Away"), ""];
+  return [tr("Dans les menus", "In menus"), ""];
+}
+
+function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend: RiotFriend; image: string; title: string; maps: Record<string, string>; onVisible: () => void; onOpen: () => void }) {
+  const [status, place] = friendLines(friend, maps);
+  return (
+    <li>
+      <button type="button" className="friend-row" onClick={onOpen}>
+        <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
+        <span className="friend-text">
+          <b>{friend.name}<small>#{friend.tag}</small></b>
+          {title && <small className="friend-title">{title}</small>}
+          <small className={friend.online && friend.product === "valorant" ? "friend-state live" : "friend-state"}>{status}</small>
+          {place && <small className="friend-state">{place}</small>}
+        </span>
+        {friend.tier > 0 && <img className="friend-rank" src={tierIcon(friend.tier)} alt={rankName(friend.tier)} title={rankName(friend.tier)} />}
+        <ChevronRight size={16} className="friend-chevron" />
+      </button>
     </li>
   );
+}
+
+function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void }) {
+  const [friends, setFriends] = useState<RiotFriend[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const root = useRef<HTMLDivElement>(null);
+  const { cards, request } = useFriendCards(friends ?? []);
+  const reload = useCallback(async () => {
+    setBusy(true);
+    try {
+      const list = await riotFriends();
+      setFriends(list);
+      writeCache("riot:friends", list);
+      setError(null);
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+  useEffect(() => {
+    if (!linked) return;
+    void readCache<RiotFriend[]>("riot:friends").then((saved) => saved && setFriends((current) => current ?? saved.value));
+    void reload();
+    const timer = setInterval(() => {
+      if (root.current?.offsetParent && !document.hidden) void reload();
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [linked, reload]);
+  const extras = useLoad(async () => {
+    const [maps, titles, loadout, player] = await Promise.all([
+      catalogGet<{ mapUrl?: string; displayName: string }[]>(`/maps?${language}`).catch(() => []),
+      catalogGet<{ uuid: string; titleText?: string | null }[]>(`/playertitles?${language}`).catch(() => []),
+      linked ? riotCall<{ Identity?: { PlayerCardID?: string; PlayerTitleID?: string } }>("/personalization/v2/players/{puuid}/playerloadout").catch(() => null) : null,
+      linked ? riotCall<{ CurrentPartyID?: string }>("/parties/v1/players/{puuid}", { host: "glz" }).catch(() => null) : null,
+    ]);
+    const party = player?.CurrentPartyID ? await riotCall<{ Members?: unknown[]; MaxPartySize?: number }>(`/parties/v1/parties/${player.CurrentPartyID}`, { host: "glz" }).catch(() => null) : null;
+    return {
+      maps: Object.fromEntries(maps.flatMap((map) => (map.mapUrl ? [[map.mapUrl.toLowerCase(), map.displayName]] : []))) as Record<string, string>,
+      titles: Object.fromEntries(titles.flatMap((item) => (item.titleText ? [[item.uuid.toLowerCase(), item.titleText]] : []))) as Record<string, string>,
+      card: loadout?.Identity?.PlayerCardID ?? "",
+      title: loadout?.Identity?.PlayerTitleID ?? "",
+      inGame: Boolean(player?.CurrentPartyID),
+      size: party?.Members?.length ?? 1,
+      max: party?.MaxPartySize ?? 5,
+    };
+  }, [linked]);
+  const board = useMemo(() => boardOf(friends ?? [], query), [friends, query]);
+  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} text={tr("Connecte ton compte Riot pour voir tes amis en direct.", "Link your Riot account to see your friends live.")} />;
+  const maps = extras.data?.maps ?? {};
+  const titles = extras.data?.titles ?? {};
+  const item = (friend: RiotFriend) => (
+    <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friend.icon && !cards[friend.id] ? friend.icon : cardImage(cards[friend.id] ?? friend.card)} onVisible={() => request(friend.id)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
+  );
+  const section = (heading: string, rows: RiotFriend[]) => rows.length > 0 && (
+    <section key={heading} className={`friend-section ${rows.length > 4 ? "wide" : ""}`}><h3>{heading}</h3><ul className="friend-card">{rows.map(item)}</ul></section>
+  );
+  const total = friends?.length ?? 0;
+  const online = friends?.filter((friend) => friend.online).length ?? 0;
   return (
-    <>
-      <div className="eval-section-head"><h2>{tr("Amis", "Friends")}{state.data ? ` (${online.length}/${state.data.length})` : ""}</h2><Button disabled={state.loading} onClick={state.reload}>{tr("Actualiser", "Refresh")}</Button></div>
+    <div ref={root} className="friends">
+      <div className="eval-section-head"><h2>{tr("Amis", "Friends")}{friends ? <small className="friend-count">{tr(`${online} en ligne sur ${total}`, `${online} online of ${total}`)}</small> : null}</h2><Button disabled={busy} onClick={() => void reload()}><RefreshCw size={14} className={busy ? "spin" : ""} />{tr("Actualiser", "Refresh")}</Button></div>
+      <label className="friend-search"><Search size={16} /><input value={query} placeholder={tr("Rechercher des amis", "Search friends")} aria-label={tr("Rechercher des amis", "Search friends")} onChange={(event) => setQuery(event.target.value)} /></label>
+      {error && <ErrorBox message={error} onRetry={() => void reload()} />}
+      {!friends && !error ? <Skeletons count={6} height={64} /> : (
+        <div className="friend-sections">
+          {account && !query && (
+            <section className="friend-section"><h3>{tr(`Votre groupe — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`, `Your party — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`)}</h3>
+              <ul className="friend-card"><li><div className="friend-row self">
+                <span className="friend-avatar">{extras.data?.card ? <img src={cardImage(extras.data.card)} alt="" /> : <i>{account.name.charAt(0).toUpperCase()}</i>}<span className={`friend-status ${extras.data?.inGame ? "online" : "offline"}`} /></span>
+                <span className="friend-text"><b>{account.name}<small>#{account.tag}</small></b>{titles[(extras.data?.title ?? "").toLowerCase()] && <small className="friend-title">{titles[(extras.data?.title ?? "").toLowerCase()]}</small>}<small className="friend-state">{extras.data?.inGame ? tr("Dans VALORANT", "In VALORANT") : tr("VALORANT fermé", "VALORANT closed")}</small></span>
+              </div></li></ul>
+            </section>
+          )}
+          {board.parties.map((party) => (
+            <section key={party.id} className="friend-section"><h3>{tr(`Groupe — ${party.size}/${party.max}`, `Party — ${party.size}/${party.max}`)}</h3>
+              <ul className="friend-card">{party.members.map(item)}{party.others > 0 && <li className="friend-others">{tr(`+ ${party.others} autre${party.others > 1 ? "s" : ""}`, `+ ${party.others} other${party.others > 1 ? "s" : ""}`)}</li>}</ul>
+            </section>
+          ))}
+          {section(`VALORANT — ${board.valorant.length}`, board.valorant)}
+          {board.platforms.map((group) => section(`${group.name} — ${group.rows.length}`, group.rows))}
+          {section(tr(`Hors ligne — ${board.offline.length}`, `Offline — ${board.offline.length}`), board.offline)}
+          {query && board.parties.length + board.valorant.length + board.platforms.length + board.offline.length === 0 && <Empty title={tr("Aucun ami trouvé", "No friend found")} text={tr("Vérifie le pseudo ou le tag.", "Check the name or tag.")} />}
+        </div>
+      )}
       <p className="eval-soft">{tr("Tu restes invisible pour tes amis pendant cette lecture.", "You stay invisible to your friends during this check.")}</p>
-      <Status state={state} height={48}>{() => <ul className="friend-list">{online.map(row)}{offline.map(row)}</ul>}</Status>
-    </>
+    </div>
   );
 }
 
@@ -481,6 +651,7 @@ function Seasons({ account }: { account: EvalAccount | null }) {
 
 export default function EvalHub({ account, linked, matches }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[] }) {
   const [section, setSection] = useState<Section>("friends");
+  const [target, setTarget] = useState<string>();
   const items = [
     { id: "friends", label: tr("Amis", "Friends"), icon: <UserPlus size={16} />, group: tr("Joueurs", "Players") },
     { id: "leaderboard", label: tr("Classement", "Leaderboard"), icon: <Trophy size={16} />, group: tr("Joueurs", "Players") },
@@ -501,9 +672,9 @@ export default function EvalHub({ account, linked, matches }: { account: EvalAcc
     <div className="kit-split">
       <SideNav items={items} value={section} onChange={setSection} id="eval-hub" label={tr("Sections du Hub", "Hub sections")} />
       <div className="kit-split-body">
-        {section === "friends" && <Friends linked={linked} />}
+        {section === "friends" && <Friends linked={linked} account={account} onOpen={(handle) => { setTarget(handle); setSection("players"); }} />}
         {section === "leaderboard" && <Leaderboard />}
-        {section === "players" && <Players />}
+        {section === "players" && <Players key={target} target={target} />}
         {section === "maps" && <Maps />}
         {section === "agents" && <Agents />}
         {section === "weapons" && <Weapons />}

@@ -35,3 +35,13 @@ test("une date serveur traverse le champ local sans changer d'instant", () => {
   assert.match(local, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
   assert.equal(new Date(dateTimeInputToIso(local)).getTime(), new Date(source).getTime());
 });
+
+test("the month grid starts on Monday and fills whole weeks", async () => {
+  const { monthCells, dayKey } = await import("./productivity.ts");
+  const november = monthCells(new Date(2026, 10, 15));
+  assert.equal(november.length % 7, 0);
+  assert.equal(november[0].date.getDay(), 1);
+  assert.equal(november[0].key, "2026-10-26");
+  assert.equal(november.filter((cell) => cell.inMonth).length, 30);
+  assert.equal(dayKey(new Date(2026, 0, 5)), "2026-01-05");
+});

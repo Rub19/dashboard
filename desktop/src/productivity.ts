@@ -1,3 +1,17 @@
+export function monthCells(month: Date): { key: string; date: Date; inMonth: boolean }[] {
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const start = new Date(first);
+  start.setDate(1 - ((first.getDay() + 6) % 7));
+  const end = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+  const count = Math.ceil(((first.getDay() + 6) % 7 + end.getDate()) / 7) * 7;
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
+    return { key: dayKey(date), date, inMonth: date.getMonth() === month.getMonth() };
+  });
+}
+
+export const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
 export function itemPreview(body: string): string {
   return body
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")

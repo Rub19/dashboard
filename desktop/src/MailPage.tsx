@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2 } from "lucide-react";
+import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
@@ -82,6 +82,12 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
   }, [folder, search]);
   const read = (message: Message) => {
     setOpen(message);
+    if (!message.body_text && !message.body_html && message.thread_id) {
+      void apiCall<Json>(`api/mail/thread?thread_id=${encodeURIComponent(message.thread_id)}`).then((thread) => {
+        const full = (firstArray(thread) as unknown as Message[]).find((item) => item.id === message.id);
+        if (full) setOpen((current) => (current?.id === message.id ? { ...current, ...full } : current));
+      }).catch(() => null);
+    }
     if (!message.is_read) void apiData("api/mail/read", "POST", { id: message.id, is_read: true }).then(state.reload).catch(() => null);
   };
   const act = async (run: () => Promise<unknown>) => {
@@ -102,10 +108,12 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       </PageHead>
       <form className="discord-search files-search" onSubmit={(event) => { event.preventDefault(); setSearch(query.trim()); }}><Search size={14} /><input value={query} placeholder={tr("Chercher dans les mails, puis Entrée", "Search mail, then Enter")} aria-label={tr("Chercher dans les mails", "Search mail")} onChange={(event) => { setQuery(event.target.value); if (!event.target.value) setSearch(""); }} /></form>
       {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}
+      <div className={`mail-split ${open ? "reading" : ""}`}>
+      <div>
       {!state.data ? (state.loading ? <Skeletons count={6} height={58} /> : null) : state.data.length === 0 ? <Empty title={tr("Aucun message", "No messages")} /> : (
         <Stagger className="mail-list">
           {state.data.map((message) => (
-            <StaggerItem key={message.id} variants={staggerItem} className={message.is_read ? "" : "unread"}>
+            <StaggerItem key={message.id} variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
               <button type="button" onClick={() => read(message)}>
                 <span><b>{message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang)}</time></span>
                 <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
@@ -115,9 +123,10 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
           ))}
         </Stagger>
       )}
-      <Drawer open={Boolean(open)} title={open?.subject || tr("(sans objet)", "(no subject)")} onClose={() => setOpen(null)} width={720}>
-        {open && (
-          <>
+      </div>
+        {open ? (
+          <article className="mail-reader">
+            <header className="mail-reader-head"><h2>{open.subject || tr("(sans objet)", "(no subject)")}</h2><Button aria-label={tr("Fermer le message", "Close message")} onClick={() => setOpen(null)}><X size={15} /></Button></header>
             <p className="muted small">{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}, {new Date(open.received_at ?? open.sent_at ?? "").toLocaleString(lang)}</p>
             <div className="row">
               <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
@@ -127,10 +136,10 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
               {folder !== "trash" && <Button className="danger" onClick={() => void act(() => apiData("api/mail/move", "POST", { ids: [open.id], folder: "trash" }))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
             </div>
             {(open.attachments?.length ?? 0) > 0 && <ul className="eval-tags">{open.attachments?.map((item) => <li key={item.filename}>{item.filename}</li>)}</ul>}
-            <pre className="mail-body">{content}</pre>
-          </>
-        )}
-      </Drawer>
+            {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
+          </article>
+        ) : <p className="mail-idle">{tr("Choisis un message pour le lire.", "Pick a message to read it.")}</p>}
+      </div>
     </>
   );
 }

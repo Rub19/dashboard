@@ -40,6 +40,26 @@ pub struct Friend {
     pub tier: i64,
     pub party_size: i64,
     pub card: String,
+    pub show: String,
+    pub party_max: i64,
+    pub party_id: String,
+    pub party_state: String,
+    pub ally_score: i64,
+    pub enemy_score: i64,
+    pub map: String,
+    pub idle: bool,
+    pub playing: bool,
+    pub icon: String,
+    pub title: String,
+    pub last_online: String,
+}
+
+fn profile_icon(league: &str) -> Option<String> {
+    let text = league.replace("&quot;", "\"").replace("\\\"", "\"");
+    let start = text.find("\"profileIcon\"")?;
+    let rest = &text[start + 13..];
+    let digits: String = rest.chars().skip_while(|character| !character.is_ascii_digit()).take_while(char::is_ascii_digit).collect();
+    (!digits.is_empty()).then(|| format!("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/{digits}.jpg"))
 }
 
 fn attribute(name: &str, text: &str) -> Option<String> {
@@ -94,7 +114,7 @@ pub fn parse_roster(xml: &str) -> Vec<Friend> {
         if name.is_empty() {
             continue;
         }
-        friends.push(Friend { id: id.to_lowercase(), name: unescape(&name), tag: unescape(&attribute("tagline", id_tag).unwrap_or_default()), ..Friend::default() });
+        friends.push(Friend { id: id.to_lowercase(), name: unescape(&name), tag: unescape(&attribute("tagline", id_tag).unwrap_or_default()), last_online: attribute("last_online", attributes).or_else(|| section("last_online", body).map(str::to_string)).unwrap_or_default(), ..Friend::default() });
     }
     friends
 }
@@ -106,12 +126,23 @@ pub fn apply_presence(friends: &mut HashMap<String, Friend>, stanza: &str) {
     let Some(friend) = friends.get_mut(&id) else { return };
     let games = section("games", stanza).unwrap_or("");
     let show = section("show", stanza).unwrap_or("chat");
+    if let Some(seen) = section("last_online", stanza) {
+        friend.last_online = seen.to_string();
+    }
     if attribute("type", open).as_deref() == Some("unavailable") || show == "offline" || (show == "mobile" && games.is_empty()) {
         friend.online = false;
         return;
     }
     friend.online = true;
-    friend.product = ["valorant", "league_of_legends", "bacon", "lion", "tft", "keystone"].iter().find(|product| games.contains(&format!("<{product}"))).map(|product| product.to_string()).unwrap_or_default();
+    friend.show = show.to_string();
+    let product = ["valorant", "league_of_legends", "bacon", "lion", "tft", "keystone"].iter().find(|product| games.contains(&format!("<{product}"))).map(|product| product.to_string()).unwrap_or_default();
+    if !(product.is_empty() || product == "keystone") || friend.product.is_empty() || friend.product == "keystone" {
+        friend.product = product;
+    }
+    if let Some(league) = section("league_of_legends", games) {
+        friend.playing = league.contains("inGame") || league.contains("championSelect") || show == "dnd";
+        friend.icon = profile_icon(league).unwrap_or_default();
+    }
     let payload = section("valorant", stanza)
         .and_then(|valorant| section("p", valorant))
         .and_then(|encoded| BASE64_STANDARD.decode(encoded).ok())
@@ -123,6 +154,14 @@ pub fn apply_presence(friends: &mut HashMap<String, Friend>, stanza: &str) {
         friend.party_size = read("partyPresenceData", "partySize").as_i64().unwrap_or(1);
         friend.tier = read("playerPresenceData", "competitiveTier").as_i64().unwrap_or(0);
         friend.card = read("playerPresenceData", "playerCardId").as_str().unwrap_or_default().to_string();
+        friend.title = read("playerPresenceData", "playerTitleId").as_str().unwrap_or_default().to_string();
+        friend.party_max = read("partyPresenceData", "maxPartySize").as_i64().unwrap_or(5);
+        friend.party_id = read("partyPresenceData", "partyId").as_str().unwrap_or_default().to_string();
+        friend.party_state = read("partyPresenceData", "partyState").as_str().unwrap_or_default().to_string();
+        friend.ally_score = read("partyPresenceData", "partyOwnerMatchScoreAllyTeam").as_i64().unwrap_or(0);
+        friend.enemy_score = read("partyPresenceData", "partyOwnerMatchScoreEnemyTeam").as_i64().unwrap_or(0);
+        friend.map = read("matchPresenceData", "matchMap").as_str().unwrap_or_default().to_string();
+        friend.idle = json.get("isIdle").and_then(Value::as_bool).unwrap_or(false);
     }
 }
 
@@ -251,6 +290,32 @@ mod tests {
         let friend = &map["aaa"];
         assert!(friend.online);
         assert_eq!((friend.product.as_str(), friend.state.as_str(), friend.queue.as_str(), friend.tier, friend.party_size), ("valorant", "INGAME", "competitive", 27, 3));
+    }
+
+    #[test]
+    fn presence_reads_party_score_card_and_map() {
+        let mut map = HashMap::from([("aaa".to_string(), Friend { id: "aaa".into(), name: "Rub".into(), ..Friend::default() })]);
+        let payload = BASE64_STANDARD.encode(r#"{"isIdle":true,"matchPresenceData":{"matchMap":"/Game/Maps/Bonsai/Bonsai"},"partyPresenceData":{"partyId":"p","partySize":3,"maxPartySize":5,"partyState":"MATCHMAKING","partyOwnerMatchScoreAllyTeam":7,"partyOwnerMatchScoreEnemyTeam":12},"playerPresenceData":{"playerTitleId":"t"}}"#);
+        apply_presence(&mut map, &format!("<presence from='AAA@x/RC'><show>away</show><last_online>123</last_online><games><valorant><p>{payload}</p></valorant></games></presence>"));
+        let friend = &map["aaa"];
+        assert_eq!((friend.party_id.as_str(), friend.party_max, friend.ally_score, friend.enemy_score, friend.idle), ("p", 5, 7, 12, true));
+        assert_eq!((friend.map.as_str(), friend.title.as_str(), friend.show.as_str(), friend.last_online.as_str(), friend.party_state.as_str()), ("/Game/Maps/Bonsai/Bonsai", "t", "away", "123", "MATCHMAKING"));
+    }
+
+    #[test]
+    fn the_riot_client_does_not_hide_the_game_being_played() {
+        let mut map = HashMap::from([("aaa".to_string(), Friend { id: "aaa".into(), name: "Rub".into(), ..Friend::default() })]);
+        apply_presence(&mut map, "<presence from='AAA@x/VAL'><show>chat</show><games><valorant><p>e30=</p></valorant></games></presence>");
+        apply_presence(&mut map, "<presence from='AAA@x/RC'><show>chat</show><games><keystone><st>chat</st></keystone></games></presence>");
+        assert_eq!(map["aaa"].product, "valorant");
+    }
+
+    #[test]
+    fn league_presence_reads_the_profile_icon() {
+        let mut map = HashMap::from([("aaa".to_string(), Friend { id: "aaa".into(), name: "Rub".into(), ..Friend::default() })]);
+        apply_presence(&mut map, "<presence from='AAA@x/RC'><show>dnd</show><games><league_of_legends><st>dnd</st><p>{&quot;gameStatus&quot;:&quot;inGame&quot;,&quot;profileIcon&quot;:&quot;4567&quot;}</p></league_of_legends></games></presence>");
+        assert!(map["aaa"].playing);
+        assert!(map["aaa"].icon.ends_with("/4567.jpg"));
     }
 
     #[test]

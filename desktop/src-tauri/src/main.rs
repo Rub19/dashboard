@@ -18,6 +18,7 @@ use tauri::ipc::Channel;
 use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
+use tauri_plugin_updater::UpdaterExt;
 use tauri_plugin_window_state::StateFlags;
 use tokio::sync::Mutex;
 
@@ -215,6 +216,43 @@ async fn read_journal(app: AppHandle, state: State<'_, App>) -> Result<Vec<journ
     Ok(journal::read(&journal_path(&app)?))
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct EthoneUpdate {
+    version: String,
+    notes: Option<String>,
+}
+
+#[tauri::command]
+async fn ethone_update_check(app: AppHandle, state: State<'_, App>) -> Result<Option<EthoneUpdate>, String> {
+    require_session(&state).await?;
+    let update = app.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())?;
+    Ok(update.map(|update| EthoneUpdate { version: update.version.clone(), notes: update.body.clone() }))
+}
+
+#[tauri::command]
+async fn ethone_update_install(on: Channel<f64>, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
+    require_session(&state).await?;
+    let _guard = state.installing.try_lock().map_err(|_| "Une installation est déjà en cours".to_string())?;
+    let update = app.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())?.ok_or("Aucune mise à jour")?;
+    let mut received = 0u64;
+    let result = update
+        .download_and_install(
+            |chunk, total| {
+                received += chunk as u64;
+                if let Some(total) = total.filter(|total| *total > 0) {
+                    let _ = on.send(received as f64 / total as f64);
+                }
+            },
+            || {},
+        )
+        .await
+        .map_err(|e| e.to_string());
+    record(&app, "ethone", "update", result.is_ok(), result.as_ref().err().map_or(update.version.as_str(), String::as_str));
+    result?;
+    app.restart()
+}
+
 #[tauri::command]
 fn window_setup(window: WebviewWindow) -> bool {
     windowing::apply_mica(&window)
@@ -263,6 +301,7 @@ fn main() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_window_state::Builder::default().with_state_flags(StateFlags::POSITION).build())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(App { modules, installing: Mutex::new(()), auth: auth::Auth::new(api) })
         .setup(|app| {
             #[cfg(not(debug_assertions))]
@@ -300,6 +339,8 @@ fn main() {
             open_releases,
             install_module,
             read_journal,
+            ethone_update_check,
+            ethone_update_install,
             window_setup,
             window_mode,
             window_theme,

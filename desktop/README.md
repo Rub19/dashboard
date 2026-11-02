@@ -30,6 +30,28 @@ node tools/sandbox-test.mjs
 
 Il installe Kairo et HDV, refuse une mise à jour si l'application tourne, puis met à jour.
 
+## Ethone Setup
+
+Installeur personnalisé dans `setup/`. Il embarque le paquet NSIS d'Ethone et réutilise le catalogue, les flux et la vérification des signatures d'Ethone (`src-tauri/src`), sans copie.
+
+```bash
+node tools/build-setup.mjs "Notes de version"
+```
+
+Le résultat arrive dans `out/` : `Ethone-Setup-X.exe`, le paquet de mise à jour, sa signature et `latest.json`. La clé `~/.tauri/ethone-updater.key` est obligatoire : la perdre met fin aux mises à jour des installations existantes. Rien n'est publié par ce script.
+
+Installation silencieuse :
+
+```bash
+Ethone-Setup-X.exe /S /MODULES=kairo,hdv-tracker /DIR=D:\Apps\Ethone /NODESKTOP
+```
+
+Le code de sortie vaut 0 si tout a réussi. Seuls les modules listés sont installés. Le journal se trouve dans la page Journal d'Ethone.
+
+## Mises à jour d'Ethone
+
+Ethone lit `latest.json` sur la dernière release de `Rub19/dashboard`, avec sa propre clé. Une release Ethone utilise le tag `desktop-vX.Y.Z`, marqué comme dernière version, avec `latest.json` et le paquet signé en assets. Tant qu'aucune release n'existe, Ethone n'affiche simplement rien.
+
 ## Organisation
 
 | Chemin | Rôle |
@@ -42,6 +64,7 @@ Il installe Kairo et HDV, refuse une mise à jour si l'application tourne, puis 
 | `src-tauri/src/system.rs` | Registre Windows, processus, lancement |
 | `src-tauri/src/journal.rs` | Journal local des opérations |
 | `src/` | Interface, motion dans `src/motion.ts` |
+| `setup/` | Ethone Setup : `src/engine.rs` pour le moteur, `ui/` pour l'interface |
 
 ## Ajouter un module
 

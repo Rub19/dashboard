@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "dev:setup": "vite --config vite.setup.config.ts",
+    "build:setup": "vite build --config vite.setup.config.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",

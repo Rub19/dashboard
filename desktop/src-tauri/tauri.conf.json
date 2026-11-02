@@ -44,7 +44,8 @@
       "nsis": {
         "installMode": "currentUser"
       }
-    }
+    },
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "deep-link": {
@@ -52,6 +53,15 @@
         "schemes": [
           "ethone"
         ]
+      }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUzMEE0NDM5MDNCMjAxODAKUldTQUFiSURPVVFLVXp6NElHNW9VRGFjK1hmeVFkVG5tanREZ201alowYUd3bC9UOWxpZS81R0wK",
+      "endpoints": [
+        "https://github.com/Rub19/dashboard/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
       }
     }
   }

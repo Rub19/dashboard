@@ -77,3 +77,11 @@ export function installModule(id: string, onProgress: (progress: Progress) => vo
   on.onmessage = onProgress;
   return invoke<{ from: string | null; to: string }>("install_module", { id, on });
 }
+
+export const ethoneUpdateCheck = () => invoke<{ version: string; notes: string | null } | null>("ethone_update_check");
+
+export function ethoneUpdateInstall(onProgress: (value: number) => void) {
+  const on = new Channel<number>();
+  on.onmessage = onProgress;
+  return invoke<void>("ethone_update_install", { on });
+}

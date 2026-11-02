@@ -216,6 +216,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .group-title { font-size: 14px; font-weight: 600; margin: 20px 0 8px; }
 .pagehead + .group-title { margin-top: 0; }
 
+.ethone-update { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: var(--r-m); background: color-mix(in srgb, var(--accent) 9%, var(--row)); }
 .apps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .app { position: relative; background: var(--row); border: 1px solid var(--line); border-radius: var(--r-m); overflow: hidden; }
 .app.skeleton { height: 66px; animation: pulse 1.2s ease-in-out infinite alternate; }
@@ -278,7 +279,7 @@ dd { margin: 0; }
 @media (max-width: 1040px) {
   .shell:not(.compact) { grid-template-columns: 56px minmax(0, 1fr); }
   .shell .nav-label { display: none; }
-  .app-text small { display: none; }
+  .shell .app-text small { display: none; }
   .searchbox kbd { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

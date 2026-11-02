@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Download, Gamepad2, RefreshCw } from "lucide-react";
-import { ModuleStatus } from "./api";
-import { Key, lang, t } from "./i18n";
+import { ethoneUpdateCheck, ethoneUpdateInstall, ModuleStatus } from "./api";
+import { errorText, Key, lang, t } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_GLIDE } from "./motion";
 import { Button } from "./ui";
 
@@ -130,6 +130,41 @@ function Row({ status, working, error, onRun, onDismiss }: { status: ModuleStatu
   );
 }
 
+function EthoneUpdate() {
+  const [version, setVersion] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    ethoneUpdateCheck().then((update) => setVersion(update?.version ?? null), () => undefined);
+  }, []);
+
+  if (!version) return null;
+
+  const install = () => {
+    setError(null);
+    setProgress(0);
+    ethoneUpdateInstall(setProgress).catch((reason) => {
+      setProgress(null);
+      setError(errorText(reason));
+    });
+  };
+
+  return (
+    <div className="ethone-update">
+      <span className="app-text">
+        <b>{t("updateEthone", { version })}</b>
+        <small role={error ? "alert" : undefined}>{error ?? t("updateEthoneText")}</small>
+      </span>
+      {progress === null ? (
+        <Button variant="primary" onClick={install}><Download size={14} />{t("action.update")}</Button>
+      ) : (
+        <span className="working" role="status">{t("progress.downloading", { percent: `${Math.round(progress * 100)} %` })}</span>
+      )}
+    </div>
+  );
+}
+
 export default function ModulesPage({ name, modules, checking, busy, errors, onRun, onRefresh, onDismiss }: Props) {
   return (
     <>
@@ -143,6 +178,7 @@ export default function ModulesPage({ name, modules, checking, busy, errors, onR
           {t("refresh")}
         </Button>
       </div>
+      <EthoneUpdate />
       {modules.length === 0 ? (
         <ul className="apps" aria-busy="true" aria-label={t("loading")}>
           {SKELETONS.map((index) => <li key={index} className="app skeleton" />)}

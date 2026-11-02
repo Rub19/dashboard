@@ -59,3 +59,13 @@ Limite connue : la fenêtre étant sans bordure système, le menu Snap Layouts a
 ## 11. Pas de SDK pour l'instant
 
 Le contrat est le format du catalogue, versionné par `schemaVersion`. Une bibliothèque partagée attendra un premier consommateur réel.
+
+## 12. Ethone Setup réutilise Ethone
+
+`setup/` embarque le paquet NSIS d'Ethone, ce qui garde la désinstallation Windows et le chemin de mise à jour. Le catalogue, les flux, les signatures et les règles d'installation viennent de `src-tauri/src`, sans copie. Un module qui échoue n'annule pas les autres : ce qui a réussi reste installé et le reste peut être réessayé. Désinstaller Ethone ne touche pas aux applications et ferme la session.
+
+Limite connue : la session n'est effacée que par Ethone Setup, pas par la désinstallation depuis les Paramètres de Windows.
+
+## 13. Ethone a sa propre clé de mise à jour
+
+`~/.tauri/ethone-updater.key`, distincte de celles des modules. Les releases d'Ethone seront dans `Rub19/dashboard` avec le tag `desktop-vX.Y.Z`, ce qui ne déclenche aucun déploiement du site. Aucune publication sans l'accord de Rub19.

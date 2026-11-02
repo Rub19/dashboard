@@ -42,15 +42,8 @@
 - [x] Livrer Calendrier comme tranche séparée.
   - Acceptation : lecture et mutations Worker, validation des dates, ordre chronologique et formulaire Début/Fin.
   - Vérification : onze tests frontend, 50 tests Rust, contrôle TypeScript, build Vite et ouverture réelle de l'exécutable release. Le formulaire a été annulé sans modifier les données.
-- [ ] Livrer Habitudes et Focus en tranches séparées.
-- [ ] Spécifier puis livrer `cloud-files` par tranches Liste, Transfert et Partage.
-- [ ] Spécifier puis livrer `identity-connections` par tranches Profil, Connexions, Sécurité et Réglages.
-- [ ] Spécifier puis livrer `gaming` par tranches Vue générale, Matchs et suivis Riot.
-- [ ] Spécifier puis livrer `discord` par domaines internes vérifiables.
-- [ ] Spécifier puis livrer `collaboration` par tranches Espaces, Équipe et Mail.
-- [ ] Spécifier puis livrer `brain-automation` par tranches Brain, Flows et Plugins.
-- [ ] Spécifier puis livrer `insights` par tranches Activité, Analyses et Interactions.
-- [ ] Spécifier puis livrer `admin-support` par tranches Administration, Documentation, Journal et À propos.
+- [ ] Tester avec Rub19 tout ce qui est marqué « Écrit » dans `docs/ecosystem/dashboard-capabilities.md`.
+- [ ] Porter la liste « Non porté » de `docs/ecosystem/HANDOFF.md`.
 
 ## Vérification finale
 

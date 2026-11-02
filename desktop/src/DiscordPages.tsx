@@ -1,6 +1,8 @@
 import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Pause, Play, Search, Shuffle, SkipBack, SkipForward, Square, Trash2 } from "lucide-react";
 import { botCall } from "./api";
+import { CreateButtons, DISCORD_CREATORS } from "./DiscordCreate";
+import { flattenEntries, Json } from "./generic";
 import { errorText, lang, tr } from "./i18n";
 import { Drawer, Empty, ErrorBox, PageHead, Skeletons, Status, Tabs, useLoad } from "./kit";
 import { Button } from "./ui";
@@ -175,6 +177,11 @@ function Tickets({ guild }: { guild: string }) {
   );
 }
 
+function GiveawayCreate({ guild, onCreated }: { guild: string; onCreated: () => void }) {
+  const channels = useLoad(() => botCall<Json>(`api/guilds/${guild}/server/channels`), [guild]);
+  return <CreateButtons specs={DISCORD_CREATORS.giveaways} root={`api/guilds/${guild}/giveaways`} directory={{ channels: channels.data ? flattenEntries(channels.data) : [], roles: [] }} onCreated={onCreated} />;
+}
+
 function Giveaways({ guild }: { guild: string }) {
   const state = useLoad(() => botCall<{ giveaways?: Row[] }>(`api/guilds/${guild}/giveaways/list`), [guild]);
   const action = useAction(state.reload);
@@ -182,7 +189,7 @@ function Giveaways({ guild }: { guild: string }) {
   const act = (id: string, name: string) => void action.run(() => botCall(`api/guilds/${guild}/giveaways/${id}/${name}`, "POST", {}));
   return (
     <>
-      <PageHead title={tr("Concours", "Giveaways")} onRefresh={state.reload} refreshing={state.loading} />
+      <PageHead title={tr("Concours", "Giveaways")} onRefresh={state.reload} refreshing={state.loading}><GiveawayCreate guild={guild} onCreated={state.reload} /></PageHead>
       {action.error && <ErrorBox message={action.error} />}
       <Status state={state}>
         {() => rows.length === 0 ? <Empty title={tr("Aucun concours", "No giveaways")} /> : (

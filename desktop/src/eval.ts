@@ -155,6 +155,32 @@ export function roundsFor(match: EvalMatch, puuid: string) {
   });
 }
 
+export function matchAnalysis(match: EvalMatch, puuid: string) {
+  const rounds = match.rounds ?? [];
+  const kills = match.kills ?? [];
+  const team = new Map(match.players.map((player) => [player.puuid, player.team]));
+  const me = team.get(puuid);
+  let good = 0;
+  let firstKills = 0;
+  let firstDeaths = 0;
+  for (const round of rounds) {
+    const inRound = kills.filter((kill) => kill.r === round.n).sort((left, right) => left.t - right.t);
+    if (inRound[0]?.k === puuid) firstKills++;
+    if (inRound[0]?.v === puuid) firstDeaths++;
+    const death = inRound.find((kill) => kill.v === puuid);
+    const involved = inRound.some((kill) => kill.k === puuid || kill.a.includes(puuid));
+    const traded = death ? inRound.some((kill) => kill.v === death.k && kill.t >= death.t && kill.t - death.t <= 5000 && team.get(kill.k) === me) : false;
+    if (involved || !death || traded) good++;
+  }
+  return {
+    kast: rounds.length ? Math.round((good / rounds.length) * 100) : 0,
+    firstKills,
+    firstDeaths,
+    plants: rounds.filter((round) => round.plant === puuid).length,
+    defuses: rounds.filter((round) => round.defuse === puuid).length,
+  };
+}
+
 export function scoreboard(match: EvalMatch, puuid: string) {
   const me = match.players.find((player) => player.puuid === puuid);
   const order = me?.team === "Blue" ? (["Blue", "Red"] as const) : (["Red", "Blue"] as const);

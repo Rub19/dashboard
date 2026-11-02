@@ -1,6 +1,6 @@
 # Ethone Desktop
 
-Application Windows qui détecte les modules Ethone, lit leurs versions et les installe après vérification de leur signature. Chaque module reste un programme indépendant, développé dans son propre dépôt, et fonctionne sans Ethone.
+Application Windows tout-en-un du compte Ethone : Accueil, Applications, Productivité, Fichiers, Mail, Équipe, E:VAL, Jeux, Discord, Brain, Analyses et Réglages. Elle détecte aussi les modules Ethone, lit leurs versions et les installe après vérification de leur signature. Chaque module reste un programme indépendant, développé dans son propre dépôt, et fonctionne sans Ethone.
 
 ## Commandes
 
@@ -30,6 +30,10 @@ node tools/sandbox-test.mjs
 
 Il installe Kairo et HDV, refuse une mise à jour si l'application tourne, puis met à jour.
 
+## Aperçu sans compiler
+
+`preview.html` affiche l'interface dans un navigateur avec des données d'exemple signalées à l'écran. Ce fichier n'est pas livré dans l'application. Lancer `npx vite` puis ouvrir `/preview.html`. Options d'adresse : `?riot` compte Riot relié et partie en direct, `?discord` compte Discord relié, `?login` écran de connexion, `?noid`, `?fail` et `?empty` pour les états d'E:VAL.
+
 ## Ethone Setup
 
 Installeur personnalisé dans `setup/`. Il embarque le paquet NSIS d'Ethone et réutilise le catalogue, les flux et la vérification des signatures d'Ethone (`src-tauri/src`), sans copie.
@@ -38,7 +42,7 @@ Installeur personnalisé dans `setup/`. Il embarque le paquet NSIS d'Ethone et r
 node tools/build-setup.mjs "Notes de version"
 ```
 
-Le résultat arrive dans `out/` : `Ethone-Setup-X.exe`, le paquet de mise à jour, sa signature et `latest.json`. La clé `~/.tauri/ethone-updater.key` est obligatoire : la perdre met fin aux mises à jour des installations existantes. Rien n'est publié par ce script.
+Le résultat arrive dans `out/` : `Ethone-Setup-X.exe`, `Ethone.exe` (fichier unique sans installation, WebView2 requis), le paquet de mise à jour, sa signature et `latest.json`. La clé `~/.tauri/ethone-updater.key` est obligatoire : la perdre met fin aux mises à jour des installations existantes. Rien n'est publié par ce script.
 
 Installation silencieuse :
 
@@ -58,12 +62,21 @@ Ethone lit `latest.json` sur la dernière release de `Rub19/dashboard`, avec sa 
 |---|---|
 | `catalog/catalog.json` | Modules connus : flux, clé publique, détection, règle de mise à jour, compatibilité |
 | `src-tauri/src/auth.rs` | Connexion au compte Ethone, session dans le Gestionnaire d'identifiants |
+| `src-tauri/src/gateway.rs` | Liste des chemins autorisés vers le Worker, Supabase, Riot et le catalogue |
+| `src-tauri/src/riot.rs` | Connexion Riot, jetons en mémoire, appels au jeu |
+| `src-tauri/src/chat.rs` | Lecture ponctuelle des amis Riot par le chat |
+| `src-tauri/src/bot.rs` | Connexion Discord et appels au bot |
 | `src-tauri/src/action.rs` | Décide de l'action possible, sans effet de bord |
 | `src-tauri/src/feed.rs` | Lit les flux de versions |
 | `src-tauri/src/install.rs` | Télécharge, vérifie, installe, contrôle le résultat |
 | `src-tauri/src/system.rs` | Registre Windows, processus, lancement |
 | `src-tauri/src/journal.rs` | Journal local des opérations |
-| `src/` | Interface, motion dans `src/motion.ts` |
+| `src/Shell.tsx`, `src/Sidebar.tsx` | Fenêtre, barre latérale, applications épinglées, pages gardées en mémoire |
+| `src/kit.tsx`, `src/generic.tsx` | Composants communs, affichage et formulaires des données du bot |
+| `src/TrackerPage.tsx`, `src/Eval*.tsx`, `src/eval.ts` | E:VAL : Profil, En direct, Jeu, Hub |
+| `src/DiscordPage.tsx`, `src/DiscordPages.tsx`, `src/DiscordCreate.tsx`, `src/discordSpecs.ts` | Discord : modules, pages sur mesure, formulaires de création |
+| `src/DailyPage.tsx`, `src/ProductivityPage.tsx`, `src/FilesPage.tsx`, `src/MailPage.tsx`, `src/MorePages.tsx` | Autres sections |
+| `src/` | Reste de l'interface, motion dans `src/motion.ts` |
 | `setup/` | Ethone Setup : `src/engine.rs` pour le moteur, `ui/` pour l'interface |
 
 ## Ajouter un module

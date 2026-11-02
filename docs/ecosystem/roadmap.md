@@ -12,7 +12,8 @@ Chaque étape se termine par une preuve vérifiable. Aucune durée n'est annonc�
 | À faire | 4. Flux signé pour Nova | Nova vérifié par signature |
 | En cours | 5. Ethone Setup et mise à jour d'Ethone | Setup 0.1.0 testé en réel dans Windows Sandbox le 2 novembre 2026. Reste : mise à jour réelle après une première release validée par Rub19 |
 | À faire | 6. Breach : releases signées, fenêtre dédiée, hors ligne, export de sauvegarde | Partie hors ligne, site inchangé |
-| À faire | 7. Confort : notifications, diagnostic, paramètres | Tests d'interface et accessibilité |
+| En cours | 6 bis. Dashboard Windows tout-en-un | Sections écrites, voir `dashboard-capabilities.md`. Reste : test réel avec Rub19 et fonctions de la liste « Non porté » de `HANDOFF.md` |
+| En cours | 7. Confort : notifications, diagnostic, paramètres | Diagnostic et réglages écrits. Reste : notifications, tests d'interface et accessibilité |
 | À faire | 8. Mobile : page Modules sur iOS, rattrapage Android, signature | Build signé, test sur appareil |
 | À faire | 9. Services : préférences synchronisées | Synchronisation et hors ligne testés |
 

@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
 import { botCall, botLogin, botLogout, botStatus } from "./api";
+import { CreateButtons, DISCORD_CREATORS } from "./DiscordCreate";
 import { CUSTOM_DISCORD_PAGES } from "./DiscordPages";
 import { DISCORD_GROUPS, DISCORD_MODULES as SPEC_MODULES, DiscordModule } from "./discordSpecs";
 import { ConfigForm, Directory, factsOf, firstArray, flattenEntries, humanize, Json, JsonList, displayValue, unwrapConfig } from "./generic";
@@ -147,15 +148,16 @@ function useDirectory(guild: string): Directory | undefined {
 
 function ModuleView({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const directory = useDirectory(guild);
+  const [created, setCreated] = useState(0);
   const Custom = CUSTOM_DISCORD_PAGES[spec.id];
   if (Custom) return <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate"><Custom guild={guild} /></motion.div>;
   return (
     <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate">
-      <PageHead title={spec.title} />
+      <PageHead title={spec.title}>{DISCORD_CREATORS[spec.id] && <CreateButtons key={created} specs={DISCORD_CREATORS[spec.id]} root={moduleUrl(spec, guild, "/")} directory={directory} onCreated={() => setCreated((value) => value + 1)} />}</PageHead>
       {spec.overview && <Overview spec={spec} guild={guild} />}
       {spec.actions && <ActionButtons spec={spec} guild={guild} />}
       {spec.configs?.map((_, index) => <ConfigSection key={index} spec={spec} guild={guild} index={index} directory={directory} />)}
-      {spec.lists?.map((_, index) => <ListSection key={index} spec={spec} guild={guild} index={index} />)}
+      {spec.lists?.map((_, index) => <ListSection key={`${index}-${created}`} spec={spec} guild={guild} index={index} />)}
     </motion.div>
   );
 }

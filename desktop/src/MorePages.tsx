@@ -63,6 +63,46 @@ function ProfileEditor() {
   );
 }
 
+function TwoFactor() {
+  const [setup, setSetup] = useState<{ secret?: string; otpauth?: string } | null>(null);
+  const [code, setCode] = useState("");
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const run = async (action: () => Promise<void>) => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      await action();
+    } catch (reason) {
+      setMessage({ text: errorText(reason), ok: false });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <PageHead title={tr("Double authentification", "Two-factor authentication")} text={tr("Une application comme Google Authenticator te donne un code à chaque connexion.", "An app such as Google Authenticator gives you a code at each sign-in.")} />
+      {!setup && <div className="row"><Button variant="primary" disabled={busy} onClick={() => void run(async () => setSetup(await apiData("api/auth/totp/setup", "POST", {})))}>{tr("Activer", "Enable")}</Button></div>}
+      {setup && <section className="totp"><p>{tr("Ajoute cette clé dans ton application d'authentification, puis saisis le code affiché.", "Add this key to your authenticator app, then enter the code shown.")}</p><code>{setup.secret}</code></section>}
+      <form className="daily-add" onSubmit={(event) => { event.preventDefault(); void run(async () => {
+        if (setup) {
+          await apiData("api/auth/totp/verify", "POST", { code: code.trim() });
+          setSetup(null);
+          setMessage({ text: tr("Double authentification activée.", "Two-factor enabled."), ok: true });
+        } else {
+          await apiData("api/auth/totp/disable", "POST", { code: code.trim() });
+          setMessage({ text: tr("Double authentification désactivée.", "Two-factor disabled."), ok: true });
+        }
+        setCode("");
+      }); }}>
+        <input value={code} inputMode="numeric" autoComplete="one-time-code" placeholder={tr("Code à 6 chiffres", "6-digit code")} aria-label={tr("Code d'authentification", "Authentication code")} onChange={(event) => setCode(event.target.value)} />
+        <Button type="submit" className={setup ? "" : "danger"} disabled={busy || code.trim().length < 6}>{setup ? tr("Confirmer", "Confirm") : tr("Désactiver", "Disable")}</Button>
+      </form>
+      {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
+    </>
+  );
+}
+
 function Connections() {
   const state = useLoad(() => apiCall<Json>("api/connections"));
   return (
@@ -96,7 +136,7 @@ function Connections() {
 }
 
 export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
-  const [section, setSection] = useState<"appearance" | "profile" | "connections" | "devices" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("appearance");
+  const [section, setSection] = useState<"appearance" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("appearance");
   const items = [
     { id: "appearance", label: tr("Apparence et compte", "Appearance and account"), icon: <Palette size={16} />, group: tr("Application", "App") },
     { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
@@ -105,6 +145,7 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
     { id: "profiles", label: tr("Espaces de profil", "Profile spaces"), icon: <Users size={16} />, group: tr("Compte", "Account") },
     { id: "connections", label: tr("Connexions", "Connections"), icon: <Plug size={16} />, group: tr("Compte", "Account") },
     { id: "devices", label: tr("Appareils", "Devices"), icon: <Shield size={16} />, group: tr("Sécurité", "Security") },
+    { id: "twofactor", label: tr("Double authentification", "Two-factor"), icon: <Shield size={16} />, group: tr("Sécurité", "Security") },
     { id: "passkeys", label: tr("Clés d'accès", "Passkeys"), icon: <KeyRound size={16} />, group: tr("Sécurité", "Security") },
     { id: "events", label: tr("Journal de sécurité", "Security log"), icon: <Activity size={16} />, group: tr("Sécurité", "Security") },
     { id: "ai", label: tr("Intelligence artificielle", "AI"), icon: <Sparkles size={16} />, group: tr("Services", "Services") },
@@ -118,6 +159,7 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
       {section === "profiles" && <Remote title={tr("Espaces de profil", "Profile spaces")} path="api/profiles" actions={[{ title: tr("Activer", "Activate"), run: (row) => apiData("api/profiles/activate", "POST", { id: asRecord(row).id }) }]} />}
       {section === "connections" && <Connections />}
       {section === "devices" && <Remote title={tr("Appareils", "Devices")} path="api/auth/devices" actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/device/revoke", "POST", { deviceId: asRecord(row).id }) }]} />}
+      {section === "twofactor" && <TwoFactor />}
       {section === "passkeys" && <Remote title={tr("Clés d'accès", "Passkeys")} path="api/auth/passkeys" text={tr("Les clés d'accès se créent sur ethone.dev, car elles sont liées à ce domaine.", "Passkeys are created on ethone.dev because they are tied to that domain.")} actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/passkey/revoke", "POST", { passkeyId: asRecord(row).id }) }]} />}
       {section === "events" && <Remote title={tr("Journal de sécurité", "Security log")} path="api/auth/security-events" />}
       {section === "ai" && <><RemoteFields title={tr("État de l'IA", "AI status")} path="api/ai/status" /><RemoteFields title={tr("Quota", "Quota")} path="api/ai/quota" /></>}

@@ -4,7 +4,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
+import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
@@ -177,9 +177,10 @@ function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; 
 function MatchPanel({ match, puuid, image, onClose }: { match: EvalMatch; puuid: string; image?: string; onClose: () => void }) {
   const close = useRef<HTMLButtonElement>(null);
   const reduce = useReducedMotion();
-  const [view, setView] = useState<"board" | "rounds" | "kills">("board");
+  const [view, setView] = useState<"board" | "analysis" | "rounds" | "kills">("board");
   const nameOf = (id: string) => match.players.find((player) => player.puuid === id)?.name ?? "?";
   const rounds = roundsFor(match, puuid);
+  const analysis = matchAnalysis(match, puuid);
   useEffect(() => {
     close.current?.focus();
     const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
@@ -198,8 +199,17 @@ function MatchPanel({ match, puuid, image, onClose }: { match: EvalMatch; puuid:
           </div>
           <button ref={close} type="button" className="icon-btn" aria-label={t("close")} onClick={onClose}><X size={18} /></button>
         </header>
-        {rounds.length > 0 && <div className="eval-panel-tabs"><Tabs id="match" label={tr("Vue du match", "Match view")} value={view} onChange={setView} tabs={[{ id: "board", label: tr("Tableau", "Scoreboard") }, { id: "rounds", label: tr("Manches", "Rounds") }, { id: "kills", label: tr("Éliminations", "Kills") }]} /></div>}
+        {rounds.length > 0 && <div className="eval-panel-tabs"><Tabs id="match" label={tr("Vue du match", "Match view")} value={view} onChange={setView} tabs={[{ id: "board", label: tr("Tableau", "Scoreboard") }, { id: "analysis", label: tr("Analyse", "Analysis") }, { id: "rounds", label: tr("Manches", "Rounds") }, { id: "kills", label: tr("Éliminations", "Kills") }]} /></div>}
         <div className="eval-board-scroll">
+          {view === "analysis" && (
+            <dl className="eval-analysis">
+              <div><dt>KAST</dt><dd>{analysis.kast} %</dd></div>
+              <div><dt>{tr("Premières éliminations", "First kills")}</dt><dd>{analysis.firstKills}</dd></div>
+              <div><dt>{tr("Premières morts", "First deaths")}</dt><dd>{analysis.firstDeaths}</dd></div>
+              <div><dt>{tr("Spikes posés", "Spikes planted")}</dt><dd>{analysis.plants}</dd></div>
+              <div><dt>{tr("Spikes désamorcés", "Spikes defused")}</dt><dd>{analysis.defuses}</dd></div>
+            </dl>
+          )}
           {view === "rounds" && (
             <ol className="eval-rounds">
               {rounds.map((round) => (

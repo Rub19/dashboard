@@ -90,3 +90,14 @@ Comme sur iOS, la connexion passe par la page officielle de Riot et une API non 
 
 Même mécanisme qu'iOS : navigateur, retour `ethone://discord-auth?code=`, échange du code contre un jeton gardé dans le Gestionnaire d'identifiants. Les modules du bot sont décrits par `discordSpecs.ts`, généré depuis `AdminSpecs.swift`, et affichés par un moteur commun.
 
+## 18. Barre latérale et pages en mémoire
+
+Décision du 2 novembre 2026, après refus par Rub19 des tuiles colorées. Barre à lignes (icône et nom), sections groupées, réductible en icônes. La couleur reste sur l'icône. Une page visitée reste en mémoire pour revenir tout de suite avec son état, et les rafraîchissements automatiques s'arrêtent quand elle est cachée.
+
+## 19. Français par défaut
+
+L'application démarre en français sauf choix contraire dans les Réglages. Des contenus restent français en anglais : noms de rangs et modules Discord.
+
+## 20. Chat Riot en lecture ponctuelle
+
+Les amis sont lus par une connexion XMPP courte, ouverte puis fermée à chaque actualisation, avec la présence hors ligne. Dépendances ajoutées : `tokio-rustls` et `webpki-roots`. Aucune connexion permanente ni messagerie.

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { lastSession, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
+import { lastSession, matchAnalysis, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
 
 const player = (puuid, team, score, extra = {}) => ({ puuid, name: puuid, tag: "EUW", team, agent: "Jett", agentId: "a", tier: 12, card: "", level: 1, party: "", score, kills: 10, deaths: 5, assists: 2, hs: 5, bs: 4, ls: 1, dmg: 2000, ...extra });
 const match = (id, startedAt, red, blue, players) => ({ id, map: "Ascent", mapId: "m", mode: "Competitive", queue: "competitive", startedAt, lengthSec: 1800, teams: { Red: { won: red > blue, rounds: red }, Blue: { won: blue > red, rounds: blue } }, players });
@@ -50,6 +50,12 @@ test("les manches comptent les éliminations du joueur", () => {
   assert.deepEqual([first.won, first.kills, first.died], [true, 1, false]);
   assert.deepEqual([second.won, second.kills, second.died], [false, 0, true]);
   assert.deepEqual(roundsFor({ ...game, rounds: undefined }, "me"), []);
+});
+
+test("l'analyse calcule le KAST et les premières éliminations", () => {
+  const game = { ...match("1", null, 2, 1, [player("me", "Red", 1), player("ally", "Red", 1), player("foe", "Blue", 1)]), rounds: [{ n: 1, winner: "Red", end: "", plant: "me", site: "A", defuse: "" }, { n: 2, winner: "Blue", end: "", plant: "", site: "", defuse: "" }, { n: 3, winner: "Red", end: "", plant: "", site: "", defuse: "me" }], kills: [{ r: 1, t: 10, k: "me", v: "foe", w: "", a: [] }, { r: 2, t: 10, k: "foe", v: "me", w: "", a: [] }, { r: 3, t: 10, k: "foe", v: "me", w: "", a: [] }, { r: 3, t: 3000, k: "ally", v: "foe", w: "", a: [] }] };
+  assert.deepEqual(matchAnalysis(game, "me"), { kast: 67, firstKills: 1, firstDeaths: 2, plants: 1, defuses: 1 });
+  assert.equal(matchAnalysis({ ...game, rounds: [] }, "me").kast, 0);
 });
 
 test("noms et identifiants Riot", () => {

@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Archive, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2 } from "lucide-react";
+import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2 } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
@@ -33,6 +33,7 @@ function Compose({ open, initial, onClose, onSent }: { open: boolean; initial: {
   const [body, setBody] = useState(initial.body);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [when, setWhen] = useState("");
   useEffect(() => {
     if (!open) return;
     setTo(initial.to);
@@ -45,7 +46,9 @@ function Compose({ open, initial, onClose, onSent }: { open: boolean; initial: {
     setBusy(true);
     setError(null);
     try {
-      await apiData("api/mail/send", "POST", { to: to.split(/[,;]/).map((item) => item.trim()).filter(Boolean), subject, text: body, in_reply_to: initial.inReplyTo });
+      const recipients = to.split(/[,;]/).map((item) => item.trim()).filter(Boolean);
+      if (when) await apiData("api/mail/schedule", "POST", { to: recipients, subject, text: body, scheduled_at: new Date(when).toISOString() });
+      else await apiData("api/mail/send", "POST", { to: recipients, subject, text: body, in_reply_to: initial.inReplyTo });
       onSent();
       onClose();
     } catch (reason) {
@@ -60,8 +63,9 @@ function Compose({ open, initial, onClose, onSent }: { open: boolean; initial: {
         <Field label={tr("À", "To")}><input type="text" required value={to} autoComplete="off" onChange={(event) => setTo(event.target.value)} /></Field>
         <Field label={tr("Objet", "Subject")}><input value={subject} onChange={(event) => setSubject(event.target.value)} /></Field>
         <Field label={tr("Message", "Message")}><textarea rows={14} required value={body} onChange={(event) => setBody(event.target.value)} /></Field>
+        <Field label={tr("Envoyer plus tard (facultatif)", "Send later (optional)")}><input type="datetime-local" value={when} onChange={(event) => setWhen(event.target.value)} /></Field>
         {error && <ErrorBox message={error} />}
-        <div className="row"><Button type="submit" variant="primary" disabled={busy || !to.trim()}><Send size={15} />{busy ? tr("Envoi…", "Sending…") : tr("Envoyer", "Send")}</Button></div>
+        <div className="row"><Button type="submit" variant="primary" disabled={busy || !to.trim()}><Send size={15} />{busy ? tr("Envoi…", "Sending…") : when ? tr("Programmer", "Schedule") : tr("Envoyer", "Send")}</Button></div>
       </form>
     </Drawer>
   );
@@ -118,6 +122,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
             <div className="row">
               <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
               <Button onClick={() => void act(() => apiData("api/mail/read", "POST", { id: open.id, is_starred: !open.is_starred }))}><Star size={15} />{open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Étoile", "Star")}</Button>
+              <Button onClick={() => { const date = new Date(); date.setDate(date.getDate() + 1); date.setHours(9, 0, 0, 0); void act(() => apiData("api/mail/snooze", "POST", { id: open.id, snoozed_until: date.toISOString() })); }}><Clock size={15} />{tr("Reporter à demain", "Snooze to tomorrow")}</Button>
               {folder !== "archive" && <Button onClick={() => void act(() => apiData("api/mail/move", "POST", { ids: [open.id], folder: "archive" }))}><Archive size={15} />{tr("Archiver", "Archive")}</Button>}
               {folder !== "trash" && <Button className="danger" onClick={() => void act(() => apiData("api/mail/move", "POST", { ids: [open.id], folder: "trash" }))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
             </div>
@@ -130,12 +135,29 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
   );
 }
 
-function Remote({ title, path }: { title: string; path: string }) {
+interface ManageField { key: string; label: string; multiline?: boolean }
+
+function Remote({ title, path, fields, deletable }: { title: string; path: string; fields?: ManageField[]; deletable?: boolean }) {
   const state = useLoad(() => apiCall<Json>(path), [path]);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
+  const ready = (fields ?? []).every((field) => (values[field.key] ?? "").trim());
+  const add = (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    apiData(path, "POST", values).then(() => { setValues({}); state.reload(); }, (reason) => setError(errorText(reason)));
+  };
   return (
     <>
       <PageHead title={title} onRefresh={state.reload} refreshing={state.loading} />
-      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} />}</Status>
+      {fields && (
+        <form className="mail-manage" onSubmit={add}>
+          {fields.map((field) => <Field key={field.key} label={field.label}>{field.multiline ? <textarea rows={4} value={values[field.key] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))} /> : <input value={values[field.key] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))} />}</Field>)}
+          <div className="row"><Button type="submit" variant="primary" disabled={!ready}>{tr("Ajouter", "Add")}</Button></div>
+        </form>
+      )}
+      {error && <ErrorBox message={error} />}
+      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={deletable ? [{ title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: row && typeof row === "object" && !Array.isArray(row) ? row.id : null }) }] : []} />}</Status>
     </>
   );
 }
@@ -155,13 +177,13 @@ export default function MailPage() {
     { id: "signatures" as Section, label: tr("Signatures", "Signatures"), group: tr("Gestion", "Manage") },
   ];
   const isFolder = FOLDERS.some((folder) => folder.id === section);
-  const paths: Partial<Record<Section, { title: string; path: string }>> = {
+  const paths: Partial<Record<Section, { title: string; path: string; fields?: ManageField[]; deletable?: boolean }>> = {
     contacts: { title: tr("Contacts", "Contacts"), path: "api/mail/contacts" },
     aliases: { title: tr("Adresses", "Addresses"), path: "api/mail/alias" },
-    labels: { title: tr("Étiquettes", "Labels"), path: "api/mail/labels" },
+    labels: { title: tr("Étiquettes", "Labels"), path: "api/mail/labels", deletable: true, fields: [{ key: "name", label: tr("Nom", "Name") }] },
     rules: { title: tr("Règles", "Rules"), path: "api/mail/rules" },
-    templates: { title: tr("Modèles", "Templates"), path: "api/mail/templates" },
-    signatures: { title: tr("Signatures", "Signatures"), path: "api/mail/signatures" },
+    templates: { title: tr("Modèles", "Templates"), path: "api/mail/templates", deletable: true, fields: [{ key: "name", label: tr("Nom", "Name") }, { key: "subject", label: tr("Objet", "Subject") }, { key: "content", label: tr("Contenu", "Content"), multiline: true }] },
+    signatures: { title: tr("Signatures", "Signatures"), path: "api/mail/signatures", deletable: true, fields: [{ key: "name", label: tr("Nom", "Name") }, { key: "content", label: tr("Contenu", "Content"), multiline: true }] },
   };
   return (
     <div className="kit-split">

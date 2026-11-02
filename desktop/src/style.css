@@ -695,6 +695,13 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .service-grid .up i { background: var(--success); }
 .service-grid small { grid-column: 2; color: var(--muted); font-size: 12px; font-weight: 400; line-height: 16px; }
 .lol-head img.pixel { image-rendering: pixelated; }
+.eval-analysis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 0; }
+.eval-analysis div { display: grid; gap: 2px; padding: 14px; border-radius: 12px; background: var(--eval-card2); }
+.eval-analysis dt { color: var(--eval-muted); font-size: 12px; line-height: 16px; }
+.eval-analysis dd { margin: 0; font: 700 22px/28px var(--display); font-variant-numeric: tabular-nums; }
+.mail-manage { display: grid; gap: 10px; max-width: 620px; padding: 14px; border-radius: var(--r-m); background: var(--row); }
+.totp { display: grid; gap: 8px; padding: 14px; border-radius: var(--r-m); background: var(--row); }
+.totp code { padding: 8px 10px; border-radius: 8px; background: var(--control); font-size: 15px; letter-spacing: .08em; overflow-wrap: anywhere; user-select: text; }
 .kit-skeletons { display: grid; gap: 10px; }
 .kit-skeletons span { display: block; border-radius: var(--r-m); background: var(--row); animation: pulse 1.2s ease-in-out infinite alternate; }
 .kit-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding: 10px 14px; border-radius: var(--r-s); background: var(--danger-bg); color: var(--danger); }

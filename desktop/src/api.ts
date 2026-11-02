@@ -86,6 +86,7 @@ export const authOauthStart = (provider: Provider) => invoke<void>("auth_oauth_s
 export const authOauthCancel = () => invoke<void>("auth_oauth_cancel");
 export const authMfa = (code: string | null, backupCode: string | null) => invoke<Stage>("auth_mfa", { code, backupCode });
 export const authSignOut = () => invoke<void>("auth_sign_out");
+export const profileAvatar = () => invoke<string | null>("profile_avatar");
 export const openSite = (page: SitePage) => invoke<void>("open_site", { page });
 
 export const modulesLocal = () => invoke<ModuleStatus[]>("modules_local");

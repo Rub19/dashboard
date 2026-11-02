@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CircleUser, House, Info, LayoutGrid, ListChecks, LogOut, Menu, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
-import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, Progress } from "./api";
+import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
@@ -25,8 +25,18 @@ function progressState(progress: Progress): Busy {
 }
 
 function Avatar({ profile }: { profile: Profile }) {
+  const [source, setSource] = useState<string | null>(null);
   const [broken, setBroken] = useState(false);
-  if (profile.avatar && !broken) return <img className="avatar" src={profile.avatar} alt="" referrerPolicy="no-referrer" onError={() => setBroken(true)} />;
+  useEffect(() => {
+    let active = true;
+    setSource(null);
+    setBroken(false);
+    profileAvatar().then((value) => active && setSource(value), () => active && setBroken(true));
+    return () => {
+      active = false;
+    };
+  }, [profile.avatar]);
+  if (source && !broken) return <img className="avatar" src={source} alt="" onError={() => setBroken(true)} />;
   return <span className="avatar initial">{profile.name.slice(0, 1).toUpperCase()}</span>;
 }
 
@@ -150,7 +160,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     <motion.div className={`shell ${compact ? "compact" : ""}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
       <header className="titlebar" data-tauri-drag-region>
         <button type="button" className="icon-btn" aria-label={t("toggleNav")} aria-expanded={!compact} onClick={toggleNav}><Menu size={17} /></button>
-        <span className="title-brand" data-tauri-drag-region><BrandMark size={16} />Ethone</span>
+        <span className="title-brand" data-tauri-drag-region><BrandMark size={22} /><b>Ethone</b></span>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
           <span>{t("searchPlaceholder")}</span>

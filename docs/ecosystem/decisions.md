@@ -69,3 +69,9 @@ Limite connue : la session n'est effacée que par Ethone Setup, pas par la dési
 ## 13. Ethone a sa propre clé de mise à jour
 
 `~/.tauri/ethone-updater.key`, distincte de celles des modules. Les releases d'Ethone seront dans `Rub19/dashboard` avec le tag `desktop-vX.Y.Z`, ce qui ne déclenche aucun déploiement du site. Aucune publication sans l'accord de Rub19.
+
+## 14. L'identité Ethone remplace celle du fournisseur de connexion
+
+Le nom et l'avatar affichés dans Ethone Desktop viennent de `ethone_public_profiles`, comme sur le site et l'app iOS. La photo Discord, Google ou GitHub ne sert jamais de photo de profil Desktop.
+
+Desktop lit d'abord `/api/profile` par le Worker après l'enregistrement de l'appareil, puis utilise Supabase en secours. Les avatars de bibliothèque sont servis avec `Cross-Origin-Resource-Policy: same-origin`, donc WebView2 ne peut pas les charger directement depuis `tauri.localhost`. Rust télécharge uniquement les chemins `/avatars/` d'ethone.dev ou le stockage public `profile-media` du projet Supabase, contrôle le type et la taille, puis transmet l'image en mémoire à l'interface. L'image n'est pas stockée dans le Gestionnaire d'identifiants Windows.

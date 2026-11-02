@@ -3,6 +3,7 @@ import type { ModuleStatus, Profile } from "./api";
 import { connectionStatus, summarizeModules } from "./home";
 import { Key, t } from "./i18n";
 import { Button } from "./ui";
+import { BrandMark } from "./ui";
 
 interface Props {
   profile: Profile;
@@ -29,10 +30,13 @@ export default function HomePage({ profile, modules, checking, offline, error, o
   return (
     <>
       <div className="home-head">
-        <div>
-          <p className="home-kicker">{t("tagline")}</p>
-          <h1>{greeting()}, {profile.name}</h1>
-          <p className="muted">{t("homeLine")}</p>
+        <div className="home-welcome">
+          <span className="home-brand"><BrandMark size={52} /></span>
+          <div>
+            <p className="home-kicker">{t("tagline")}</p>
+            <h1>{greeting()}, {profile.name}</h1>
+            <p className="muted">{t("homeLine")}</p>
+          </div>
         </div>
         <Button disabled={checking} onClick={onRefresh}>
           <RefreshCw size={14} className={checking ? "spin" : ""} />

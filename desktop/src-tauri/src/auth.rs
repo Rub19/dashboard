@@ -1,4 +1,4 @@
-use base64::prelude::{Engine, BASE64_URL_SAFE_NO_PAD};
+use base64::prelude::{Engine, BASE64_STANDARD, BASE64_URL_SAFE_NO_PAD};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
@@ -11,6 +11,7 @@ const ANON_KEY: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmF
 pub const OAUTH_REDIRECT: &str = "ethone://auth-callback";
 const PROVIDERS: [&str; 3] = ["google", "github", "discord"];
 const MAX_STORED: usize = 1000;
+const MAX_AVATAR_BYTES: u64 = 5 * 1024 * 1024;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -62,11 +63,64 @@ fn profile_from(user: &Value) -> Profile {
         .find_map(|key| meta[*key].as_str().filter(|text| !text.is_empty()))
         .map(str::to_string)
         .unwrap_or_else(|| email.split('@').next().unwrap_or_default().to_string());
-    let avatar = meta["avatar_url"]
+    let avatar = meta["custom_avatar_url"]
         .as_str()
-        .filter(|url| url.starts_with("https://"))
-        .map(str::to_string);
+        .and_then(normalized_profile_avatar);
     Profile { email, name, avatar }
+}
+
+fn valid_profile_avatar(url: &str) -> bool {
+    url.starts_with("/avatars/")
+        || (url.starts_with("https://")
+            && !["discordapp.com", "discordapp.net", "discord.com", "googleusercontent.com", "google.com"]
+                .iter()
+                .any(|host| url.to_ascii_lowercase().contains(host)))
+}
+
+fn normalized_profile_avatar(url: &str) -> Option<String> {
+    valid_profile_avatar(url).then(|| if url.starts_with('/') { format!("https://ethone.dev{url}") } else { url.to_string() })
+}
+
+fn account_profile_row(value: &Value) -> Option<&serde_json::Map<String, Value>> {
+    if let Some(row) = value.as_array().and_then(|rows| rows.first()).and_then(Value::as_object) {
+        return Some(row);
+    }
+    if let Some(row) = value.as_object().filter(|row| {
+        row.contains_key("avatar_url") || row.contains_key("display_name") || row.contains_key("username")
+    }) {
+        return Some(row);
+    }
+    value.get("data").and_then(account_profile_row)
+}
+
+fn avatar_url_allowed(value: &str) -> bool {
+    let Ok(url) = reqwest::Url::parse(value) else {
+        return false;
+    };
+    if url.scheme() != "https" {
+        return false;
+    }
+    (url.host_str() == Some("ethone.dev") && url.path().starts_with("/avatars/"))
+        || value.starts_with(&format!(
+            "{SUPABASE_URL}/storage/v1/object/public/profile-media/"
+        ))
+}
+
+fn account_profile(value: Value, fallback: &Profile) -> Profile {
+    let Some(row) = account_profile_row(&value) else {
+        return Profile { avatar: fallback.avatar.as_deref().and_then(normalized_profile_avatar), ..fallback.clone() };
+    };
+    let name = ["display_name", "username"]
+        .iter()
+        .find_map(|key| row.get(*key).and_then(Value::as_str).map(str::trim).filter(|value| !value.is_empty() && value.chars().count() <= 80))
+        .unwrap_or(&fallback.name)
+        .to_string();
+    let avatar = row
+        .get("avatar_url")
+        .and_then(Value::as_str)
+        .and_then(normalized_profile_avatar)
+        .or_else(|| fallback.avatar.as_deref().and_then(normalized_profile_avatar));
+    Profile { email: fallback.email.clone(), name, avatar }
 }
 
 fn error_code(body: &Value) -> Option<String> {
@@ -199,6 +253,30 @@ impl Api {
         })
         .await
     }
+
+    async fn rest_json(&self, method: reqwest::Method, path: &str, access: &str, body: Option<Value>, prefer: Option<&str>) -> Result<Value, Failure> {
+        let url = format!("{}/rest/v1/{path}", self.auth_base);
+        let mut request = self.client.request(method, url).header("apikey", ANON_KEY).bearer_auth(access);
+        if let Some(prefer) = prefer {
+            request = request.header("Prefer", prefer);
+        }
+        self.send(match body {
+            Some(body) => request.json(&body),
+            None => request,
+        })
+        .await
+    }
+}
+
+fn token_subject(access: &str) -> Result<String, String> {
+    let payload = access.split('.').nth(1).ok_or("sessionExpired")?;
+    let decoded = BASE64_URL_SAFE_NO_PAD.decode(payload).map_err(|_| "sessionExpired")?;
+    let value: Value = serde_json::from_slice(&decoded).map_err(|_| "sessionExpired")?;
+    let subject = value["sub"].as_str().ok_or("sessionExpired")?;
+    if subject.len() != 36 || !subject.chars().all(|character| character.is_ascii_hexdigit() || character == '-') {
+        return Err("sessionExpired".into());
+    }
+    Ok(subject.into())
 }
 
 fn vault_service() -> &'static str {
@@ -259,12 +337,33 @@ impl Auth {
         Self { api, inner: Mutex::new(Inner { remember: true, ..Default::default() }) }
     }
 
-    async fn establish(&self, tokens: Tokens, remember: bool) -> Stage {
+    async fn establish(&self, mut tokens: Tokens, remember: bool) -> Stage {
         let device = self
             .api
             .worker_post("api/auth/device", &tokens.access, json!({ "name": device_name() }))
             .await;
-        let stage = stage_after_device(tokens.profile.clone(), device).unwrap_or(Stage::SignedOut);
+        let preliminary = stage_after_device(tokens.profile.clone(), device).unwrap_or(Stage::SignedOut);
+        if matches!(preliminary, Stage::SignedIn { offline: false, .. }) {
+            let worker_profile = self
+                .api
+                .worker_json(reqwest::Method::GET, "api/profile", &tokens.access, None)
+                .await
+                .ok()
+                .filter(|value| account_profile_row(value).is_some());
+            if let Some(value) = worker_profile {
+                tokens.profile = account_profile(value, &tokens.profile);
+            } else if let Ok(user_id) = token_subject(&tokens.access) {
+                let path = format!("ethone_public_profiles?select=display_name,username,avatar_url&user_id=eq.{user_id}&limit=1");
+                if let Ok(value) = self.api.rest_json(reqwest::Method::GET, &path, &tokens.access, None, None).await {
+                    tokens.profile = account_profile(value, &tokens.profile);
+                }
+            }
+        }
+        let stage = match preliminary {
+            Stage::SignedIn { offline, .. } => Stage::SignedIn { profile: tokens.profile.clone(), offline },
+            Stage::MfaRequired { .. } => Stage::MfaRequired { profile: tokens.profile.clone() },
+            Stage::SignedOut => Stage::SignedOut,
+        };
         let mut inner = self.inner.lock().await;
         inner.remember = remember;
         if stage == Stage::SignedOut {
@@ -330,6 +429,47 @@ impl Auth {
 
     pub async fn worker_get(&self, path: &str) -> Result<Value, String> {
         self.worker_json(reqwest::Method::GET, path, None).await
+    }
+
+    pub async fn avatar_data(&self) -> Result<Option<String>, String> {
+        let (profile, online) = match self.current().await {
+            Stage::SignedIn { profile, offline } => (profile, !offline),
+            Stage::MfaRequired { profile } => (profile, false),
+            Stage::SignedOut => return Ok(None),
+        };
+        let avatar = if profile.avatar.is_some() {
+            profile.avatar
+        } else if online {
+            self.worker_get("api/profile")
+                .await
+                .ok()
+                .and_then(|value| account_profile(value, &profile).avatar)
+        } else {
+            None
+        };
+        let Some(url) = avatar else {
+            return Ok(None);
+        };
+        if !avatar_url_allowed(&url) {
+            return Err("Avatar non autorisé".into());
+        }
+        let response = self.api.client.get(url).send().await.map_err(|_| "Avatar indisponible")?;
+        if !response.status().is_success() || response.content_length().is_some_and(|length| length > MAX_AVATAR_BYTES) {
+            return Err("Avatar indisponible".into());
+        }
+        let media_type = response
+            .headers()
+            .get(reqwest::header::CONTENT_TYPE)
+            .and_then(|value| value.to_str().ok())
+            .and_then(|value| value.split(';').next())
+            .filter(|value| matches!(*value, "image/png" | "image/jpeg" | "image/webp" | "image/gif"))
+            .ok_or("Format d'avatar invalide")?
+            .to_string();
+        let bytes = response.bytes().await.map_err(|_| "Avatar indisponible")?;
+        if bytes.len() as u64 > MAX_AVATAR_BYTES {
+            return Err("Avatar trop lourd".into());
+        }
+        Ok(Some(format!("data:{media_type};base64,{}", BASE64_STANDARD.encode(bytes))))
     }
 
     pub async fn worker_json(&self, method: reqwest::Method, path: &str, body: Option<Value>) -> Result<Value, String> {
@@ -509,13 +649,62 @@ mod tests {
     }
 
     #[test]
+    fn token_subject_accepts_only_a_uuid_subject() {
+        let payload = BASE64_URL_SAFE_NO_PAD.encode(br#"{"sub":"12345678-1234-1234-1234-123456789abc"}"#);
+        assert_eq!(token_subject(&format!("x.{payload}.y")).unwrap(), "12345678-1234-1234-1234-123456789abc");
+        let invalid = BASE64_URL_SAFE_NO_PAD.encode(br#"{"sub":"../other"}"#);
+        assert!(token_subject(&format!("x.{invalid}.y")).is_err());
+    }
+
+    #[test]
     fn profile_prefers_the_username_then_the_address() {
-        let named = profile_from(&json!({"email":"a@b.c","user_metadata":{"full_name":"Rub","avatar_url":"https://x/y.png"}}));
+        let named = profile_from(&json!({"email":"a@b.c","user_metadata":{"full_name":"Rub","custom_avatar_url":"https://x/y.png"}}));
         assert_eq!(named.name, "Rub");
         assert_eq!(named.avatar.as_deref(), Some("https://x/y.png"));
         let bare = profile_from(&json!({"email":"rub@b.c","user_metadata":{"avatar_url":"http://x/y.png"}}));
         assert_eq!(bare.name, "rub");
         assert_eq!(bare.avatar, None);
+    }
+
+    #[test]
+    fn ethone_profile_replaces_provider_identity() {
+        let fallback = Profile { email: "rub@example.test".into(), name: "Discord name".into(), avatar: Some("https://cdn.discordapp.com/avatar.png".into()) };
+        let profile = account_profile(json!([{"display_name":"Rub Ethone","username":"rub","avatar_url":"/avatars/library/ethone.webp"}]), &fallback);
+        assert_eq!(profile.name, "Rub Ethone");
+        assert_eq!(profile.avatar.as_deref(), Some("https://ethone.dev/avatars/library/ethone.webp"));
+        assert!(account_profile(json!([]), &fallback).avatar.is_none());
+        assert!(!valid_profile_avatar("https://cdn.discordapp.com/avatar.png"));
+    }
+
+    #[test]
+    fn worker_profile_envelope_replaces_provider_identity() {
+        let fallback = Profile {
+            email: "rub@example.test".into(),
+            name: "Discord name".into(),
+            avatar: None,
+        };
+        let profile = account_profile(
+            json!({"data":{"data":{"display_name":"Rub","username":"rub","avatar_url":"/avatars/ethone-originals/quantum.webp"}}}),
+            &fallback,
+        );
+        assert_eq!(profile.name, "Rub");
+        assert_eq!(
+            profile.avatar.as_deref(),
+            Some("https://ethone.dev/avatars/ethone-originals/quantum.webp")
+        );
+    }
+
+    #[test]
+    fn avatar_proxy_accepts_only_ethone_profile_media() {
+        assert!(avatar_url_allowed(
+            "https://ethone.dev/avatars/library/crunchyroll/bocchi.webp"
+        ));
+        assert!(avatar_url_allowed(
+            "https://bvgifyzhpzkbrwdjrqsg.supabase.co/storage/v1/object/public/profile-media/user/avatar.webp"
+        ));
+        assert!(!avatar_url_allowed("https://cdn.discordapp.com/avatar.png"));
+        assert!(!avatar_url_allowed("https://ethone.dev/api/private"));
+        assert!(!avatar_url_allowed("http://127.0.0.1/avatar.png"));
     }
 
     #[test]

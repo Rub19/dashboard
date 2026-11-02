@@ -45,6 +45,7 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 - Ethone Setup 0.1.0 : build complet et scénario réel réussi dans Windows Sandbox le 2 novembre 2026. Installation personnalisée d'Ethone, Kairo 0.3.3 et HDV Tracker 1.5.0, réparation, refus d'un module inconnu, protection pendant l'exécution et désinstallation sélective vérifiés.
 - Connexion réelle confirmée par Rub19.
 - Interface Windows : Mica, navigation, lignes dépliables.
+- Refonte visuelle Desktop : vrai logo Ethone, nouvelle direction sombre verre/teal, nouvelles icônes Kairo et HDV Tracker. Le build release a été ouvert et l'Accueil ainsi que la page Applications ont été contrôlés visuellement le 2 novembre 2026.
 
 **Écrit mais pas vérifié en réel**
 
@@ -52,6 +53,8 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 - Agrandissement de la fenêtre, interface sombre avec Mica : à confirmer par Rub19.
 - Refonte du dashboard : carte des capacités, plan, navigation Accueil/Applications/Productivité et synthèse réelle écrits. Notes, Tâches et Calendrier passent par la session Rust et le Worker, avec lecture et mutations reliées. Le 2 novembre 2026, l'exécutable release a restauré la vraie session, affiché l'Accueil, les cinq applications, une vraie tâche Worker et l'état réel vide du Calendrier. Les formulaires de tâche et d'événement ont été ouverts puis annulés sans modifier les données. Onze tests frontend, contrôle TypeScript, build Vite, 50 tests Rust Desktop et 36 tests Rust Setup réussis. Les mutations réelles restent à vérifier sans sacrifier une donnée de Rub19.
 - Lancement `tauri dev` : Vite ignore désormais `src-tauri/target` et `setup/target`, car Windows verrouille les exécutables Rust et provoquait `EBUSY`. Test de régression ajouté.
+- Photo de profil Desktop : la source Discord est rejetée, le profil Ethone est relu par `/api/profile`, et Rust charge uniquement les médias Ethone autorisés pour contourner la protection `same-origin` des avatars. Les tests de priorité, d'enveloppe Worker et de liste blanche passent. Le build Tauri release `--no-bundle` réussit, mais l'affichage final de la photo Bocchi/Kita reste à confirmer manuellement sans contrôle d'écran.
+- Vérifications du lot identité du 2 novembre 2026 : 54 tests Rust Desktop, 11 tests frontend, contrôle TypeScript, build Vite et build Tauri release `--no-bundle` réussis.
 
 ## Reste à faire, dans l'ordre
 

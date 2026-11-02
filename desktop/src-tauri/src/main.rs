@@ -128,6 +128,11 @@ async fn auth_sign_out(state: State<'_, App>) -> Result<(), String> {
 }
 
 #[tauri::command]
+async fn profile_avatar(state: State<'_, App>) -> Result<Option<String>, String> {
+    state.auth.avatar_data().await
+}
+
+#[tauri::command]
 fn open_site(page: String, app: AppHandle) -> Result<(), String> {
     let path = match page.as_str() {
         "register" => "register",
@@ -367,6 +372,7 @@ fn main() {
             auth_oauth_cancel,
             auth_mfa,
             auth_sign_out,
+            profile_avatar,
             open_site,
             modules_local,
             modules_remote,

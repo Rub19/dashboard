@@ -3,17 +3,14 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { motion, useReducedMotion } from "framer-motion";
 import { t } from "./i18n";
 import { SPRING_PRESS } from "./motion";
+import ethoneLogo from "./assets/ethone-logo.png";
 
 export function Button({ variant = "ghost", className = "", ...props }: ComponentProps<typeof motion.button> & { variant?: "ghost" | "primary" }) {
   return <motion.button type="button" whileTap={{ scale: 0.97 }} transition={SPRING_PRESS} className={`btn ${variant === "primary" ? "primary" : ""} ${className}`} {...props} />;
 }
 
 export function BrandMark({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M17.5 5h-11v14h11M6.5 12h9" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <img className="brand-mark" src={ethoneLogo} width={size} height={size} alt="" aria-hidden="true" />;
 }
 
 export function WindowControls({ canMaximize = true }: { canMaximize?: boolean }) {

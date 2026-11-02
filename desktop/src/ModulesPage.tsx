@@ -48,7 +48,7 @@ function summary(modules: ModuleStatus[], checking: boolean, name: string) {
 }
 
 function AppIcon({ id }: { id: string }) {
-  const icon = ICONS[`./assets/modules/${id}.png`];
+  const icon = ICONS[`./assets/modules/${id}-v2.png`] ?? ICONS[`./assets/modules/${id}.png`];
   if (icon) return <img className="app-icon" src={icon} alt="" />;
   return <span className="app-icon glyph"><Gamepad2 size={20} /></span>;
 }

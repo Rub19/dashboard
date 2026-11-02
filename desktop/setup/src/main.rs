@@ -102,6 +102,12 @@ fn setup_link(page: String, app: AppHandle) -> Result<(), String> {
 }
 
 fn silent(modules: Vec<Module>, args: &[String]) -> i32 {
+    if args.iter().any(|arg| arg == "/UNINSTALL") {
+        let runtime = tokio::runtime::Runtime::new().expect("runtime");
+        let result = runtime.block_on(engine::uninstall());
+        println!("uninstall {}", result.as_ref().map_or_else(|e| e.as_str(), |_| "ok"));
+        return i32::from(result.is_err());
+    }
     let selected = args
         .iter()
         .find_map(|arg| arg.strip_prefix("/MODULES="))

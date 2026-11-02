@@ -217,8 +217,17 @@ pub async fn run_plan(modules: &[Module], plan: &Plan, emit: &(dyn Fn(Event) + S
         }
     }
     for id in &plan.modules {
-        let Some(module) = modules.iter().find(|m| &m.id == id) else { continue };
+        let Some(module) = modules.iter().find(|m| &m.id == id) else {
+            all_ok = false;
+            emit(Event::Done { id: id.clone(), ok: false, detail: "unknownModule".into() });
+            continue;
+        };
         emit(Event::Start { id: id.clone() });
+        let current = row(module).await;
+        if current.status == RowStatus::Installed {
+            emit(Event::Done { id: id.clone(), ok: true, detail: current.installed.unwrap_or_default() });
+            continue;
+        }
         let notify = |progress: install::Progress| emit(Event::Progress { id: id.clone(), progress });
         let result = install::run(module, VERSION, &notify).await;
         let detail = match &result {

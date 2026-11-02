@@ -51,6 +51,7 @@ export class AiQuotaManager {
     const requests = typeof stored?.requests === "number" ? stored.requests : 0;
     const fallbacks = typeof stored?.fallbacks === "number" ? stored.fallbacks : 0;
     const errors = typeof stored?.errors === "number" ? stored.errors : 0;
+    const { apiToken: _apiToken, accountId: _accountId, ...publicConfig } = this.config.cloudflare;
     return Object.freeze({
       date: new Date(todayMs).toISOString(),
       used,
@@ -58,7 +59,7 @@ export class AiQuotaManager {
       fallbacks,
       errors,
       status: this.config.cloudflare.budget > 0 ? used / this.config.cloudflare.budget : 0,
-      ...this.config.cloudflare,
+      ...publicConfig,
     });
   }
 

@@ -62363,4 +62363,45 @@ CHANGELOG_BY_LANG.en.unshift(v1_92_1_en);
 CHANGELOG_BY_LANG.es.unshift(v1_92_1_es);
 CHANGELOG_BY_LANG.de.unshift(v1_92_1_de);
 
+const v1_92_2_fr: ChangelogEntry = {
+  version: "v1.92.2",
+  date: "2026-11-02",
+  title: "Correctif de sécurité du service IA",
+  items: [
+    "Service : la réponse du quota IA n'inclut plus de données de configuration internes.",
+  ],
+};
+
+const v1_92_2_en: ChangelogEntry = {
+  version: "v1.92.2",
+  date: "2026-11-02",
+  title: "AI service security fix",
+  items: [
+    "Service: the AI quota response no longer includes internal configuration data.",
+  ],
+};
+
+const v1_92_2_es: ChangelogEntry = {
+  version: "v1.92.2",
+  date: "2026-11-02",
+  title: "Corrección de seguridad del servicio de IA",
+  items: [
+    "Servicio: la respuesta de la cuota de IA ya no incluye datos de configuración internos.",
+  ],
+};
+
+const v1_92_2_de: ChangelogEntry = {
+  version: "v1.92.2",
+  date: "2026-11-02",
+  title: "Sicherheitskorrektur des KI-Dienstes",
+  items: [
+    "Dienst: Die KI-Kontingentantwort enthält keine internen Konfigurationsdaten mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_92_2_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_92_2_en);
+CHANGELOG_BY_LANG.es.unshift(v1_92_2_es);
+CHANGELOG_BY_LANG.de.unshift(v1_92_2_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

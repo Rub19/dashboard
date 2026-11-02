@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.92.2 — 2026-11-02
+
+**Correctif de sécurité du service IA**
+
+- Service : la réponse du quota IA n'inclut plus de données de configuration internes.
+
 ## v1.92.1 — 2026-11-02
 
 **Correctifs de sécurité des dépendances**

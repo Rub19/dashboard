@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.92.2",
+    "date": "2026-11-02",
+    "title": "Correctif de sécurité du service IA",
+    "items": [
+      "Service : la réponse du quota IA n'inclut plus de données de configuration internes."
+    ]
+  },
+  {
     "version": "v1.92.1",
     "date": "2026-11-02",
     "title": "Correctifs de sécurité des dépendances",
@@ -612,15 +620,6 @@
       "Accueil façon tableau de bord : résumé du jour, cartes Focus, Mail, Agenda, Habitudes et Météo, et blocs personnalisables.",
       "Mail : archiver, corbeille, indésirable, bloquer, transférer, rechercher, et réglages (adresses ETHONE, signatures, transferts, expéditeurs bloqués).",
       "Textes des mails lisibles et sans espaces vides ; entrées d'écran sans effet de flou."
-    ]
-  },
-  {
-    "version": "v1.75.142",
-    "date": "2026-10-17",
-    "title": "Bot : clôture des signalements plus fiable",
-    "items": [
-      "Si le message privé au membre qui a signalé ne peut pas être envoyé, la clôture du signalement se termine quand même (classement dans le fil compris).",
-      "Les tests automatiques du bot passent de nouveau."
     ]
   }
 ]

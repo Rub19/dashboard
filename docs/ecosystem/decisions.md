@@ -52,7 +52,9 @@ Des processus séparés sous le même compte Windows peuvent lire les fichiers l
 
 ## 10. Direction visuelle
 
-Console : rail d'icônes, tableau dense, palette `Ctrl+K`, barre d'état. Le login et le motion reprennent ceux d'ethone.dev : mêmes courbes, ressorts et chorégraphies (`src/motion.ts`), fond lumineux, bordure de lumière. Réduction des animations, de la transparence et contraste élevé respectés.
+Application Windows, pas page web : Mica, Segoe UI Variable, navigation latérale repliable, couche de contenu arrondie, lignes dépliables, vraies icônes des applications. La connexion est une petite fenêtre de 440×660, tracée par la bordure de lumière d'Ethone, qui s'agrandit en application une fois connecté. Le motion reprend les courbes et ressorts d'ethone.dev (`src/motion.ts`), sans animation pour la palette `Ctrl+K`. Réduction des animations, de la transparence, contraste élevé et couleurs forcées respectés.
+
+Limite connue : la fenêtre étant sans bordure système, le menu Snap Layouts au survol du bouton Agrandir n'apparaît pas. Glisser vers les bords et double-cliquer sur la barre de titre sont pris en charge par Tauri, mais n'ont pas été testés.
 
 ## 11. Pas de SDK pour l'instant
 

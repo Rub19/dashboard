@@ -1,38 +1,73 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { AnimatePresence, motion } from "framer-motion";
-import { about, authState, Stage } from "./api";
-import { t } from "./i18n";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { AnimatePresence } from "framer-motion";
+import { authState, Stage } from "./api";
 import Login from "./Login";
-import { EASE_SNAP } from "./motion";
+import { readJson, write } from "./settings";
 import Shell from "./Shell";
-import { BrandMark } from "./ui";
+
+interface Saved {
+  width: number;
+  height: number;
+  maximized: boolean;
+}
+
+const DEFAULT_SIZE: Saved = { width: 1180, height: 760, maximized: false };
+
+function setWindowMode(signedIn: boolean, animate: boolean) {
+  const saved = readJson<Saved>("ethone-window") ?? DEFAULT_SIZE;
+  return invoke("window_mode", { mode: signedIn ? "app" : "login", ...saved, animate });
+}
 
 export default function App() {
   const [stage, setStage] = useState<Stage | null>(null);
-  const [version, setVersion] = useState("");
   const [callbackError, setCallbackError] = useState<string | null>(null);
+  const shown = useRef(false);
+  const signedIn = stage?.stage === "signedIn";
 
   useEffect(() => {
     authState().then(setStage, () => setStage({ stage: "signedOut" }));
-    about().then((info) => setVersion(info.version));
     const stop = listen<{ stage?: Stage; error?: string }>("auth-callback", ({ payload }) => {
       if (payload.stage) setStage(payload.stage);
       else if (payload.error) setCallbackError(payload.error);
     });
+    return () => void stop.then((unlisten) => unlisten());
+  }, []);
+
+  useEffect(() => {
+    if (stage === null) return;
+    void setWindowMode(signedIn, shown.current);
+    shown.current = true;
+  }, [stage === null, signedIn]);
+
+  useEffect(() => {
+    if (!signedIn) return;
+    const appWindow = getCurrentWindow();
+    let timer = 0;
+    const stop = appWindow.onResized(() => {
+      clearTimeout(timer);
+      timer = window.setTimeout(async () => {
+        const maximized = await appWindow.isMaximized();
+        const previous = readJson<Saved>("ethone-window") ?? DEFAULT_SIZE;
+        if (maximized) return write("ethone-window", JSON.stringify({ ...previous, maximized }));
+        const size = (await appWindow.innerSize()).toLogical(await appWindow.scaleFactor());
+        write("ethone-window", JSON.stringify({ width: size.width, height: size.height, maximized }));
+      }, 400);
+    });
     return () => {
+      clearTimeout(timer);
       void stop.then((unlisten) => unlisten());
     };
-  }, []);
+  }, [signedIn]);
+
+  if (stage === null) return null;
 
   return (
     <AnimatePresence mode="wait">
-      {stage === null ? (
-        <motion.div key="boot" className="boot" role="status" aria-label={t("loading")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 0.25, ease: EASE_SNAP }}>
-          <span className="brand-tile big"><BrandMark size={26} /></span>
-        </motion.div>
-      ) : stage.stage === "signedIn" ? (
-        <Shell key="shell" profile={stage.profile} offline={stage.offline} version={version} onSignedOut={() => setStage({ stage: "signedOut" })} />
+      {stage.stage === "signedIn" ? (
+        <Shell key="shell" profile={stage.profile} offline={stage.offline} onSignedOut={() => setStage({ stage: "signedOut" })} />
       ) : (
         <Login key="login" stage={stage} callbackError={callbackError} onStage={setStage} />
       )}

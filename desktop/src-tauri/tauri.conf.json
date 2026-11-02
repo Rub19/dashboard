@@ -15,16 +15,17 @@
       {
         "label": "main",
         "title": "Ethone",
-        "width": 1280,
-        "height": 820,
-        "minWidth": 900,
-        "minHeight": 600,
+        "width": 440,
+        "height": 660,
         "decorations": false,
-        "center": true
+        "center": true,
+        "transparent": true,
+        "visible": false,
+        "shadow": true
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src ipc: http://ipc.localhost"
     }
   },
   "bundle": {

@@ -1,7 +1,7 @@
 import { storedLanguage } from "./settings";
 
 const fr = {
-  modules: "Modules",
+  modules: "Applications",
   journal: "Journal",
   settings: "Réglages",
   about: "À propos",
@@ -132,12 +132,34 @@ const fr = {
   "error.network": "Connexion impossible. Vérifie ton accès à Internet.",
   "error.server": "Le service ne répond pas correctement. Réessaie dans un instant.",
   loading: "Chargement",
+  hello: "Bonjour {name}.",
+  allUpToDate: "Toutes tes applications sont à jour.",
+  oneUpdate: "1 mise à jour disponible.",
+  manyUpdates: "{count} mises à jour disponibles.",
+  versionLine: "Version {version}",
+  newVersionLine: "Version {version} disponible",
+  notInstalledLine: "Non installée",
+  latestLine: "Dernière version : {version}",
+  releaseNotes: "Notes de version",
+  details: "Détails",
+  toggleNav: "Afficher ou réduire le menu",
+  restore: "Restaurer",
+  signInTitle: "Connexion à Ethone",
+  signInSub: "Utilise ton compte Ethone pour accéder à tes applications.",
+  tabEmailCode: "Code par e-mail",
+  orWord: "ou",
+  emailPlaceholder: "nom@exemple.com",
+  legalLinks: "Informations légales",
+  "platformName.windows": "Windows",
+  "platformName.ios": "iOS",
+  "platformName.android": "Android",
+  "platformName.web": "Web",
 };
 
 export type Key = keyof typeof fr;
 
 const en: Record<Key, string> = {
-  modules: "Modules",
+  modules: "Apps",
   journal: "Log",
   settings: "Settings",
   about: "About",
@@ -268,9 +290,31 @@ const en: Record<Key, string> = {
   "error.network": "Can't connect. Check your Internet access.",
   "error.server": "The service isn't responding correctly. Try again in a moment.",
   loading: "Loading",
+  hello: "Hello {name}.",
+  allUpToDate: "All your apps are up to date.",
+  oneUpdate: "1 update available.",
+  manyUpdates: "{count} updates available.",
+  versionLine: "Version {version}",
+  newVersionLine: "Version {version} available",
+  notInstalledLine: "Not installed",
+  latestLine: "Latest version: {version}",
+  releaseNotes: "Release notes",
+  details: "Details",
+  toggleNav: "Show or collapse the menu",
+  restore: "Restore",
+  signInTitle: "Sign in to Ethone",
+  signInSub: "Use your Ethone account to reach your apps.",
+  tabEmailCode: "Email code",
+  orWord: "or",
+  emailPlaceholder: "name@example.com",
+  legalLinks: "Legal information",
+  "platformName.windows": "Windows",
+  "platformName.ios": "iOS",
+  "platformName.android": "Android",
+  "platformName.web": "Web",
 };
 
-export const lang = storedLanguage() ?? (navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en");
+export const lang = storedLanguage() ?? (navigator.languages.some((item) => item.toLowerCase().startsWith("fr")) ? "fr" : "en");
 const table = lang === "fr" ? fr : en;
 
 export function t(key: Key, values: Record<string, string> = {}): string {

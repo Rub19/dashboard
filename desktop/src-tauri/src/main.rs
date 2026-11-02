@@ -7,6 +7,7 @@ mod feed;
 mod install;
 mod journal;
 mod system;
+mod windowing;
 
 use action::{decide, Action, Facts};
 use catalog::Module;
@@ -14,9 +15,10 @@ use futures_util::future::join_all;
 use serde::Serialize;
 use std::path::PathBuf;
 use tauri::ipc::Channel;
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
+use tauri_plugin_window_state::StateFlags;
 use tokio::sync::Mutex;
 
 const ETHONE_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -214,6 +216,21 @@ async fn read_journal(app: AppHandle, state: State<'_, App>) -> Result<Vec<journ
 }
 
 #[tauri::command]
+fn window_setup(window: WebviewWindow) -> bool {
+    windowing::apply_mica(&window)
+}
+
+#[tauri::command]
+async fn window_mode(mode: String, width: f64, height: f64, maximized: bool, animate: bool, window: WebviewWindow) -> Result<(), String> {
+    windowing::set_mode(&window, mode == "login", width, height, maximized, animate)
+}
+
+#[tauri::command]
+fn window_theme(theme: String, window: WebviewWindow) -> Result<(), String> {
+    windowing::set_theme(&window, &theme)
+}
+
+#[tauri::command]
 fn about() -> serde_json::Value {
     serde_json::json!({ "version": ETHONE_VERSION, "catalogSchema": catalog::SCHEMA_VERSION })
 }
@@ -244,12 +261,21 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| focus_main(app)))
         .plugin(tauri_plugin_deep_link::init())
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_window_state::Builder::default().with_state_flags(StateFlags::POSITION).build())
         .plugin(tauri_plugin_opener::init())
         .manage(App { modules, installing: Mutex::new(()), auth: auth::Auth::new(api) })
         .setup(|app| {
             #[cfg(not(debug_assertions))]
             let _ = app.deep_link().register("ethone");
+            let fallback = app.handle().clone();
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                if let Some(window) = fallback.get_webview_window("main") {
+                    if !window.is_visible().unwrap_or(true) {
+                        let _ = window.show();
+                    }
+                }
+            });
             let handle = app.handle().clone();
             app.deep_link().on_open_url(move |event| {
                 for url in event.urls() {
@@ -274,6 +300,9 @@ fn main() {
             open_releases,
             install_module,
             read_journal,
+            window_setup,
+            window_mode,
+            window_theme,
             about
         ])
         .run(tauri::generate_context!())

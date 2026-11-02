@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, Boxes, ChevronRight, CircleUser, Info, LogOut, ScrollText, Search, Settings as SettingsIcon, Wifi, WifiOff } from "lucide-react";
+import { CircleUser, Info, LayoutGrid, LogOut, Menu, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import ModulesPage, { Busy } from "./ModulesPage";
-import { EASE_SNAP, panelSpring, revealUp, SPRING_PILL, stepEnter } from "./motion";
+import { EASE_SNAP, pageEnter, popover, SPRING_PILL } from "./motion";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
-import { BrandMark, startDrag, WindowControls } from "./ui";
+import { readJson, write } from "./settings";
+import { BrandMark, WindowControls } from "./ui";
 
 type Page = "modules" | "journal" | "settings" | "about";
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGES: { id: Page; icon: typeof Boxes }[] = [
-  { id: "modules", icon: Boxes },
+const MAIN_PAGES: { id: Page; icon: typeof LayoutGrid }[] = [
+  { id: "modules", icon: LayoutGrid },
   { id: "journal", icon: ScrollText },
+];
+const FOOT_PAGES: { id: Page; icon: typeof LayoutGrid }[] = [
   { id: "settings", icon: SettingsIcon },
   { id: "about", icon: Info },
 ];
@@ -32,22 +35,22 @@ function Avatar({ profile }: { profile: Profile }) {
   return <span className="avatar initial">{profile.name.slice(0, 1).toUpperCase()}</span>;
 }
 
-export default function Shell({ profile, offline, version, onSignedOut }: { profile: Profile; offline: boolean; version: string; onSignedOut: () => void }) {
+export default function Shell({ profile, offline, onSignedOut }: { profile: Profile; offline: boolean; onSignedOut: () => void }) {
   const [page, setPage] = useState<Page>("modules");
   const [modules, setModules] = useState<ModuleStatus[]>([]);
   const [checking, setChecking] = useState(false);
-  const [checkedAt, setCheckedAt] = useState<Date | null>(null);
   const [busy, setBusy] = useState<Record<string, Busy>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [palette, setPalette] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [compact, setCompact] = useState(() => readJson<boolean>("ethone-nav-compact") ?? false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
 
   const refresh = useCallback(async () => {
     setChecking(true);
     try {
       setModules(await modulesRemote());
-      setCheckedAt(new Date());
     } finally {
       setChecking(false);
     }
@@ -65,7 +68,10 @@ export default function Shell({ profile, offline, version, onSignedOut }: { prof
         event.preventDefault();
         setPalette((open) => !open);
       }
-      if (event.key === "Escape") setMenu(false);
+      if (event.key === "Escape" && menuRef.current?.querySelector(".menu")) {
+        setMenu(false);
+        menuButton.current?.focus();
+      }
     };
     const onDown = (event: PointerEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) setMenu(false);
@@ -78,6 +84,13 @@ export default function Shell({ profile, offline, version, onSignedOut }: { prof
     };
   }, []);
 
+  const toggleNav = () => {
+    setCompact((value) => {
+      write("ethone-nav-compact", JSON.stringify(!value));
+      return !value;
+    });
+  };
+
   const clearError = (id: string) => setErrors(({ [id]: _, ...rest }) => rest);
 
   const run = useCallback(
@@ -86,7 +99,7 @@ export default function Shell({ profile, offline, version, onSignedOut }: { prof
       clearError(id);
       try {
         if (status.action === "install" || status.action === "update") {
-          setBusy((all) => ({ ...all, [id]: { label: t("progress.downloading", { percent: "" }), value: null } }));
+          setBusy((all) => ({ ...all, [id]: { label: t("progress.downloading", { percent: "" }).trim(), value: null } }));
           await installModule(id, (progress) => setBusy((all) => ({ ...all, [id]: progressState(progress) })));
           await refresh();
         } else if (status.action === "releasePage") {
@@ -109,65 +122,64 @@ export default function Shell({ profile, offline, version, onSignedOut }: { prof
     () => [
       ...modules
         .filter((status) => CAN_RUN.includes(status.action))
-        .map((status) => ({ id: `run-${status.module.id}`, label: `${t(`action.${status.action}` as Key)} · ${status.module.name}`, run: () => void run(status) })),
-      ...PAGES.map(({ id }) => ({ id: `page-${id}`, label: t(id), run: () => setPage(id) })),
+        .map((status) => ({ id: `run-${status.module.id}`, label: `${t(`action.${status.action}` as Key)} : ${status.module.name}`, run: () => void run(status) })),
+      ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: t(id), run: () => setPage(id) })),
       { id: "refresh", label: t("refresh"), run: () => void refresh() },
       { id: "signout", label: t("signOut"), run: () => void signOut() },
     ],
     [modules, run, refresh],
   );
 
-  const installedCount = modules.filter((status) => status.installed).length;
-  const detected = modules.filter((status) => status.module.updatePolicy !== "web").length;
-  const reachable = modules.some((status) => status.latest) && !offline;
+  const navItem = ({ id, icon: Icon }: { id: Page; icon: typeof LayoutGrid }) => (
+    <button key={id} type="button" className={`nav-item ${page === id ? "on" : ""}`} aria-current={page === id ? "page" : undefined} title={compact ? t(id) : undefined} onClick={() => setPage(id)}>
+      {page === id && <motion.span layoutId="nav-pill" className="nav-pill" transition={SPRING_PILL} />}
+      <Icon size={18} />
+      <span className="nav-label">{t(id)}</span>
+    </button>
+  );
+
+  const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
 
   return (
-    <motion.div className="shell" initial={{ opacity: 0, scale: 0.985, filter: "blur(8px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} exit={{ opacity: 0, scale: 0.985, filter: "blur(6px)" }} transition={{ duration: 0.45, ease: EASE_SNAP }}>
-      <nav className="rail" aria-label={t("modules")}>
-        <span className="brand-tile" onMouseDown={startDrag}><BrandMark size={18} /></span>
-        {PAGES.map(({ id, icon: Icon }) => (
-          <motion.button key={id} type="button" whileTap={{ scale: 0.92 }} className={page === id ? "on" : ""} aria-label={t(id)} title={t(id)} aria-current={page === id ? "page" : undefined} onClick={() => setPage(id)}>
-            {page === id && <motion.span layoutId="rail-pill" className="rail-pill" transition={SPRING_PILL} />}
-            <Icon size={18} />
-          </motion.button>
-        ))}
-      </nav>
-
-      <header className="topbar" onMouseDown={startDrag}>
-        <div className="crumbs" onMouseDown={startDrag}>
-          <span className="muted">ETHONE</span>
-          <ChevronRight size={13} className="muted" />
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.b key={page} variants={stepEnter} initial="initial" animate="animate" exit="exit">{t(page)}</motion.b>
-          </AnimatePresence>
-        </div>
-        <button type="button" className="searchpill" onClick={() => setPalette(true)}>
+    <motion.div className={`shell ${compact ? "compact" : ""}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
+      <header className="titlebar" data-tauri-drag-region>
+        <button type="button" className="icon-btn" aria-label={t("toggleNav")} aria-expanded={!compact} onClick={toggleNav}><Menu size={17} /></button>
+        <span className="title-brand" data-tauri-drag-region><BrandMark size={16} />Ethone</span>
+        <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
           <span>{t("searchPlaceholder")}</span>
-          <kbd>Ctrl K</kbd>
+          <kbd>Ctrl+K</kbd>
         </button>
-        <div className="usermenu" ref={menuRef}>
-          <button type="button" className="userchip" aria-expanded={menu} aria-haspopup="menu" onClick={() => setMenu((open) => !open)}>
-            <Avatar profile={profile} />
-            <span>{profile.name}</span>
-          </button>
-          <AnimatePresence>
-            {menu && (
-              <motion.div role="menu" className="menu" variants={panelSpring} initial="initial" animate="animate" exit="exit" style={{ transformOrigin: "top right" }}>
-                <div className="menu-head"><b>{profile.name}</b><small className="muted">{profile.email}</small></div>
-                <button type="button" role="menuitem" onClick={() => { setMenu(false); void openSite("account"); }}><CircleUser size={15} />{t("manageAccount")}</button>
-                <button type="button" role="menuitem" onClick={signOut}><LogOut size={15} />{t("signOut")}</button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
         <WindowControls />
       </header>
 
-      <main className="content">
+      <nav className="nav" aria-label={t("modules")}>
+        <div className="nav-group">{MAIN_PAGES.map(navItem)}</div>
+        <div className="nav-group nav-foot">
+          {!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
+          {FOOT_PAGES.map(navItem)}
+          <div className="usermenu" ref={menuRef}>
+            <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={compact ? profile.name : undefined} onClick={() => setMenu((open) => !open)}>
+              <Avatar profile={profile} />
+              <span className="nav-label">{profile.name}</span>
+            </button>
+            <AnimatePresence>
+              {menu && (
+                <motion.div role="menu" className="menu" variants={popover} initial="initial" animate="animate" exit="exit" style={{ transformOrigin: "bottom left" }}>
+                  <div className="menu-head"><b>{profile.name}</b><small className="muted">{profile.email}</small></div>
+                  <button type="button" role="menuitem" autoFocus onClick={() => { setMenu(false); void openSite("account"); }}><CircleUser size={15} />{t("manageAccount")}</button>
+                  <button type="button" role="menuitem" onClick={signOut}><LogOut size={15} />{t("signOut")}</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </nav>
+
+      <main className="layer">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={page} variants={revealUp} initial="initial" animate="animate" exit="exit" className="page">
-            {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} checkedAt={checkedAt} busy={busy} errors={errors} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
+          <motion.div key={page} className="page" variants={pageEnter} initial="initial" animate="animate" exit="exit">
+            {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
             {page === "journal" && <JournalPage />}
             {page === "settings" && <SettingsPage profile={profile} onSignOut={signOut} />}
             {page === "about" && <AboutPage />}
@@ -175,16 +187,7 @@ export default function Shell({ profile, offline, version, onSignedOut }: { prof
         </AnimatePresence>
       </main>
 
-      <footer className="statusbar">
-        <span>v{version}</span>
-        <span><Activity size={12} />{t("installedCount", { count: String(installedCount), total: String(detected) })}</span>
-        <span className="status-right">
-          {reachable ? <Wifi size={12} className="ok" /> : <WifiOff size={12} />}
-          {checking ? t("checking") : reachable ? t("operational") : t("offline")}
-        </span>
-      </footer>
-
-      <AnimatePresence>{palette && <Palette commands={commands} onClose={() => setPalette(false)} />}</AnimatePresence>
+      {palette && <Palette commands={commands} onClose={() => setPalette(false)} />}
     </motion.div>
   );
 }

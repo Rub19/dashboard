@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { t } from "./i18n";
-import { panelSpring, SPRING_PILL } from "./motion";
 
 export interface Command {
   id: string;
@@ -24,6 +22,10 @@ export default function Palette({ commands, onClose }: { commands: Command[]; on
     dialog.current?.showModal();
   }, []);
 
+  useEffect(() => {
+    document.getElementById(`palette-${results[index]?.id}`)?.scrollIntoView({ block: "nearest" });
+  }, [index, results]);
+
   const pick = (command?: Command) => {
     if (!command) return;
     onClose();
@@ -32,46 +34,42 @@ export default function Palette({ commands, onClose }: { commands: Command[]; on
 
   return (
     <dialog ref={dialog} className="palette" aria-label={t("commands")} onClose={onClose} onCancel={(event) => { event.preventDefault(); onClose(); }} onClick={(event) => event.target === dialog.current && onClose()}>
-      <motion.div className="palette-panel" variants={panelSpring} initial="initial" animate="animate" exit="exit">
-        <div className="palette-input">
-          <Search size={16} className="muted" />
-          <input
-            autoFocus
-            value={query}
-            placeholder={t("searchPlaceholder")}
-            aria-label={t("searchPlaceholder")}
-            role="combobox"
-            aria-expanded="true"
-            aria-controls="palette-results"
-            aria-activedescendant={results[index] ? `palette-${results[index].id}` : undefined}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setIndex(0);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowDown") {
-                event.preventDefault();
-                setIndex((value) => Math.min(value + 1, results.length - 1));
-              }
-              if (event.key === "ArrowUp") {
-                event.preventDefault();
-                setIndex((value) => Math.max(value - 1, 0));
-              }
-              if (event.key === "Enter") pick(results[index]);
-            }}
-          />
-          <kbd>Esc</kbd>
-        </div>
-        <ul id="palette-results" role="listbox">
-          {results.map((command, position) => (
-            <li key={command.id} id={`palette-${command.id}`} role="option" aria-selected={position === index} onMouseEnter={() => setIndex(position)} onClick={() => pick(command)}>
-              {position === index && <motion.span layoutId="palette-pill" className="palette-pill" transition={SPRING_PILL} />}
-              <span>{command.label}</span>
-            </li>
-          ))}
-          {results.length === 0 && <li className="muted">{t("noResult")}</li>}
-        </ul>
-      </motion.div>
+      <div className="palette-input">
+        <Search size={16} className="muted" />
+        <input
+          autoFocus
+          value={query}
+          placeholder={t("searchPlaceholder")}
+          aria-label={t("searchPlaceholder")}
+          role="combobox"
+          aria-expanded="true"
+          aria-controls="palette-results"
+          aria-activedescendant={results[index] ? `palette-${results[index].id}` : undefined}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setIndex(0);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setIndex((value) => Math.min(value + 1, results.length - 1));
+            }
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              setIndex((value) => Math.max(value - 1, 0));
+            }
+            if (event.key === "Enter") pick(results[index]);
+          }}
+        />
+      </div>
+      <ul id="palette-results" role="listbox">
+        {results.map((command, position) => (
+          <li key={command.id} id={`palette-${command.id}`} role="option" aria-selected={position === index} onMouseEnter={() => setIndex(position)} onClick={() => pick(command)}>
+            {command.label}
+          </li>
+        ))}
+        {results.length === 0 && <li className="muted">{t("noResult")}</li>}
+      </ul>
     </dialog>
   );
 }

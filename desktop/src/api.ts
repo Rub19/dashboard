@@ -95,6 +95,16 @@ export const itemsList = (kind: ItemKind) => invoke<EthoneItem[]>("items_list", 
 export const itemsCreate = (kind: ItemKind, input: EthoneItemInput) => invoke<string>("items_create", { kind, input });
 export const itemsUpdate = (kind: ItemKind, id: string, input: EthoneItemInput) => invoke<void>("items_update", { kind, id, input });
 export const itemsDelete = (kind: ItemKind, id: string) => invoke<void>("items_delete", { kind, id });
+export interface RiotIdentity {
+  puuid: string;
+  name: string;
+  tag: string;
+  region: string;
+}
+export const riotStatus = () => invoke<RiotIdentity | null>("riot_status");
+export const riotLogin = () => invoke<void>("riot_login");
+export const riotLogout = () => invoke<void>("riot_logout");
+export const riotRank = <T,>() => invoke<T>("riot_rank");
 export const trackerIdentity = () => invoke<{ name: string; tag: string } | null>("tracker_identity");
 export const trackerSync = <T,>(name: string, tag: string) => invoke<T>("tracker_sync", { name, tag });
 export const trackerMatches = <T,>(puuid: string, limit: number) => invoke<T[]>("tracker_matches", { puuid, limit });

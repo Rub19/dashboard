@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, Crosshair, RefreshCw, WifiOff } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, RefreshCw, WifiOff } from "lucide-react";
 import { EthoneItem, itemsList, ModuleStatus, Profile } from "./api";
 import { dayProgress, connectionStatus, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
 import { errorText, Key, lang, t } from "./i18n";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
-import { Button } from "./ui";
+import { Button, ValorantMark } from "./ui";
 
 interface Props {
   profile: Profile;
@@ -134,7 +134,7 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
             <button type="button" className="link" onClick={onOpenApplications}>{t("seeApplications")}<ArrowRight size={13} /></button>
           </div>
           <button type="button" className="home-eval" onClick={onOpenTracker}>
-            <Crosshair size={20} />
+            <ValorantMark size={22} />
             <span><b>E:VAL</b><small>{t("evalTagline")}</small></span>
             <ArrowRight size={16} />
           </button>

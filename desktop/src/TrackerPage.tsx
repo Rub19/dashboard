@@ -1,12 +1,13 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
-import { RefreshCw, Search, Star, X } from "lucide-react";
-import { trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { listen } from "@tauri-apps/api/event";
+import { LogOut, RefreshCw, Search, Star, X } from "lucide-react";
+import { riotLogin, riotLogout, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, scoreboard, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, lang, t } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP } from "./motion";
 import { readJson, write } from "./settings";
-import { Button } from "./ui";
+import { Button, ValorantMark } from "./ui";
 
 const LOCAL_ID = "ethone-eval-riot-id";
 const MATCH_LIMIT = 25;
@@ -14,7 +15,10 @@ const MATCH_LIMIT = 25;
 interface Loaded {
   account: EvalAccount;
   matches: EvalMatch[];
+  linked: boolean;
 }
+
+type RiotRank = NonNullable<EvalAccount["mmr"]>;
 
 let memory: Loaded | null = null;
 
@@ -49,13 +53,13 @@ function RankDisc({ tier, progress, size }: { tier: number; progress: number; si
   );
 }
 
-function ProfileCard({ account }: { account: EvalAccount }) {
+function ProfileCard({ account, linked, onDisconnect }: { account: EvalAccount; linked: boolean; onDisconnect: () => void }) {
   const tier = account.mmr?.tier || account.tier || 0;
   const peak = account.mmr?.peakTier ?? 0;
   const rr = account.mmr?.rr ?? 0;
   return (
     <section className="eval-card eval-profile" aria-label={t("evalProfile")}>
-      <header><b>{account.name}<span>#{account.tag}</span></b></header>
+      <header className="eval-account"><b>{account.name}<span>#{account.tag}</span></b>{linked && <button type="button" className="icon-btn" aria-label={t("evalDisconnect")} title={t("evalDisconnect")} onClick={onDisconnect}><LogOut size={15} /></button>}</header>
       <div className="eval-banner">
         {account.card ? <img src={bannerImage(account.card)} alt="" /> : <span className="eval-banner-empty" />}
         {(account.level ?? 0) > 0 && <span className="eval-level">{account.level}</span>}
@@ -204,7 +208,7 @@ function MatchPanel({ match, puuid, onClose }: { match: EvalMatch; puuid: string
   );
 }
 
-function RiotIdForm({ error, onSubmit }: { error: string | null; onSubmit: (name: string, tag: string) => void }) {
+function RiotIdForm({ onSubmit }: { onSubmit: (name: string, tag: string) => void }) {
   const [value, setValue] = useState("");
   const [invalid, setInvalid] = useState(false);
   const submit = (event: FormEvent) => {
@@ -215,15 +219,27 @@ function RiotIdForm({ error, onSubmit }: { error: string | null; onSubmit: (name
   };
   return (
     <form className="eval-link" onSubmit={submit}>
-      <h1>E:VAL</h1>
-      <p>{t("evalLinkText")}</p>
-      <label htmlFor="riot-id">{t("evalRiotId")}</label>
+      <label htmlFor="riot-id">{t("evalOtherPlayer")}</label>
       <div>
         <input id="riot-id" value={value} spellCheck={false} autoComplete="off" placeholder={t("evalRiotPlaceholder")} aria-invalid={invalid} onChange={(event) => setValue(event.target.value)} />
-        <Button type="submit" variant="primary"><Search size={15} />{t("evalSearch")}</Button>
+        <Button type="submit"><Search size={15} />{t("evalSearch")}</Button>
       </div>
-      {(invalid || error) && <p className="bad" role="alert">{invalid ? t("evalRiotInvalid") : error}</p>}
+      {invalid && <p className="bad" role="alert">{t("evalRiotInvalid")}</p>}
     </form>
+  );
+}
+
+function Connect({ error, connecting, onConnect, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onSearch: (name: string, tag: string) => void }) {
+  return (
+    <div className="eval-connect">
+      <ValorantMark size={44} />
+      <h1>E:VAL</h1>
+      <p>{t("evalConnectText")}</p>
+      <Button variant="primary" disabled={connecting} onClick={onConnect}>{t("evalConnectRiot")}</Button>
+      {connecting && <p role="status">{t("evalConnecting")}</p>}
+      {error && <p className="bad" role="alert">{error}</p>}
+      <RiotIdForm onSubmit={onSearch} />
+    </div>
   );
 }
 
@@ -234,45 +250,60 @@ export default function TrackerPage() {
   const [error, setError] = useState<string | null>(null);
   const [needsId, setNeedsId] = useState(false);
   const [open, setOpen] = useState<EvalMatch | null>(null);
+  const [connecting, setConnecting] = useState(false);
   const firstLoad = useRef(!memory);
 
-  const load = useCallback(async (name: string, tag: string) => {
+  const load = useCallback(async (name: string, tag: string, linkedId: string | null) => {
     const account = await trackerSync<EvalAccount>(name, tag);
-    const matches = await trackerMatches<EvalMatch>(account.puuid, MATCH_LIMIT);
-    memory = { account, matches };
+    const [matches, rank] = await Promise.all([
+      trackerMatches<EvalMatch>(account.puuid, MATCH_LIMIT),
+      linkedId?.toLowerCase() === account.puuid.toLowerCase() ? riotRank<RiotRank>().catch(() => null) : null,
+    ]);
+    if (rank && (rank.tier ?? 0) > 0) account.mmr = { ...account.mmr, ...rank };
+    memory = { account, matches, linked: Boolean(linkedId) };
     setData(memory);
     setNeedsId(false);
     setError(null);
-  }, []);
-
-  const identity = useCallback(async () => {
-    const local = readJson<{ name: string; tag: string }>(LOCAL_ID);
-    return local ?? (await trackerIdentity());
   }, []);
 
   const start = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const id = await identity();
-      if (id) await load(id.name, id.tag);
+      const riot = await riotStatus();
+      const id = riot ?? readJson<{ name: string; tag: string }>(LOCAL_ID) ?? (await trackerIdentity());
+      if (id) await load(id.name, id.tag, riot?.puuid ?? null);
       else setNeedsId(true);
     } catch (reason) {
       setError(errorText(reason));
     } finally {
       setLoading(false);
     }
-  }, [identity, load]);
+  }, [load]);
 
   useEffect(() => {
     if (!memory) void start();
+  }, [start]);
+
+  useEffect(() => {
+    const stop = listen<{ status: string; message: string | null }>("riot-login", ({ payload }) => {
+      setConnecting(false);
+      if (payload.status === "linked") {
+        memory = null;
+        setData(null);
+        void start();
+      } else if (payload.status === "failed") {
+        setError(errorText(payload.message));
+      }
+    });
+    return () => void stop.then((unlisten) => unlisten());
   }, [start]);
 
   const refresh = async () => {
     if (!data) return;
     setRefreshing(true);
     try {
-      await load(data.account.name, data.account.tag);
+      await load(data.account.name, data.account.tag, data.linked ? data.account.puuid : null);
     } catch (reason) {
       setError(errorText(reason));
     } finally {
@@ -284,13 +315,29 @@ export default function TrackerPage() {
     setLoading(true);
     setError(null);
     try {
-      await load(name, tag);
+      await load(name, tag, null);
       write(LOCAL_ID, JSON.stringify({ name, tag }));
     } catch (reason) {
       setError(errorText(reason));
     } finally {
       setLoading(false);
     }
+  };
+
+  const connect = () => {
+    setConnecting(true);
+    setError(null);
+    riotLogin().catch((reason) => {
+      setConnecting(false);
+      setError(errorText(reason));
+    });
+  };
+
+  const disconnect = () => {
+    memory = null;
+    setData(null);
+    write(LOCAL_ID, "null");
+    riotLogout().catch((reason) => setError(errorText(reason))).finally(() => setNeedsId(true));
   };
 
   const closeMatch = useCallback(() => setOpen(null), []);
@@ -303,7 +350,7 @@ export default function TrackerPage() {
       </div>
     );
   }
-  if (needsId) return <RiotIdForm error={error} onSubmit={(name, tag) => void search(name, tag)} />;
+  if (needsId) return <Connect error={error} connecting={connecting} onConnect={connect} onSearch={(name, tag) => void search(name, tag)} />;
   if (!data) {
     return (
       <div className="eval-error" role="alert">
@@ -314,13 +361,13 @@ export default function TrackerPage() {
     );
   }
 
-  const { account, matches } = data;
+  const { account, matches, linked } = data;
   const history = account.mmr?.history ?? [];
   return (
     <>
       <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
-          <ProfileCard account={account} />
+          <ProfileCard account={account} linked={linked} onDisconnect={disconnect} />
           {matches.length > 0 && <StatGrid matches={matches} puuid={account.puuid} />}
         </div>
         <div className="eval-main">

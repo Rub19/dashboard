@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CircleUser, Crosshair, House, Info, LayoutGrid, ListChecks, LogOut, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
+import { CircleUser, House, Info, LayoutGrid, ListChecks, LogOut, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
@@ -11,11 +11,11 @@ import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
 import ProductivityPage from "./ProductivityPage";
 import TrackerPage from "./TrackerPage";
-import { BrandMark, WindowControls } from "./ui";
+import { BrandMark, ValorantMark, WindowControls } from "./ui";
 
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGE_ICONS: Record<Page, typeof LayoutGrid> = { home: House, modules: LayoutGrid, productivity: ListChecks, tracker: Crosshair, journal: ScrollText, settings: SettingsIcon, about: Info };
+const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, tracker: ValorantMark, journal: ScrollText, settings: SettingsIcon, about: Info };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -160,7 +160,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   return (
     <motion.div className="shell" data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
       <header className="titlebar" data-tauri-drag-region>
-        <span className="title-brand" data-tauri-drag-region><BrandMark size={24} /><b>{page === "tracker" ? "E:VAL" : "Ethone"}</b></span>
+        <span className="title-brand" data-tauri-drag-region>{page === "tracker" ? <span className="title-valorant"><ValorantMark size={20} /></span> : <BrandMark size={24} />}<b>{page === "tracker" ? "E:VAL" : "Ethone"}</b></span>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
           <span>{t("searchPlaceholder")}</span>

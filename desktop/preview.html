@@ -40,6 +40,7 @@
           if (command === "auth_state") return { stage: "signedIn", profile, offline: false };
           if (command === "modules_local" || command === "modules_remote") return modules;
           if (command === "items_list") { await pause(300); return items[args.kind]; }
+          if (command === "riot_status") return null;
           if (command === "tracker_identity") return params.has("noid") ? null : { name: "Exemple", tag: "0000" };
           if (command === "tracker_sync") { await pause(500); if (params.has("fail")) throw "Service indisponible"; return account; }
           if (command === "tracker_matches") return matches;

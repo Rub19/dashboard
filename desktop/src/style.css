@@ -217,6 +217,8 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .nav-item:hover { color: var(--fg); }
 .nav-item:active svg { transform: scale(.88); }
 .nav-item.on { color: var(--fg); font-weight: 600; }
+.nav-item .valorant-mark { color: #ff4655; }
+.title-valorant { display: grid; place-items: center; width: 24px; height: 24px; color: #ff4655; }
 .nav-trace { position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 0 3px 3px 0; background: var(--trace); box-shadow: 0 0 14px var(--trace-glow); }
 .nav-label { max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nav-note { display: grid; justify-items: center; gap: 3px; padding: 6px 2px; font-size: 11px; color: var(--muted); }
@@ -277,7 +279,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .home-app-text b { font-weight: 600; }
 .home-app-text small { font-size: 12px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .home-eval { display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 6px; padding: 12px 14px; border-radius: var(--r-m); background: #000; color: #fff; text-align: left; transition: transform .16s var(--ease); }
-.home-eval svg:first-child { color: #fd5b68; }
+.home-eval svg:first-child { color: #ff4655; }
 .home-eval span { flex: 1; display: grid; min-width: 0; }
 .home-eval small { color: #a3a3ac; font-size: 12px; line-height: 16px; }
 .home-eval:active { transform: scale(.985); }
@@ -353,6 +355,14 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 }
 .eval-skeleton { display: block; height: 180px; border-radius: 20px; background: var(--eval-card); animation: pulse 1.2s ease-in-out infinite alternate; }
 .eval-skeleton.tall { height: 340px; }
+.eval-connect { display: grid; justify-items: start; gap: 12px; max-width: 520px; margin: 12vh auto 0; }
+.eval-connect .valorant-mark { color: #ff4655; }
+.eval-connect h1 { font: 750 36px/44px var(--display); letter-spacing: -.02em; }
+.eval-connect > p { color: var(--eval-muted); text-wrap: pretty; }
+.eval-connect .eval-link { margin: 12px 0 0; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+.eval-connect .bad { color: var(--danger); }
+.eval-account { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.eval-account .link { font-size: 12px; }
 .eval-link, .eval-error { display: grid; gap: 8px; max-width: 460px; margin: 12vh auto 0; }
 .eval-link h1, .eval-error h1 { font: 750 36px/44px var(--display); letter-spacing: -.02em; }
 .eval-link > p:not(.bad), .eval-error p { color: var(--eval-muted); }

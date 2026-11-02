@@ -6,6 +6,7 @@ mod catalog;
 mod feed;
 mod install;
 mod journal;
+mod riot;
 mod system;
 mod sync;
 mod tracker;
@@ -30,6 +31,12 @@ struct App {
     modules: Vec<Module>,
     installing: Mutex<()>,
     auth: auth::Auth,
+}
+
+static RIOT: std::sync::OnceLock<riot::Riot> = std::sync::OnceLock::new();
+
+fn riot_session() -> &'static riot::Riot {
+    RIOT.get_or_init(riot::Riot::new)
 }
 
 #[derive(Serialize)]
@@ -193,6 +200,35 @@ async fn items_update(kind: String, id: String, mut input: sync::ItemInput, stat
     let mut body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
     body.as_object_mut().ok_or("Donnée invalide")?.insert("id".into(), serde_json::Value::String(id));
     sync::parse_mutated(state.auth.worker_json(reqwest::Method::PATCH, kind.path(), Some(body)).await?)
+}
+
+#[tauri::command]
+async fn riot_status(state: State<'_, App>) -> Result<Option<riot::Identity>, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    Ok(riot::load_identity())
+}
+
+#[tauri::command]
+async fn riot_login(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().login(app).await
+}
+
+#[tauri::command]
+async fn riot_logout(app: tauri::AppHandle) -> Result<(), String> {
+    riot_session().logout(&app).await
+}
+
+#[tauri::command]
+async fn riot_rank(app: tauri::AppHandle, state: State<'_, App>) -> Result<riot::Rank, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().rank(&app).await
 }
 
 #[tauri::command]
@@ -398,6 +434,10 @@ fn main() {
             items_create,
             items_update,
             items_delete,
+            riot_status,
+            riot_login,
+            riot_logout,
+            riot_rank,
             tracker_identity,
             tracker_sync,
             tracker_matches,

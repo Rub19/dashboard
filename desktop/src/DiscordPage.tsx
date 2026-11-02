@@ -305,6 +305,7 @@ export default function DiscordPage() {
           </select>
         )}
         <label className="discord-search"><Search size={14} /><input value={query} placeholder={tr("Chercher un module", "Find a module")} aria-label={tr("Chercher un module", "Find a module")} onChange={(event) => setQuery(event.target.value)} /></label>
+        <button type="button" className={`discord-home ${moduleId ? "" : "on"}`} onClick={() => setModuleId(null)}>{tr("Vue d'ensemble", "Overview")}</button>
         <nav aria-label={tr("Modules Discord", "Discord modules")}>
           {DISCORD_GROUPS.map((group) => {
             const items = modules.filter((item) => item.group === group);
@@ -317,7 +318,6 @@ export default function DiscordPage() {
             );
           })}
         </nav>
-        <button type="button" className={`discord-home ${moduleId ? "" : "on"}`} onClick={() => setModuleId(null)}>{tr("Vue d'ensemble", "Overview")}</button>
         <button type="button" className="link discord-logout" onClick={() => void botLogout().then(() => setLinked(false))}><LogOut size={13} />{tr("Déconnecter Discord", "Disconnect Discord")}</button>
       </aside>
       <div className="discord-main">

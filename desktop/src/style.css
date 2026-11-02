@@ -703,7 +703,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .kit-empty b { font: 650 17px/24px var(--display); }
 .kit-empty p { max-width: 460px; color: var(--muted); }
 .kit-empty .btn { margin-top: 10px; }
-.kit-tabs { display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--control); }
+.kit-tabs { display: inline-flex; justify-self: start; width: fit-content; gap: 2px; padding: 3px; border-radius: 12px; background: var(--control); }
 .kit-tabs button { position: relative; height: 32px; padding: 0 16px; border-radius: 9px; color: var(--muted); transition: color .1s ease; }
 .kit-tabs button:hover, .kit-tabs button.on { color: var(--fg); }
 .kit-tab-pill { position: absolute; inset: 0; border-radius: 9px; background: var(--control-hover); box-shadow: inset 0 0 0 1px var(--line); }

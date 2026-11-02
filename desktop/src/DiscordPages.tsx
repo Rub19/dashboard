@@ -12,6 +12,9 @@ const when = (value: unknown) => {
   return text(value) && !Number.isNaN(date.getTime()) ? date.toLocaleString(lang, { dateStyle: "short", timeStyle: "short" }) : "";
 };
 
+const LABELS: Record<string, string> = { pending: "En attente", under_review: "À l'étude", planned: "Planifiée", accepted: "Acceptée", in_progress: "En cours", completed: "Terminée", rejected: "Refusée", duplicate: "Doublon", open: "Ouvert", opened: "Ouvert", closed: "Fermé", claimed: "Pris en charge", active: "En cours", running: "En cours", ongoing: "En cours", ended: "Terminé", cancelled: "Annulé", reverted: "Annulée", high: "Haute", urgent: "Urgente", medium: "Moyenne", normal: "Normale", low: "Basse" };
+const label = (value: unknown) => (lang === "fr" ? LABELS[text(value).toLowerCase()] ?? text(value) : text(value));
+
 function useAction(reload: () => void) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -151,8 +154,8 @@ function Tickets({ guild }: { guild: string }) {
               <li key={text(row.id)}>
                 <button type="button" onClick={() => setOpen(row)}>
                   <span><b>{text(row.categoryName) || tr("Ticket", "Ticket")}{text(row.tag) ? ` ${text(row.tag)}` : ""}</b><small>{text(row.userTag) || text(row.authorTag)}{when(row.createdAt) ? `, ${when(row.createdAt)}` : ""}</small></span>
-                  {text(row.priority) && <Badge tone={/high|urgent/i.test(text(row.priority)) ? "bad" : undefined}>{text(row.priority)}</Badge>}
-                  <Badge tone={/closed|ferm/i.test(text(row.status)) ? undefined : "good"}>{text(row.status)}</Badge>
+                  {text(row.priority) && <Badge tone={/high|urgent/i.test(text(row.priority)) ? "bad" : undefined}>{label(row.priority)}</Badge>}
+                  <Badge tone={/closed|ferm/i.test(text(row.status)) ? undefined : "good"}>{label(row.status)}</Badge>
                 </button>
               </li>
             ))}
@@ -192,7 +195,7 @@ function Giveaways({ guild }: { guild: string }) {
                 <li key={id}>
                   <div>
                     <span><b>{text(row.prize)}</b><small>{tr(`${entries} participants, ${text(row.winnerCount)} gagnant(s)`, `${entries} entries, ${text(row.winnerCount)} winner(s)`)}{when(row.endsAt) ? `, ${when(row.endsAt)}` : ""}</small></span>
-                    <Badge tone={active ? "good" : undefined}>{text(row.status)}</Badge>
+                    <Badge tone={active ? "good" : undefined}>{label(row.status)}</Badge>
                     {active ? <Confirm label={tr("Terminer", "End")} disabled={action.busy} onConfirm={() => act(id, "end")} /> : <Button disabled={action.busy} onClick={() => act(id, "reroll")}>{tr("Retirer un gagnant", "Reroll")}</Button>}
                   </div>
                 </li>
@@ -221,7 +224,7 @@ function Suggestions({ guild }: { guild: string }) {
               <li key={text(row.id)}>
                 <div>
                   <span><b>{text(row.title) || text(row.suggestion)}</b><small>{text(row.authorTag)}, ▲ {text(row.upvotesCount) || 0}, ▼ {text(row.downvotesCount) || 0}</small></span>
-                  <Badge tone={text(row.status) === "accepted" ? "good" : text(row.status) === "rejected" ? "bad" : undefined}>{text(row.status)}</Badge>
+                  <Badge tone={text(row.status) === "accepted" ? "good" : text(row.status) === "rejected" ? "bad" : undefined}>{label(row.status)}</Badge>
                   <Button disabled={action.busy} onClick={() => set(text(row.id), "accepted")}>{tr("Accepter", "Accept")}</Button>
                   <Button disabled={action.busy} className="danger" onClick={() => set(text(row.id), "rejected")}>{tr("Refuser", "Reject")}</Button>
                 </div>

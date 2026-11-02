@@ -37,7 +37,7 @@
         transformCallback: () => 0,
         unregisterCallback: () => undefined,
         async invoke(command, args) {
-          if (command === "auth_state") return { stage: "signedIn", profile, offline: false };
+          if (command === "auth_state") return params.has("login") ? { stage: "signedOut" } : { stage: "signedIn", profile, offline: false };
           if (command === "modules_local" || command === "modules_remote") return modules;
           if (command === "items_list") { await pause(300); return items[args.kind]; }
           if (command === "tracker_identity") return params.has("noid") ? null : { name: "Exemple", tag: "0000" };
@@ -53,7 +53,27 @@
           }
           if (command === "read_journal") return [];
           if (command === "riot_friends") return [{ id: "1", name: "Ami", tag: "0000", online: true, product: "valorant", state: "INGAME", queue: "competitive", tier: 18, partySize: 2, card: "" }, { id: "2", name: "Autre", tag: "0001", online: false, product: "", state: "", queue: "", tier: 0, partySize: 1, card: "" }];
-          if (command === "bot_status") return false;
+          if (command === "bot_status") return params.has("discord");
+          if (command === "bot_call") {
+            const p = args.path.split("?")[0];
+            if (p === "api/guilds") return { guilds: [{ id: "1", name: "Serveur d'exemple", icon: null, botPresent: true }] };
+            if (p.endsWith("/1/overview")) return { guild: { memberCount: 1284, channelsCount: 42, rolesCount: 18 }, botStatus: { online: true, pingMs: 88, uptimeMs: 93000000 }, stats: { totalCommands: 5210, commandsToday: 37, recentActivities: [{ id: "a", message: "Exemple d'activité", timestamp: new Date().toISOString() }] } };
+            if (p.endsWith("/modules")) return { modules: [{ id: "automod", name: "AutoMod", description: "Filtre les messages", enabled: true }, { id: "welcome", name: "Accueil", description: "Message de bienvenue", enabled: false }, { id: "leveling", name: "Niveaux", description: "Rôles et XP", enabled: true }] };
+            if (p.endsWith("/server/channels")) return { categories: [{ id: "c1", name: "Général", channels: [{ id: "10", name: "general" }, { id: "11", name: "logs" }] }] };
+            if (p.endsWith("/server/roles")) return { roles: [{ id: "20", name: "Modérateur" }, { id: "21", name: "Membre" }] };
+            if (p.endsWith("/moderation/cases")) return { cases: [{ caseNumber: 12, userTag: "Membre#0001", userId: "5", action: "BAN", reason: "Exemple de raison assez longue pour voir le retour à la ligne dans le tableau", moderatorTag: "Modo#0002", createdAt: new Date().toISOString(), status: "active" }, { caseNumber: 11, userTag: "Autre#0003", userId: "6", action: "WARN", reason: "Exemple", moderatorTag: "Modo#0002", createdAt: new Date().toISOString(), status: "reverted" }] };
+            if (p.endsWith("/moderation/bans")) return { bans: [{ userId: "5", userTag: "Membre#0001", reason: "Exemple" }] };
+            if (p.endsWith("/server/members")) return { total: 2, totalPages: 1, members: [{ id: "7", displayName: "Exemple", username: "exemple", avatar: "", bot: false }, { id: "8", displayName: "Etho", username: "etho", avatar: "", bot: true, communicationDisabledUntil: "" }] };
+            if (p.endsWith("/tickets/list")) return { tickets: [{ id: "t1", categoryName: "Support", tag: "#12", userTag: "Membre#0001", createdAt: new Date().toISOString(), priority: "high", status: "open", description: "Exemple de demande" }] };
+            if (p.endsWith("/giveaways/list")) return { giveaways: [{ id: "g1", prize: "Nitro", winnerCount: 1, participants: ["a", "b"], endsAt: new Date(Date.now() + 86400000).toISOString(), status: "active" }] };
+            if (p.endsWith("/suggestions/list")) return { suggestions: [{ id: "s1", title: "Ajouter un salon", authorTag: "Membre#0001", upvotesCount: 4, downvotesCount: 1, status: "pending" }] };
+            if (p.endsWith("/logs/events")) return { events: [{ type: "MESSAGE_DELETE", actor: { tag: "Modo#0002" }, target: { tag: "Membre#0001" }, reason: "Exemple", severity: "high", timestamp: new Date().toISOString() }] };
+            if (p.endsWith("/music/state")) return { state: { currentTrack: { title: "Morceau d'exemple", author: "Artiste" }, paused: false, volume: 60, queue: [{ title: "Suivant", author: "Artiste" }] } };
+            if (p.endsWith("/automod/overview")) return { enabled: true, rulesCount: 3, actionsToday: 2, guildId: "1" };
+            if (p.endsWith("/automod/rules")) return { rules: [{ id: "r1", name: "Anti-spam", status: "active", type: "spam" }] };
+            if (p.endsWith("/automod/history")) return { history: [] };
+            return { enabled: true, logChannelId: "11", staffRoleId: "20", ignoredRoleIds: ["21"], message: "Bienvenue !", threshold: 5, nested: { active: false, retries: 3 } };
+          }
           if (command === "open_external") return null;
           if (command === "catalog_get") return { data: [] };
           if (command === "rest_call") return [];

@@ -131,7 +131,7 @@ function Overview({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, spec.overview ?? "/")), [spec.id, guild]);
   if (state.error) return null;
   if (!state.data) return <Skeletons count={1} height={28} />;
-  const facts = factsOf(state.data);
+  const facts = factsOf(state.data).filter((fact) => /^(total|active|pending|live|open)|(Count|Today|Rate|Score)$/.test(fact.key));
   if (facts.length === 0) return null;
   return <dl className="discord-facts">{facts.map((fact) => <div key={fact.key}><dt>{humanize(fact.key)}</dt><dd>{displayValue(fact.value)}</dd></div>)}</dl>;
 }
@@ -217,7 +217,7 @@ function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) =
         </dl>
       )}
       <section className="discord-section">
-        <h2>{tr("Modules du serveur", "Server modules")}</h2>
+        <h2>{tr("Modules du serveur", "Server modules")}{modules.data?.modules && <small className="discord-count">{tr(`${modules.data.modules.filter((item) => item.enabled).length} actifs sur ${modules.data.modules.length}`, `${modules.data.modules.filter((item) => item.enabled).length} on, ${modules.data.modules.length} total`)}</small>}</h2>
         {error && <ErrorBox message={error} />}
         {!modules.data ? (modules.loading ? <Skeletons count={4} height={56} /> : modules.error ? <ErrorBox message={modules.error} onRetry={modules.reload} /> : null) : (
           <Stagger className="discord-modules">

@@ -1,9 +1,9 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
-import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
+import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Skeletons, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
@@ -159,11 +159,11 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
       {section === "profile" && <ProfileEditor />}
       {section === "profiles" && <Remote title={tr("Espaces de profil", "Profile spaces")} path="api/profiles" actions={[{ title: tr("Activer", "Activate"), run: (row) => apiData("api/profiles/activate", "POST", { id: asRecord(row).id }) }]} />}
       {section === "connections" && <Connections />}
-      {section === "devices" && <Remote title={tr("Appareils", "Devices")} path="api/auth/devices" actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/device/revoke", "POST", { deviceId: asRecord(row).id }) }]} />}
+      {section === "devices" && <Devices />}
       {section === "twofactor" && <TwoFactor />}
       {section === "passkeys" && <Remote title={tr("Clés d'accès", "Passkeys")} path="api/auth/passkeys" text={tr("Les clés d'accès se créent sur ethone.dev, car elles sont liées à ce domaine.", "Passkeys are created on ethone.dev because they are tied to that domain.")} actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/passkey/revoke", "POST", { passkeyId: asRecord(row).id }) }]} />}
-      {section === "events" && <Remote title={tr("Journal de sécurité", "Security log")} path="api/auth/security-events?limit=20" />}
-      {section === "ai" && <><RemoteFields title={tr("État de l'IA", "AI status")} path="api/ai/status" /><RemoteFields title={tr("Quota", "Quota")} path="api/ai/quota" /></>}
+      {section === "events" && <SecurityLog />}
+      {section === "ai" && <AiStatus />}
     </Split>
   );
 }
@@ -201,6 +201,65 @@ function SharedSpaces() {
   );
 }
 
+function Devices() {
+  const state = useLoad(() => apiCall<Json>("api/auth/devices"));
+  const revoke = { title: tr("Révoquer", "Revoke"), destructive: true, run: (row: Json) => apiData("api/auth/device/revoke", "POST", { deviceId: asRecord(row).id }) };
+  return (
+    <>
+      <PageHead title={tr("Appareils", "Devices")} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>
+        {(data) => {
+          const groups = new Map<string, Json[]>();
+          for (const row of firstArray(data)) groups.set(rowTitle(row), [...(groups.get(rowTitle(row)) ?? []), row]);
+          return <div className="device-groups">{[...groups].map(([name, rows]) => <details key={name} className="generic-details"><summary>{name}<small>{tr(`${rows.length} connexion${rows.length > 1 ? "s" : ""}`, `${rows.length} session${rows.length > 1 ? "s" : ""}`)}</small></summary><JsonList rows={rows} actions={[revoke]} onChanged={state.reload} /></details>)}</div>;
+        }}
+      </Status>
+    </>
+  );
+}
+
+const SECURITY_LABELS: Record<string, string> = { device_added: "Nouvel appareil connecté", device_revoked: "Appareil révoqué", signed_in: "Connexion", signed_out: "Déconnexion", password_changed: "Mot de passe modifié", mfa_enabled: "Double authentification activée", mfa_disabled: "Double authentification désactivée", passkey_added: "Clé d'accès ajoutée", passkey_removed: "Clé d'accès retirée" };
+
+function SecurityLog() {
+  const state = useLoad(() => apiData<{ id?: string; kind?: string; created_at?: string }[]>("api/auth/security-events?limit=20"));
+  return (
+    <>
+      <PageHead title={tr("Journal de sécurité", "Security log")} text={tr("Les 20 derniers événements.", "The last 20 events.")} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>{(rows) => rows.length === 0 ? <Empty title={tr("Aucun événement", "No events")} /> : <ul className="activity-list">{rows.map((row, index) => <li key={row.id ?? index}><b>{(lang === "fr" ? SECURITY_LABELS[row.kind ?? ""] : undefined) ?? humanize(row.kind ?? "")}</b><time>{row.created_at ? new Date(row.created_at).toLocaleString(lang) : ""}</time></li>)}</ul>}</Status>
+    </>
+  );
+}
+
+function AiStatus() {
+  const state = useLoad(async () => {
+    const [status, quota] = await Promise.all([apiData<{ primary?: string; fallback?: string }>("api/ai/status"), apiData<{ used?: number; budget?: number; requests?: number; errors?: number }>("api/ai/quota")]);
+    return { status, quota };
+  });
+  return (
+    <>
+      <PageHead title={tr("Intelligence artificielle", "Artificial intelligence")} text={tr("Ce que Brain a consommé aujourd'hui.", "What Brain used today.")} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>
+        {({ status, quota }) => {
+          const share = (quota.budget ?? 0) > 0 ? Math.min(1, (quota.used ?? 0) / (quota.budget ?? 1)) : 0;
+          return (
+            <>
+              <div className="quota-bar" role="progressbar" aria-valuenow={Math.round(share * 100)} aria-valuemin={0} aria-valuemax={100}><i style={{ transform: `scaleX(${share})` }} /></div>
+              <div className="focus-stats">
+                <Stat label={tr("Quota utilisé", "Quota used")} value={`${Math.round(share * 100)} %`} hint={`${(quota.used ?? 0).toLocaleString(lang)} / ${(quota.budget ?? 0).toLocaleString(lang)}`} />
+                <Stat label={tr("Requêtes", "Requests")} value={(quota.requests ?? 0).toLocaleString(lang)} />
+                <Stat label={tr("Erreurs", "Errors")} value={(quota.errors ?? 0).toLocaleString(lang)} />
+                <Stat label={tr("Service", "Service")} value={humanize(status.primary ?? "–")} hint={status.fallback ? tr(`Secours : ${humanize(status.fallback)}`, `Fallback: ${humanize(status.fallback)}`) : undefined} />
+              </div>
+            </>
+          );
+        }}
+      </Status>
+    </>
+  );
+}
+
+const SERVICE_NAMES: Record<string, string> = { lastfm: "Last.fm", nowplaying: "Lecture en cours", weather: "Météo", github: "GitHub", youtube: "YouTube", "google-calendar": "Google Agenda", "google-drive": "Google Drive" };
+
 function Diagnostic() {
   const state = useLoad(() => apiData<{ worker?: string; version?: string; services?: { id: string; available: boolean }[] }>("api/diagnostic"));
   return (
@@ -210,12 +269,12 @@ function Diagnostic() {
         {(data) => (
           <>
             <div className="focus-stats">
-              <Stat label="Worker" value={data.worker === "connected" ? tr("Connecté", "Connected") : tr("Indisponible", "Unavailable")} />
+              <Stat label={tr("Serveur Ethone", "Ethone server")} value={data.worker === "connected" ? tr("Connecté", "Connected") : tr("Indisponible", "Unavailable")} />
               <Stat label={tr("Version", "Version")} value={data.version ?? "–"} />
               <Stat label={tr("Services disponibles", "Available services")} value={`${(data.services ?? []).filter((service) => service.available).length} / ${(data.services ?? []).length}`} />
             </div>
             <ul className="service-grid">
-              {(data.services ?? []).map((service) => <li key={service.id} className={service.available ? "up" : "down"}><i />{humanize(service.id)}<small>{service.available ? tr("Disponible", "Available") : tr("Indisponible", "Unavailable")}</small></li>)}
+              {(data.services ?? []).map((service) => <li key={service.id} className={service.available ? "up" : "down"}><i />{SERVICE_NAMES[service.id] ?? humanize(service.id)}<small>{service.available ? tr("Disponible", "Available") : tr("Indisponible", "Unavailable")}</small></li>)}
             </ul>
           </>
         )}
@@ -456,11 +515,16 @@ export function ActivityView() {
       <PageHead title={tr("Activité", "Activity")} onRefresh={state.reload} refreshing={state.loading} />
       {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={humanize(key)} value={(value as number).toLocaleString(lang)} />)}</div>}
       <Status state={state}>
-        {(data) => (data.events ?? []).length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : (
-          <ul className="activity-list">
-            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.details?.title ?? (lang === "fr" ? ACTIVITY_LABELS[event.eventType ?? ""] : undefined) ?? humanize(event.eventType ?? "")}</b><time>{event.createdAt ? new Date(event.createdAt).toLocaleString(lang) : ""}</time></li>)}
-          </ul>
-        )}
+        {(data) => {
+          const rows: { key: string; title: string; at: string; count: number }[] = [];
+          for (const [index, event] of (data.events ?? []).entries()) {
+            const title = event.details?.title ?? (lang === "fr" ? ACTIVITY_LABELS[event.eventType ?? ""] : undefined) ?? humanize(event.eventType ?? "");
+            const last = rows[rows.length - 1];
+            if (last?.title === title) last.count += 1;
+            else rows.push({ key: event.id ?? String(index), title, at: event.createdAt ?? "", count: 1 });
+          }
+          return rows.length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : <ul className="activity-list">{rows.map((row) => <li key={row.key}><b>{row.title}{row.count > 1 && <small className="activity-count">×{row.count}</small>}</b><time>{row.at ? new Date(row.at).toLocaleString(lang) : ""}</time></li>)}</ul>;
+        }}
       </Status>
     </>
   );
@@ -534,6 +598,10 @@ function LolView() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    if (value) void submit({ preventDefault() {} } as FormEvent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <PageHead title="League of Legends" />
@@ -596,6 +664,10 @@ function TftView() {
   };
   const played = (matches ?? []).filter((match) => match.me?.placement);
   const average = played.length ? played.reduce((total, match) => total + (match.me?.placement ?? 0), 0) / played.length : 0;
+  useEffect(() => {
+    if (value) void submit({ preventDefault() {} } as FormEvent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <PageHead title="Teamfight Tactics" />
@@ -649,6 +721,10 @@ function SteamView() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    if (value) void submit({ preventDefault() {} } as FormEvent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <PageHead title="Steam" />
@@ -686,6 +762,10 @@ function MinecraftView() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    if (value) void submit({ preventDefault() {} } as FormEvent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <PageHead title="Minecraft" />

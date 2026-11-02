@@ -8,7 +8,7 @@ import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, stag
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "friends" | "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive" | "lineups" | "settings" | "recap";
+type Section = "friends" | "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "lineups" | "settings" | "recap";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -251,21 +251,21 @@ function AgentContracts({ linked }: { linked: boolean }) {
       catalogGet<{ uuid: string; content: { relationType?: string; relationUuid?: string; chapters?: { levels?: unknown[] }[] } }[]>(`/contracts?${language}`),
       catalogGet<AgentItem[]>(`/agents?isPlayableCharacter=true&${language}`),
     ]);
-    return agents.map((agent) => {
+    return agents.flatMap((agent) => {
       const contract = contracts.find((item) => item.content.relationType === "Agent" && item.content.relationUuid?.toLowerCase() === agent.uuid.toLowerCase());
       const total = contract?.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0;
       const reached = mine.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract?.uuid.toLowerCase())?.ProgressionLevelReached;
-      return { id: agent.uuid, name: agent.displayName, icon: agent.displayIcon, reached: reached === undefined ? null : Math.min(reached, total), total };
-    }).sort((left, right) => (right.reached ?? 0) / Math.max(1, right.total) - (left.reached ?? 0) / Math.max(1, left.total) || left.name.localeCompare(right.name));
+      return reached === undefined ? [] : [{ id: agent.uuid, name: agent.displayName, icon: agent.displayIcon, reached: Math.min(reached, total), total }];
+    }).sort((left, right) => right.reached / Math.max(1, right.total) - left.reached / Math.max(1, left.total));
   }, [linked]);
   if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Contrats d'agents", "Agent contracts")}</h2></div>
       <Status state={state} height={60}>
-        {(rows) => (
+        {(rows) => rows.length === 0 ? <Empty title={tr("Aucun contrat en cours", "No active contract")} text={tr("Riot ne donne que la progression des contrats actifs. Active un agent dans le jeu pour le suivre ici.", "Riot only shares progress for active contracts. Activate an agent in the game to follow it here.")} /> : (
           <ul className="eval-contracts">
-            {rows.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{tr("Niveau", "Level")} {row.reached ?? "–"} / {row.total}</small></li>)}
+            {rows.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{tr("Niveau", "Level")} {row.reached} / {row.total}</small></li>)}
           </ul>
         )}
       </Status>
@@ -294,22 +294,6 @@ function SeasonGoal({ account }: { account: EvalAccount | null }) {
           <p>{goal <= tier ? tr("Objectif atteint.", "Goal reached.") : tr(`Il te reste environ ${left} RR avant ${rankName(goal)}.`, `About ${left} RR left to ${rankName(goal)}.`)}</p>
         </section>
       )}
-    </>
-  );
-}
-
-function ContractArchive({ linked }: { linked: boolean }) {
-  const state = useLoad(async () => {
-    const [mine, contracts] = await Promise.all([
-      linked ? riotCall<{ Contracts?: { ContractDefinitionID: string; ProgressionLevelReached?: number }[] }>("/contracts/v1/contracts/{puuid}") : null,
-      catalogGet<{ uuid: string; displayName: string; content: { relationType?: string | null; chapters?: { levels?: unknown[] }[] } }[]>(`/contracts?${language}`),
-    ]);
-    return contracts.filter((contract) => contract.content.relationType !== "Agent").map((contract) => ({ id: contract.uuid, name: contract.displayName, total: contract.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0, reached: mine?.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract.uuid.toLowerCase())?.ProgressionLevelReached ?? null }));
-  }, [linked]);
-  return (
-    <>
-      <div className="eval-section-head"><h2>{tr("Archives des contrats", "Contract archive")}</h2></div>
-      <Status state={state}>{(rows) => <table className="eval-table"><thead><tr><th scope="col">{tr("Niveau", "Tier")}</th><th scope="col">{tr("Contrat", "Contract")}</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.reached ?? "–"} / {row.total}</td><th scope="row">{row.name}</th></tr>)}</tbody></table>}</Status>
     </>
   );
 }
@@ -482,13 +466,15 @@ function Friends({ linked }: { linked: boolean }) {
   );
 }
 
+const seasonName = (short: string) => short.replace(/^e(\d+)a(\d+)$/i, (_, episode: string, act: string) => tr(`Épisode ${episode}, acte ${act}`, `Episode ${episode}, act ${act}`));
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
   return (
     <table className="eval-table">
       <thead><tr><th scope="col">{tr("Saison", "Season")}</th><th scope="col">{tr("Rang final", "Final rank")}</th><th scope="col">{tr("Victoires", "Wins")}</th><th scope="col">{tr("Parties", "Games")}</th></tr></thead>
-      <tbody>{seasons.map((season) => <tr key={season.season}><th scope="row">{season.short ?? season.season}</th><td style={{ color: rankColor(season.endTier) }}>{rankName(season.endTier)}</td><td>{season.wins}</td><td>{season.games}</td></tr>)}</tbody>
+      <tbody>{[...seasons].reverse().map((season) => <tr key={season.season}><th scope="row">{seasonName(season.short ?? season.season)}</th><td style={{ color: rankColor(season.endTier) }}>{season.endTier > 0 && <img className="eval-season-rank" src={tierIcon(season.endTier)} alt="" />}{rankName(season.endTier)}</td><td>{season.wins}</td><td>{season.games}</td></tr>)}</tbody>
     </table>
   );
 }
@@ -504,7 +490,6 @@ export default function EvalHub({ account, linked, matches }: { account: EvalAcc
     { id: "collection", label: tr("Ma collection", "My collection"), icon: <Sparkles size={16} />, group: tr("Joueurs", "Players") },
     { id: "goal", label: tr("Objectif de saison", "Season goal"), icon: <Target size={16} />, group: tr("Joueurs", "Players") },
     { id: "contracts", label: tr("Contrats d'agents", "Agent contracts"), icon: <FileText size={16} />, group: tr("Joueurs", "Players") },
-    { id: "archive", label: tr("Archives des contrats", "Contract archive"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
     { id: "recap", label: tr("Récap Discord", "Discord recap"), icon: <Send size={16} />, group: tr("Outils", "Tools") },
     { id: "settings", label: tr("Paramètres de jeu", "Game settings"), icon: <Save size={16} />, group: tr("Outils", "Tools") },
     { id: "lineups", label: "Line-ups", icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
@@ -527,7 +512,6 @@ export default function EvalHub({ account, linked, matches }: { account: EvalAcc
         {section === "collection" && <Collection linked={linked} />}
         {section === "contracts" && <AgentContracts linked={linked} />}
         {section === "goal" && <SeasonGoal account={account} />}
-        {section === "archive" && <ContractArchive linked={linked} />}
         {section === "lineups" && <Lineups />}
         {section === "settings" && <GameSettings linked={linked} />}
         {section === "recap" && <DiscordRecap account={account} matches={matches} />}

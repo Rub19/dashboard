@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { errorText, lang, tr } from "./i18n";
 import { LABELS } from "./labels";
-import { Drawer, Empty, ErrorBox, Stagger, StaggerItem, staggerItem } from "./kit";
+import { Drawer, Empty, ErrorBox, formatBytes, Stagger, StaggerItem, staggerItem } from "./kit";
 import { Button } from "./ui";
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
@@ -60,7 +60,7 @@ export function displayValue(value: Json | undefined): string {
       const date = new Date(value);
       if (!Number.isNaN(date.getTime())) return date.toLocaleString(lang);
     }
-    return value;
+    return (lang === "fr" ? VALUES[value] : undefined) ?? value;
   }
   if (Array.isArray(value)) return tr(`${value.length} élément${value.length > 1 ? "s" : ""}`, `${value.length} item${value.length > 1 ? "s" : ""}`);
   const entries = Object.entries(value);
@@ -138,12 +138,28 @@ export function JsonFields({ value }: { value: Json }) {
   const nested = entries.filter(([, item]) => item && typeof item === "object");
   return (
     <div className="generic-view">
-      {plain.length > 0 && <dl className="generic-fields">{plain.map(([key, item]) => <div key={key}><dt>{humanize(key)}</dt><dd>{displayValue(item)}</dd></div>)}</dl>}
+      {plain.length > 0 && <dl className="generic-fields">{plain.map(([key, item]) => <div key={key}><dt>{humanize(key)}</dt><dd>{fieldValue(key, item)}</dd></div>)}</dl>}
       {nested.map(([key, item]) => <details key={key} className="generic-details"><summary>{humanize(key)}<small>{displayValue(item)}</small></summary><JsonFields value={item} /></details>)}
     </div>
   );
 }
 
+const ENUMS: Record<string, [string, string][]> = {
+  botpersonality: [["FRIENDLY", "Amical"], ["PROFESSIONAL", "Professionnel"], ["HUMOROUS", "Humoristique"], ["CONCISE", "Concis"], ["CYBER", "Cyber"]],
+  themepreset: [["DEFAULT", "Par défaut"], ["CYBERPUNK", "Cyberpunk"], ["EMERALD", "Émeraude"], ["SUNSET", "Coucher de soleil"], ["DARK", "Sombre"]],
+  responsevisibility: [["PUBLIC", "Visible par tous"], ["EPHEMERAL", "Visible par l'auteur seulement"]],
+  activepreset: [["PRESET_BALANCED", "Équilibré"], ["PRESET_STRICT", "Strict"], ["PRESET_COMMUNITY", "Communauté"]],
+  language: [["fr", "Français"], ["en", "English"], ["es", "Español"], ["de", "Deutsch"]],
+  preferredlocale: [["fr", "Français"], ["en-US", "English (US)"], ["en-GB", "English (UK)"], ["es-ES", "Español"], ["de", "Deutsch"]],
+  loglevel: [["debug", "Détaillé"], ["info", "Normal"], ["warn", "Avertissements"], ["error", "Erreurs seulement"]],
+  defaultsafetylevel: [["SAFE", "Prudent"], ["STANDARD", "Standard"], ["DESTRUCTIVE", "Complet, peut supprimer"]],
+  risksensitivity: [["low", "Faible"], ["standard", "Normale"], ["high", "Élevée"]],
+  verificationlevel: [["0", "Aucun"], ["1", "Faible, e-mail vérifié"], ["2", "Moyen, inscrit depuis 5 minutes"], ["3", "Élevé, membre depuis 10 minutes"], ["4", "Maximum, téléphone vérifié"]],
+  explicitcontentfilter: [["0", "Désactivé"], ["1", "Membres sans rôle"], ["2", "Tous les membres"]],
+  defaultmessagenotifications: [["0", "Tous les messages"], ["1", "Mentions seulement"]],
+};
+const VALUES: Record<string, string> = { online: "En ligne", idle: "Absent", dnd: "Ne pas déranger", offline: "Hors ligne", invisible: "Invisible" };
+const fieldValue = (key: string, item: Json) => (typeof item === "number" && /size$/i.test(key) ? formatBytes(item) : displayValue(item));
 const isColorKey = (key: string) => /colou?r\d?$/i.test(key);
 const READ_ONLY = /^(last|total|current|next|high|started|published)[A-Z]|(At|Count|Today|Masked)$/;
 const ADVANCED = /(threshold|interval|retention|window|burst|strategy|regex|webhook|template|cooldown|seconds|minutes|hours|percent|multiplier|maximum|^max|^min)/i;
@@ -216,6 +232,18 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
       const lower = key.toLowerCase();
       if (isColorKey(key) && (typeof item === "string" || typeof item === "number" || item === null)) {
         return <ColorField key={id} label={humanize(key)} value={item} onChange={(hex) => change(next, typeof item === "number" ? parseInt(hex.slice(1), 16) : hex)} />;
+      }
+      const choices = lower === "timezone" ? Intl.supportedValuesOf("timeZone").map((zone): [string, string] => [zone, zone]) : ENUMS[lower];
+      if (choices && (typeof item === "string" || typeof item === "number" || item === null)) {
+        const current = item === null ? "" : String(item);
+        return (
+          <label key={id} className="kit-field"><span>{humanize(key)}</span>
+            <select value={current} onChange={(event) => change(next, typeof item === "number" ? Number(event.target.value) : event.target.value)}>
+              {!choices.some(([option]) => option === current) && <option value={current}>{current || tr("Par défaut", "Default")}</option>}
+              {choices.map(([option, label]) => <option key={option} value={option}>{label}</option>)}
+            </select>
+          </label>
+        );
       }
       if (typeof item === "boolean") {
         return <label key={id} className="generic-toggle"><span>{humanize(key)}</span><input type="checkbox" role="switch" checked={item} onChange={(event) => change(next, event.target.checked)} /></label>;

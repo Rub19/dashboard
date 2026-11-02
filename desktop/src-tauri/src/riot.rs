@@ -94,10 +94,8 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
     let seasons = player["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"].as_object();
     let season = latest["SeasonID"].as_str().and_then(|id| seasons?.iter().find(|(key, _)| key.eq_ignore_ascii_case(id)).map(|(_, value)| value));
     let number = |value: &Value| value.as_i64().unwrap_or(0);
-    let mut tier = number(&latest["TierAfterUpdate"]);
-    if tier == 0 {
-        tier = season.map_or(0, |info| number(&info["CompetitiveTier"]));
-    }
+    let seasonal = season.map_or(0, |info| number(&info["CompetitiveTier"]));
+    let tier = if seasonal > 0 { seasonal } else { number(&latest["TierAfterUpdate"]) };
     let peak_tier = seasons
         .into_iter()
         .flat_map(|all| all.values())
@@ -122,7 +120,9 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
         .collect();
     Rank {
         tier,
-        rr: number(&latest["RankedRatingAfterUpdate"]),
+        rr: season
+            .and_then(|info| info["RankedRating"].as_i64())
+            .unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"])),
         peak_tier,
         leaderboard_rank: season.map_or(0, |info| number(&info["LeaderboardRank"])),
         history,
@@ -388,6 +388,18 @@ impl Riot {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_current_rank_follows_the_season_not_the_last_match() {
+        let player = json!({
+            "LatestCompetitiveUpdate": { "SeasonID": "ACT", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319 },
+            "QueueSkills": { "competitive": { "SeasonalInfoBySeasonID": {
+                "act": { "CompetitiveTier": 24, "RankedRating": 300, "WinsByTier": { "27": 1 } }
+            } } }
+        });
+        let rank = parse_rank(&player, &json!({}));
+        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (24, 300, 27));
+    }
 
     #[test]
     fn tokens_only_come_from_the_expected_redirect() {

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, RefreshCw, WifiOff } from "lucide-react";
 import { apiCall, apiData, EthoneItem, itemsList, ModuleStatus, Profile, riotRank, riotStatus } from "./api";
 import { rankName, tierIcon } from "./eval";
+import { firstArray, Json } from "./generic";
 import { dayProgress, connectionStatus, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { readJson } from "./settings";
@@ -77,6 +78,19 @@ function HomeTiles({ onMail, onTracker, onWeather, onDaily }: { onMail: () => vo
       {weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={onWeather}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
       <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>
     </div>
+  );
+}
+
+function RecentMail({ onOpen }: { onOpen: () => void }) {
+  const mail = useQuiet(async () => {
+    return firstArray(await apiCall<Json>("api/mail/inbox?folder=inbox&limit=5")) as unknown as { id: string; from_address: string; from_name?: string; subject: string }[];
+  });
+  if (!mail || mail.length === 0) return null;
+  return (
+    <section className="home-mail">
+      <h2>{tr("Derniers mails", "Latest mail")}</h2>
+      <ul>{mail.map((item) => <li key={item.id}><button type="button" onClick={onOpen}><b>{item.from_name || item.from_address}</b><span>{item.subject || tr("(sans objet)", "(no subject)")}</span></button></li>)}</ul>
+    </section>
   );
 }
 
@@ -165,7 +179,10 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
       <HomeTiles onMail={onOpenMail} onTracker={onOpenTracker} onWeather={onOpenInsights} onDaily={onOpenDaily} />
 
       <div className="home-columns">
-        <Agenda onOpen={onOpenProductivity} offline={offline} />
+        <div className="home-left">
+          <Agenda onOpen={onOpenProductivity} offline={offline} />
+          <RecentMail onOpen={onOpenMail} />
+        </div>
         <div className="home-apps">
           <div className="section-head">
             <div>

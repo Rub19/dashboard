@@ -1,6 +1,6 @@
 import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CircleUser, House, Info, LayoutGrid, ListChecks, LogOut, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
+import { Activity, BrainCircuit, CalendarCheck, CircleUser, Folder, Gamepad2, House, Info, LayoutGrid, ListChecks, LogOut, Mail, MessagesSquare, ScrollText, Search, Settings as SettingsIcon, UserRound, Users, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
@@ -10,12 +10,18 @@ import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
 import ProductivityPage from "./ProductivityPage";
+import DailyPage from "./DailyPage";
+import DiscordPage from "./DiscordPage";
+import FilesPage from "./FilesPage";
+import MailPage from "./MailPage";
+import { AccountPage, BrainPage, GamesPage, InsightsPage, TeamPage } from "./MorePages";
 import TrackerPage from "./TrackerPage";
 import { BrandMark, ValorantMark, WindowControls } from "./ui";
 
+const WIDE: Page[] = ["home", "tracker", "daily", "files", "mail", "games", "discord", "brain", "team", "insights", "account"];
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, tracker: ValorantMark, journal: ScrollText, settings: SettingsIcon, about: Info };
+const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, daily: CalendarCheck, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, account: UserRound, journal: ScrollText, settings: SettingsIcon, about: Info };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -194,11 +200,20 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
       <main className="layer">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
-          <motion.div key={page} className={`page ${page === "home" || page === "tracker" ? "wide" : ""}`} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
+          <motion.div key={page} className={`page ${WIDE.includes(page) ? "wide" : ""}`} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
             {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} />}
             {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
             {page === "productivity" && <ProductivityPage />}
             {page === "tracker" && <TrackerPage />}
+            {page === "daily" && <DailyPage />}
+            {page === "files" && <FilesPage />}
+            {page === "mail" && <MailPage />}
+            {page === "games" && <GamesPage />}
+            {page === "discord" && <DiscordPage />}
+            {page === "brain" && <BrainPage />}
+            {page === "team" && <TeamPage />}
+            {page === "insights" && <InsightsPage />}
+            {page === "account" && <AccountPage />}
             {page === "journal" && <JournalPage />}
             {page === "settings" && <SettingsPage profile={profile} onSignOut={signOut} />}
             {page === "about" && <AboutPage />}

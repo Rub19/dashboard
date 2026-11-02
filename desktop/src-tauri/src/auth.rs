@@ -493,7 +493,7 @@ impl Auth {
         }
     }
 
-    pub async fn rest_get(&self, path: &str) -> Result<Value, String> {
+    pub async fn user_id(&self) -> Result<String, String> {
         let access = {
             let inner = self.inner.lock().await;
             if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
@@ -505,10 +505,29 @@ impl Auth {
             Some(access) => access,
             None => self.renew_access().await?,
         };
-        match self.api.rest_json(reqwest::Method::GET, path, &access, None, None).await {
+        token_subject(&access)
+    }
+
+    pub async fn rest_get(&self, path: &str) -> Result<Value, String> {
+        self.rest_call(reqwest::Method::GET, path, None, None).await
+    }
+
+    pub async fn rest_call(&self, method: reqwest::Method, path: &str, body: Option<Value>, prefer: Option<&str>) -> Result<Value, String> {
+        let access = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            inner.access.clone()
+        };
+        let access = match access {
+            Some(access) => access,
+            None => self.renew_access().await?,
+        };
+        match self.api.rest_json(method.clone(), path, &access, body.clone(), prefer).await {
             Err(Failure::Status(401, _)) => {
                 let renewed = self.renew_access().await?;
-                self.api.rest_json(reqwest::Method::GET, path, &renewed, None, None).await.map_err(service_error)
+                self.api.rest_json(method, path, &renewed, body, prefer).await.map_err(service_error)
             }
             result => result.map_err(service_error),
         }

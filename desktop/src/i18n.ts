@@ -4,6 +4,17 @@ const fr = {
   home: "Accueil",
   modules: "Applications",
   productivity: "Productivité",
+  daily: "Quotidien",
+  files: "Fichiers",
+  mail: "Mail",
+  games: "Jeux",
+  discord: "Discord",
+  brain: "Brain",
+  team: "Équipe",
+  insights: "Analyses",
+  "error.discordRequired": "Connecte ton compte Discord.",
+  "error.discordUnreachable": "Impossible de joindre le bot Discord.",
+  "error.discordLoginFailed": "La connexion Discord a échoué. Réessaie.",
   tracker: "E:VAL",
   evalTagline: "Ton tracker VALORANT : rang, matchs et statistiques.",
   evalProfile: "Profil VALORANT",
@@ -297,6 +308,17 @@ const en: Record<Key, string> = {
   home: "Home",
   modules: "Apps",
   productivity: "Productivity",
+  daily: "Daily",
+  files: "Files",
+  mail: "Mail",
+  games: "Games",
+  discord: "Discord",
+  brain: "Brain",
+  team: "Team",
+  insights: "Insights",
+  "error.discordRequired": "Link your Discord account.",
+  "error.discordUnreachable": "Could not reach the Discord bot.",
+  "error.discordLoginFailed": "Discord sign-in failed. Try again.",
   tracker: "E:VAL",
   evalTagline: "Your VALORANT tracker: rank, matches and stats.",
   evalProfile: "VALORANT profile",
@@ -586,6 +608,8 @@ const en: Record<Key, string> = {
 
 export const lang = storedLanguage() ?? (navigator.languages.some((item) => item.toLowerCase().startsWith("fr")) ? "fr" : "en");
 const table = lang === "fr" ? fr : en;
+
+export const tr = (french: string, english: string) => (lang === "fr" ? french : english);
 
 export function t(key: Key, values: Record<string, string> = {}): string {
   return Object.entries(values).reduce((text, [name, value]) => text.replace(`{${name}}`, value), table[key] ?? key);

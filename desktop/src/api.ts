@@ -95,6 +95,20 @@ export const itemsList = (kind: ItemKind) => invoke<EthoneItem[]>("items_list", 
 export const itemsCreate = (kind: ItemKind, input: EthoneItemInput) => invoke<string>("items_create", { kind, input });
 export const itemsUpdate = (kind: ItemKind, id: string, input: EthoneItemInput) => invoke<void>("items_update", { kind, id, input });
 export const itemsDelete = (kind: ItemKind, id: string) => invoke<void>("items_delete", { kind, id });
+type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export const apiCall = <T,>(path: string, method: Method = "GET", body?: unknown) => invoke<T>("api_call", { method, path, body: body ?? null });
+export const apiData = async <T,>(path: string, method: Method = "GET", body?: unknown) => {
+  const response = await apiCall<{ data?: T } | T>(path, method, body);
+  return (response && typeof response === "object" && "data" in response ? response.data : response) as T;
+};
+export const restCall = <T,>(path: string, method: Method = "GET", body?: unknown, prefer?: string) => invoke<T>("rest_call", { method, path, body: body ?? null, prefer: prefer ?? null });
+export const catalogGet = <T,>(path: string) => invoke<{ data: T }>("catalog_get", { path }).then(({ data }) => data);
+export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz"; method?: Method; body?: unknown } = {}) => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
+export const openExternal = (url: string) => invoke<void>("open_external", { url });
+export const botStatus = () => invoke<boolean>("bot_status");
+export const botLogin = () => invoke<void>("bot_login");
+export const botLogout = () => invoke<void>("bot_logout");
+export const botCall = <T,>(path: string, method: Method = "GET", body?: unknown) => invoke<T>("bot_call", { method, path, body: body ?? null });
 export interface RiotIdentity {
   puuid: string;
   name: string;

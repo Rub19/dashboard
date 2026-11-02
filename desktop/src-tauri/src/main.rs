@@ -2,8 +2,10 @@
 
 mod action;
 mod auth;
+mod bot;
 mod catalog;
 mod feed;
+mod gateway;
 mod install;
 mod journal;
 mod riot;
@@ -31,6 +33,12 @@ struct App {
     modules: Vec<Module>,
     installing: Mutex<()>,
     auth: auth::Auth,
+}
+
+static BOT: std::sync::OnceLock<bot::Bot> = std::sync::OnceLock::new();
+
+fn bot_client() -> &'static bot::Bot {
+    BOT.get_or_init(bot::Bot::new)
 }
 
 static RIOT: std::sync::OnceLock<riot::Riot> = std::sync::OnceLock::new();
@@ -200,6 +208,82 @@ async fn items_update(kind: String, id: String, mut input: sync::ItemInput, stat
     let mut body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
     body.as_object_mut().ok_or("Donnée invalide")?.insert("id".into(), serde_json::Value::String(id));
     sync::parse_mutated(state.auth.worker_json(reqwest::Method::PATCH, kind.path(), Some(body)).await?)
+}
+
+#[tauri::command]
+async fn api_call(method: String, path: String, body: Option<serde_json::Value>, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    let method = gateway::method(&method)?;
+    state.auth.worker_json(method, gateway::worker_path(&path)?, body).await
+}
+
+#[tauri::command]
+async fn rest_call(method: String, path: String, body: Option<serde_json::Value>, prefer: Option<String>, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    let method = gateway::method(&method)?;
+    let path = gateway::table_path(&path)?;
+    let body = match body {
+        Some(mut value) if method == reqwest::Method::POST && value.is_object() => {
+            let owner = state.auth.user_id().await?;
+            value["user_id"] = serde_json::Value::String(owner);
+            Some(value)
+        }
+        other => other,
+    };
+    state.auth.rest_call(method, path, body, prefer.as_deref()).await
+}
+
+#[tauri::command]
+async fn catalog_get(path: String, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().catalog(&gateway::catalog_url(&path)?).await
+}
+
+#[tauri::command]
+async fn riot_call(host: String, path: String, method: String, body: Option<serde_json::Value>, app: tauri::AppHandle, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    let method = gateway::method(&method)?;
+    riot_session().call(&app, &host, gateway::riot_path(&path)?, method, body).await
+}
+
+#[tauri::command]
+async fn open_external(url: String, app: tauri::AppHandle) -> Result<(), String> {
+    if !url.starts_with("https://") || url.chars().any(char::is_control) {
+        return Err("Requête refusée".into());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+async fn bot_status(state: State<'_, App>) -> Result<bool, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    Ok(bot::linked())
+}
+
+#[tauri::command]
+async fn bot_login(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    app.opener().open_url(bot::LOGIN_URL, None::<&str>).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+fn bot_logout() {
+    bot::sign_out();
+}
+
+#[tauri::command]
+async fn bot_call(method: String, path: String, body: Option<serde_json::Value>, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    let method = gateway::method(&method)?;
+    bot_client().call(method, bot::clean_path(&path)?, body).await
 }
 
 #[tauri::command]
@@ -393,6 +477,20 @@ fn focus_main(app: &AppHandle) {
 
 fn handle_callback(app: AppHandle, url: String) {
     focus_main(&app);
+    if url.starts_with("ethone://discord-auth") {
+        tauri::async_runtime::spawn(async move {
+            let result = match bot::code_from_url(&url) {
+                Some(code) => bot_client().exchange(&code).await,
+                None => Err("discordLoginFailed".to_string()),
+            };
+            let payload = match result {
+                Ok(()) => serde_json::json!({ "ok": true }),
+                Err(error) => serde_json::json!({ "ok": false, "error": error }),
+            };
+            let _ = app.emit_to("main", "discord-login", payload);
+        });
+        return;
+    }
     tauri::async_runtime::spawn(async move {
         let result = app.state::<App>().auth.oauth_finish(&url).await;
         let payload = match result {
@@ -450,6 +548,15 @@ fn main() {
             items_create,
             items_update,
             items_delete,
+            open_external,
+            bot_status,
+            bot_login,
+            bot_logout,
+            bot_call,
+            api_call,
+            rest_call,
+            catalog_get,
+            riot_call,
             riot_status,
             riot_login,
             riot_open_browser,

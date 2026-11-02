@@ -2,15 +2,19 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
-import { riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { apiData, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, scoreboard, splitRiotId, statsFor, tierIcon } from "./eval";
-import { errorText, lang, t } from "./i18n";
+import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
+import EvalGame from "./EvalGame";
+import EvalHub from "./EvalHub";
+import { Tabs } from "./kit";
 import { Button, ValorantMark } from "./ui";
 
 const LOCAL_ID = "ethone-eval-riot-id";
 const MATCH_LIMIT = 25;
+type EvalTab = "profile" | "game" | "hub";
 
 interface Loaded {
   account: EvalAccount;
@@ -289,6 +293,8 @@ function Connect({ error, connecting, onConnect, onLinked, onSearch }: { error: 
   );
 }
 
+const linked0 = (data: Loaded) => data.linked;
+
 export default function TrackerPage() {
   const [data, setData] = useState<Loaded | null>(memory);
   const [loading, setLoading] = useState(!memory);
@@ -297,6 +303,9 @@ export default function TrackerPage() {
   const [needsId, setNeedsId] = useState(false);
   const [open, setOpen] = useState<EvalMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [tab, setTab] = useState<EvalTab>("profile");
+  const [limit, setLimit] = useState(MATCH_LIMIT);
+  const [loadingMore, setLoadingMore] = useState(false);
   const firstLoad = useRef(!memory);
 
   const load = useCallback(async (name: string, tag: string, linkedId: string | null) => {
@@ -392,6 +401,23 @@ export default function TrackerPage() {
     riotLogout().catch((reason) => setError(errorText(reason))).finally(() => setNeedsId(true));
   };
 
+  const loadMore = async () => {
+    if (!data) return;
+    setLoadingMore(true);
+    try {
+      const next = limit + 10;
+      await apiData(`api/valorant/eval/history?puuid=${data.account.puuid}&page=${Math.floor(limit / 10) + 1}`);
+      const matches = await trackerMatches<EvalMatch>(data.account.puuid, Math.min(100, next));
+      memory = { ...data, matches };
+      setData(memory);
+      setLimit(next);
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   const closeMatch = useCallback(() => setOpen(null), []);
 
   if (loading) {
@@ -418,7 +444,12 @@ export default function TrackerPage() {
   const history = account.mmr?.history ?? [];
   return (
     <>
-      <div className="eval-grid" inert={Boolean(open)}>
+      <div className="eval-tabs-row">
+        <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
+      </div>
+      {tab === "game" && <EvalGame linked={linked0(data)} onConnect={connect} />}
+      {tab === "hub" && <EvalHub account={account} />}
+      {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
           <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />
           {matches.length > 0 && <StatGrid matches={matches} puuid={account.puuid} />}
@@ -439,10 +470,11 @@ export default function TrackerPage() {
                   <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} onOpen={() => setOpen(match)} />
                 ))}
               </motion.ul>
+              {matches.length >= limit && <Button disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? t("loading") : tr("Charger plus de matchs", "Load more matches")}</Button>}
             </>
           )}
         </div>
-      </div>
+      </div>}
       <AnimatePresence>{open && <MatchPanel key={open.id} match={open} puuid={account.puuid} onClose={closeMatch} />}</AnimatePresence>
     </>
   );

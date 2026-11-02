@@ -25,6 +25,7 @@ struct Credentials {
     entitlements: String,
     expires: Instant,
     puuid: String,
+    region: String,
     shard: String,
 }
 
@@ -173,12 +174,13 @@ pub struct Riot {
     credentials: Mutex<Option<Credentials>>,
     version: Mutex<String>,
     silent: Mutex<Option<Instant>>,
+    catalog: Mutex<std::collections::HashMap<String, Value>>,
 }
 
 impl Riot {
     pub fn new() -> Self {
         let client = reqwest::Client::builder().timeout(Duration::from_secs(15)).build().unwrap_or_default();
-        Self { client, credentials: Mutex::new(None), version: Mutex::new(String::new()), silent: Mutex::new(None) }
+        Self { client, credentials: Mutex::new(None), version: Mutex::new(String::new()), silent: Mutex::new(None), catalog: Mutex::new(std::collections::HashMap::new()) }
     }
 
     async fn json(&self, request: reqwest::RequestBuilder) -> Result<Value, String> {
@@ -216,6 +218,7 @@ impl Riot {
             expires: Instant::now() + Duration::from_secs(tokens.expires_in.saturating_sub(60)),
             puuid,
             shard: shard_for(&region).to_string(),
+            region,
         });
         *self.silent.lock().await = None;
         let text = serde_json::to_string(&identity).map_err(|error| error.to_string())?;
@@ -313,6 +316,41 @@ impl Riot {
             *self.credentials.lock().await = None;
         }
         result
+    }
+
+    pub async fn call(&self, app: &AppHandle, host: &str, path: &str, method: reqwest::Method, body: Option<Value>) -> Result<Value, String> {
+        let credentials = self.valid(app).await?;
+        let version = self.client_version().await;
+        let base = if host == "glz" {
+            format!("https://glz-{}-1.{}.a.pvp.net", credentials.region, credentials.shard)
+        } else {
+            format!("https://pd.{}.a.pvp.net", credentials.shard)
+        };
+        let path = path.replace("{puuid}", &credentials.puuid);
+        let mut request = self
+            .client
+            .request(method, format!("{base}{path}"))
+            .bearer_auth(&credentials.access)
+            .header("X-Riot-Entitlements-JWT", &credentials.entitlements)
+            .header("X-Riot-ClientPlatform", CLIENT_PLATFORM)
+            .header("X-Riot-ClientVersion", version);
+        if let Some(body) = body {
+            request = request.json(&body);
+        }
+        let result = self.json(request).await;
+        if result.as_ref().is_err_and(|message| message == "riotExpired") {
+            *self.credentials.lock().await = None;
+        }
+        result
+    }
+
+    pub async fn catalog(&self, url: &str) -> Result<Value, String> {
+        if let Some(value) = self.catalog.lock().await.get(url) {
+            return Ok(value.clone());
+        }
+        let value = self.json(self.client.get(url)).await?;
+        self.catalog.lock().await.insert(url.to_string(), value.clone());
+        Ok(value)
     }
 
     pub async fn rank(&self, app: &AppHandle) -> Result<Rank, String> {

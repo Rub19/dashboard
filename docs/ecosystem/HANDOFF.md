@@ -126,4 +126,4 @@ Fait sur la vraie app et le vrai compte, en pilotant la WebView par un port de d
 - Retiré : page Plugins (la route `api/user-data/plugins` n'existe pas), liste Quêtes du module Mini-Jeux (route absente côté bot).
 - Journal de sécurité : limité à 20 lignes, car `api/auth/security-events` renvoie une erreur serveur à partir de 30. Cause non trouvée.
 
-**Urgent, à faire avec l'accord de Rub19** : `api/ai/quota` renvoie à tout compte connecté le jeton Cloudflare du worker et l'identifiant de compte. Le correctif et son test sont sur la branche (`worker/src/services/ai-quota-durable-object.js`), pas encore déployés. Après déploiement, le jeton doit être remplacé, car il a déjà été exposé.
+**Reste à faire** : `api/ai/quota` renvoyait à tout compte connecté le jeton Cloudflare du worker et l'identifiant de compte. Corrigé et déployé le 2 novembre 2026 (version `ccffb732`, vérifié sur la réponse réelle). Le correctif est sur la branche, pas encore sur `main` : un déploiement fait depuis `main` remettrait la fuite. Le jeton doit encore être remplacé, car il a été exposé.

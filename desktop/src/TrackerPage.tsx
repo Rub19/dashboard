@@ -10,12 +10,13 @@ import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./moti
 import { readJson, write } from "./settings";
 import EvalGame from "./EvalGame";
 import EvalHub from "./EvalHub";
+import EvalLive from "./EvalLive";
 import { Tabs } from "./kit";
 import { Button, ValorantMark } from "./ui";
 
 const LOCAL_ID = "ethone-eval-riot-id";
 const MATCH_LIMIT = 25;
-type EvalTab = "profile" | "game" | "hub";
+type EvalTab = "profile" | "live" | "game" | "hub";
 
 interface Loaded {
   account: EvalAccount;
@@ -488,8 +489,9 @@ export default function TrackerPage() {
   return (
     <>
       <div className="eval-tabs-row">
-        <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
+        <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
       </div>
+      {tab === "live" && <EvalLive linked={isLinked} onConnect={connect} />}
       {tab === "game" && <EvalGame linked={isLinked} onConnect={connect} />}
       {tab === "hub" && <EvalHub account={account} linked={isLinked} matches={matches} />}
       {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>

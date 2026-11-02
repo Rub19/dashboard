@@ -346,6 +346,11 @@ impl Riot {
         result
     }
 
+    pub async fn friends(&self, app: &AppHandle) -> Result<Vec<crate::chat::Friend>, String> {
+        let credentials = self.valid(app).await?;
+        crate::chat::friends(&self.client, &credentials.access, &credentials.entitlements).await
+    }
+
     pub async fn catalog(&self, url: &str) -> Result<Value, String> {
         if let Some(value) = self.catalog.lock().await.get(url) {
             return Ok(value.clone());

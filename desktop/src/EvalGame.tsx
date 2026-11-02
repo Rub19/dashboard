@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import { catalogGet, riotCall } from "./api";
-import { agentIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
 import { readJson, write } from "./settings";
@@ -404,44 +403,22 @@ function PartyAndLive() {
   const state = useLoad(async () => {
     const player = await riotCall<{ CurrentPartyID: string }>("/parties/v1/players/{puuid}", { host: "glz" }).catch(() => null);
     const party = player ? await riotCall<{ State?: string; Accessibility?: string; MatchmakingData?: { QueueID?: string }; Members: { Subject: string; IsOwner?: boolean; PlayerIdentity?: { PlayerCardID?: string } }[] }>(`/parties/v1/parties/${player.CurrentPartyID}`, { host: "glz" }).catch(() => null) : null;
-    const liveId = await riotCall<{ MatchID: string }>("/core-game/v1/players/{puuid}", { host: "glz" }).catch(() => null);
-    const preId = liveId ? null : await riotCall<{ MatchID: string }>("/pregame/v1/players/{puuid}", { host: "glz" }).catch(() => null);
-    const live = liveId
-      ? await riotCall<{ Players?: { Subject: string; TeamID?: string; CharacterID?: string }[] }>(`/core-game/v1/matches/${liveId.MatchID}`, { host: "glz" }).catch(() => null)
-      : null;
-    const pre = preId
-      ? await riotCall<{ AllyTeam?: { Players?: { Subject: string; CharacterID?: string }[] } }>(`/pregame/v1/matches/${preId.MatchID}`, { host: "glz" }).catch(() => null)
-      : null;
-    const players = live?.Players ?? pre?.AllyTeam?.Players ?? [];
-    const subjects = [...(party?.Members.map((member) => member.Subject) ?? []), ...players.map((item) => item.Subject)];
+    const subjects = party?.Members.map((member) => member.Subject) ?? [];
     const names = subjects.length ? await riotCall<{ Subject: string; GameName: string; TagLine: string }[]>("/name-service/v2/players", { method: "PUT", body: subjects }).catch(() => []) : [];
-    return { party, players, inGame: Boolean(liveId), names };
+    return { party, names };
   });
   useEffect(() => {
     const timer = setInterval(() => root.current?.offsetParent && state.reload(), 20000);
     return () => clearInterval(timer);
   }, [state.reload]);
   if (!state.data) return state.error ? <ErrorBox message={state.error} onRetry={state.reload} /> : <Skeletons count={1} height={96} />;
-  const { party, players, inGame, names } = state.data;
+  const { party, names } = state.data;
   const nameOf = (subject: string) => {
     const found = names.find((item) => item.Subject === subject);
     return found?.GameName ? `${found.GameName}#${found.TagLine}` : tr("Joueur masqué", "Hidden player");
   };
   return (
     <div className="eval-party" ref={root}>
-      {players.length > 0 && (
-        <section className="eval-card eval-pad">
-          <h2>{inGame ? tr("Partie en cours", "Live match") : tr("Sélection des agents", "Agent select")}</h2>
-          <ul className="eval-live">
-            {players.map((player) => (
-              <li key={player.Subject}>
-                {player.CharacterID ? <img src={agentIcon(player.CharacterID)} alt="" /> : <span className="eval-offer-empty" />}
-                <b>{nameOf(player.Subject)}</b>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
       <section className="eval-card eval-pad">
         <div className="eval-section-head"><h2><Users size={16} />{tr("Groupe", "Party")}</h2>{party && <span>{party.Members.length} / 5</span>}</div>
         {party ? (

@@ -40,11 +40,19 @@
           if (command === "auth_state") return { stage: "signedIn", profile, offline: false };
           if (command === "modules_local" || command === "modules_remote") return modules;
           if (command === "items_list") { await pause(300); return items[args.kind]; }
-          if (command === "riot_status") return null;
           if (command === "tracker_identity") return params.has("noid") ? null : { name: "Exemple", tag: "0000" };
           if (command === "tracker_sync") { await pause(500); if (params.has("fail")) throw "Service indisponible"; return account; }
           if (command === "tracker_matches") return matches;
+          if (command === "riot_status") return params.has("riot") ? { puuid, name: "Exemple", tag: "0000", region: "eu" } : null;
+          if (command === "riot_call") {
+            if (args.path.startsWith("/core-game/v1/players")) return { MatchID: "live-1" };
+            if (args.path === "/core-game/v1/matches/live-1") return { MapID: "/Game/Maps/Ascent/Ascent", MatchmakingData: { QueueID: "competitive" }, Players: [["a", "Red", "Jett"], ["b", "Red", "Sage"], ["c", "Red", "Omen"], ["d", "Blue", "Reyna"], ["e", "Blue", "Jett"], ["f", "Blue", "Sage"]].map(([id, team, agent], index) => ({ Subject: index === 0 ? puuid : id, TeamID: team, CharacterID: agents[agent], PlayerIdentity: { AccountLevel: 100 + index } })) };
+            if (args.path === "/name-service/v2/players") return args.body.map((id, index) => ({ Subject: id, GameName: `Joueur${index}`, TagLine: "0000" }));
+            if (args.path.startsWith("/mmr/v1/players/")) return { LatestCompetitiveUpdate: { TierAfterUpdate: 18, RankedRatingAfterUpdate: 42 }, QueueSkills: { competitive: { SeasonalInfoBySeasonID: { a: { WinsByTier: { 21: 3 } } } } } };
+            throw "riotFailed";
+          }
           if (command === "read_journal") return [];
+          if (command === "riot_friends") return [{ id: "1", name: "Ami", tag: "0000", online: true, product: "valorant", state: "INGAME", queue: "competitive", tier: 18, partySize: 2, card: "" }, { id: "2", name: "Autre", tag: "0001", online: false, product: "", state: "", queue: "", tier: 0, partySize: 1, card: "" }];
           if (command === "bot_status") return false;
           if (command === "open_external") return null;
           if (command === "catalog_get") return { data: [] };

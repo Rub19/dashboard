@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, Users } from "lucide-react";
-import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, trackerMatches, trackerSync } from "./api";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users } from "lucide-react";
+import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
 import { flattenEntries, Json } from "./generic";
 import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
@@ -8,7 +8,7 @@ import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, stag
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive" | "lineups" | "settings" | "recap";
+type Section = "friends" | "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive" | "lineups" | "settings" | "recap";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -459,6 +459,29 @@ function DiscordRecap({ account, matches }: { account: EvalAccount | null; match
   );
 }
 
+const STATE_LABELS: Record<string, () => string> = { MENUS: () => tr("Dans les menus", "In menus"), PREGAME: () => tr("Sélection d'agent", "Agent select"), INGAME: () => tr("En partie", "In game") };
+
+function Friends({ linked }: { linked: boolean }) {
+  const state = useLoad(async () => (linked ? riotFriends() : []), [linked]);
+  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
+  const online = (state.data ?? []).filter((friend) => friend.online);
+  const offline = (state.data ?? []).filter((friend) => !friend.online);
+  const row = (friend: RiotFriend) => (
+    <li key={friend.id} className={friend.online ? "online" : ""}>
+      <span className="friend-dot" />
+      <span className="friend-name"><b>{friend.name}<small>#{friend.tag}</small></b><small>{friend.online ? (friend.product === "valorant" ? (STATE_LABELS[friend.state]?.() ?? "VALORANT") + (friend.queue ? `, ${modeName(friend.queue)}` : "") + (friend.partySize > 1 ? tr(`, groupe de ${friend.partySize}`, `, party of ${friend.partySize}`) : "") : friend.product ? friend.product.replace(/_/g, " ") : tr("En ligne", "Online")) : tr("Hors ligne", "Offline")}</small></span>
+      {friend.tier > 0 && <img src={tierIcon(friend.tier)} alt={rankName(friend.tier)} title={rankName(friend.tier)} />}
+    </li>
+  );
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Amis", "Friends")}{state.data ? ` (${online.length}/${state.data.length})` : ""}</h2><Button disabled={state.loading} onClick={state.reload}>{tr("Actualiser", "Refresh")}</Button></div>
+      <p className="eval-soft">{tr("Tu restes invisible pour tes amis pendant cette lecture.", "You stay invisible to your friends during this check.")}</p>
+      <Status state={state} height={48}>{() => <ul className="friend-list">{online.map(row)}{offline.map(row)}</ul>}</Status>
+    </>
+  );
+}
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
@@ -471,8 +494,9 @@ function Seasons({ account }: { account: EvalAccount | null }) {
 }
 
 export default function EvalHub({ account, linked, matches }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[] }) {
-  const [section, setSection] = useState<Section>("leaderboard");
+  const [section, setSection] = useState<Section>("friends");
   const items = [
+    { id: "friends", label: tr("Amis", "Friends"), icon: <UserPlus size={16} />, group: tr("Joueurs", "Players") },
     { id: "leaderboard", label: tr("Classement", "Leaderboard"), icon: <Trophy size={16} />, group: tr("Joueurs", "Players") },
     { id: "players", label: tr("Rechercher un joueur", "Find a player"), icon: <Users size={16} />, group: tr("Joueurs", "Players") },
     { id: "seasons", label: tr("Mes saisons", "My seasons"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
@@ -492,6 +516,7 @@ export default function EvalHub({ account, linked, matches }: { account: EvalAcc
     <div className="kit-split">
       <SideNav items={items} value={section} onChange={setSection} id="eval-hub" label={tr("Sections du Hub", "Hub sections")} />
       <div className="kit-split-body">
+        {section === "friends" && <Friends linked={linked} />}
         {section === "leaderboard" && <Leaderboard />}
         {section === "players" && <Players />}
         {section === "maps" && <Maps />}

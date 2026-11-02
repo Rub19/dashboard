@@ -12,7 +12,8 @@ const TABLES: [&str; 9] = [
     "ethone_activity",
 ];
 pub const LINEUPS_URL: &str = "https://uh5it8zn19.execute-api.us-east-1.amazonaws.com/development";
-const RIOT_PREFIXES: [&str; 16] = [
+const RIOT_PREFIXES: [&str; 17] = [
+    "/match-details/v1/matches/",
     "/getPreference/Ares.PlayerSettings",
     "/savePreference",
     "/core-game/v1/",

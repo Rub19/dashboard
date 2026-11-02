@@ -613,6 +613,49 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .lol-matches img { width: 40px; height: 40px; border-radius: 9px; }
 .lol-matches span { display: grid; min-width: 0; }
 .lol-matches small { color: var(--muted); font-size: 12px; }
+.live { display: grid; gap: 16px; }
+.live-hero { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; min-height: 148px; padding: 18px 20px; overflow: hidden; border-radius: 20px; background: var(--eval-card); color: #fff; }
+.live-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.live-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / .75), rgb(0 0 0 / .2)); }
+.live-hero > :not(img) { position: relative; z-index: 1; }
+.live-hero h1 { font: 750 34px/40px var(--display); letter-spacing: -.02em; }
+.live-dot { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; }
+.live-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #ff4655; animation: live-pulse 1.1s ease-in-out infinite alternate; }
+@keyframes live-pulse { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .live-dot::before { animation: none; } }
+.live-timer { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 99px; background: rgb(0 0 0 / .55); font: 700 18px/22px var(--display); font-variant-numeric: tabular-nums; }
+.live-teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 16px; align-items: start; }
+.live-team { display: grid; gap: 8px; }
+.live-team h2 { font: 700 16px/22px var(--display); }
+.live-team.ally h2 { color: #5ec9a5; }
+.live-team.enemy h2 { color: #ff5a5f; }
+.live-team ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.live-row { display: grid; grid-template-columns: 40px minmax(0, 1.4fr) minmax(112px, 1fr) 26px 44px 44px; align-items: center; gap: 10px; width: 100%; min-height: 58px; padding: 8px 12px; border-radius: 14px; background: var(--eval-card); text-align: left; transition: background-color .08s ease, transform .14s var(--ease); }
+.live-row:hover { background: var(--eval-card2); }
+.live-row:active { transform: scale(.992); }
+.live-row.me { box-shadow: inset 0 0 0 1.5px #f0e6a8; }
+.live-agent { display: block; width: 40px; height: 40px; overflow: hidden; border-radius: 10px; background: var(--eval-card2); }
+.live-agent img { width: 100%; height: 100%; object-fit: cover; }
+.live-agent.picking img { opacity: .5; }
+.live-name, .live-rank > span, .live-stat { display: grid; min-width: 0; }
+.live-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.live-name b small { color: var(--eval-muted); font-weight: 400; }
+.live-row small { color: var(--eval-muted); font-size: 11px; line-height: 15px; }
+.live-rank { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.live-rank img { flex: none; width: 28px; height: 28px; object-fit: contain; }
+.live-rank b { font-size: 13px; line-height: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.live-peak img { display: block; width: 24px; height: 24px; object-fit: contain; opacity: .85; }
+.live-stat { justify-items: end; font-variant-numeric: tabular-nums; }
+.live-stat b { font-size: 13px; line-height: 17px; white-space: nowrap; }
+.friend-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.friend-list li { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 7px 14px; border-radius: 12px; background: var(--eval-card); }
+.friend-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--eval-card2); }
+.friend-list .online .friend-dot { background: #35c26b; }
+.friend-name { flex: 1; display: grid; min-width: 0; }
+.friend-name b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: text; }
+.friend-name b small { color: var(--eval-muted); font-weight: 400; }
+.friend-name > small { color: var(--eval-muted); font-size: 12px; line-height: 16px; }
+.friend-list img { flex: none; width: 28px; height: 28px; object-fit: contain; }
 .kit-skeletons { display: grid; gap: 10px; }
 .kit-skeletons span { display: block; border-radius: var(--r-m); background: var(--row); animation: pulse 1.2s ease-in-out infinite alternate; }
 .kit-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding: 10px 14px; border-radius: var(--r-s); background: var(--danger-bg); color: var(--danger); }

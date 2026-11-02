@@ -4,6 +4,7 @@ mod action;
 mod auth;
 mod bot;
 mod catalog;
+mod chat;
 mod feed;
 mod gateway;
 mod install;
@@ -237,6 +238,14 @@ async fn catalog_get(path: String, state: State<'_, App>) -> Result<serde_json::
         return Err("sessionRequired".into());
     }
     riot_session().catalog(&gateway::catalog_url(&path)?).await
+}
+
+#[tauri::command]
+async fn riot_friends(app: tauri::AppHandle, state: State<'_, App>) -> Result<Vec<chat::Friend>, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().friends(&app).await
 }
 
 #[tauri::command]
@@ -566,6 +575,7 @@ fn main() {
             catalog_get,
             riot_call,
             lineups_get,
+            riot_friends,
             riot_status,
             riot_login,
             riot_open_browser,

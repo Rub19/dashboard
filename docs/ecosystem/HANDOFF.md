@@ -47,7 +47,7 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 
 **Écrit mais pas vérifié en réel**
 
-- Ethone Setup (`desktop/setup/`) : tests Rust et interface sur faux moteur seulement. Le premier build complet s'est arrêté avant la fin, cause à vérifier. Lancer `node tools/build-setup.mjs "Notes"`, puis `node tools/sandbox-setup.mjs` avec l'accord de Rub19.
+- Ethone Setup (`desktop/setup/`) : tests Rust et interface sur faux moteur seulement. Le premier build complet a échoué avec « Accès refusé » sur `target/release/ethone-desktop.exe` ; la cause probable est Ethone resté ouvert depuis ce dossier. Fermer Ethone, puis lancer `node tools/build-setup.mjs "Notes"`, puis `node tools/sandbox-setup.mjs` avec l'accord de Rub19.
 - Mise à jour d'Ethone : impossible à tester sans une première release.
 - Agrandissement de la fenêtre, interface sombre avec Mica : à confirmer par Rub19.
 

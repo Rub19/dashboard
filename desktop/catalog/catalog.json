@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "kairo",
+      "name": "Kairo",
+      "summary": {
+        "fr": "Tracker League of Legends, VALORANT et TFT.",
+        "en": "League of Legends, VALORANT and TFT tracker."
+      },
+      "repo": "Rub19/ethra",
+      "feed": { "kind": "tauri", "url": "https://github.com/Rub19/ethra/releases/latest/download/latest.json" },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI4RjNGOEI2QTNERUU0QjgKUldTNDVONmp0dmp6dUtlMVlXWENNWG9ta0pCZ09FZWFkWUF1YUEyYTR1WW5VTWVhbHQyM08zYTkK",
+      "detect": { "uninstallKey": "Kairo", "exe": "ethra.exe" },
+      "updatePolicy": "delegated",
+      "installArgs": ["/S"],
+      "updateArgs": ["/S", "/UPDATE"],
+      "minEthone": "0.1.0",
+      "blockedVersions": [],
+      "releasesUrl": "https://github.com/Rub19/ethra/releases",
+      "launchUrl": null,
+      "platforms": { "windows": "full", "ios": "none", "android": "none", "web": "none" }
+    },
+    {
+      "id": "hdv-tracker",
+      "name": "HDV Tracker",
+      "summary": {
+        "fr": "Carnet de prix du /ah de Rinaorc SkyBlock.",
+        "en": "Price notebook for the Rinaorc SkyBlock /ah."
+      },
+      "repo": "Rub19/hdv-tracker",
+      "feed": { "kind": "tauri", "url": "https://hdv.ethone.dev/updates/latest.json" },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEyOTNGNUEwRTQyNzM3MzcKUldRM055ZmtvUFdUb29NQTVIb0REbURFR1ZOM2dNM05FZy9xRGZIQXFhREEyc1NyNURyMXRDOHEK",
+      "detect": { "uninstallKey": "HDV Tracker", "exe": "hdv-tracker.exe" },
+      "updatePolicy": "delegated",
+      "installArgs": ["/S"],
+      "updateArgs": ["/S"],
+      "minEthone": "0.1.0",
+      "blockedVersions": [],
+      "releasesUrl": "https://hdv.ethone.dev",
+      "launchUrl": null,
+      "platforms": { "windows": "full", "ios": "partial", "android": "partial", "web": "partial" }
+    },
+    {
+      "id": "interior-studio",
+      "name": "Interior Studio",
+      "summary": {
+        "fr": "Conception d'intérieurs en 2D et 3D.",
+        "en": "2D and 3D interior design."
+      },
+      "repo": "Rub19/Interior-OS",
+      "feed": { "kind": "tauri", "url": "https://interior.ethone.dev/updates/latest.json" },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUxRkJEM0ZDNEI4NTczMUYKUldRZmM0VkwvTlA3NFp1TTJmWkttQjVDazllVmU4TXBWMHpkZGxEZEUzWnkva0J0MGJnUHBrQnMK",
+      "detect": { "uninstallKey": "Interior Studio", "exe": "interior-studio.exe" },
+      "updatePolicy": "autonomous",
+      "installArgs": ["/S"],
+      "updateArgs": [],
+      "minEthone": "0.1.0",
+      "blockedVersions": [],
+      "releasesUrl": "https://interior.ethone.dev",
+      "launchUrl": null,
+      "platforms": { "windows": "full", "ios": "partial", "android": "none", "web": "partial" }
+    },
+    {
+      "id": "nova-pc-suite",
+      "name": "Nova PC Suite",
+      "summary": {
+        "fr": "Diagnostic, pilotes et maintenance de Windows.",
+        "en": "Windows diagnostics, drivers and maintenance."
+      },
+      "repo": "Rub19/nova-pc-suite",
+      "feed": { "kind": "githubReleases", "repo": "Rub19/nova-pc-suite" },
+      "pubkey": null,
+      "detect": { "uninstallKey": "Nova PC Suite", "exe": "nova-pc-suite.exe" },
+      "updatePolicy": "manual",
+      "installArgs": [],
+      "updateArgs": [],
+      "minEthone": "0.1.0",
+      "blockedVersions": [],
+      "releasesUrl": "https://github.com/Rub19/nova-pc-suite/releases",
+      "launchUrl": null,
+      "platforms": { "windows": "full", "ios": "none", "android": "none", "web": "none" }
+    },
+    {
+      "id": "ethone-breach",
+      "name": "Ethone Breach",
+      "summary": {
+        "fr": "Jeu d'infiltration, jouable sur le site Ethone.",
+        "en": "Infiltration game, playable on the Ethone website."
+      },
+      "repo": "Rub19/ethone-breach",
+      "feed": { "kind": "none" },
+      "pubkey": null,
+      "detect": null,
+      "updatePolicy": "web",
+      "installArgs": [],
+      "updateArgs": [],
+      "minEthone": "0.1.0",
+      "blockedVersions": [],
+      "releasesUrl": null,
+      "launchUrl": "https://ethone.dev/games/",
+      "platforms": { "windows": "partial", "ios": "partial", "android": "partial", "web": "full" }
+    }
+  ]
+}

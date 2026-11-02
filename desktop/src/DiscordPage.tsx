@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePersisted } from "./qol";
 import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
@@ -248,9 +249,11 @@ export default function DiscordPage() {
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [guild, setGuild] = useState<string | null>(() => readJson<string>(GUILD_KEY));
-  const [moduleId, setModuleId] = useState<string | null>(null);
+  const [savedModule, saveModule] = usePersisted<string>("ethone-discord-module", "");
+  const moduleId = savedModule || null;
+  const setModuleId = (next: string | null) => saveModule(next ?? "");
   const [query, setQuery] = useState("");
-  const [section, setSection] = useState("home");
+  const [section, setSection] = usePersisted<string>("ethone-section-discord", "home");
   const searching = query.trim().length > 0;
   const openSection = (next: string) => {
     setQuery("");

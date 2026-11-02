@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "./qol";
 import { AnimatePresence, motion } from "framer-motion";
 import { errorText, lang, tr } from "./i18n";
 import { LABELS } from "./labels";
@@ -188,11 +189,10 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
   const [draft, setDraft] = useState(value);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+
   useEffect(() => setDraft(value), [value]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(value), [draft, value]);
   const change = (path: string[], next: Json) => {
-    setSaved(false);
     setDraft((current) => {
       const copy = structuredClone(current);
       let node = copy as { [key: string]: Json };
@@ -274,7 +274,7 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
     setError(null);
     try {
       await onSave(draft);
-      setSaved(true);
+      toast(tr("Réglages enregistrés", "Settings saved"));
     } catch (reason) {
       setError(errorText(reason));
     } finally {
@@ -294,7 +294,6 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
       {rest.length > 0 && <div className="generic-form-grid">{fields(rest, [])}</div>}
       {more.length > 0 && <details className="generic-more" open={rest.length < 3}><summary>{tr(`Options avancées (${more.length})`, `Advanced options (${more.length})`)}</summary><div className="generic-form-grid">{fields(more, [])}</div></details>}
       {error && <ErrorBox message={error} />}
-      {saved && !dirty && <p className="ok" role="status">{tr("Enregistré.", "Saved.")}</p>}
       <AnimatePresence initial={false}>
         {dirty && (
           <motion.div className="generic-savebar" initial={{ opacity: 0, transform: "translateY(8px)" }} animate={{ opacity: 1, transform: "translateY(0px)" }} exit={{ opacity: 0, transform: "translateY(8px)" }} transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}>
@@ -328,6 +327,7 @@ export function JsonList({ rows, actions = [], onChanged, emptyTitle, emptyText,
     setError(null);
     try {
       await action.run(row, text.trim());
+      toast(tr(`Fait : ${action.title}`, `Done: ${action.title}`));
       setOpen(null);
       setConfirm(null);
       setAsking(null);

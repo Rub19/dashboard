@@ -129,3 +129,7 @@ Fait sur la vraie app et le vrai compte, en pilotant la WebView par un port de d
 **Reste à faire** : `api/ai/quota` renvoyait à tout compte connecté le jeton Cloudflare du worker et l'identifiant de compte. Corrigé et déployé le 2 novembre 2026 (version `ccffb732`, vérifié sur la réponse réelle). Le correctif est sur la branche, pas encore sur `main` : un déploiement fait depuis `main` remettrait la fuite. Le jeton doit encore être remplacé, car il a été exposé.
 
 Suite du test : le rang affiché suit `CompetitiveTier` de la saison et non le dernier match classé (un Radiant perdu sans jouer restait affiché). Correctif du jeton présent sur `main` (v1.92.2). Reste à faire : remplacer le jeton Cloudflare, vue mois du calendrier, mail côte à côte, Concentration et Ambiance réunies, historique de Brain, alerte de `scripts/audit-security.mjs` sur `discord-bot/src/modules/riot/riotService.ts` (motif `service-role-reference`, à vérifier).
+
+## Refonte de l'interface (3 novembre 2026)
+
+Interface refaite façon Apple sur Windows, voir `desktop/DESIGN.md`. Toutes les pages passent par les mêmes jetons et composants. Vérifié par captures sur le vrai compte : accueil, applications, tâches, calendrier, mail, E:VAL, Discord, réglages, en sombre, et quatre pages en clair ; connexion et installateur sur l'aperçu. Vérifié en vrai : raccourcis, suppression avec annulation, menu contextuel, mémoire de la dernière page. Non vérifié : plusieurs écrans, changement d'échelle Windows, navigation complète au clavier.

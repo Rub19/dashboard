@@ -90,7 +90,7 @@ export function PageHead({ title, text, children, onRefresh, refreshing }: { tit
         {text && <p className="muted">{text}</p>}
       </div>
       <div className="row">
-        {onRefresh && <Button disabled={refreshing} onClick={onRefresh}><RefreshCw size={14} className={refreshing ? "spin" : ""} />{t("refresh")}</Button>}
+        {onRefresh && <Button data-refresh disabled={refreshing} title="F5" onClick={onRefresh}><RefreshCw size={14} className={refreshing ? "spin" : ""} />{t("refresh")}</Button>}
         {children}
       </div>
     </header>
@@ -152,10 +152,10 @@ export function Drawer({ open, title, onClose, children, width = 560 }: { open: 
       {open && (
         <>
           <motion.div key="scrim" className="kit-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} onClick={onClose} />
-          <motion.aside key="panel" role="dialog" aria-label={title} className="kit-drawer" style={{ width: `min(${width}px, 92vw)` }} initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }} exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} transition={{ type: "spring", duration: 0.42, bounce: 0 }}>
+          <motion.aside key="panel" tabIndex={-1} autoFocus role="dialog" aria-label={title} className="kit-drawer" style={{ width: `min(${width}px, 92vw)` }} initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }} exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} transition={{ type: "spring", duration: 0.42, bounce: 0 }}>
             <header>
               <h2>{title}</h2>
-              <button type="button" className="icon-btn" autoFocus aria-label={t("close")} onClick={onClose}><X size={18} /></button>
+              <button type="button" className="icon-btn" aria-label={t("close")} onClick={onClose}><X size={18} /></button>
             </header>
             <div className="kit-drawer-body">{children}</div>
           </motion.aside>

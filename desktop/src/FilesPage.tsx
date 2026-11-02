@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePersisted } from "./qol";
 import { ChevronRight, ExternalLink, FileText, Folder, Link2, Search, Star, Trash2 } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
@@ -101,7 +102,7 @@ function Remote({ title, path, revoke, revokeKey }: { title: string; path: strin
 }
 
 export default function FilesPage() {
-  const [section, setSection] = useState<Section>("all");
+  const [section, setSection] = usePersisted<Section>("ethone-section-files", "all");
   const quota = useLoad(() => apiCall<Json>("api/google-drive/quota").catch(() => null));
   const items = [
     { id: "all", label: tr("Mes fichiers", "My files"), icon: <Folder size={16} /> },

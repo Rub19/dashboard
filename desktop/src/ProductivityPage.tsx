@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { undoable } from "./qol";
 import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Circle, NotebookPen, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { PageHead } from "./kit";
 import { EthoneItem, EthoneItemInput, ItemKind, itemsCreate, itemsDelete, itemsList, itemsUpdate } from "./api";
@@ -63,7 +64,6 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
   const [editor, setEditor] = useState<EthoneItem | "new" | null>(null);
   const [draft, setDraft] = useState<ProductivityDraft>(EMPTY_DRAFT);
   const [saving, setSaving] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -86,7 +86,6 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
 
   useEffect(() => {
     setEditor(null);
-    setConfirmDelete(null);
   }, [kind]);
 
   const openNew = () => {
@@ -138,18 +137,18 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     }
   };
 
-  const remove = async (id: string) => {
-    setSaving(true);
+  const remove = (item: EthoneItem) => {
     setError(null);
-    try {
-      await itemsDelete(kind, id);
-      setConfirmDelete(null);
-      await load();
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setSaving(false);
-    }
+    setItems((current) => current.filter((other) => other.id !== item.id));
+    undoable(
+      lang === "fr" ? `« ${item.title} » supprimé` : `"${item.title}" deleted`,
+      () => itemsDelete(kind, item.id),
+      () => void load(),
+      (reason) => {
+        setError(errorText(reason));
+        void load();
+      },
+    );
   };
 
   const shown = kind === "events" && day ? items.filter((item) => item.startAt && dayKey(new Date(item.startAt)) === day) : items;
@@ -185,16 +184,12 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
                     <b>{item.title}</b>
                     {preview && <small className="muted">{preview}</small>}
                   </span>
-                  {confirmDelete === item.id ? (
-                    <span className="delete-confirm"><span>{t("confirmDelete")}</span><Button disabled={saving} onClick={() => setConfirmDelete(null)}>{t("cancel")}</Button><Button disabled={saving} onClick={() => void remove(item.id)}><Trash2 size={14} />{t("delete")}</Button></span>
-                  ) : (
                     <span className="item-actions">
                       {(kind === "events" ? item.startAt : item.updatedAt) && <time className="muted small" dateTime={(kind === "events" ? item.startAt : item.updatedAt) ?? undefined}>{itemDate(kind === "events" ? item.startAt : item.updatedAt)}</time>}
                       {kind === "tasks" && <Button disabled={saving} onClick={() => void toggleTask(item)}>{item.done ? <RotateCcw size={14} /> : <CheckCircle2 size={14} />}{item.done ? t("reopen") : t("markDone")}</Button>}
                       <Button disabled={saving} onClick={() => openEdit(item)}><Pencil size={14} />{t("edit")}</Button>
-                      <Button disabled={saving} onClick={() => setConfirmDelete(item.id)}><Trash2 size={14} />{t("delete")}</Button>
+                      <Button disabled={saving} onClick={() => remove(item)}><Trash2 size={14} />{t("delete")}</Button>
                     </span>
-                  )}
                 </li>
               );
             })}

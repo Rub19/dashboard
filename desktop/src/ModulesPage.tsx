@@ -1,4 +1,5 @@
 import { PageHead } from "./kit";
+import { contextMenu } from "./qol";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Download, Gamepad2, Pin, PinOff } from "lucide-react";
@@ -64,7 +65,11 @@ function Row({ status, working, error, onRun, onDismiss, pinned, onPin }: { stat
   const hint = action in HINTS ? t(HINTS[action as keyof typeof HINTS]) : null;
 
   return (
-    <motion.li className="app" variants={listItem}>
+    <motion.li className="app" variants={listItem} onContextMenu={(event) => contextMenu(event, [
+      ...(ACTIONABLE.includes(action) ? [{ label: t(`action.${action}` as Key), run: onRun }] : []),
+      { label: open ? tr("Masquer les détails", "Hide details") : tr("Voir les détails", "Show details"), run: () => setOpen((value) => !value) },
+      { label: pinned ? tr("Désépingler", "Unpin") : tr("Épingler dans la barre", "Pin to the sidebar"), run: onPin },
+    ])}>
       <div className="app-row">
         <button type="button" className="app-main" aria-expanded={open} aria-controls={`details-${module.id}`} onClick={() => setOpen((value) => !value)}>
           <AppIcon id={module.id} />

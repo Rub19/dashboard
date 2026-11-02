@@ -74,7 +74,7 @@ export const weaponIcon = (id: string) => `${MEDIA}/weapons/${id}/killstreamicon
 export const modeName = (mode: string) => MODES[mode.toLowerCase().replace(/[\s_-]/g, "")] ?? mode;
 
 export function rankColor(tier: number): string {
-  if (tier >= 27) return "#f3e9a6";
+  if (tier >= 27) return "#d4b13f";
   if (tier >= 24) return "#fd5b68";
   if (tier >= 21) return "#2dd4a0";
   if (tier >= 18) return "#c084fc";

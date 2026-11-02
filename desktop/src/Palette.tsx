@@ -5,6 +5,7 @@ import { t } from "./i18n";
 export interface Command {
   id: string;
   label: string;
+  hint?: string;
   run: () => void;
 }
 
@@ -65,7 +66,7 @@ export default function Palette({ commands, onClose }: { commands: Command[]; on
       <ul id="palette-results" role="listbox">
         {results.map((command, position) => (
           <li key={command.id} id={`palette-${command.id}`} role="option" aria-selected={position === index} onMouseEnter={() => setIndex(position)} onClick={() => pick(command)}>
-            {command.label}
+            <span>{command.label}</span>{command.hint && <kbd>{command.hint}</kbd>}
           </li>
         ))}
         {results.length === 0 && <li className="muted">{t("noResult")}</li>}

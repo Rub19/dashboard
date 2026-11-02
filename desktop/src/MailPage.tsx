@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
+import { contextMenu, copyText, toast } from "./qol";
+import { usePersisted } from "./qol";
+import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X, Copy } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
@@ -100,6 +102,9 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       setError(errorText(reason));
     }
   };
+  const move = (message: Message, target: string, done: string) => {
+    void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder: target })).then(() => toast(done, { action: { label: tr("Annuler", "Undo"), run: () => void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder })) } }));
+  };
   const content = open ? (open.body_text?.trim() || (open.body_html ? htmlToText(open.body_html) : open.snippet ?? "")) : "";
   return (
     <>
@@ -114,7 +119,13 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
         <Stagger className="mail-list">
           {state.data.map((message) => (
             <StaggerItem key={message.id} variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
-              <button type="button" onClick={() => read(message)}>
+              <button type="button" onClick={() => read(message)} onContextMenu={(event) => contextMenu(event, [
+                { label: tr("Ouvrir", "Open"), run: () => read(message) },
+                { label: tr("Répondre", "Reply"), run: () => onCompose({ to: message.from_address, subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`, body: "", inReplyTo: message.id }) },
+                { label: tr("Copier l'adresse", "Copy address"), run: () => void copyText(message.from_address, tr("Adresse copiée", "Address copied")) },
+                ...(folder !== "archive" ? [{ label: tr("Archiver", "Archive"), run: () => move(message, "archive", tr("Message archivé", "Message archived")) }] : []),
+                ...(folder !== "trash" ? [{ label: tr("Corbeille", "Trash"), danger: true, run: () => move(message, "trash", tr("Message mis à la corbeille", "Message moved to trash")) }] : []),
+              ])}>
                 <span><b>{message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang)}</time></span>
                 <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
                 {message.snippet && <small>{message.snippet}</small>}
@@ -132,8 +143,9 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
               <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
               <Button onClick={() => void act(() => apiData("api/mail/read", "POST", { id: open.id, is_starred: !open.is_starred }))}><Star size={15} />{open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Étoile", "Star")}</Button>
               <Button onClick={() => { const date = new Date(); date.setDate(date.getDate() + 1); date.setHours(9, 0, 0, 0); void act(() => apiData("api/mail/snooze", "POST", { id: open.id, snoozed_until: date.toISOString() })); }}><Clock size={15} />{tr("Reporter à demain", "Snooze to tomorrow")}</Button>
-              {folder !== "archive" && <Button onClick={() => void act(() => apiData("api/mail/move", "POST", { ids: [open.id], folder: "archive" }))}><Archive size={15} />{tr("Archiver", "Archive")}</Button>}
-              {folder !== "trash" && <Button className="danger" onClick={() => void act(() => apiData("api/mail/move", "POST", { ids: [open.id], folder: "trash" }))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
+              <Button aria-label={tr("Copier l'adresse", "Copy address")} title={tr("Copier l'adresse", "Copy address")} onClick={() => void copyText(open.from_address, tr("Adresse copiée", "Address copied"))}><Copy size={15} /></Button>
+              {folder !== "archive" && <Button onClick={() => move(open, "archive", tr("Message archivé", "Message archived"))}><Archive size={15} />{tr("Archiver", "Archive")}</Button>}
+              {folder !== "trash" && <Button className="danger" onClick={() => move(open, "trash", tr("Message mis à la corbeille", "Message moved to trash"))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
             </div>
             {(open.attachments?.length ?? 0) > 0 && <ul className="eval-tags">{open.attachments?.map((item) => <li key={item.filename}>{item.filename}</li>)}</ul>}
             {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
@@ -172,7 +184,7 @@ function Remote({ title, path, fields, deletable }: { title: string; path: strin
 }
 
 export default function MailPage() {
-  const [section, setSection] = useState<Section>("inbox");
+  const [section, setSection] = usePersisted<Section>("ethone-section-mail", "inbox");
   const [composing, setComposing] = useState(false);
   const [draft, setDraft] = useState<{ to: string; subject: string; body: string; inReplyTo?: string }>({ to: "", subject: "", body: "" });
   const [version, setVersion] = useState(0);

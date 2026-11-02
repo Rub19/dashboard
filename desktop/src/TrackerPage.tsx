@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { usePersisted } from "./qol";
 import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
@@ -359,9 +360,10 @@ export default function TrackerPage() {
   const [needsId, setNeedsId] = useState(false);
   const [open, setOpen] = useState<EvalMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
-  const [tab, setTab] = useState<EvalTab>("profile");
+  const [tab, setTab] = usePersisted<EvalTab>("ethone-section-eval", "profile");
   const [limit, setLimit] = useState(MATCH_LIMIT);
-  const [visited, setVisited] = useState<EvalTab[]>([]);
+  const [visited, setVisited] = useState<EvalTab[]>([tab]);
+  useEffect(() => setVisited((seen) => (seen.includes(tab) ? seen : [...seen, tab])), [tab]);
   const [loadingMore, setLoadingMore] = useState(false);
   const firstLoad = useRef(!memory);
   const mapImages = useMapImages();
@@ -519,7 +521,7 @@ export default function TrackerPage() {
   return (
     <>
       <div className="eval-tabs-row">
-        <Tabs id="eval" label="E:VAL" value={tab} onChange={(next) => { setTab(next); setVisited((seen) => (seen.includes(next) ? seen : [...seen, next])); }} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
+        <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
       </div>
       {tab === "live" && <EvalLive linked={isLinked} onConnect={connect} />}
       {visited.includes("game") && <div style={{ display: tab === "game" ? "contents" : "none" }}><EvalGame linked={isLinked} onConnect={connect} /></div>}

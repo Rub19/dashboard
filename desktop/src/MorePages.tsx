@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { usePersisted } from "./qol";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
@@ -137,7 +138,7 @@ function Connections() {
 }
 
 export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
-  const [section, setSection] = useState<"appearance" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("appearance");
+  const [section, setSection] = usePersisted<"appearance" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
   const items = [
     { id: "appearance", label: tr("Apparence et compte", "Appearance and account"), icon: <Palette size={16} />, group: tr("Application", "App") },
     { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
@@ -323,7 +324,7 @@ function Team() {
 }
 
 export function TeamPage() {
-  const [section, setSection] = useState<"team" | "shared" | "personal">("team");
+  const [section, setSection] = usePersisted<"team" | "shared" | "personal">("ethone-section-team", "team");
   const items = [
     { id: "team", label: tr("Équipe", "Team"), icon: <Users size={16} /> },
     { id: "shared", label: tr("Espaces partagés", "Shared spaces"), icon: <Link2 size={16} /> },
@@ -419,7 +420,7 @@ function BrainChat() {
 }
 
 export function BrainPage() {
-  const [section, setSection] = useState<"chat" | "flows" | "macros" | "interactions" | "personas">("chat");
+  const [section, setSection] = usePersisted<"chat" | "flows" | "macros" | "interactions" | "personas">("ethone-section-brain", "chat");
   const items = [
     { id: "chat", label: "Brain", icon: <MessageSquare size={16} /> },
     { id: "flows", label: "Flows", icon: <Workflow size={16} />, group: tr("Automatisations", "Automation") },
@@ -547,7 +548,7 @@ function Support() {
 }
 
 export function InsightsPage() {
-  const [section, setSection] = useState<"activity" | "mail" | "weather" | "rss" | "diagnostic">("activity");
+  const [section, setSection] = usePersisted<"activity" | "mail" | "weather" | "rss" | "diagnostic">("ethone-section-insights", "activity");
   const items = [
     { id: "activity", label: tr("Activité", "Activity"), icon: <Activity size={16} /> },
     { id: "mail", label: tr("Statistiques mail", "Mail stats"), icon: <MessageSquare size={16} /> },
@@ -798,7 +799,7 @@ function RotationView() {
 }
 
 export function GamesPage() {
-  const [section, setSection] = useState<"lol" | "tft" | "rotation" | "steam" | "minecraft">("lol");
+  const [section, setSection] = usePersisted<"lol" | "tft" | "rotation" | "steam" | "minecraft">("ethone-section-games", "lol");
   const items = [
     { id: "lol", label: "League of Legends", icon: <Gamepad2 size={16} />, group: "Riot" },
     { id: "tft", label: "Teamfight Tactics", icon: <Gamepad2 size={16} />, group: "Riot" },

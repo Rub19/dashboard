@@ -1,4 +1,6 @@
 import { FormEvent, useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { contextMenu, copyText } from "./qol";
+import { usePersisted } from "./qol";
 import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, ChevronRight, Minus, Moon, RefreshCw } from "lucide-react";
 import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
 import { readCache, writeCache } from "./cache";
@@ -531,7 +533,10 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
   const [status, place] = friendLines(friend, maps);
   return (
     <li>
-      <button type="button" className="friend-row" onClick={onOpen}>
+      <button type="button" className="friend-row" onClick={onOpen} onContextMenu={(event) => contextMenu(event, [
+        { label: tr("Voir le profil", "View profile"), run: onOpen },
+        { label: tr("Copier l'identifiant Riot", "Copy Riot ID"), run: () => void copyText(`${friend.name}#${friend.tag}`, tr("Identifiant copié", "Riot ID copied")) },
+      ])}>
         <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
         <span className="friend-text">
           <b>{friend.name}<small>#{friend.tag}</small></b>
@@ -650,7 +655,7 @@ function Seasons({ account }: { account: EvalAccount | null }) {
 }
 
 export default function EvalHub({ account, linked, matches }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[] }) {
-  const [section, setSection] = useState<Section>("friends");
+  const [section, setSection] = usePersisted<Section>("ethone-section-hub", "friends");
   const [target, setTarget] = useState<string>();
   const items = [
     { id: "friends", label: tr("Amis", "Friends"), icon: <UserPlus size={16} />, group: tr("Joueurs", "Players") },

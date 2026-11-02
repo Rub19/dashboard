@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { usePersisted } from "./qol";
 import { motion } from "framer-motion";
 import { CalendarDays, Check, FileText, Flame, Headphones, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2, Zap } from "lucide-react";
 import ProductivityPage from "./ProductivityPage";
@@ -418,7 +419,7 @@ function Scratchpad() {
 }
 
 export default function WorkPage() {
-  const [section, setSection] = useState<Section>("tasks");
+  const [section, setSection] = usePersisted<Section>("ethone-section-productivity", "tasks");
   const items = [
     { id: "tasks", label: tr("Tâches", "Tasks"), icon: <ListChecks size={16} />, group: tr("Organisation", "Organize") },
     { id: "events", label: tr("Calendrier", "Calendar"), icon: <CalendarDays size={16} />, group: tr("Organisation", "Organize") },

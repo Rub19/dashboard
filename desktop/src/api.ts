@@ -47,6 +47,29 @@ export interface Profile {
   avatar: string | null;
 }
 
+export type ItemKind = "notes" | "tasks" | "events";
+
+export interface EthoneItem {
+  id: string;
+  title: string;
+  body: string;
+  done: boolean;
+  startAt: string | null;
+  endAt: string | null;
+  data: Record<string, unknown>;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface EthoneItemInput {
+  title: string;
+  body: string;
+  done: boolean;
+  startAt: string | null;
+  endAt: string | null;
+  data: Record<string, unknown>;
+}
+
 export type Stage =
   | { stage: "signedOut" }
   | { stage: "mfaRequired"; profile: Profile }
@@ -67,6 +90,10 @@ export const openSite = (page: SitePage) => invoke<void>("open_site", { page });
 
 export const modulesLocal = () => invoke<ModuleStatus[]>("modules_local");
 export const modulesRemote = () => invoke<ModuleStatus[]>("modules_remote");
+export const itemsList = (kind: ItemKind) => invoke<EthoneItem[]>("items_list", { kind });
+export const itemsCreate = (kind: ItemKind, input: EthoneItemInput) => invoke<string>("items_create", { kind, input });
+export const itemsUpdate = (kind: ItemKind, id: string, input: EthoneItemInput) => invoke<void>("items_update", { kind, id, input });
+export const itemsDelete = (kind: ItemKind, id: string) => invoke<void>("items_delete", { kind, id });
 export const openModule = (id: string) => invoke<void>("open_module", { id });
 export const openReleases = (id: string) => invoke<void>("open_releases", { id });
 export const readJournal = () => invoke<JournalEntry[]>("read_journal");

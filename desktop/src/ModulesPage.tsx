@@ -17,6 +17,7 @@ interface Props {
   checking: boolean;
   busy: Record<string, Busy>;
   errors: Record<string, string>;
+  loadError: string | null;
   onRun: (status: ModuleStatus) => void;
   onRefresh: () => void;
   onDismiss: (id: string) => void;
@@ -165,7 +166,7 @@ function EthoneUpdate() {
   );
 }
 
-export default function ModulesPage({ name, modules, checking, busy, errors, onRun, onRefresh, onDismiss }: Props) {
+export default function ModulesPage({ name, modules, checking, busy, errors, loadError, onRun, onRefresh, onDismiss }: Props) {
   return (
     <>
       <div className="pagehead">
@@ -179,6 +180,12 @@ export default function ModulesPage({ name, modules, checking, busy, errors, onR
         </Button>
       </div>
       <EthoneUpdate />
+      {loadError && (
+        <div className="home-error" role="alert">
+          <span>{loadError}</span>
+          <Button onClick={onRefresh}>{t("retry")}</Button>
+        </div>
+      )}
       {modules.length === 0 ? (
         <ul className="apps" aria-busy="true" aria-label={t("loading")}>
           {SKELETONS.map((index) => <li key={index} className="app skeleton" />)}

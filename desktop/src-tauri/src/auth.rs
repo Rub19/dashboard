@@ -84,6 +84,15 @@ fn user_error(failure: Failure, invalid: &str) -> String {
     }
 }
 
+fn service_error(failure: Failure) -> String {
+    match failure {
+        Failure::Network => "network".into(),
+        Failure::Status(401 | 403, _) => "sessionExpired".into(),
+        Failure::Status(429, _) => "rateLimited".into(),
+        Failure::Status(..) => "server".into(),
+    }
+}
+
 pub fn challenge(verifier: &str) -> String {
     BASE64_URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()))
 }
@@ -179,6 +188,16 @@ impl Api {
     async fn worker_post(&self, path: &str, access: &str, body: Value) -> Result<Value, Failure> {
         let url = format!("{}/{path}", self.worker_base);
         self.send(self.client.post(url).bearer_auth(access).json(&body)).await
+    }
+
+    async fn worker_json(&self, method: reqwest::Method, path: &str, access: &str, body: Option<Value>) -> Result<Value, Failure> {
+        let url = format!("{}/{path}", self.worker_base);
+        let request = self.client.request(method, url).bearer_auth(access);
+        self.send(match body {
+            Some(body) => request.json(&body),
+            None => request,
+        })
+        .await
     }
 }
 
@@ -278,6 +297,60 @@ impl Auth {
 
     pub async fn is_signed_in(&self) -> bool {
         matches!(self.inner.lock().await.stage, Some(Stage::SignedIn { .. }))
+    }
+
+    async fn renew_access(&self) -> Result<String, String> {
+        let (refresh, remember) = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            (inner.refresh.clone().ok_or("network")?, inner.remember)
+        };
+        let tokens = match self.api.grant("refresh_token", json!({ "refresh_token": refresh })).await {
+            Ok(tokens) => tokens,
+            Err(Failure::Status(400..=403, _)) => {
+                vault_clear();
+                *self.inner.lock().await = Inner { remember: true, stage: Some(Stage::SignedOut), ..Default::default() };
+                return Err("sessionExpired".into());
+            }
+            Err(failure) => return Err(service_error(failure)),
+        };
+        if remember {
+            vault_save(&Stored { refresh: tokens.refresh.clone(), profile: tokens.profile.clone(), mfa_pending: false });
+        }
+        let access = tokens.access.clone();
+        let mut inner = self.inner.lock().await;
+        inner.access = Some(tokens.access);
+        inner.refresh = Some(tokens.refresh);
+        inner.profile = Some(tokens.profile.clone());
+        inner.stage = Some(Stage::SignedIn { profile: tokens.profile, offline: false });
+        Ok(access)
+    }
+
+    pub async fn worker_get(&self, path: &str) -> Result<Value, String> {
+        self.worker_json(reqwest::Method::GET, path, None).await
+    }
+
+    pub async fn worker_json(&self, method: reqwest::Method, path: &str, body: Option<Value>) -> Result<Value, String> {
+        let access = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            inner.access.clone()
+        };
+        let access = match access {
+            Some(access) => access,
+            None => self.renew_access().await?,
+        };
+        match self.api.worker_json(method.clone(), path, &access, body.clone()).await {
+            Err(Failure::Status(401, _)) => {
+                let renewed = self.renew_access().await?;
+                self.api.worker_json(method, path, &renewed, body).await.map_err(service_error)
+            }
+            result => result.map_err(service_error),
+        }
     }
 
     async fn restore(&self) -> Stage {
@@ -514,5 +587,12 @@ mod tests {
     async fn modules_stay_locked_until_signed_in() {
         let auth = Auth::new(Api::new("http://127.0.0.1:9", "http://127.0.0.1:9", false).unwrap());
         assert!(!auth.is_signed_in().await);
+    }
+
+    #[tokio::test]
+    async fn worker_data_stays_locked_until_signed_in() {
+        let auth = Auth::new(Api::new("http://127.0.0.1:9", "http://127.0.0.1:9", false).unwrap());
+        assert_eq!(auth.worker_get("api/notes").await.unwrap_err(), "sessionRequired");
+        assert_eq!(auth.worker_json(reqwest::Method::POST, "api/notes", Some(json!({}))).await.unwrap_err(), "sessionRequired");
     }
 }

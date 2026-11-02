@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "test": "node --experimental-strip-types --test src/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "tauri": "tauri",
     "dev:setup": "vite --config vite.setup.config.ts",

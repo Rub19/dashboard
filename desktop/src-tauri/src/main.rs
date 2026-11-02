@@ -7,6 +7,7 @@ mod feed;
 mod install;
 mod journal;
 mod system;
+mod sync;
 mod windowing;
 
 use action::{decide, Action, Facts};
@@ -160,6 +161,40 @@ async fn modules_remote(state: State<'_, App>) -> Result<Vec<ModuleStatus>, Stri
             Err(error) => status(module, None, Some(error)),
         })
         .collect())
+}
+
+#[tauri::command]
+async fn items_list(kind: String, state: State<'_, App>) -> Result<Vec<sync::Item>, String> {
+    let kind = sync::ItemKind::try_from(kind.as_str())?;
+    sync::parse_list(state.auth.worker_get(kind.path()).await?)
+}
+
+#[tauri::command]
+async fn items_create(kind: String, mut input: sync::ItemInput, state: State<'_, App>) -> Result<String, String> {
+    let kind = sync::ItemKind::try_from(kind.as_str())?;
+    sync::validate_input(&input)?;
+    input.title = input.title.trim().to_string();
+    let body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
+    sync::parse_created(state.auth.worker_json(reqwest::Method::POST, kind.path(), Some(body)).await?)
+}
+
+#[tauri::command]
+async fn items_update(kind: String, id: String, mut input: sync::ItemInput, state: State<'_, App>) -> Result<(), String> {
+    let kind = sync::ItemKind::try_from(kind.as_str())?;
+    sync::validate_id(&id)?;
+    sync::validate_input(&input)?;
+    input.title = input.title.trim().to_string();
+    let mut body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
+    body.as_object_mut().ok_or("Donnée invalide")?.insert("id".into(), serde_json::Value::String(id));
+    sync::parse_mutated(state.auth.worker_json(reqwest::Method::PATCH, kind.path(), Some(body)).await?)
+}
+
+#[tauri::command]
+async fn items_delete(kind: String, id: String, state: State<'_, App>) -> Result<(), String> {
+    let kind = sync::ItemKind::try_from(kind.as_str())?;
+    sync::validate_id(&id)?;
+    let body = serde_json::json!({ "id": id });
+    sync::parse_mutated(state.auth.worker_json(reqwest::Method::DELETE, kind.path(), Some(body)).await?)
 }
 
 #[tauri::command]
@@ -335,6 +370,10 @@ fn main() {
             open_site,
             modules_local,
             modules_remote,
+            items_list,
+            items_create,
+            items_update,
+            items_delete,
             open_module,
             open_releases,
             install_module,

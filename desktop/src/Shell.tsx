@@ -1,25 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CircleUser, Info, LayoutGrid, LogOut, Menu, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
+import { CircleUser, House, Info, LayoutGrid, ListChecks, LogOut, Menu, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
+import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, pageEnter, popover, SPRING_PILL } from "./motion";
+import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
+import ProductivityPage from "./ProductivityPage";
 import { readJson, write } from "./settings";
 import { BrandMark, WindowControls } from "./ui";
 
-type Page = "modules" | "journal" | "settings" | "about";
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const MAIN_PAGES: { id: Page; icon: typeof LayoutGrid }[] = [
-  { id: "modules", icon: LayoutGrid },
-  { id: "journal", icon: ScrollText },
-];
-const FOOT_PAGES: { id: Page; icon: typeof LayoutGrid }[] = [
-  { id: "settings", icon: SettingsIcon },
-  { id: "about", icon: Info },
-];
+const PAGE_ICONS: Record<Page, typeof LayoutGrid> = { home: House, modules: LayoutGrid, productivity: ListChecks, journal: ScrollText, settings: SettingsIcon, about: Info };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -36,9 +31,10 @@ function Avatar({ profile }: { profile: Profile }) {
 }
 
 export default function Shell({ profile, offline, onSignedOut }: { profile: Profile; offline: boolean; onSignedOut: () => void }) {
-  const [page, setPage] = useState<Page>("modules");
+  const [page, setPage] = useState<Page>("home");
   const [modules, setModules] = useState<ModuleStatus[]>([]);
   const [checking, setChecking] = useState(false);
+  const [moduleError, setModuleError] = useState<string | null>(null);
   const [busy, setBusy] = useState<Record<string, Busy>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [palette, setPalette] = useState(false);
@@ -49,18 +45,25 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   const refresh = useCallback(async () => {
     setChecking(true);
+    setModuleError(null);
     try {
-      setModules(await modulesRemote());
+      setModules(await (offline ? modulesLocal() : modulesRemote()));
+    } catch (reason) {
+      setModuleError(errorText(reason));
     } finally {
       setChecking(false);
     }
-  }, []);
+  }, [offline]);
 
   useEffect(() => {
-    modulesLocal().then(setModules).then(refresh);
-    const timer = setInterval(refresh, CHECK_EVERY);
-    return () => clearInterval(timer);
-  }, [refresh]);
+    modulesLocal().then(setModules, (reason) => setModuleError(errorText(reason))).then(() => {
+      if (!offline) return refresh();
+    });
+    const timer = offline ? undefined : setInterval(refresh, CHECK_EVERY);
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [offline, refresh]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -130,13 +133,16 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     [modules, run, refresh],
   );
 
-  const navItem = ({ id, icon: Icon }: { id: Page; icon: typeof LayoutGrid }) => (
+  const navItem = ({ id }: { id: Page }) => {
+    const Icon = PAGE_ICONS[id];
+    return (
     <button key={id} type="button" className={`nav-item ${page === id ? "on" : ""}`} aria-current={page === id ? "page" : undefined} title={compact ? t(id) : undefined} onClick={() => setPage(id)}>
       {page === id && <motion.span layoutId="nav-pill" className="nav-pill" transition={SPRING_PILL} />}
       <Icon size={18} />
       <span className="nav-label">{t(id)}</span>
     </button>
-  );
+    );
+  };
 
   const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
 
@@ -153,7 +159,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         <WindowControls />
       </header>
 
-      <nav className="nav" aria-label={t("modules")}>
+      <nav className="nav" aria-label={t("navigation")}>
         <div className="nav-group">{MAIN_PAGES.map(navItem)}</div>
         <div className="nav-group nav-foot">
           {!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
@@ -179,7 +185,9 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       <main className="layer">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={page} className="page" variants={pageEnter} initial="initial" animate="animate" exit="exit">
-            {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
+            {page === "home" && <HomePage profile={profile} modules={modules} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onOpenApplications={() => setPage("modules")} />}
+            {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
+            {page === "productivity" && <ProductivityPage />}
             {page === "journal" && <JournalPage />}
             {page === "settings" && <SettingsPage profile={profile} onSignOut={signOut} />}
             {page === "about" && <AboutPage />}

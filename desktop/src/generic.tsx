@@ -1,16 +1,51 @@
 import { useEffect, useMemo, useState } from "react";
-import { errorText, tr } from "./i18n";
+import { errorText, lang, tr } from "./i18n";
 import { Drawer, Empty, ErrorBox, Stagger, StaggerItem, staggerItem } from "./kit";
 import { Button } from "./ui";
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 const TITLE_KEYS = ["title", "name", "label", "subject", "prize", "displayName", "device_name", "platform", "userTag", "tag", "username", "guildName", "email", "event_type", "eventType", "id"];
 const SUB_KEYS = ["status", "type", "category", "description", "reason", "authorTag", "action", "browser", "last_seen_at", "createdAt", "created_at", "updatedAt"];
-const HIDDEN = new Set(["__v", "_id", "user_id", "userId", "profile_id", "workspace_id", "slug", "public_id"]);
+const HIDDEN = new Set(["__v", "_id", "id", "guildId", "user_id", "userId", "profile_id", "workspace_id", "slug", "public_id", "createdAt", "updatedAt", "created_at", "updated_at"]);
+const PHRASES: Record<string, string> = {
+  enabled: "Activé", active: "Actif", online: "En ligne", channelid: "Salon", roleid: "Rôle", channelids: "Salons", roleids: "Rôles", logchannelid: "Salon des journaux", logsuccess: "Journaliser les réussites", botname: "Nom du bot", botpersonality: "Personnalité du bot", activepreset: "Préréglage actif", autodeletecommands: "Supprimer les commandes automatiquement", commandcooldown: "Délai entre les commandes", commandrules: "Règles des commandes", adminroles: "Rôles administrateurs", blacklist: "Liste noire", captcha: "Captcha", attempts: "Tentatives", delayminutes: "Délai en minutes", failaction: "Action en cas d'échec", givenroles: "Rôles donnés", removedroles: "Rôles retirés", mentiononjoin: "Mentionner à l'arrivée", panelmessageid: "Message du panneau", emergencycontacts: "Contacts d'urgence", mode: "Mode", userids: "Utilisateurs", emojis: "Émojis", errorcolor: "Couleur des erreurs", prefix: "Préfixe", language: "Langue", locale: "Langue", timezone: "Fuseau horaire", message: "Message", title: "Titre", description: "Description", color: "Couleur", name: "Nom", reason: "Raison", status: "État", type: "Type", duration: "Durée", threshold: "Seuil", action: "Action", membercount: "Membres", channelscount: "Salons", rolescount: "Rôles", totalcommands: "Commandes au total", commandstoday: "Commandes aujourd'hui", pingms: "Latence", uptimems: "Temps en ligne", count: "Nombre", total: "Total", level: "Niveau", xp: "XP", welcomemessage: "Message de bienvenue", goodbyemessage: "Message de départ", dmenabled: "Message privé activé",
+};
+const WORDS: Record<string, string> = { channel: "salon", channels: "salons", role: "rôle", roles: "rôles", user: "utilisateur", users: "utilisateurs", log: "journal", logs: "journaux", message: "message", messages: "messages", enabled: "activé", max: "maximum", min: "minimum", per: "par", delay: "délai", time: "durée", days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes", day: "jour", auto: "automatique", member: "membre", members: "membres", admin: "administrateur", staff: "équipe", ignored: "ignorés", allowed: "autorisés", whitelist: "liste blanche", blacklist: "liste noire", welcome: "bienvenue", goodbye: "départ", reward: "récompense", rewards: "récompenses", command: "commande", commands: "commandes", limit: "limite", cooldown: "délai", notify: "notifier", on: "à", join: "l'arrivée", leave: "le départ" };
 
 export function humanize(key: string): string {
-  const text = key.replace(/_/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/\s+/g, " ").trim();
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  if (lang === "fr") {
+    const phrase = PHRASES[key.replace(/[_\s-]/g, "").toLowerCase()];
+    if (phrase) return phrase;
+  }
+  const words = key.replace(/_/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/\s+/g, " ").trim().toLowerCase().split(" ").filter((word) => word !== "id" && word !== "ids");
+  const text = (lang === "fr" ? words.map((word) => WORDS[word] ?? word) : words).join(" ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+const isEmpty = (value: Json | undefined) => value === null || value === undefined || value === "" || (Array.isArray(value) && value.length === 0) || (typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 0);
+const isIdLike = (key: string, value: Json) => /(^id$|Id$|_id$)/.test(key) || (typeof value === "string" && /^\d{16,}$/.test(value));
+
+export function factsOf(value: Json): { key: string; value: Json }[] {
+  const source = unwrapConfig(value).body;
+  const facts: { key: string; value: Json }[] = [];
+  for (const [key, item] of Object.entries(source)) {
+    if (HIDDEN.has(key) || isIdLike(key, item) || isEmpty(item)) continue;
+    if (typeof item === "number" || typeof item === "boolean" || (typeof item === "string" && item.length <= 40)) facts.push({ key, value: item });
+    if (facts.length >= 8) break;
+  }
+  return facts;
+}
+
+export interface DirectoryEntry { id: string; name: string }
+export interface Directory { channels: DirectoryEntry[]; roles: DirectoryEntry[] }
+
+export function flattenEntries(value: Json, prefix = ""): DirectoryEntry[] {
+  if (Array.isArray(value)) return value.flatMap((item) => flattenEntries(item, prefix));
+  if (!value || typeof value !== "object") return [];
+  const out: DirectoryEntry[] = [];
+  if (typeof value.id === "string" && typeof value.name === "string") out.push({ id: value.id, name: prefix + value.name });
+  for (const item of Object.values(value)) if (item && typeof item === "object") out.push(...flattenEntries(item, prefix));
+  return out;
 }
 
 export function displayValue(value: Json | undefined): string {
@@ -90,22 +125,21 @@ export const rowSubtitle = (row: Json): string => {
 export function JsonFields({ value }: { value: Json }) {
   if (value === null || typeof value !== "object") return <p className="generic-scalar">{displayValue(value)}</p>;
   if (Array.isArray(value)) {
-    return <ul className="generic-nested">{value.slice(0, 200).map((item, index) => <li key={index}>{item && typeof item === "object" ? <JsonFields value={item} /> : displayValue(item)}</li>)}</ul>;
+    if (value.every((item) => typeof item !== "object")) return <p className="generic-scalar">{value.map(displayValue).join(", ")}</p>;
+    return <ul className="generic-nested">{value.slice(0, 100).map((item, index) => <li key={index}>{item && typeof item === "object" ? <JsonFields value={item} /> : displayValue(item)}</li>)}</ul>;
   }
-  const entries = Object.entries(value).filter(([key]) => !HIDDEN.has(key));
+  const entries = Object.entries(value).filter(([key, item]) => !HIDDEN.has(key) && !isEmpty(item) && !isIdLike(key, item));
+  const plain = entries.filter(([, item]) => typeof item !== "object" || item === null);
+  const nested = entries.filter(([, item]) => item && typeof item === "object");
   return (
-    <dl className="generic-fields">
-      {entries.map(([key, item]) => (
-        <div key={key} className={item && typeof item === "object" ? "block" : ""}>
-          <dt>{humanize(key)}</dt>
-          <dd>{item && typeof item === "object" ? (Object.keys(item).length ? <JsonFields value={item} /> : "–") : displayValue(item)}</dd>
-        </div>
-      ))}
-    </dl>
+    <div className="generic-view">
+      {plain.length > 0 && <dl className="generic-fields">{plain.map(([key, item]) => <div key={key}><dt>{humanize(key)}</dt><dd>{displayValue(item)}</dd></div>)}</dl>}
+      {nested.map(([key, item]) => <details key={key} className="generic-details"><summary>{humanize(key)}<small>{displayValue(item)}</small></summary><JsonFields value={item} /></details>)}
+    </div>
   );
 }
 
-export function ConfigForm({ value, onSave }: { value: { [key: string]: Json }; onSave: (next: { [key: string]: Json }) => Promise<void> }) {
+export function ConfigForm({ value, onSave, directory }: { value: { [key: string]: Json }; onSave: (next: { [key: string]: Json }) => Promise<void>; directory?: Directory }) {
   const [draft, setDraft] = useState(value);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,28 +156,57 @@ export function ConfigForm({ value, onSave }: { value: { [key: string]: Json }; 
       return copy;
     });
   };
-  const render = (node: { [key: string]: Json }, path: string[]) =>
-    Object.entries(node).filter(([key]) => !HIDDEN.has(key) && key !== "guildId" && key !== "id" && key !== "createdAt" && key !== "updatedAt").map(([key, item]) => {
+  const pick = (key: string, entries: DirectoryEntry[], current: string, next: string[], id: string, sign: string) => (
+    <label key={id} className="kit-field"><span>{humanize(key)}</span>
+      <select value={current} onChange={(event) => change(next, event.target.value || null)}>
+        <option value="">{tr("Aucun", "None")}</option>
+        {!entries.some((entry) => entry.id === current) && current && <option value={current}>{current}</option>}
+        {entries.map((entry) => <option key={entry.id} value={entry.id}>{sign}{entry.name}</option>)}
+      </select>
+    </label>
+  );
+  const pickMany = (key: string, entries: DirectoryEntry[], current: string[], next: string[], id: string, sign: string) => (
+    <div key={id} className="kit-field"><span>{humanize(key)}</span>
+      <div className="generic-chips">
+        {current.map((item) => <button key={item} type="button" title={tr("Retirer", "Remove")} onClick={() => change(next, current.filter((other) => other !== item))}>{sign}{entries.find((entry) => entry.id === item)?.name ?? item} ×</button>)}
+        <select value="" aria-label={tr(`Ajouter : ${humanize(key)}`, `Add: ${humanize(key)}`)} onChange={(event) => event.target.value && change(next, [...current, event.target.value])}>
+          <option value="">{tr("Ajouter…", "Add…")}</option>
+          {entries.filter((entry) => !current.includes(entry.id)).map((entry) => <option key={entry.id} value={entry.id}>{sign}{entry.name}</option>)}
+        </select>
+      </div>
+    </div>
+  );
+  const render = (node: { [key: string]: Json }, path: string[]) => {
+    const entries = Object.entries(node).filter(([key]) => !HIDDEN.has(key));
+    const rank = ([, item]: [string, Json]) => (typeof item === "boolean" ? 0 : item && typeof item === "object" && !Array.isArray(item) ? 2 : 1);
+    return [...entries].sort((left, right) => rank(left) - rank(right)).map(([key, item]) => {
       const next = [...path, key];
       const id = next.join(".");
+      const lower = key.toLowerCase();
       if (typeof item === "boolean") {
         return <label key={id} className="generic-toggle"><span>{humanize(key)}</span><input type="checkbox" role="switch" checked={item} onChange={(event) => change(next, event.target.checked)} /></label>;
       }
       if (typeof item === "number") {
         return <label key={id} className="kit-field"><span>{humanize(key)}</span><input type="number" value={item} onChange={(event) => change(next, Number(event.target.value))} /></label>;
       }
+      if (directory && (typeof item === "string" || item === null) && lower.endsWith("channelid")) return pick(key, directory.channels, item ?? "", next, id, "#");
+      if (directory && (typeof item === "string" || item === null) && lower.endsWith("roleid")) return pick(key, directory.roles, item ?? "", next, id, "@");
       if (typeof item === "string" || item === null) {
         const text = item ?? "";
         return <label key={id} className="kit-field"><span>{humanize(key)}</span>{text.length > 80 ? <textarea rows={4} value={text} onChange={(event) => change(next, event.target.value)} /> : <input value={text} onChange={(event) => change(next, event.target.value)} />}</label>;
       }
       if (Array.isArray(item)) {
         if (item.every((entry) => typeof entry === "string" || typeof entry === "number")) {
+          const values = item.map(String);
+          if (directory && /channels?(ids)?$/.test(lower)) return pickMany(key, directory.channels, values, next, id, "#");
+          if (directory && /roles?(ids)?$/.test(lower)) return pickMany(key, directory.roles, values, next, id, "@");
           return <label key={id} className="kit-field"><span>{humanize(key)}</span><textarea rows={2} value={item.join("\n")} placeholder={tr("Une valeur par ligne", "One value per line")} onChange={(event) => change(next, event.target.value.split("\n").map((line) => line.trim()).filter(Boolean))} /></label>;
         }
-        return <div key={id} className="generic-readonly"><span>{humanize(key)}</span><JsonFields value={item} /></div>;
+        return null;
       }
-      return <fieldset key={id} className="generic-group"><legend>{humanize(key)}</legend>{render(item, next)}</fieldset>;
+      return <details key={id} className="generic-details"><summary>{humanize(key)}</summary><div className="generic-form-grid">{render(item, next)}</div></details>;
     });
+  };
   const save = async () => {
     setSaving(true);
     setError(null);
@@ -159,7 +222,7 @@ export function ConfigForm({ value, onSave }: { value: { [key: string]: Json }; 
   if (Object.keys(draft).length === 0) return <p className="muted">{tr("Aucun réglage disponible.", "No settings available.")}</p>;
   return (
     <div className="generic-form">
-      {render(draft, [])}
+      <div className="generic-form-grid">{render(draft, [])}</div>
       {error && <ErrorBox message={error} />}
       <div className="row">
         <Button variant="primary" disabled={!dirty || saving} onClick={() => void save()}>{saving ? tr("Enregistrement…", "Saving…") : tr("Enregistrer", "Save")}</Button>

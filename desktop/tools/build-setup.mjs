@@ -35,6 +35,7 @@ const out = join(root, "out");
 mkdirSync(out, { recursive: true });
 const final = join(out, `Ethone-Setup-${version}.exe`);
 copyFileSync(join(setup, "target/release/ethone-setup.exe"), final);
+copyFileSync(join(root, "src-tauri/target/release/ethone.exe"), join(out, "Ethone.exe"));
 copyFileSync(nsis, join(out, `Ethone_${version}_x64-setup.exe`));
 copyFileSync(`${nsis}.sig`, join(out, `Ethone_${version}_x64-setup.exe.sig`));
 writeFileSync(

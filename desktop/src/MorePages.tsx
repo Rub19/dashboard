@@ -491,6 +491,65 @@ function LolView() {
   );
 }
 
+interface TftMatch { id?: string; mode?: string; setNumber?: number; playedAt?: string; me?: { placement?: number; level?: number; traits?: { name?: string; numUnits?: number }[]; units?: { name?: string; tier?: number }[] } | null }
+
+function TftView() {
+  const key = "ethone-tft-id";
+  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
+  const [matches, setMatches] = useState<TftMatch[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!value.includes("#")) {
+      setError(tr("Écris l'identifiant sous la forme Pseudo#TAG.", "Write the ID as Name#TAG."));
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    write(key, JSON.stringify(value.trim()));
+    try {
+      const result = await apiData<TftMatch[]>(`api/stats/tft-matches?${riotParts(value)}`);
+      setMatches(Array.isArray(result) ? result : []);
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const played = (matches ?? []).filter((match) => match.me?.placement);
+  const average = played.length ? played.reduce((total, match) => total + (match.me?.placement ?? 0), 0) / played.length : 0;
+  return (
+    <>
+      <PageHead title="Teamfight Tactics" />
+      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder="Pseudo#TAG" aria-label={tr("Identifiant Riot", "Riot ID")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
+      {error && <ErrorBox message={error} />}
+      {busy && <Skeletons count={3} height={70} />}
+      {matches && !busy && (matches.length === 0 ? <Empty title={tr("Aucune partie TFT", "No TFT games")} /> : (
+        <>
+          <div className="focus-stats">
+            <Stat label={tr("Parties", "Games")} value={played.length} />
+            <Stat label={tr("Place moyenne", "Average place")} value={average.toFixed(1).replace(".", ",")} />
+            <Stat label="Top 4" value={played.filter((match) => (match.me?.placement ?? 9) <= 4).length} />
+          </div>
+          <ul className="tft-list">
+            {matches.map((match, index) => (
+              <li key={match.id ?? index}>
+                <div className="tft-top">
+                  <span className={`tft-place ${(match.me?.placement ?? 9) <= 4 ? "good" : ""}`}>{match.me?.placement ?? "–"}</span>
+                  <span><b>{match.mode ?? "TFT"}</b><small>Set {match.setNumber}, {tr("niveau", "level")} {match.me?.level}{match.playedAt ? `, ${new Date(match.playedAt).toLocaleString()}` : ""}</small></span>
+                </div>
+                {(match.me?.traits?.length ?? 0) > 0 && <div className="tft-line">{match.me?.traits?.slice(0, 6).map((trait) => `${trait.name} ${trait.numUnits}`).join(", ")}</div>}
+                {(match.me?.units?.length ?? 0) > 0 && <div className="tft-line">{match.me?.units?.slice(0, 9).map((unit) => `${unit.name} ${"★".repeat(unit.tier ?? 1)}`).join(", ")}</div>}
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </>
+  );
+}
+
 export function GamesPage() {
   const [section, setSection] = useState<"lol" | "tft" | "rotation" | "steam" | "minecraft">("lol");
   const items = [
@@ -503,7 +562,7 @@ export function GamesPage() {
   return (
     <Split id="games" label={tr("Jeux", "Games")} items={items} value={section} onChange={setSection}>
       {section === "lol" && <LolView />}
-      {section === "tft" && <Lookup key="tft" title="Teamfight Tactics" label={tr("Identifiant Riot", "Riot ID")} placeholder="Pseudo#TAG" load={(value) => apiData<Json>(`api/stats/tft-matches?${riotParts(value)}`)} />}
+      {section === "tft" && <TftView />}
       {section === "rotation" && <RemoteFields title={tr("Rotation LoL", "LoL rotation")} path="api/stats/lol-rotation" />}
       {section === "steam" && <Lookup key="steam" title="Steam" label="Steam ID" placeholder="SteamID64" load={async (value) => ({ joueur: await apiData<Json>(`api/steam/player?steamId=${encodeURIComponent(value)}`), recents: await apiData<Json>(`api/steam/recent-games?steamId=${encodeURIComponent(value)}`).catch(() => null) })} />}
       {section === "minecraft" && <Lookup key="minecraft" title="Minecraft" label={tr("Pseudo", "Username")} placeholder={tr("Pseudo", "Username")} load={(value) => apiData<Json>(`api/minecraft/profile?username=${encodeURIComponent(value)}`)} />}

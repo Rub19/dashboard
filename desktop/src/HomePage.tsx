@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, RefreshCw, WifiOff } from "lucide-react";
-import { EthoneItem, itemsList, ModuleStatus, Profile } from "./api";
+import { apiCall, apiData, EthoneItem, itemsList, ModuleStatus, Profile, riotRank, riotStatus } from "./api";
+import { rankName, tierIcon } from "./eval";
 import { dayProgress, connectionStatus, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
-import { errorText, Key, lang, t } from "./i18n";
+import { errorText, Key, lang, t, tr } from "./i18n";
+import { readJson } from "./settings";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
 import { Button, ValorantMark } from "./ui";
@@ -20,6 +22,9 @@ interface Props {
   onOpenApplications: () => void;
   onOpenProductivity: () => void;
   onOpenTracker: () => void;
+  onOpenMail: () => void;
+  onOpenInsights: () => void;
+  onOpenDaily: () => void;
 }
 
 const RUNNABLE = new Set<ModuleStatus["action"]>(["open", "openWeb", "install", "update", "openToUpdate", "releasePage"]);
@@ -39,6 +44,40 @@ function useNow() {
     return () => clearInterval(timer);
   }, []);
   return now;
+}
+
+function useQuiet<T>(load: () => Promise<T>) {
+  const [value, setValue] = useState<T | null>(null);
+  useEffect(() => {
+    let active = true;
+    load().then((result) => active && setValue(result), () => null);
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return value;
+}
+
+function HomeTiles({ onMail, onTracker, onWeather, onDaily }: { onMail: () => void; onTracker: () => void; onWeather: () => void; onDaily: () => void }) {
+  const unread = useQuiet(async () => (await apiCall<{ meta?: { unread?: number } }>("api/mail/inbox?folder=inbox&limit=1")).meta?.unread ?? 0);
+  const rank = useQuiet(async () => ((await riotStatus()) ? riotRank<{ tier?: number; rr?: number }>() : null));
+  const weather = useQuiet(async () => {
+    const city = readJson<string>("ethone-weather-city") ?? "Paris";
+    const data = await apiData<{ temperature?: number }>(`api/weather?city=${encodeURIComponent(city)}`);
+    return { city, temperature: data.temperature };
+  });
+  const focus = readJson<{ completedAt: string; seconds: number }[]>("ethone-focus-history") ?? [];
+  const today = new Date().toDateString();
+  const focusMinutes = Math.round(focus.filter((entry) => new Date(entry.completedAt).toDateString() === today).reduce((total, entry) => total + entry.seconds, 0) / 60);
+  return (
+    <div className="home-tiles">
+      {unread !== null && <button type="button" className="home-tile" onClick={onMail}><small>{tr("Mails non lus", "Unread mail")}</small><b>{unread}</b></button>}
+      {rank && (rank.tier ?? 0) > 0 && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b><img src={tierIcon(rank.tier ?? 0)} alt="" />{rank.rr} RR</b><small>{rankName(rank.tier ?? 0)}</small></button>}
+      {weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={onWeather}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
+      <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>
+    </div>
+  );
 }
 
 function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
@@ -97,7 +136,7 @@ function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
   );
 }
 
-export default function HomePage({ profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker }: Props) {
+export default function HomePage({ profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker, onOpenMail, onOpenInsights, onOpenDaily }: Props) {
   const now = useNow();
   const summary = summarizeModules(modules);
   const status = connectionStatus(offline, error);
@@ -122,6 +161,8 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
           <Button onClick={onRefresh}>{t("retry")}</Button>
         </div>
       )}
+
+      <HomeTiles onMail={onOpenMail} onTracker={onOpenTracker} onWeather={onOpenInsights} onDaily={onOpenDaily} />
 
       <div className="home-columns">
         <Agenda onOpen={onOpenProductivity} offline={offline} />

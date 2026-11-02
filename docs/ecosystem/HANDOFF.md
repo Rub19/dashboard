@@ -64,12 +64,13 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 
 **Écrit, testé seulement par les contrôles automatiques, pas en réel**
 
-- Discord : la connexion attend Rub19, aucun module n'a été ouvert en réel. Moteur commun, pas de page sur mesure par module.
+- Discord : la connexion réelle est confirmée par Rub19 et la première vue affichait de vraies données. La refonte de la vue d'ensemble, les choix de salons et de rôles et les modules n'ont pas été vus depuis. Moteur commun, pas de page sur mesure par module.
+- Boutons de fenêtre sur mesure, tuiles de l'Accueil, page TFT, signets, contrats d'agents et changement de carte ou de titre : écrits pendant que Rub19 jouait, sans build ni fenêtre. Seuls TypeScript et les tests frontend sont passés.
 - Connexion Riot par navigateur, écritures Mail et Habitudes, Factures, Fichiers (aucun fichier sur le compte), partage, Équipe, Brain (aucun message envoyé), Météo, RSS, TFT, Steam, Minecraft, appareils, clés d'accès, déconnexion de services, recherche de joueur, cartes, agents, armes, collection, groupe et partie en direct.
 
 **Non porté**
 
-- E:VAL : amis et chat, signets, historique d'achats, objectifs de saison, line-ups, archives de contrats, profils d'apparences, modification de l'équipement, récap Discord, paramètres de jeu.
+- E:VAL : amis et chat, historique d'achats, objectifs de saison, line-ups, archives de contrats, profils d'apparences, changement des skins d'armes, récap Discord, paramètres de jeu.
 - Dashboard : marketplace, soundscape, clip, navigateur intégré, éditeurs de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Factures séparées du site, qui les garde dans le navigateur. Concentration et mémo restent sur le PC.
 
 ## Reste à faire, dans l'ordre

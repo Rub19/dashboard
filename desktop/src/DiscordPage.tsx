@@ -4,9 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
 import { botCall, botLogin, botLogout, botStatus } from "./api";
 import { DISCORD_GROUPS, DISCORD_MODULES as SPEC_MODULES, DiscordModule } from "./discordSpecs";
-import { ConfigForm, firstArray, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
+import { ConfigForm, Directory, factsOf, firstArray, flattenEntries, humanize, Json, JsonList, displayValue, unwrapConfig } from "./generic";
 import { errorText, tr } from "./i18n";
-import { Empty, ErrorBox, PageHead, Skeletons, Status, useLoad } from "./kit";
+import { Empty, ErrorBox, PageHead, Skeletons, Stagger, StaggerItem, staggerItem, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
@@ -51,7 +51,7 @@ function moduleUrl(spec: DiscordModule, guild: string, sub: string): string {
   return `api/${root}${sub === "/" ? "" : sub}`;
 }
 
-function ConfigSection({ spec, guild, index }: { spec: DiscordModule; guild: string; index: number }) {
+function ConfigSection({ spec, guild, index, directory }: { spec: DiscordModule; guild: string; index: number; directory?: Directory }) {
   const config = spec.configs![index];
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, config.get)), [spec.id, guild, config.get]);
   return (
@@ -60,7 +60,7 @@ function ConfigSection({ spec, guild, index }: { spec: DiscordModule; guild: str
       <Status state={state} height={120}>
         {(data) => {
           const { body, wrapper } = unwrapConfig(data);
-          return <ConfigForm value={body} onSave={async (next) => {
+          return <ConfigForm value={body} directory={directory} onSave={async (next) => {
             const method = (config.method ?? "PUT") as "PUT" | "PATCH" | "POST";
             await botCall(moduleUrl(spec, guild, config.put), method, config.strict && wrapper ? { [wrapper]: next } : next);
             state.reload();
@@ -130,24 +130,100 @@ function ActionButtons({ spec, guild }: { spec: DiscordModule; guild: string }) 
 function Overview({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, spec.overview ?? "/")), [spec.id, guild]);
   if (state.error) return null;
-  return <section className="discord-section"><h2>{tr("Vue d'ensemble", "Overview")}</h2><Status state={state} height={80}>{(data) => <JsonFields value={data} />}</Status></section>;
+  if (!state.data) return <Skeletons count={1} height={72} />;
+  const facts = factsOf(state.data);
+  if (facts.length === 0) return null;
+  return <div className="focus-stats">{facts.map((fact) => <Stat key={fact.key} label={humanize(fact.key)} value={displayValue(fact.value)} />)}</div>;
+}
+
+function useDirectory(guild: string): Directory | undefined {
+  const channels = useLoad(() => botCall<Json>(`api/guilds/${guild}/server/channels`), [guild]);
+  const roles = useLoad(() => botCall<Json>(`api/guilds/${guild}/server/roles`), [guild]);
+  if (!channels.data || !roles.data) return undefined;
+  return { channels: flattenEntries(channels.data), roles: flattenEntries(roles.data) };
 }
 
 function ModuleView({ spec, guild }: { spec: DiscordModule; guild: string }) {
+  const directory = useDirectory(guild);
   return (
     <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate">
       <PageHead title={spec.title} />
       {spec.overview && <Overview spec={spec} guild={guild} />}
       {spec.actions && <ActionButtons spec={spec} guild={guild} />}
-      {spec.configs?.map((_, index) => <ConfigSection key={index} spec={spec} guild={guild} index={index} />)}
+      {spec.configs?.map((_, index) => <ConfigSection key={index} spec={spec} guild={guild} index={index} directory={directory} />)}
       {spec.lists?.map((_, index) => <ListSection key={index} spec={spec} guild={guild} index={index} />)}
     </motion.div>
   );
 }
 
-function GuildOverview({ guild }: { guild: Guild }) {
-  const state = useLoad(() => botCall<Json>(`api/guilds/${guild.id}/overview`), [guild.id]);
-  return <div className="discord-module"><PageHead title={guild.name} text={tr("Choisis un module à gauche pour le régler.", "Pick a module on the left to configure it.")} /><Status state={state} height={100}>{(data) => <JsonFields value={data} />}</Status></div>;
+interface GuildData { guild?: { memberCount?: number; channelsCount?: number; rolesCount?: number }; botStatus?: { online?: boolean; pingMs?: number; uptimeMs?: number }; stats?: { totalCommands?: number; commandsToday?: number; recentActivities?: { id?: string; message?: string; description?: string; action?: string; title?: string; user?: string; timestamp?: string }[] } }
+interface ModuleState { id: string; name: string; description?: string; enabled: boolean }
+
+function uptime(milliseconds: number) {
+  const hours = Math.floor(milliseconds / 3600000);
+  return hours >= 24 ? tr(`${Math.floor(hours / 24)} j ${hours % 24} h`, `${Math.floor(hours / 24)}d ${hours % 24}h`) : `${hours} h ${Math.floor((milliseconds % 3600000) / 60000)} min`;
+}
+
+function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) => void }) {
+  const state = useLoad(() => botCall<GuildData>(`api/guilds/${guild.id}/overview`), [guild.id]);
+  const modules = useLoad(() => botCall<{ modules?: ModuleState[] }>(`api/guilds/${guild.id}/modules`), [guild.id]);
+  const [error, setError] = useState<string | null>(null);
+  const toggle = async (item: ModuleState) => {
+    setError(null);
+    modules.set({ modules: modules.data?.modules?.map((other) => (other.id === item.id ? { ...other, enabled: !item.enabled } : other)) });
+    try {
+      await botCall(`api/guilds/${guild.id}/modules/${item.id}`, "PATCH", { enabled: !item.enabled });
+    } catch (reason) {
+      setError(errorText(reason));
+      modules.reload();
+    }
+  };
+  const data = state.data;
+  const activities = data?.stats?.recentActivities ?? [];
+  return (
+    <div className="discord-module">
+      <header className="discord-hero">
+        {guild.icon ? <img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128`} alt="" /> : <span className="discord-hero-icon">{guild.name.charAt(0)}</span>}
+        <div>
+          <h1>{guild.name}</h1>
+          {data?.botStatus && <p className={data.botStatus.online ? "ok" : "bad"}>{data.botStatus.online ? tr("Bot en ligne", "Bot online") : tr("Bot hors ligne", "Bot offline")}{data.botStatus.pingMs ? `, ${data.botStatus.pingMs} ms` : ""}</p>}
+        </div>
+      </header>
+      {state.error && <ErrorBox message={state.error} onRetry={state.reload} />}
+      {!data ? (state.loading ? <Skeletons count={1} height={72} /> : null) : (
+        <div className="focus-stats">
+          <Stat label={tr("Membres", "Members")} value={(data.guild?.memberCount ?? 0).toLocaleString()} />
+          <Stat label={tr("Salons", "Channels")} value={data.guild?.channelsCount ?? 0} />
+          <Stat label={tr("Rôles", "Roles")} value={data.guild?.rolesCount ?? 0} />
+          <Stat label={tr("Commandes", "Commands")} value={(data.stats?.totalCommands ?? 0).toLocaleString()} hint={tr(`${data.stats?.commandsToday ?? 0} aujourd'hui`, `${data.stats?.commandsToday ?? 0} today`)} />
+          {data.botStatus?.uptimeMs ? <Stat label={tr("Bot en ligne depuis", "Bot up for")} value={uptime(data.botStatus.uptimeMs)} /> : null}
+        </div>
+      )}
+      <section className="discord-section">
+        <h2>{tr("Modules du serveur", "Server modules")}</h2>
+        {error && <ErrorBox message={error} />}
+        {!modules.data ? (modules.loading ? <Skeletons count={4} height={56} /> : modules.error ? <ErrorBox message={modules.error} onRetry={modules.reload} /> : null) : (
+          <Stagger className="discord-modules">
+            {(modules.data.modules ?? []).map((item) => {
+              const openable = DISCORD_MODULES.some((spec) => spec.id === item.id);
+              return (
+                <StaggerItem key={item.id} variants={staggerItem}>
+                  <button type="button" className="discord-module-open" disabled={!openable} onClick={() => onOpen(item.id)}><b>{item.name}</b>{item.description && <small>{item.description}</small>}</button>
+                  <input type="checkbox" role="switch" aria-label={item.name} checked={item.enabled} onChange={() => void toggle(item)} />
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        )}
+      </section>
+      {activities.length > 0 && (
+        <section className="discord-section">
+          <h2>{tr("Activité récente", "Recent activity")}</h2>
+          <ul className="activity-list">{activities.slice(0, 12).map((item, index) => <li key={item.id ?? index}><b>{item.message ?? item.description ?? item.title ?? item.action}</b>{item.timestamp && <time>{new Date(item.timestamp).toLocaleString()}</time>}</li>)}</ul>
+        </section>
+      )}
+    </div>
+  );
 }
 
 export default function DiscordPage() {
@@ -237,13 +313,14 @@ export default function DiscordPage() {
             );
           })}
         </nav>
+        <button type="button" className={`discord-home ${moduleId ? "" : "on"}`} onClick={() => setModuleId(null)}>{tr("Vue d'ensemble", "Overview")}</button>
         <button type="button" className="link discord-logout" onClick={() => void botLogout().then(() => setLinked(false))}><LogOut size={13} />{tr("Déconnecter Discord", "Disconnect Discord")}</button>
       </aside>
       <div className="discord-main">
         {guilds.error && !guilds.data && <ErrorBox message={guilds.error} onRetry={guilds.reload} />}
         {!guilds.loading && usable.length === 0 && !guilds.error && <Empty title={tr("Aucun serveur avec le bot", "No server with the bot")} text={tr("Invite le bot sur un de tes serveurs depuis ethone.dev.", "Invite the bot to one of your servers from ethone.dev.")} />}
         <AnimatePresence mode="wait" initial={false}>
-          {guild && current && (spec ? <ModuleView key={`${spec.id}-${guild}`} spec={spec} guild={guild} /> : <GuildOverview key={guild} guild={current} />)}
+          {guild && current && (spec ? <ModuleView key={`${spec.id}-${guild}`} spec={spec} guild={guild} /> : <GuildOverview key={guild} guild={current} onOpen={setModuleId} />)}
         </AnimatePresence>
       </div>
     </div>

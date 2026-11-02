@@ -201,7 +201,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       <main className="layer">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div key={page} className={`page ${WIDE.includes(page) ? "wide" : ""}`} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
-            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} />}
+            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("daily")} />}
             {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
             {page === "productivity" && <ProductivityPage />}
             {page === "tracker" && <TrackerPage />}

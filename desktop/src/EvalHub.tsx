@@ -1,12 +1,13 @@
 import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, History, Map as MapIcon, Search, Sparkles, Trophy, Users } from "lucide-react";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Search, Sparkles, Trophy, Users } from "lucide-react";
 import { apiData, catalogGet, restCall, riotCall, trackerMatches, trackerSync } from "./api";
 import { bannerImage, EvalAccount, EvalMatch, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr } from "./i18n";
 import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
+import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection";
+type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -49,9 +50,14 @@ function Players() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [found, setFound] = useState<{ account: EvalAccount; matches: EvalMatch[] } | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    const id = splitRiotId(value);
+  const [saved, setSaved] = useState<string[]>(() => readJson<string[]>("ethone-eval-bookmarks") ?? []);
+  const toggleSaved = (handle: string) => {
+    const next = saved.includes(handle) ? saved.filter((item) => item !== handle) : [...saved, handle];
+    setSaved(next);
+    write("ethone-eval-bookmarks", JSON.stringify(next));
+  };
+  const search = async (text: string) => {
+    const id = splitRiotId(text);
     if (!id) {
       setError(tr("Écris l'identifiant sous la forme Pseudo#TAG.", "Write the ID as Name#TAG."));
       return;
@@ -67,21 +73,26 @@ function Players() {
       setBusy(false);
     }
   };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    void search(value);
+  };
   const tier = found ? found.account.mmr?.tier || found.account.tier || 0 : 0;
   const stats = found ? statsFor(found.matches, found.account.puuid) : null;
   return (
     <>
-      <form className="eval-search" onSubmit={(event) => void submit(event)}>
+      <form className="eval-search" onSubmit={submit}>
         <input value={value} spellCheck={false} autoComplete="off" placeholder="Pseudo#TAG" aria-label={tr("Identifiant Riot", "Riot ID")} onChange={(event) => setValue(event.target.value)} />
         <Button type="submit" variant="primary" disabled={busy}><Search size={15} />{tr("Rechercher", "Search")}</Button>
       </form>
+      {saved.length > 0 && <div className="eval-bookmarks">{saved.map((handle) => <button key={handle} type="button" onClick={() => { setValue(handle); void search(handle); }}>{handle}</button>)}</div>}
       {error && <ErrorBox message={error} />}
       {busy && <Skeletons count={1} height={180} />}
       {found && !busy && (
         <section className="eval-card eval-found">
           {found.account.card && <img className="eval-found-banner" src={bannerImage(found.account.card)} alt="" />}
           <div className="eval-found-body">
-            <h2>{found.account.name}<span>#{found.account.tag}</span></h2>
+            <div className="eval-section-head"><h2>{found.account.name}<span>#{found.account.tag}</span></h2><Button onClick={() => toggleSaved(`${found.account.name}#${found.account.tag}`)}>{saved.includes(`${found.account.name}#${found.account.tag}`) ? tr("Retirer des signets", "Remove bookmark") : tr("Ajouter aux signets", "Bookmark")}</Button></div>
             <p style={{ color: rankColor(tier) }}>{rankName(tier)}{(found.account.mmr?.rr ?? 0) > 0 ? `, ${found.account.mmr?.rr} RR` : ""}</p>
             {stats && stats.count > 0 && <p className="eval-soft">{stats.wins}V – {stats.losses}D, K/D {stats.kd.toFixed(1).replace(".", ",")}, {stats.hs} % {tr("à la tête", "headshots")}, {tr("sur", "over")} {stats.count} {tr("matchs", "matches")}</p>}
             <ul className="eval-found-list">
@@ -231,6 +242,36 @@ function Collection({ linked }: { linked: boolean }) {
   );
 }
 
+function AgentContracts({ linked }: { linked: boolean }) {
+  const state = useLoad(async () => {
+    if (!linked) return [];
+    const [mine, contracts, agents] = await Promise.all([
+      riotCall<{ Contracts?: { ContractDefinitionID: string; ProgressionLevelReached?: number }[] }>("/contracts/v1/contracts/{puuid}"),
+      catalogGet<{ uuid: string; content: { relationType?: string; relationUuid?: string; chapters?: { levels?: unknown[] }[] } }[]>(`/contracts?${language}`),
+      catalogGet<AgentItem[]>(`/agents?isPlayableCharacter=true&${language}`),
+    ]);
+    return agents.map((agent) => {
+      const contract = contracts.find((item) => item.content.relationType === "Agent" && item.content.relationUuid?.toLowerCase() === agent.uuid.toLowerCase());
+      const total = contract?.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0;
+      const reached = mine.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract?.uuid.toLowerCase())?.ProgressionLevelReached ?? 0;
+      return { id: agent.uuid, name: agent.displayName, icon: agent.displayIcon, reached: Math.min(reached, total), total };
+    }).sort((left, right) => right.reached / Math.max(1, right.total) - left.reached / Math.max(1, left.total) || left.name.localeCompare(right.name));
+  }, [linked]);
+  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Contrats d'agents", "Agent contracts")}</h2></div>
+      <Status state={state} height={60}>
+        {(rows) => (
+          <ul className="eval-contracts">
+            {rows.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{tr("Niveau", "Level")} {row.reached} / {row.total}</small></li>)}
+          </ul>
+        )}
+      </Status>
+    </>
+  );
+}
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
@@ -250,6 +291,7 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
     { id: "seasons", label: tr("Mes saisons", "My seasons"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
     { id: "names", label: tr("Mes anciens pseudos", "My past names"), icon: <History size={16} />, group: tr("Joueurs", "Players") },
     { id: "collection", label: tr("Ma collection", "My collection"), icon: <Sparkles size={16} />, group: tr("Joueurs", "Players") },
+    { id: "contracts", label: tr("Contrats d'agents", "Agent contracts"), icon: <FileText size={16} />, group: tr("Joueurs", "Players") },
     { id: "maps", label: tr("Cartes", "Maps"), icon: <MapIcon size={16} />, group: tr("Le jeu", "The game") },
     { id: "agents", label: tr("Agents", "Agents"), icon: <Users size={16} />, group: tr("Le jeu", "The game") },
     { id: "weapons", label: tr("Armes", "Weapons"), icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
@@ -266,6 +308,7 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
         {section === "seasons" && <Seasons account={account} />}
         {section === "names" && <NameHistory account={account} />}
         {section === "collection" && <Collection linked={linked} />}
+        {section === "contracts" && <AgentContracts linked={linked} />}
       </div>
     </div>
   );

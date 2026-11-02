@@ -4,7 +4,8 @@ import { Clock, Users } from "lucide-react";
 import { catalogGet, riotCall } from "./api";
 import { agentIcon } from "./eval";
 import { errorText, tr } from "./i18n";
-import { Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
+import { Drawer, Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
+import { Button } from "./ui";
 import { EASE_SNAP } from "./motion";
 
 const VP = "85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741";
@@ -229,7 +230,51 @@ function Missions() {
   );
 }
 
+const CARD_TYPE = "3f296c07-64c3-494c-923b-fe692a4fa1bd";
+const TITLE_TYPE = "de7caa6b-adf7-4588-bbd1-143831e786c6";
+
+function Picker({ kind, current, loadout, onClose, onSaved }: { kind: "card" | "title" | null; current?: string; loadout: unknown; onClose: () => void; onSaved: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const items = useLoad(async () => {
+    if (!kind) return [];
+    const type = kind === "card" ? CARD_TYPE : TITLE_TYPE;
+    const [owned, all] = await Promise.all([
+      riotCall<{ Entitlements?: { ItemID: string }[] }>(`/store/v1/entitlements/{puuid}/${type}`),
+      catalogGet<{ uuid: string; displayName?: string; titleText?: string | null; smallArt?: string }[]>(kind === "card" ? `/playercards?${language}` : `/playertitles?${language}`),
+    ]);
+    const ids = new Set((owned.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+    return all.filter((item) => ids.has(item.uuid.toLowerCase()));
+  }, [kind]);
+  const choose = async (id: string) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const body = structuredClone(loadout) as { Identity?: Record<string, unknown> };
+      body.Identity = { ...body.Identity, [kind === "card" ? "PlayerCardID" : "PlayerTitleID"]: id };
+      await riotCall("/personalization/v3/players/{puuid}/playerloadout", { method: "PUT", body });
+      onSaved();
+      onClose();
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Drawer open={kind !== null} title={kind === "card" ? tr("Changer de carte", "Change card") : tr("Changer de titre", "Change title")} onClose={onClose} width={620}>
+      {error && <ErrorBox message={error} />}
+      {!items.data ? (items.error ? <ErrorBox message={items.error} onRetry={items.reload} /> : <Skeletons count={4} height={48} />) : kind === "card" ? (
+        <ul className="eval-card-picker">{items.data.map((item) => <li key={item.uuid}><button type="button" disabled={busy} className={item.uuid.toLowerCase() === current?.toLowerCase() ? "on" : ""} title={item.displayName} aria-label={item.displayName} onClick={() => void choose(item.uuid)}>{item.smallArt && <img src={item.smallArt} alt="" loading="lazy" />}</button></li>)}</ul>
+      ) : (
+        <ul className="eval-title-picker">{items.data.filter((item) => item.titleText).map((item) => <li key={item.uuid}><button type="button" disabled={busy} className={item.uuid.toLowerCase() === current?.toLowerCase() ? "on" : ""} onClick={() => void choose(item.uuid)}>{item.titleText}</button></li>)}</ul>
+      )}
+    </Drawer>
+  );
+}
+
 function Loadout() {
+  const [picking, setPicking] = useState<"card" | "title" | null>(null);
   const state = useLoad(async () => {
     const loadout = await riotCall<{ Identity?: { PlayerCardID?: string; PlayerTitleID?: string }; Guns?: { ID: string; SkinLevelID?: string }[]; Sprays?: { SprayID?: string }[] }>("/personalization/v3/players/{puuid}/playerloadout").catch(() => riotCall<{ Identity?: { PlayerCardID?: string; PlayerTitleID?: string }; Guns?: { ID: string; SkinLevelID?: string }[]; Sprays?: { SprayID?: string }[] }>("/personalization/v2/players/{puuid}/playerloadout"));
     const [skins, weapons, title] = await Promise.all([
@@ -248,6 +293,7 @@ function Loadout() {
       <section className="eval-card eval-identity">
         {card && <img src={`${MEDIA}/playercards/${card}/largeart.png`} alt="" />}
         <div>{title && <b>{title}</b>}
+          <div className="row eval-identity-actions"><Button onClick={() => setPicking("card")}>{tr("Changer de carte", "Change card")}</Button><Button onClick={() => setPicking("title")}>{tr("Changer de titre", "Change title")}</Button></div>
           {(loadout.Sprays?.length ?? 0) > 0 && <div className="eval-sprays">{loadout.Sprays?.map(({ SprayID }) => SprayID && <img key={SprayID} src={`${MEDIA}/sprays/${SprayID.toLowerCase()}/displayicon.png`} alt="" />)}</div>}
         </div>
       </section>
@@ -264,6 +310,7 @@ function Loadout() {
           );
         })}
       </Stagger>
+      <Picker kind={picking} current={picking === "card" ? loadout.Identity?.PlayerCardID : loadout.Identity?.PlayerTitleID} loadout={loadout} onClose={() => setPicking(null)} onSaved={state.reload} />
     </div>
   );
 }

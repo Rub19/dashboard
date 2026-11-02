@@ -1,9 +1,10 @@
-export type Page = "home" | "modules" | "productivity" | "journal" | "settings" | "about";
+export type Page = "home" | "modules" | "productivity" | "tracker" | "journal" | "settings" | "about";
 
 export const MAIN_PAGES = [
   { id: "home" },
   { id: "modules" },
   { id: "productivity" },
+  { id: "tracker" },
 ] as const satisfies readonly { id: Page }[];
 
 export const FOOT_PAGES = [

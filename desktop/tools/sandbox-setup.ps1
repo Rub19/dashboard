@@ -23,14 +23,25 @@ function Shot($name) {
 }
 function Gui($name, $exe) {
   $process = Start-Process -FilePath $exe -PassThru
-  Start-Sleep -Seconds 12
-  Say "[$name] running: $(-not $process.HasExited)"
+  $deadline = (Get-Date).AddSeconds(30)
+  do {
+    Start-Sleep -Seconds 2
+    $webviews = (Get-Process msedgewebview2 -ErrorAction SilentlyContinue | Measure-Object).Count
+  } while ($webviews -eq 0 -and -not $process.HasExited -and (Get-Date) -lt $deadline)
+  Start-Sleep -Seconds 6
+  $process.Refresh()
+  $title = if ($process.HasExited) { "exited $($process.ExitCode)" } else { $process.MainWindowTitle }
+  $ok = (-not $process.HasExited) -and ($title -ne "Error") -and ($webviews -gt 0)
+  Say "[$name] window ok: $ok (title '$title', webview2 processes $webviews)"
   Shot $name
   Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-  Start-Sleep -Seconds 2
+  Start-Sleep -Seconds 3
 }
 
-Say "webview2: $([bool](Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}' -ErrorAction SilentlyContinue))"
+$webviewKey = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+$webviewRoot = "${env:ProgramFiles(x86)}\Microsoft\EdgeWebView\Application"
+$registered = (Get-ItemProperty $webviewKey -ErrorAction SilentlyContinue).pv
+Say "webview2 registered: $registered, present: $(Test-Path (Join-Path $webviewRoot "$registered\msedgewebview2.exe"))"
 Gui "welcome" $setup
 
 Run "install" @("/S", "/MODULES=kairo,hdv-tracker", "`"/DIR=$custom`"", "/NODESKTOP")

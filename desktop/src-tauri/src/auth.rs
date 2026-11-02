@@ -493,6 +493,27 @@ impl Auth {
         }
     }
 
+    pub async fn rest_get(&self, path: &str) -> Result<Value, String> {
+        let access = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            inner.access.clone()
+        };
+        let access = match access {
+            Some(access) => access,
+            None => self.renew_access().await?,
+        };
+        match self.api.rest_json(reqwest::Method::GET, path, &access, None, None).await {
+            Err(Failure::Status(401, _)) => {
+                let renewed = self.renew_access().await?;
+                self.api.rest_json(reqwest::Method::GET, path, &renewed, None, None).await.map_err(service_error)
+            }
+            result => result.map_err(service_error),
+        }
+    }
+
     async fn restore(&self) -> Stage {
         let Some(stored) = vault_load() else {
             self.inner.lock().await.stage = Some(Stage::SignedOut);

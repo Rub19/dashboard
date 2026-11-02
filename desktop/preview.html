@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aperçu Ethone</title>
+    <script>
+      const params = new URLSearchParams(location.search);
+      const agents = { Jett: "add6443a-41bd-e414-f6ad-e58d267f4e95", Reyna: "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc", Sage: "569fdd95-4d10-43ab-ca70-79becc718b46", Omen: "8e253930-4c05-31dd-1b6c-968525494517" };
+      const maps = [["Ascent", "7eaecc1b-4337-bbf6-6ab9-04b8f06b3319"], ["Haven", "2bee0dc9-4ffe-519b-1cbd-7fbe763a6047"], ["Bind", "2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba"]];
+      const player = (puuid, name, team, agent, tier, score, kills, deaths, assists) => ({ puuid, name, tag: "0000", team, agent, agentId: agents[agent], tier, card: "", title: "", level: 100, party: "", score, kills, deaths, assists, hs: kills, bs: kills * 2, ls: 2, dmg: score * 0.7, dmgIn: 0, spent: 0, loadout: 0 });
+      const puuid = "exemple-exemple-exemple-exemple";
+      const game = (index, map, red, blue, agent, kills, deaths) => ({
+        v: 1, id: `match-${index}`, map: map[0], mapId: map[1], mode: index === 3 ? "Unrated" : "Competitive", queue: "competitive", season: "", version: "", cluster: "Paris",
+        startedAt: new Date(Date.now() - index * 2700000).toISOString(), lengthSec: 2100,
+        teams: { Red: { won: red > blue, rounds: red }, Blue: { won: blue > red, rounds: blue } },
+        players: [
+          player(puuid, "Exemple", "Red", agent, 18, kills * 260, kills, deaths, 5),
+          player("a2", "Coequipier long pseudo", "Red", "Sage", 17, 3200, 11, 15, 12),
+          player("a3", "Allie", "Red", "Omen", 19, 4300, 16, 14, 8),
+          player("b1", "Adversaire", "Blue", "Reyna", 18, 5000, 19, 13, 4),
+          player("b2", "Rival", "Blue", "Jett", 20, 3700, 14, 16, 3),
+        ], rounds: [], kills: [],
+      });
+      const matches = params.has("empty") ? [] : [game(1, maps[0], 13, 9, "Jett", 24, 12), game(2, maps[1], 7, 13, "Reyna", 14, 18), game(3, maps[2], 12, 12, "Jett", 18, 18), game(4, maps[0], 13, 3, "Omen", 19, 7)];
+      const account = { puuid, name: "Exemple", tag: "0000", level: 212, card: "9fb348bc-41a0-91ad-8a3e-818035c4e561", tier: 18, mmr: { tier: 18, rr: 64, peakTier: 21, leaderboardRank: 0, history: [{ match: "match-1", tier: 18, rr: 64, change: 21 }, { match: "match-2", tier: 18, rr: 43, change: -17 }] } };
+      const iso = (hours) => new Date(new Date().setHours(hours, 30, 0, 0)).toISOString();
+      const item = (id, title, startAt, done = false) => ({ id, title, body: "", done, startAt, endAt: null, data: {}, createdAt: null, updatedAt: null });
+      const items = params.has("empty") ? { tasks: [], events: [], notes: [] } : { tasks: [item("t1", "Exemple de tâche à faire"), item("t2", "Autre exemple de tâche"), item("t3", "Tâche terminée", null, true)], events: [item("e1", "Exemple d'événement", iso(9)), item("e2", "Second exemple", iso(21))], notes: [] };
+      const mod = (id, name, action, installed, latest, running = false) => ({ module: { id, name, summary: { fr: name, en: name }, updatePolicy: "delegated" }, action, installed, latest, running, compatible: true, error: null });
+      const modules = [mod("kairo", "Kairo", "open", "0.3.3", "0.3.3", true), mod("hdv-tracker", "HDV Tracker", "update", "1.4.0", "1.5.0"), mod("interior-studio", "Interior Studio", "install", null, "0.2.2"), mod("nova-pc-suite", "Nova PC Suite", "releasePage", null, "0.2.14"), mod("ethone-breach", "Ethone Breach", "openWeb", null, null)];
+      const profile = { name: "Exemple", email: "exemple@ethone.dev", avatar: null };
+      const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      window.__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener: () => undefined };
+      window.__TAURI_INTERNALS__ = {
+        metadata: { currentWindow: { label: "main" }, currentWebview: { label: "main" } },
+        transformCallback: () => 0,
+        unregisterCallback: () => undefined,
+        async invoke(command, args) {
+          if (command === "auth_state") return { stage: "signedIn", profile, offline: false };
+          if (command === "modules_local" || command === "modules_remote") return modules;
+          if (command === "items_list") { await pause(300); return items[args.kind]; }
+          if (command === "tracker_identity") return params.has("noid") ? null : { name: "Exemple", tag: "0000" };
+          if (command === "tracker_sync") { await pause(500); if (params.has("fail")) throw "Service indisponible"; return account; }
+          if (command === "tracker_matches") return matches;
+          if (command === "read_journal") return [];
+          if (command === "about") return { version: "0.1.0", catalogSchema: 1 };
+          if (command === "window_setup") return false;
+          return null;
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div style="position:fixed;right:12px;bottom:10px;z-index:99;padding:3px 10px;border-radius:99px;background:#b3261e;color:#fff;font:600 12px Segoe UI,sans-serif;pointer-events:none">Aperçu, données d'exemple</div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

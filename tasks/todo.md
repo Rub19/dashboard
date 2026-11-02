@@ -6,6 +6,8 @@
   - Preuve : build du 2 novembre 2026, code de sortie 0, quatre fichiers dans `desktop/out/`.
 - [x] Tester Ethone Setup dans Windows Sandbox.
   - Preuve : installation Ethone/Kairo/HDV, réparation, refus d'un module inconnu, protection pendant l'exécution et désinstallation sélective réussis.
+- [x] Refaire le test silencieux avec le build du code `b2e0a6b2`.
+  - Preuve : scénario complet réussi dans Windows Sandbox le 2 novembre 2026 à 18 h 31 et 18 h 36. WebView2 ne démarre plus dans la Sandbox, y compris avec l'ancien Setup : fenêtres contrôlées sur le vrai PC à la place, sans installation.
 
 ## Fondation
 

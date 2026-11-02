@@ -95,6 +95,9 @@ export const itemsList = (kind: ItemKind) => invoke<EthoneItem[]>("items_list", 
 export const itemsCreate = (kind: ItemKind, input: EthoneItemInput) => invoke<string>("items_create", { kind, input });
 export const itemsUpdate = (kind: ItemKind, id: string, input: EthoneItemInput) => invoke<void>("items_update", { kind, id, input });
 export const itemsDelete = (kind: ItemKind, id: string) => invoke<void>("items_delete", { kind, id });
+export const trackerIdentity = () => invoke<{ name: string; tag: string } | null>("tracker_identity");
+export const trackerSync = <T,>(name: string, tag: string) => invoke<T>("tracker_sync", { name, tag });
+export const trackerMatches = <T,>(puuid: string, limit: number) => invoke<T[]>("tracker_matches", { puuid, limit });
 export const openModule = (id: string) => invoke<void>("open_module", { id });
 export const openReleases = (id: string) => invoke<void>("open_releases", { id });
 export const readJournal = () => invoke<JournalEntry[]>("read_journal");

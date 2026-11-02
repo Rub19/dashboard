@@ -15,6 +15,24 @@ export function summarizeModules(modules: ModuleStatus[]) {
   };
 }
 
+export function dayProgress(now: Date): number {
+  return (now.getHours() * 60 + now.getMinutes()) / (24 * 60);
+}
+
+export function openTasks<T extends { done: boolean }>(tasks: T[]): T[] {
+  return tasks.filter(({ done }) => !done);
+}
+
+export function todayEvents<T extends { startAt: string | null }>(events: T[], now: Date): T[] {
+  return events
+    .filter(({ startAt }) => {
+      if (!startAt) return false;
+      const start = new Date(startAt);
+      return start.getFullYear() === now.getFullYear() && start.getMonth() === now.getMonth() && start.getDate() === now.getDate();
+    })
+    .sort((left, right) => Date.parse(left.startAt as string) - Date.parse(right.startAt as string));
+}
+
 export function connectionStatus(offline: boolean, error: string | null): "online" | "offline" | "degraded" {
   if (error) return "degraded";
   return offline ? "offline" : "online";

@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CircleUser, House, Info, LayoutGrid, ListChecks, LogOut, Menu, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
+import { CircleUser, Crosshair, House, Info, LayoutGrid, ListChecks, LogOut, ScrollText, Search, Settings as SettingsIcon, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
-import { EASE_SNAP, pageEnter, popover, SPRING_PILL } from "./motion";
+import { EASE_SNAP, pageShift, popover, SPRING_PILL } from "./motion";
 import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
 import ProductivityPage from "./ProductivityPage";
-import { readJson, write } from "./settings";
+import TrackerPage from "./TrackerPage";
 import { BrandMark, WindowControls } from "./ui";
 
+const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGE_ICONS: Record<Page, typeof LayoutGrid> = { home: House, modules: LayoutGrid, productivity: ListChecks, journal: ScrollText, settings: SettingsIcon, about: Info };
+const PAGE_ICONS: Record<Page, typeof LayoutGrid> = { home: House, modules: LayoutGrid, productivity: ListChecks, tracker: Crosshair, journal: ScrollText, settings: SettingsIcon, about: Info };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -49,7 +50,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [palette, setPalette] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [compact, setCompact] = useState(() => readJson<boolean>("ethone-nav-compact") ?? false);
+  const [direction, setDirection] = useState(1);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -97,12 +98,12 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     };
   }, []);
 
-  const toggleNav = () => {
-    setCompact((value) => {
-      write("ethone-nav-compact", JSON.stringify(!value));
-      return !value;
+  const go = useCallback((next: Page) => {
+    setPage((current) => {
+      setDirection(ALL_PAGES.indexOf(next) >= ALL_PAGES.indexOf(current) ? 1 : -1);
+      return next;
     });
-  };
+  }, []);
 
   const clearError = (id: string) => setErrors(({ [id]: _, ...rest }) => rest);
 
@@ -136,31 +137,30 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       ...modules
         .filter((status) => CAN_RUN.includes(status.action))
         .map((status) => ({ id: `run-${status.module.id}`, label: `${t(`action.${status.action}` as Key)} : ${status.module.name}`, run: () => void run(status) })),
-      ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: t(id), run: () => setPage(id) })),
+      ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: t(id), run: () => go(id) })),
       { id: "refresh", label: t("refresh"), run: () => void refresh() },
       { id: "signout", label: t("signOut"), run: () => void signOut() },
     ],
-    [modules, run, refresh],
+    [modules, run, refresh, go],
   );
 
   const navItem = ({ id }: { id: Page }) => {
     const Icon = PAGE_ICONS[id];
     return (
-    <button key={id} type="button" className={`nav-item ${page === id ? "on" : ""}`} aria-current={page === id ? "page" : undefined} title={compact ? t(id) : undefined} onClick={() => setPage(id)}>
-      {page === id && <motion.span layoutId="nav-pill" className="nav-pill" transition={SPRING_PILL} />}
-      <Icon size={18} />
-      <span className="nav-label">{t(id)}</span>
-    </button>
+      <button key={id} type="button" className={`nav-item ${page === id ? "on" : ""}`} aria-current={page === id ? "page" : undefined} onClick={() => go(id)}>
+        {page === id && <motion.span layoutId="nav-trace" className="nav-trace" transition={SPRING_PILL} />}
+        <Icon size={20} />
+        <span className="nav-label">{id === "tracker" ? "E:VAL" : t(id)}</span>
+      </button>
     );
   };
 
   const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
 
   return (
-    <motion.div className={`shell ${compact ? "compact" : ""}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
+    <motion.div className="shell" data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
       <header className="titlebar" data-tauri-drag-region>
-        <button type="button" className="icon-btn" aria-label={t("toggleNav")} aria-expanded={!compact} onClick={toggleNav}><Menu size={17} /></button>
-        <span className="title-brand" data-tauri-drag-region><BrandMark size={22} /><b>Ethone</b></span>
+        <span className="title-brand" data-tauri-drag-region><BrandMark size={24} /><b>{page === "tracker" ? "E:VAL" : "Ethone"}</b></span>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
           <span>{t("searchPlaceholder")}</span>
@@ -175,7 +175,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
           {!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
           {FOOT_PAGES.map(navItem)}
           <div className="usermenu" ref={menuRef}>
-            <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={compact ? profile.name : undefined} onClick={() => setMenu((open) => !open)}>
+            <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={profile.name} onClick={() => setMenu((open) => !open)}>
               <Avatar profile={profile} />
               <span className="nav-label">{profile.name}</span>
             </button>
@@ -193,11 +193,12 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       </nav>
 
       <main className="layer">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={page} className="page" variants={pageEnter} initial="initial" animate="animate" exit="exit">
-            {page === "home" && <HomePage profile={profile} modules={modules} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onOpenApplications={() => setPage("modules")} />}
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
+          <motion.div key={page} className={`page ${page === "home" || page === "tracker" ? "wide" : ""}`} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
+            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} />}
             {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
             {page === "productivity" && <ProductivityPage />}
+            {page === "tracker" && <TrackerPage />}
             {page === "journal" && <JournalPage />}
             {page === "settings" && <SettingsPage profile={profile} onSignOut={signOut} />}
             {page === "about" && <AboutPage />}

@@ -115,7 +115,7 @@ export default function Login({ stage, callbackError, onStage }: { stage: Stage;
           <span className={`login-mark ${done ? "ok" : ""}`}>
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span key={done ? "ok" : mfa ? "mfa" : "brand"} className="swap" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.6 }} transition={SPRING_SWAP}>
-                {done ? <Check size={28} /> : mfa ? <Shield size={26} /> : <BrandMark size={30} />}
+                {done ? <Check size={28} /> : mfa ? <Shield size={26} /> : <BrandMark size={56} />}
               </motion.span>
             </AnimatePresence>
           </span>

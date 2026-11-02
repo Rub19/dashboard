@@ -21,6 +21,12 @@ export const pageEnter: Variants = {
   exit: { opacity: 0, transition: { duration: 0.08, ease: EASE_OUT } },
 };
 
+export const pageShift: Variants = {
+  initial: (direction: number) => ({ opacity: 0, transform: `translateY(${direction * 18}px)` }),
+  animate: { opacity: 1, transform: "translateY(0px)", transition: { type: "spring", duration: 0.34, bounce: 0 } },
+  exit: (direction: number) => ({ opacity: 0, transform: `translateY(${direction * -8}px)`, transition: { duration: 0.09, ease: EASE_OUT } }),
+};
+
 export const listStagger: Variants = {
   animate: { transition: { staggerChildren: 0.035 } },
 };

@@ -8,6 +8,7 @@ mod install;
 mod journal;
 mod system;
 mod sync;
+mod tracker;
 mod windowing;
 
 use action::{decide, Action, Facts};
@@ -192,6 +193,23 @@ async fn items_update(kind: String, id: String, mut input: sync::ItemInput, stat
     let mut body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
     body.as_object_mut().ok_or("Donnée invalide")?.insert("id".into(), serde_json::Value::String(id));
     sync::parse_mutated(state.auth.worker_json(reqwest::Method::PATCH, kind.path(), Some(body)).await?)
+}
+
+#[tauri::command]
+async fn tracker_identity(state: State<'_, App>) -> Result<Option<tracker::RiotId>, String> {
+    Ok(tracker::parse_identity(&state.auth.rest_get(tracker::SETTINGS_PATH).await?))
+}
+
+#[tauri::command]
+async fn tracker_sync(name: String, tag: String, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    let path = tracker::sync_path(&name, &tag)?;
+    tracker::parse_account(state.auth.worker_get(&path).await?)
+}
+
+#[tauri::command]
+async fn tracker_matches(puuid: String, limit: u32, state: State<'_, App>) -> Result<Vec<serde_json::Value>, String> {
+    let path = tracker::matches_path(&puuid, limit)?;
+    tracker::parse_matches(state.auth.rest_get(&path).await?)
 }
 
 #[tauri::command]
@@ -380,6 +398,9 @@ fn main() {
             items_create,
             items_update,
             items_delete,
+            tracker_identity,
+            tracker_sync,
+            tracker_matches,
             open_module,
             open_releases,
             install_module,

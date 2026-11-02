@@ -19,7 +19,7 @@ function megabytes(bytes: number) {
 function Icon({ id }: { id: string }) {
   const icon = ICONS[`../../src/assets/modules/${id}.png`];
   if (icon) return <img className="app-icon" src={icon} alt="" />;
-  if (id === "ethone") return <span className="app-icon glyph"><BrandMark size={20} /></span>;
+  if (id === "ethone") return <span className="app-icon brand"><BrandMark size={44} /></span>;
   return <span className="app-icon glyph"><Gamepad2 size={20} /></span>;
 }
 
@@ -45,7 +45,7 @@ export function WelcomeScreen({ state, onStandard, onCustom }: { state: SetupSta
   return (
     <>
       <div className="setup-hero">
-        <span className="login-mark"><BrandMark size={30} /></span>
+        <span className="login-mark"><BrandMark size={56} /></span>
         <h1>{t("setupWelcome")}</h1>
         <p className="muted">{t("setupWelcomeText")}</p>
         <p className="muted small">{t("versionLine", { version: state.version })}</p>

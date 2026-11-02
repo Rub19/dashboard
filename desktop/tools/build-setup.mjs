@@ -21,8 +21,10 @@ copyFileSync(nsis, join(setup, "payload/ethone-setup.exe"));
 
 const setupConfPath = join(setup, "tauri.conf.json");
 const setupConf = JSON.parse(readFileSync(setupConfPath, "utf8"));
-setupConf.version = version;
-writeFileSync(setupConfPath, JSON.stringify(setupConf, null, 2) + "\n");
+if (setupConf.version !== version) {
+  setupConf.version = version;
+  writeFileSync(setupConfPath, JSON.stringify(setupConf, null, 2) + "\n");
+}
 const cargoPath = join(setup, "Cargo.toml");
 writeFileSync(cargoPath, readFileSync(cargoPath, "utf8").replace(/^version = ".*"$/m, `version = "${version}"`));
 

@@ -1,20 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { errorText, lang, tr } from "./i18n";
+import { LABELS } from "./labels";
 import { Drawer, Empty, ErrorBox, Stagger, StaggerItem, staggerItem } from "./kit";
 import { Button } from "./ui";
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-const TITLE_KEYS = ["title", "name", "label", "subject", "prize", "displayName", "device_name", "platform", "userTag", "tag", "username", "guildName", "email", "event_type", "eventType", "id"];
+const TITLE_KEYS = ["alias", "title", "name", "label", "subject", "prize", "displayName", "device_name", "platform", "userTag", "tag", "username", "guildName", "email", "code", "event_type", "eventType", "kind", "id"];
 const SUB_KEYS = ["status", "type", "category", "description", "reason", "authorTag", "action", "browser", "last_seen_at", "createdAt", "created_at", "updatedAt"];
-const HIDDEN = new Set(["__v", "_id", "id", "guildId", "user_id", "userId", "profile_id", "workspace_id", "slug", "public_id", "createdAt", "updatedAt", "created_at", "updated_at"]);
+const HIDDEN = new Set(["apiToken", "accountId", "ip_hash", "success", "ok", "__v", "_id", "id", "guildId", "user_id", "userId", "profile_id", "workspace_id", "slug", "public_id", "createdAt", "updatedAt", "created_at", "updated_at"]);
 const PHRASES: Record<string, string> = {
   staffroleid: "Rôle de l'équipe", staffroleids: "Rôles de l'équipe", ignoredroleids: "Rôles ignorés", ignoredchannelids: "Salons ignorés", alloweduserids: "Utilisateurs autorisés", rulescount: "Règles", actionstoday: "Actions aujourd'hui", welcomechannelid: "Salon de bienvenue", goodbyechannelid: "Salon de départ", autoroleid: "Rôle automatique", autoroleids: "Rôles automatiques", retries: "Tentatives", enabled: "Activé", active: "Actif", online: "En ligne", channelid: "Salon", roleid: "Rôle", channelids: "Salons", roleids: "Rôles", logchannelid: "Salon des journaux", logsuccess: "Journaliser les réussites", botname: "Nom du bot", botpersonality: "Personnalité du bot", activepreset: "Préréglage actif", autodeletecommands: "Supprimer les commandes automatiquement", commandcooldown: "Délai entre les commandes", commandrules: "Règles des commandes", adminroles: "Rôles administrateurs", blacklist: "Liste noire", captcha: "Captcha", attempts: "Tentatives", delayminutes: "Délai en minutes", failaction: "Action en cas d'échec", givenroles: "Rôles donnés", removedroles: "Rôles retirés", mentiononjoin: "Mentionner à l'arrivée", panelmessageid: "Message du panneau", emergencycontacts: "Contacts d'urgence", mode: "Mode", userids: "Utilisateurs", emojis: "Émojis", errorcolor: "Couleur des erreurs", prefix: "Préfixe", language: "Langue", locale: "Langue", timezone: "Fuseau horaire", message: "Message", title: "Titre", description: "Description", color: "Couleur", name: "Nom", reason: "Raison", status: "État", type: "Type", duration: "Durée", threshold: "Seuil", action: "Action", membercount: "Membres", channelscount: "Salons", rolescount: "Rôles", totalcommands: "Commandes au total", commandstoday: "Commandes aujourd'hui", pingms: "Latence", uptimems: "Temps en ligne", count: "Nombre", total: "Total", level: "Niveau", xp: "XP", welcomemessage: "Message de bienvenue", goodbyemessage: "Message de départ", dmenabled: "Message privé activé",
 };
-const WORDS: Record<string, string> = { channel: "salon", channels: "salons", role: "rôle", roles: "rôles", user: "utilisateur", users: "utilisateurs", log: "journal", logs: "journaux", message: "message", messages: "messages", enabled: "activé", max: "maximum", min: "minimum", per: "par", delay: "délai", time: "durée", days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes", day: "jour", auto: "automatique", member: "membre", members: "membres", admin: "administrateur", staff: "équipe", ignored: "ignorés", allowed: "autorisés", whitelist: "liste blanche", blacklist: "liste noire", welcome: "bienvenue", goodbye: "départ", reward: "récompense", rewards: "récompenses", command: "commande", commands: "commandes", limit: "limite", cooldown: "délai", notify: "notifier", on: "à", join: "l'arrivée", leave: "le départ" };
+const WORDS: Record<string, string> = { channel: "salon", channels: "salons", role: "rôle", roles: "rôles", user: "utilisateur", users: "utilisateurs", log: "journal", logs: "journaux", message: "message", messages: "messages", enabled: "activé", max: "maximum", min: "minimum", per: "par", delay: "délai", time: "durée", days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes", day: "jour", auto: "automatique", member: "membre", members: "membres", admin: "administrateur", staff: "équipe", ignored: "ignorés", allowed: "autorisés", whitelist: "liste blanche", blacklist: "liste noire", welcome: "bienvenue", goodbye: "départ", reward: "récompense", rewards: "récompenses", command: "commande", commands: "commandes", limit: "limite", cooldown: "délai", notify: "notifier" };
 
 export function humanize(key: string): string {
   if (lang === "fr") {
-    const phrase = PHRASES[key.replace(/[_\s-]/g, "").toLowerCase()];
+    const normalized = key.replace(/[_\s-]/g, "").toLowerCase();
+    const phrase = PHRASES[normalized] ?? LABELS[normalized];
     if (phrase) return phrase;
   }
   const words = key.replace(/_/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/\s+/g, " ").trim().toLowerCase().split(" ").filter((word) => word !== "id" && word !== "ids");
@@ -60,7 +62,9 @@ export function displayValue(value: Json | undefined): string {
     return value;
   }
   if (Array.isArray(value)) return tr(`${value.length} élément${value.length > 1 ? "s" : ""}`, `${value.length} item${value.length > 1 ? "s" : ""}`);
-  return tr(`${Object.keys(value).length} champs`, `${Object.keys(value).length} fields`);
+  const entries = Object.entries(value);
+  if (entries.length > 0 && entries.length <= 4 && entries.every(([, item]) => typeof item !== "object" || item === null)) return entries.map(([key, item]) => `${humanize(key)} : ${displayValue(item)}`).join(", ");
+  return tr(`${entries.length} champs`, `${entries.length} fields`);
 }
 
 export function atPath(value: Json, path?: string | null): Json | undefined {

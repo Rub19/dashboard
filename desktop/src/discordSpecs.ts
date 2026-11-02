@@ -661,11 +661,6 @@ export const DISCORD_MODULES: DiscordModule[] = [
     "title": "Historique des parties",
     "path": "/history",
     "key": "history"
-   },
-   {
-    "title": "Quêtes actives",
-    "path": "/quests",
-    "key": "quests"
    }
   ],
   "actions": [
@@ -884,7 +879,7 @@ export const DISCORD_MODULES: DiscordModule[] = [
   "lists": [
    {
     "title": "Streamers suivis",
-    "path": "",
+    "path": "/list",
     "key": "streamers",
     "rowActions": [
      {

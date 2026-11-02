@@ -10,6 +10,7 @@ import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
+interface Champion { id: number; name: string; title?: string; icon?: string }
 const asRecord = (row: Json): { [key: string]: Json } => (row && typeof row === "object" && !Array.isArray(row) ? row : {});
 
 function Remote({ title, path, text, actions }: { title: string; path: string; text?: string; actions?: { title: string; destructive?: boolean; run: (row: Json) => Promise<unknown> }[] }) {
@@ -161,7 +162,7 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
       {section === "devices" && <Remote title={tr("Appareils", "Devices")} path="api/auth/devices" actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/device/revoke", "POST", { deviceId: asRecord(row).id }) }]} />}
       {section === "twofactor" && <TwoFactor />}
       {section === "passkeys" && <Remote title={tr("Clés d'accès", "Passkeys")} path="api/auth/passkeys" text={tr("Les clés d'accès se créent sur ethone.dev, car elles sont liées à ce domaine.", "Passkeys are created on ethone.dev because they are tied to that domain.")} actions={[{ title: tr("Révoquer", "Revoke"), destructive: true, run: (row) => apiData("api/auth/passkey/revoke", "POST", { passkeyId: asRecord(row).id }) }]} />}
-      {section === "events" && <Remote title={tr("Journal de sécurité", "Security log")} path="api/auth/security-events" />}
+      {section === "events" && <Remote title={tr("Journal de sécurité", "Security log")} path="api/auth/security-events?limit=20" />}
       {section === "ai" && <><RemoteFields title={tr("État de l'IA", "AI status")} path="api/ai/status" /><RemoteFields title={tr("Quota", "Quota")} path="api/ai/quota" /></>}
     </Split>
   );
@@ -359,14 +360,13 @@ function BrainChat() {
 }
 
 export function BrainPage() {
-  const [section, setSection] = useState<"chat" | "flows" | "macros" | "interactions" | "personas" | "plugins">("chat");
+  const [section, setSection] = useState<"chat" | "flows" | "macros" | "interactions" | "personas">("chat");
   const items = [
     { id: "chat", label: "Brain", icon: <MessageSquare size={16} /> },
     { id: "flows", label: "Flows", icon: <Workflow size={16} />, group: tr("Automatisations", "Automation") },
     { id: "macros", label: "Macros", icon: <Zap size={16} />, group: tr("Automatisations", "Automation") },
     { id: "interactions", label: tr("Interactions", "Interactions"), icon: <Activity size={16} />, group: tr("Automatisations", "Automation") },
     { id: "personas", label: "Personas", icon: <Bot size={16} />, group: tr("Personnalisation", "Personalization") },
-    { id: "plugins", label: "Plugins", icon: <Plug size={16} />, group: tr("Personnalisation", "Personalization") },
   ] as const;
   return (
     <Split id="brain" label="Brain" items={items} value={section} onChange={setSection}>
@@ -375,7 +375,6 @@ export function BrainPage() {
       {section === "macros" && <Collection kind="macros" title="Macros" placeholder={tr("Nom de la macro", "Macro name")} defaults={{ action: "navigate" }} choice={{ label: tr("Page à ouvrir", "Page to open"), keys: ["href"], options: [{ id: "/", label: tr("Accueil", "Home") }, { id: "/tasks", label: tr("Tâches", "Tasks") }, { id: "/notes", label: "Notes" }, { id: "/calendar", label: tr("Calendrier", "Calendar") }, { id: "/mail", label: "Mail" }, { id: "/files", label: tr("Fichiers", "Files") }, { id: "/tracker", label: "Tracker" }, { id: "/discord", label: "Discord" }, { id: "/brain", label: "Brain" }] }} />}
       {section === "interactions" && <Collection kind="interactions" title={tr("Interactions", "Interactions")} placeholder={tr("Nom de l'interaction", "Interaction name")} defaults={{ action: "navigate" }} />}
       {section === "personas" && <Collection kind="personas" title="Personas" placeholder={tr("Nom du persona", "Persona name")} defaults={{ theme: "obsidian" }} />}
-      {section === "plugins" && <Remote title="Plugins" path="api/user-data/plugins" text={tr("Les plugins installés sur ton compte.", "Plugins installed on your account.")} />}
     </Split>
   );
 }
@@ -383,7 +382,7 @@ export function BrainPage() {
 function Weather() {
   const [city, setCity] = useState(() => readJson<string>("ethone-weather-city") ?? "Paris");
   const [query, setQuery] = useState(city);
-  const state = useLoad(() => apiData<{ city?: string; condition?: string; description?: string; temperature?: number; feelsLike?: number; humidity?: number; windSpeedKmh?: number; uvIndex?: number; hourly?: { time?: string; temperature?: number; precipitationProbability?: number }[]; daily?: { date?: string; temperatureMax?: number; temperatureMin?: number; condition?: string }[]; [key: string]: unknown }>(`api/weather?city=${encodeURIComponent(city)}`), [city]);
+  const state = useLoad(() => apiData<{ city?: string; condition?: string; description?: string; temperature?: number; apparentTemperature?: number; humidityPercent?: number; windSpeedKmh?: number; uvIndex?: number; hourly?: { time?: string; temperature?: number; precipitationProbability?: number }[]; daily?: { date?: string; max?: number; min?: number; precipitationProbability?: number }[]; [key: string]: unknown }>(`api/weather?city=${encodeURIComponent(city)}`), [city]);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!query.trim()) return;
@@ -398,12 +397,12 @@ function Weather() {
         {(data) => (
           <>
             <div className="focus-stats">
-              {data.temperature !== undefined && <Stat label={data.condition ?? data.description ?? tr("Température", "Temperature")} value={`${Math.round(Number(data.temperature))} °C`} hint={data.feelsLike !== undefined ? tr(`Ressenti ${Math.round(Number(data.feelsLike))} °C`, `Feels like ${Math.round(Number(data.feelsLike))} °C`) : undefined} />}
-              {data.humidity !== undefined && <Stat label={tr("Humidité", "Humidity")} value={`${data.humidity} %`} />}
+              {data.temperature !== undefined && <Stat label={data.description ?? tr("Température", "Temperature")} value={`${Math.round(Number(data.temperature))} °C`} hint={data.apparentTemperature !== undefined ? tr(`Ressenti ${Math.round(data.apparentTemperature)} °C`, `Feels like ${Math.round(data.apparentTemperature)} °C`) : undefined} />}
+              {data.humidityPercent !== undefined && <Stat label={tr("Humidité", "Humidity")} value={`${data.humidityPercent} %`} />}
               {data.windSpeedKmh !== undefined && <Stat label={tr("Vent", "Wind")} value={`${Math.round(Number(data.windSpeedKmh))} km/h`} />}
               {data.uvIndex !== undefined && <Stat label="UV" value={String(data.uvIndex)} />}
             </div>
-            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(lang, { weekday: "short" }) : ""}</small><b>{Math.round(Number(day.temperatureMax ?? 0))}°</b><small>{Math.round(Number(day.temperatureMin ?? 0))}°</small></li>)}</ul>}
+            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(lang, { weekday: "short" }) : ""}</small><b>{day.max === undefined ? "–" : `${Math.round(day.max)}°`}</b><small>{day.min === undefined ? "–" : `${Math.round(day.min)}°`}</small></li>)}</ul>}
           </>
         )}
       </Status>
@@ -446,8 +445,10 @@ function RssReader() {
   );
 }
 
-function ActivityView() {
-  const state = useLoad(() => apiData<{ events?: { id?: string; created_at?: string; event_type?: string; metadata?: { title?: string } | null }[] }>("api/cloud/activity?limit=200"));
+const ACTIVITY_LABELS: Record<string, string> = { shared: "Partage", uploaded: "Envoi", downloaded: "Téléchargement", deleted: "Suppression", renamed: "Renommage", moved: "Déplacement", restored: "Restauration", viewed: "Consultation", revoked: "Révocation" };
+
+export function ActivityView() {
+  const state = useLoad(() => apiData<{ events?: { id?: string; createdAt?: string; eventType?: string; details?: { title?: string } | null }[] }>("api/cloud/activity?limit=200"));
   const dashboard = useLoad(() => apiData<Json>("api/cloud/dashboard").catch(() => null));
   const numbers = useMemo(() => Object.entries(asRecord(dashboard.data ?? null)).filter(([, value]) => typeof value === "number").slice(0, 6), [dashboard.data]);
   return (
@@ -457,7 +458,7 @@ function ActivityView() {
       <Status state={state}>
         {(data) => (data.events ?? []).length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : (
           <ul className="activity-list">
-            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.metadata?.title ?? humanize(event.event_type ?? "event")}</b><time>{event.created_at ? new Date(event.created_at).toLocaleString(lang) : ""}</time></li>)}
+            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.details?.title ?? (lang === "fr" ? ACTIVITY_LABELS[event.eventType ?? ""] : undefined) ?? humanize(event.eventType ?? "")}</b><time>{event.createdAt ? new Date(event.createdAt).toLocaleString(lang) : ""}</time></li>)}
           </ul>
         )}
       </Status>
@@ -700,6 +701,22 @@ function MinecraftView() {
   );
 }
 
+function RotationView() {
+  const state = useLoad(() => apiData<{ free?: Champion[]; freeForNewPlayers?: Champion[]; gameVersion?: string; region?: string }>("api/stats/lol-rotation"));
+  const group = (title: string, rows?: Champion[]) => (rows?.length ?? 0) > 0 && (
+    <>
+      <h2 className="group-title">{title}</h2>
+      <ul className="rotation-grid">{rows?.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{row.title}</small></li>)}</ul>
+    </>
+  );
+  return (
+    <>
+      <PageHead title={tr("Rotation LoL", "LoL rotation")} text={state.data?.gameVersion ? tr(`Version ${state.data.gameVersion}`, `Version ${state.data.gameVersion}`) : undefined} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>{(data) => <>{group(tr("Gratuits cette semaine", "Free this week"), data.free)}{group(tr("Gratuits pour les nouveaux joueurs", "Free for new players"), data.freeForNewPlayers)}</>}</Status>
+    </>
+  );
+}
+
 export function GamesPage() {
   const [section, setSection] = useState<"lol" | "tft" | "rotation" | "steam" | "minecraft">("lol");
   const items = [
@@ -713,7 +730,7 @@ export function GamesPage() {
     <Split id="games" label={tr("Jeux", "Games")} items={items} value={section} onChange={setSection}>
       {section === "lol" && <LolView />}
       {section === "tft" && <TftView />}
-      {section === "rotation" && <RemoteFields title={tr("Rotation LoL", "LoL rotation")} path="api/stats/lol-rotation" />}
+      {section === "rotation" && <RotationView />}
       {section === "steam" && <SteamView />}
       {section === "minecraft" && <MinecraftView />}
     </Split>

@@ -601,6 +601,10 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .weather-days li { display: grid; justify-items: center; padding: 12px 8px; border-radius: 12px; background: var(--row); }
 .weather-days small { color: var(--muted); font-size: 12px; }
 .weather-days b { font: 650 18px/24px var(--display); }
+.rotation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 0 0 16px; padding: 0; list-style: none; }
+.rotation-grid li { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 0 10px; padding: 8px 10px; border-radius: 12px; background: var(--row); }
+.rotation-grid img { grid-row: span 2; width: 40px; height: 40px; border-radius: 9px; }
+.rotation-grid small { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .activity-list { display: grid; margin: 0; padding: 0; list-style: none; }
 .activity-list li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 2px; border-bottom: 1px solid var(--line); }
 .activity-list b { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

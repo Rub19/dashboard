@@ -254,9 +254,9 @@ function AgentContracts({ linked }: { linked: boolean }) {
     return agents.map((agent) => {
       const contract = contracts.find((item) => item.content.relationType === "Agent" && item.content.relationUuid?.toLowerCase() === agent.uuid.toLowerCase());
       const total = contract?.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0;
-      const reached = mine.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract?.uuid.toLowerCase())?.ProgressionLevelReached ?? 0;
-      return { id: agent.uuid, name: agent.displayName, icon: agent.displayIcon, reached: Math.min(reached, total), total };
-    }).sort((left, right) => right.reached / Math.max(1, right.total) - left.reached / Math.max(1, left.total) || left.name.localeCompare(right.name));
+      const reached = mine.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract?.uuid.toLowerCase())?.ProgressionLevelReached;
+      return { id: agent.uuid, name: agent.displayName, icon: agent.displayIcon, reached: reached === undefined ? null : Math.min(reached, total), total };
+    }).sort((left, right) => (right.reached ?? 0) / Math.max(1, right.total) - (left.reached ?? 0) / Math.max(1, left.total) || left.name.localeCompare(right.name));
   }, [linked]);
   if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
   return (
@@ -265,7 +265,7 @@ function AgentContracts({ linked }: { linked: boolean }) {
       <Status state={state} height={60}>
         {(rows) => (
           <ul className="eval-contracts">
-            {rows.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{tr("Niveau", "Level")} {row.reached} / {row.total}</small></li>)}
+            {rows.map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" />}<b>{row.name}</b><small>{tr("Niveau", "Level")} {row.reached ?? "–"} / {row.total}</small></li>)}
           </ul>
         )}
       </Status>
@@ -304,12 +304,12 @@ function ContractArchive({ linked }: { linked: boolean }) {
       linked ? riotCall<{ Contracts?: { ContractDefinitionID: string; ProgressionLevelReached?: number }[] }>("/contracts/v1/contracts/{puuid}") : null,
       catalogGet<{ uuid: string; displayName: string; content: { relationType?: string | null; chapters?: { levels?: unknown[] }[] } }[]>(`/contracts?${language}`),
     ]);
-    return contracts.filter((contract) => contract.content.relationType !== "Agent").map((contract) => ({ id: contract.uuid, name: contract.displayName, total: contract.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0, reached: mine?.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract.uuid.toLowerCase())?.ProgressionLevelReached ?? 0 }));
+    return contracts.filter((contract) => contract.content.relationType !== "Agent").map((contract) => ({ id: contract.uuid, name: contract.displayName, total: contract.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0, reached: mine?.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract.uuid.toLowerCase())?.ProgressionLevelReached ?? null }));
   }, [linked]);
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Archives des contrats", "Contract archive")}</h2></div>
-      <Status state={state}>{(rows) => <table className="eval-table"><thead><tr><th scope="col">{tr("Niveau", "Tier")}</th><th scope="col">{tr("Contrat", "Contract")}</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.reached} / {row.total}</td><th scope="row">{row.name}</th></tr>)}</tbody></table>}</Status>
+      <Status state={state}>{(rows) => <table className="eval-table"><thead><tr><th scope="col">{tr("Niveau", "Tier")}</th><th scope="col">{tr("Contrat", "Contract")}</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.reached ?? "–"} / {row.total}</td><th scope="row">{row.name}</th></tr>)}</tbody></table>}</Status>
     </>
   );
 }

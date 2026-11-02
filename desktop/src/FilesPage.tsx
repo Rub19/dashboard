@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronRight, ExternalLink, FileText, Folder, Link2, Search, Star, Trash2 } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
+import { ActivityView } from "./MorePages";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, formatBytes, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
@@ -121,7 +122,7 @@ export default function FilesPage() {
         {section === "favorites" && <Browser favorites />}
         {section === "shares" && <Remote title={tr("Liens de partage", "Share links")} path="api/cloud/shares" revoke="api/cloud/shares/revoke" revokeKey="shareId" />}
         {section === "drops" && <Remote title={tr("Dépôts", "Drops")} path="api/cloud/drops" revoke="api/cloud/drops/revoke" revokeKey="dropId" />}
-        {section === "activity" && <Remote title={tr("Activité", "Activity")} path="api/cloud/activity?limit=100" />}
+        {section === "activity" && <ActivityView />}
       </div>
     </div>
   );

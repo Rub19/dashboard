@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, Manager, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent};
 use tokio::sync::{oneshot, Mutex};
 
-const AUTHORIZE: &str = "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
+pub const AUTHORIZE: &str = "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid";
 const CLIENT_PLATFORM: &str = "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
 const LOGIN_LABEL: &str = "riot-login";
 const SILENT_LABEL: &str = "riot-silent";
@@ -221,6 +221,12 @@ impl Riot {
         let text = serde_json::to_string(&identity).map_err(|error| error.to_string())?;
         identity_entry()?.set_password(&text).map_err(|error| error.to_string())?;
         Ok(identity)
+    }
+
+    pub async fn link_url(&self, text: &str) -> Result<Identity, String> {
+        let url: Url = text.trim().parse().map_err(|_| "riotLinkInvalid".to_string())?;
+        let tokens = tokens_from_url(&url).ok_or("riotLinkInvalid")?;
+        self.complete(tokens).await
     }
 
     pub async fn login(&'static self, app: AppHandle) -> Result<(), String> {

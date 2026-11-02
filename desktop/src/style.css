@@ -359,6 +359,15 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .eval-connect .valorant-mark { color: #ff4655; }
 .eval-connect h1 { font: 750 36px/44px var(--display); letter-spacing: -.02em; }
 .eval-connect > p { color: var(--eval-muted); text-wrap: pretty; }
+.eval-connect-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.eval-browser { display: grid; gap: 8px; width: 100%; padding: 16px; border-radius: 16px; background: var(--eval-card); }
+.eval-browser ol { display: grid; gap: 4px; margin: 0; padding-left: 20px; }
+.eval-browser label { margin-top: 6px; font-weight: 600; }
+.eval-browser div { display: flex; gap: 8px; }
+.eval-browser input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--eval-card2); user-select: text; }
+.eval-browser input:focus { border-color: var(--eval-accent); }
+.eval-note { color: var(--eval-muted); font-size: 12px; line-height: 16px; }
+.eval-loading { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; color: var(--eval-muted); }
 .eval-connect .eval-link { margin: 12px 0 0; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
 .eval-connect .bad { color: var(--danger); }
 .eval-account { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

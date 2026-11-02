@@ -1,11 +1,11 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
-import { LogOut, RefreshCw, Search, Star, X } from "lucide-react";
-import { riotLogin, riotLogout, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
+import { riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, scoreboard, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, lang, t } from "./i18n";
-import { EASE_SNAP, listItem, listStagger, SPRING_SWAP } from "./motion";
+import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import { Button, ValorantMark } from "./ui";
 
@@ -229,15 +229,61 @@ function RiotIdForm({ onSubmit }: { onSubmit: (name: string, tag: string) => voi
   );
 }
 
-function Connect({ error, connecting, onConnect, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onSearch: (name: string, tag: string) => void }) {
+function BrowserLink({ onLinked }: { onLinked: () => void }) {
+  const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await riotLinkUrl(value);
+      setValue("");
+      onLinked();
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <motion.form className="eval-browser" variants={stepEnter} initial="initial" animate="animate" onSubmit={(event) => void submit(event)}>
+      <ol>
+        <li>{t("evalBrowserStep1")}</li>
+        <li>{t("evalBrowserStep2")}</li>
+        <li>{t("evalBrowserStep3")}</li>
+      </ol>
+      <label htmlFor="riot-url">{t("evalBrowserField")}</label>
+      <div>
+        <input id="riot-url" type="password" value={value} autoComplete="off" spellCheck={false} placeholder="https://playvalorant.com/opt_in#..." autoFocus onChange={(event) => setValue(event.target.value)} />
+        <Button type="submit" variant="primary" disabled={busy || !value.trim()}>{t("evalBrowserSubmit")}</Button>
+      </div>
+      {error && <p className="bad" role="alert">{error}</p>}
+      <p className="eval-note">{t("evalBrowserNote")}</p>
+    </motion.form>
+  );
+}
+
+function Connect({ error, connecting, onConnect, onLinked, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onLinked: () => void; onSearch: (name: string, tag: string) => void }) {
+  const [browser, setBrowser] = useState(false);
+  const [browserError, setBrowserError] = useState<string | null>(null);
+  const openBrowser = () => {
+    setBrowserError(null);
+    riotOpenBrowser().then(() => setBrowser(true), (reason) => setBrowserError(errorText(reason)));
+  };
   return (
     <div className="eval-connect">
       <ValorantMark size={44} />
       <h1>E:VAL</h1>
       <p>{t("evalConnectText")}</p>
-      <Button variant="primary" disabled={connecting} onClick={onConnect}>{t("evalConnectRiot")}</Button>
+      <div className="eval-connect-actions">
+        <Button variant="primary" onClick={openBrowser}><ExternalLink size={15} />{t("evalConnectBrowser")}</Button>
+        <Button disabled={connecting} onClick={onConnect}>{t("evalConnectWindow")}</Button>
+      </div>
+      {browser && <BrowserLink onLinked={onLinked} />}
       {connecting && <p role="status">{t("evalConnecting")}</p>}
-      {error && <p className="bad" role="alert">{error}</p>}
+      {(error || browserError) && <p className="bad" role="alert">{error ?? browserError}</p>}
       <RiotIdForm onSubmit={onSearch} />
     </div>
   );
@@ -333,6 +379,12 @@ export default function TrackerPage() {
     });
   };
 
+  const linked = () => {
+    memory = null;
+    setData(null);
+    void start();
+  };
+
   const disconnect = () => {
     memory = null;
     setData(null);
@@ -345,12 +397,13 @@ export default function TrackerPage() {
   if (loading) {
     return (
       <div className="eval-grid" aria-busy="true" aria-label={t("loading")}>
+        <p className="eval-loading" role="status"><RefreshCw size={14} className="spin" />{t("evalLoading")}</p>
         <div className="eval-side"><span className="eval-skeleton tall" /><span className="eval-skeleton" /></div>
         <div className="eval-main"><span className="eval-skeleton" /><span className="eval-skeleton" /><span className="eval-skeleton" /></div>
       </div>
     );
   }
-  if (needsId) return <Connect error={error} connecting={connecting} onConnect={connect} onSearch={(name, tag) => void search(name, tag)} />;
+  if (needsId) return <Connect error={error} connecting={connecting} onConnect={connect} onLinked={linked} onSearch={(name, tag) => void search(name, tag)} />;
   if (!data) {
     return (
       <div className="eval-error" role="alert">
@@ -361,13 +414,13 @@ export default function TrackerPage() {
     );
   }
 
-  const { account, matches, linked } = data;
+  const { account, matches, linked: isLinked } = data;
   const history = account.mmr?.history ?? [];
   return (
     <>
       <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
-          <ProfileCard account={account} linked={linked} onDisconnect={disconnect} />
+          <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />
           {matches.length > 0 && <StatGrid matches={matches} puuid={account.puuid} />}
         </div>
         <div className="eval-main">

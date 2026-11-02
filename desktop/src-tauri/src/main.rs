@@ -219,6 +219,22 @@ async fn riot_login(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), 
 }
 
 #[tauri::command]
+async fn riot_open_browser(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    app.opener().open_url(riot::AUTHORIZE, None::<&str>).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+async fn riot_link_url(url: String, state: State<'_, App>) -> Result<riot::Identity, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().link_url(&url).await
+}
+
+#[tauri::command]
 async fn riot_logout(app: tauri::AppHandle) -> Result<(), String> {
     riot_session().logout(&app).await
 }
@@ -436,6 +452,8 @@ fn main() {
             items_delete,
             riot_status,
             riot_login,
+            riot_open_browser,
+            riot_link_url,
             riot_logout,
             riot_rank,
             tracker_identity,

@@ -103,6 +103,8 @@ export interface RiotIdentity {
 }
 export const riotStatus = () => invoke<RiotIdentity | null>("riot_status");
 export const riotLogin = () => invoke<void>("riot_login");
+export const riotOpenBrowser = () => invoke<void>("riot_open_browser");
+export const riotLinkUrl = (url: string) => invoke<RiotIdentity>("riot_link_url", { url });
 export const riotLogout = () => invoke<void>("riot_logout");
 export const riotRank = <T,>() => invoke<T>("riot_rank");
 export const trackerIdentity = () => invoke<{ name: string; tag: string } | null>("tracker_identity");

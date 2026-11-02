@@ -50,7 +50,8 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 
 - Mise à jour d'Ethone : impossible à tester sans une première release.
 - Agrandissement de la fenêtre, interface sombre avec Mica : à confirmer par Rub19.
-- Refonte du dashboard : carte des capacités, plan, navigation Accueil/Applications/Productivité et synthèse réelle écrits. Notes et Tâches passent par la session Rust et le Worker, avec lecture, création, modification, complétion et suppression reliées. Huit tests frontend, contrôle TypeScript, build Vite, 49 tests Rust Desktop et 36 tests Rust Setup réussis. Le rendu et les opérations réelles de la nouvelle interface n'ont pas encore été ouverts ni validés par Rub19.
+- Refonte du dashboard : carte des capacités, plan, navigation Accueil/Applications/Productivité et synthèse réelle écrits. Notes et Tâches passent par la session Rust et le Worker, avec lecture, création, modification, complétion et suppression reliées. Le 2 novembre 2026, l'exécutable release a restauré la vraie session, affiché l'Accueil, les cinq applications et une vraie tâche Worker. Le formulaire de tâche a été ouvert puis annulé sans modifier les données. Neuf tests frontend, contrôle TypeScript, build Vite, 49 tests Rust Desktop et 36 tests Rust Setup réussis. Les mutations réelles Notes/Tâches restent à vérifier sans sacrifier une donnée de Rub19.
+- Lancement `tauri dev` : Vite ignore désormais `src-tauri/target` et `setup/target`, car Windows verrouille les exécutables Rust et provoquait `EBUSY`. Test de régression ajouté.
 
 ## Reste à faire, dans l'ordre
 

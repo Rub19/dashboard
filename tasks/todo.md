@@ -25,11 +25,11 @@
 ## Domaines suivants
 
 - [x] Spécifier le contrat sécurisé de `productivity`.
-- [ ] Ajouter la lecture authentifiée Notes/Tâches côté Rust.
+- [x] Ajouter la lecture authentifiée Notes/Tâches côté Rust.
   - Acceptation : chemins allowlistés, session obligatoire, réponse validée.
   - Vérification : tests Rust ciblés puis suite Rust complète.
   - Fichiers : `desktop/src-tauri/src/auth.rs`, `desktop/src-tauri/src/sync.rs`, `desktop/src-tauri/src/main.rs`.
-- [ ] Afficher les vraies listes Notes/Tâches dans une page Windows.
+- [x] Afficher les vraies listes Notes/Tâches dans une page Windows.
   - Acceptation : chargement, vide et erreur ; aucune donnée de démonstration.
   - Vérification : tests frontend, contrôle TypeScript et build.
   - Fichiers : `desktop/src/api.ts`, `desktop/src/ProductivityPage.tsx`, `desktop/src/productivity.ts`, `desktop/src/productivity.test.mjs`, `desktop/src/Shell.tsx`.

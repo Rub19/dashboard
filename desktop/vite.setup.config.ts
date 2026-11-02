@@ -5,6 +5,11 @@ export default defineConfig({
   root: "setup/ui",
   plugins: [react()],
   clearScreen: false,
-  server: { port: 5191, strictPort: true, fs: { allow: ["../.."] } },
+  server: {
+    port: 5191,
+    strictPort: true,
+    fs: { allow: ["../.."] },
+    watch: { ignored: ["**/src-tauri/target/**", "**/setup/target/**"] },
+  },
   build: { target: "es2022", outDir: "dist", emptyOutDir: true },
 });

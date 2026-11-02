@@ -8,12 +8,13 @@ Chaque étape se termine par une preuve vérifiable. Aucune durée n'est annonc�
 | À faire | 1 bis. Sauvegarder les clés de signature, protéger `main` contre les force-push | Clés restaurables |
 | Fait | 2. Noyau : registre, flux, interface | Application lancée, vraies versions affichées |
 | Fait | 3. Installation de Kairo et HDV | Test réel dans Windows Sandbox |
+| Fait | 3 bis. Connexion au compte Ethone et motion du site | Parcours testé sur un serveur local, connexion réelle à confirmer par Rub19 |
 | À faire | 4. Flux signé pour Nova | Nova vérifié par signature |
 | À faire | 5. Ethone Setup et mise à jour d'Ethone | Installer, réparer, désinstaller sur une machine propre |
 | À faire | 6. Breach : releases signées, fenêtre dédiée, hors ligne, export de sauvegarde | Partie hors ligne, site inchangé |
 | À faire | 7. Confort : notifications, diagnostic, paramètres | Tests d'interface et accessibilité |
 | À faire | 8. Mobile : page Modules sur iOS, rattrapage Android, signature | Build signé, test sur appareil |
-| À faire | 9. Services : compte optionnel, préférences synchronisées | Connexion, révocation et hors ligne testés |
+| À faire | 9. Services : préférences synchronisées | Synchronisation et hors ligne testés |
 
 ## Backlog
 

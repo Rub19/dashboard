@@ -35,12 +35,13 @@ Il installe Kairo et HDV, refuse une mise à jour si l'application tourne, puis 
 | Chemin | Rôle |
 |---|---|
 | `catalog/catalog.json` | Modules connus : flux, clé publique, détection, règle de mise à jour, compatibilité |
+| `src-tauri/src/auth.rs` | Connexion au compte Ethone, session dans le Gestionnaire d'identifiants |
 | `src-tauri/src/action.rs` | Décide de l'action possible, sans effet de bord |
 | `src-tauri/src/feed.rs` | Lit les flux de versions |
 | `src-tauri/src/install.rs` | Télécharge, vérifie, installe, contrôle le résultat |
 | `src-tauri/src/system.rs` | Registre Windows, processus, lancement |
 | `src-tauri/src/journal.rs` | Journal local des opérations |
-| `src/` | Interface |
+| `src/` | Interface, motion dans `src/motion.ts` |
 
 ## Ajouter un module
 

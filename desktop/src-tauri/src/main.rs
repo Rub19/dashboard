@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod action;
+mod auth;
 mod catalog;
 mod feed;
 mod install;
@@ -13,7 +14,8 @@ use futures_util::future::join_all;
 use serde::Serialize;
 use std::path::PathBuf;
 use tauri::ipc::Channel;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
+use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
 use tokio::sync::Mutex;
 
@@ -22,6 +24,7 @@ const ETHONE_VERSION: &str = env!("CARGO_PKG_VERSION");
 struct App {
     modules: Vec<Module>,
     installing: Mutex<()>,
+    auth: auth::Auth,
 }
 
 #[derive(Serialize)]
@@ -69,13 +72,81 @@ fn status(module: &Module, latest: Option<feed::Latest>, feed_error: Option<Stri
     ModuleStatus { module: module.clone(), installed, latest, feed_error, running, action }
 }
 
+async fn require_session(state: &State<'_, App>) -> Result<(), String> {
+    if state.auth.is_signed_in().await {
+        Ok(())
+    } else {
+        Err("Connexion requise".to_string())
+    }
+}
+
 #[tauri::command]
-fn modules_local(state: State<App>) -> Vec<ModuleStatus> {
-    state.modules.iter().map(|m| status(m, None, None)).collect()
+async fn auth_state(state: State<'_, App>) -> Result<auth::Stage, String> {
+    Ok(state.auth.current().await)
+}
+
+#[tauri::command]
+async fn auth_password(email: String, password: String, remember: bool, state: State<'_, App>) -> Result<auth::Stage, String> {
+    state.auth.password(email.trim(), &password, remember).await
+}
+
+#[tauri::command]
+async fn auth_otp_send(email: String, state: State<'_, App>) -> Result<(), String> {
+    state.auth.otp_send(email.trim()).await
+}
+
+#[tauri::command]
+async fn auth_otp_verify(email: String, code: String, remember: bool, state: State<'_, App>) -> Result<auth::Stage, String> {
+    state.auth.otp_verify(email.trim(), code.trim(), remember).await
+}
+
+#[tauri::command]
+async fn auth_oauth_start(provider: String, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
+    let url = state.auth.oauth_url(&provider).await?;
+    app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn auth_oauth_cancel(state: State<'_, App>) -> Result<(), String> {
+    state.auth.oauth_cancel().await;
+    Ok(())
+}
+
+#[tauri::command]
+async fn auth_mfa(code: Option<String>, backup_code: Option<String>, state: State<'_, App>) -> Result<auth::Stage, String> {
+    state.auth.mfa(code, backup_code).await
+}
+
+#[tauri::command]
+async fn auth_sign_out(state: State<'_, App>) -> Result<(), String> {
+    state.auth.sign_out().await;
+    Ok(())
+}
+
+#[tauri::command]
+fn open_site(page: String, app: AppHandle) -> Result<(), String> {
+    let path = match page.as_str() {
+        "register" => "register",
+        "recovery" => "password-recovery",
+        "terms" => "terms",
+        "privacy" => "privacy",
+        "cookies" => "cookies",
+        "legal" => "legal",
+        "account" => "profile",
+        _ => return Err("Page inconnue".to_string()),
+    };
+    app.opener().open_url(format!("https://ethone.dev/{path}"), None::<&str>).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn modules_local(state: State<'_, App>) -> Result<Vec<ModuleStatus>, String> {
+    require_session(&state).await?;
+    Ok(state.modules.iter().map(|m| status(m, None, None)).collect())
 }
 
 #[tauri::command]
 async fn modules_remote(state: State<'_, App>) -> Result<Vec<ModuleStatus>, String> {
+    require_session(&state).await?;
     let feeds = join_all(state.modules.iter().map(|m| feed::fetch(&m.feed))).await;
     Ok(state
         .modules
@@ -89,7 +160,8 @@ async fn modules_remote(state: State<'_, App>) -> Result<Vec<ModuleStatus>, Stri
 }
 
 #[tauri::command]
-fn open_module(id: String, app: AppHandle, state: State<App>) -> Result<(), String> {
+async fn open_module(id: String, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
+    require_session(&state).await?;
     let module = find(&state, &id)?;
     let result = if let Some(detect) = &module.detect {
         system::launch(detect)
@@ -105,7 +177,8 @@ fn open_module(id: String, app: AppHandle, state: State<App>) -> Result<(), Stri
 }
 
 #[tauri::command]
-fn open_releases(id: String, app: AppHandle, state: State<App>) -> Result<(), String> {
+async fn open_releases(id: String, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
+    require_session(&state).await?;
     let url = find(&state, &id)?.releases_url.as_ref().ok_or("Pas de page de versions")?;
     app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
 }
@@ -117,6 +190,7 @@ async fn install_module(
     app: AppHandle,
     state: State<'_, App>,
 ) -> Result<install::Outcome, String> {
+    require_session(&state).await?;
     let module = find(&state, &id)?;
     let _guard = state.installing.try_lock().map_err(|_| "Une installation est déjà en cours".to_string())?;
     let notify = |progress: install::Progress| {
@@ -134,7 +208,8 @@ async fn install_module(
 }
 
 #[tauri::command]
-fn read_journal(app: AppHandle) -> Result<Vec<journal::Entry>, String> {
+async fn read_journal(app: AppHandle, state: State<'_, App>) -> Result<Vec<journal::Entry>, String> {
+    require_session(&state).await?;
     Ok(journal::read(&journal_path(&app)?))
 }
 
@@ -143,20 +218,56 @@ fn about() -> serde_json::Value {
     serde_json::json!({ "version": ETHONE_VERSION, "catalogSchema": catalog::SCHEMA_VERSION })
 }
 
+fn focus_main(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+fn handle_callback(app: AppHandle, url: String) {
+    focus_main(&app);
+    tauri::async_runtime::spawn(async move {
+        let result = app.state::<App>().auth.oauth_finish(&url).await;
+        let payload = match result {
+            Ok(stage) => serde_json::json!({ "stage": stage }),
+            Err(error) => serde_json::json!({ "error": error }),
+        };
+        let _ = app.emit("auth-callback", payload);
+    });
+}
+
 fn main() {
     let modules = catalog::load().expect("catalogue invalide");
+    let api = auth::Api::production().expect("client HTTP");
     tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.unminimize();
-                let _ = window.show();
-                let _ = window.set_focus();
-            }
-        }))
+        .plugin(tauri_plugin_single_instance::init(|app, _, _| focus_main(app)))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_opener::init())
-        .manage(App { modules, installing: Mutex::new(()) })
+        .manage(App { modules, installing: Mutex::new(()), auth: auth::Auth::new(api) })
+        .setup(|app| {
+            #[cfg(not(debug_assertions))]
+            let _ = app.deep_link().register("ethone");
+            let handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                for url in event.urls() {
+                    handle_callback(handle.clone(), url.to_string());
+                }
+            });
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
+            auth_state,
+            auth_password,
+            auth_otp_send,
+            auth_otp_verify,
+            auth_oauth_start,
+            auth_oauth_cancel,
+            auth_mfa,
+            auth_sign_out,
+            open_site,
             modules_local,
             modules_remote,
             open_module,

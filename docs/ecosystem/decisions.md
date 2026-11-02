@@ -34,9 +34,17 @@ Limite connue : ajouter un module ou changer une compatibilité demande une nouv
 
 `ios/` et `android/` restent natifs. Un module ne s'installe pas sur mobile : les règles d'Apple l'excluent et Kairo a besoin du client Riot local.
 
-## 8. Pas de compte à la première version
+## 8. Ethone Desktop passe par le compte Ethone
 
-Trois systèmes existent : Supabase pour ethone.dev, un autre projet Supabase pour Interior, Discord + D1 pour HDV. Aucune fusion n'est prévue. Une connexion optionnelle pourra reprendre le flux navigateur + code de HDV.
+Décision de Rub19 le 2 novembre 2026. L'application s'ouvre sur un écran de connexion repris d'ethone.dev/login, sur le même Supabase que le site et l'app iOS : mot de passe, code OTP, Google, GitHub, Discord (PKCE avec `ethone://auth-callback`) et double authentification par le Worker.
+
+- Les échanges se font en Rust. La page n'a pas accès au réseau (CSP) ni au jeton de rafraîchissement.
+- Le jeton est dans le Gestionnaire d'identifiants Windows, jamais dans `localStorage`.
+- Sans connexion, les commandes de modules sont refusées côté Rust, pas seulement masquées.
+- Une session déjà ouverte reste utilisable hors ligne.
+- L'inscription et la récupération de mot de passe s'ouvrent sur ethone.dev, car elles passent par Turnstile.
+- Pas de passkey : WebAuthn est lié au domaine ethone.dev.
+- Interior, HDV et les autres gardent leurs propres comptes. Aucune fusion. Les applications continuent de fonctionner sans Ethone.
 
 ## 9. Isolation réaliste
 
@@ -44,7 +52,7 @@ Des processus séparés sous le même compte Windows peuvent lire les fichiers l
 
 ## 10. Direction visuelle
 
-Console : barre latérale, tableau dense, palette `Ctrl+K`.
+Console : rail d'icônes, tableau dense, palette `Ctrl+K`, barre d'état. Le login et le motion reprennent ceux d'ethone.dev : mêmes courbes, ressorts et chorégraphies (`src/motion.ts`), fond lumineux, bordure de lumière. Réduction des animations, de la transparence et contraste élevé respectés.
 
 ## 11. Pas de SDK pour l'instant
 

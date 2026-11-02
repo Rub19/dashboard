@@ -8,6 +8,7 @@ import {
 } from '../../modules/highlights/types/highlight.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module Highlights.
@@ -64,7 +65,7 @@ export function createHighlightsRouter(client: Client) {
       res.status(401).json({ error: trq('Non authentifié') });
       return;
     }
-    const allowed = HighlightUserConfigSchema.partial().pick({ enabled: true, ignoredChannelIds: true });
+    const allowed = partialPatch(HighlightUserConfigSchema).pick({ enabled: true, ignoredChannelIds: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });

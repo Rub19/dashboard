@@ -58,8 +58,8 @@ export const AutoRoleConfigSchema = z.object({
   userOverrides: z.array(UserRoleOverrideSchema).default([]),
   removeUserFromListAfterAssignment: z.boolean().default(true),
 
-  temp: TempRoleConfigSchema.default({}),
-  voice: VoiceRoleConfigSchema.default({}),
+  temp: TempRoleConfigSchema.prefault({}),
+  voice: VoiceRoleConfigSchema.prefault({}),
 });
 
 export type AutoRoleConfig = z.infer<typeof AutoRoleConfigSchema>;

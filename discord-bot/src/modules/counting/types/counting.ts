@@ -26,7 +26,7 @@ export const CountingConfigSchema = z.object({
   totalCorrect: z.number().int().min(0).default(0),
   totalMistakes: z.number().int().min(0).default(0),
   lastResetAt: z.string().nullable().default(null),
-  contributors: z.record(z.string(), CountingContributorSchema).default({}),
+  contributors: z.record(z.string(), CountingContributorSchema).prefault({}),
   updatedAt: z.string().default(() => new Date().toISOString()),
 });
 export type CountingConfig = z.infer<typeof CountingConfigSchema>;

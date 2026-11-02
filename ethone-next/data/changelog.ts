@@ -62314,4 +62314,53 @@ CHANGELOG_BY_LANG.en.unshift(v1_92_0_en);
 CHANGELOG_BY_LANG.es.unshift(v1_92_0_es);
 CHANGELOG_BY_LANG.de.unshift(v1_92_0_de);
 
+const v1_92_1_fr: ChangelogEntry = {
+  version: "v1.92.1",
+  date: "2026-11-02",
+  title: "Correctifs de sécurité des dépendances",
+  items: [
+    "Site : Next.js passe en 16.4.1 (2 failles critiques, 1 élevée).",
+    "Worker : undici 7.30.1 et postal-mime 4.0.8.",
+    "Bot : undici 6.29.1, body-parser 1.20.9, qs 6.16.1 et zod 4.6.6, avec le comportement des enregistrements partiels conservé.",
+  ],
+};
+
+const v1_92_1_en: ChangelogEntry = {
+  version: "v1.92.1",
+  date: "2026-11-02",
+  title: "Dependency security fixes",
+  items: [
+    "Site: Next.js moves to 16.4.1 (2 critical issues, 1 high).",
+    "Worker: undici 7.30.1 and postal-mime 4.0.8.",
+    "Bot: undici 6.29.1, body-parser 1.20.9, qs 6.16.1 and zod 4.6.6, with partial saves behaving as before.",
+  ],
+};
+
+const v1_92_1_es: ChangelogEntry = {
+  version: "v1.92.1",
+  date: "2026-11-02",
+  title: "Correcciones de seguridad de dependencias",
+  items: [
+    "Sitio: Next.js pasa a 16.4.1 (2 fallos críticos, 1 alto).",
+    "Worker: undici 7.30.1 y postal-mime 4.0.8.",
+    "Bot: undici 6.29.1, body-parser 1.20.9, qs 6.16.1 y zod 4.6.6, con los guardados parciales funcionando como antes.",
+  ],
+};
+
+const v1_92_1_de: ChangelogEntry = {
+  version: "v1.92.1",
+  date: "2026-11-02",
+  title: "Sicherheitskorrekturen für Abhängigkeiten",
+  items: [
+    "Website: Next.js wird auf 16.4.1 aktualisiert (2 kritische Lücken, 1 hohe).",
+    "Worker: undici 7.30.1 und postal-mime 4.0.8.",
+    "Bot: undici 6.29.1, body-parser 1.20.9, qs 6.16.1 und zod 4.6.6; teilweises Speichern funktioniert wie zuvor.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1_92_1_fr);
+CHANGELOG_BY_LANG.en.unshift(v1_92_1_en);
+CHANGELOG_BY_LANG.es.unshift(v1_92_1_es);
+CHANGELOG_BY_LANG.de.unshift(v1_92_1_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

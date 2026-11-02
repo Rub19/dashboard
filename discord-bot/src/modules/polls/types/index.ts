@@ -151,7 +151,7 @@ export const DiscordPollSchema = z.object({
   allowVoteChange: z.boolean().default(true),
   allowVoteRetract: z.boolean().default(false),
   questions: z.array(PollQuestionSchema).default([]),
-  eligibility: PollEligibilitySchema.default({
+  eligibility: PollEligibilitySchema.prefault({
     allowedRoleIds: [],
     forbiddenRoleIds: [],
     minAccountAgeDays: 0,
@@ -160,14 +160,14 @@ export const DiscordPollSchema = z.object({
     logicGate: 'ANY',
   }),
   roleWeights: z.array(PollRoleWeightSchema).default([]),
-  quorum: PollQuorumConfigSchema.default({
+  quorum: PollQuorumConfigSchema.prefault({
     enabled: false,
     minParticipantsCount: 0,
     minParticipationPercentage: 0,
     approvalThresholdPercentage: 50,
   }),
   automations: z.array(PollAutomationRuleSchema).default([]),
-  panelConfig: DiscordPollPanelConfigSchema.default({
+  panelConfig: DiscordPollPanelConfigSchema.prefault({
     channelId: '',
     embedTitle: '🗳️ Sondage Communautaire',
     embedDescription: 'Participez au vote dès maintenant ci-dessous.',

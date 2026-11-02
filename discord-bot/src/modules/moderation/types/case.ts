@@ -113,7 +113,7 @@ export const ModerationCaseSchema = z.object({
     })
     .partial()
     .optional()
-    .default({}),
+    .prefault({}),
   assignedTo: z
     .object({
       id: z.string(),
@@ -166,7 +166,7 @@ export const ModerationSettingsSchema = z.object({
       maxKicksPerMinute: z.number().default(15),
       maxTimeoutsPerMinute: z.number().default(20),
     })
-    .default({
+    .prefault({
       maxBansPerMinute: 10,
       maxKicksPerMinute: 15,
       maxTimeoutsPerMinute: 20,
@@ -181,7 +181,7 @@ export const ModerationSettingsSchema = z.object({
         { threshold: 5, action: 'BAN' },
       ]),
     })
-    .default({
+    .prefault({
       enabled: false,
       ladder: [
         { threshold: 2, action: 'TIMEOUT', durationSeconds: 3600 },

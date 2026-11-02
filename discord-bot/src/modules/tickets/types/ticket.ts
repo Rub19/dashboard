@@ -66,7 +66,7 @@ export const TicketSchema = z.object({
     .default(null),
   assignedTeamId: z.string().nullable().default(null),
   tags: z.array(z.string()).default([]),
-  answers: z.record(z.any()).default({}),
+  answers: z.record(z.string(), z.any()).prefault({}),
   notes: z
     .array(
       z.object({

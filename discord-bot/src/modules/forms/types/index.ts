@@ -121,7 +121,7 @@ export const FormScoringConfigSchema = z.object({
     low: z.number().default(39),
     medium: z.number().default(69),
     high: z.number().default(100),
-  }).default({
+  }).prefault({
     low: 39,
     medium: 69,
     high: 100,
@@ -173,7 +173,7 @@ export const FormAutomationRuleSchema = z.object({
     fieldId: z.string().optional(),
     fieldValue: z.any().optional(),
     targetStatus: FormResponseStatusSchema.optional(),
-  }).default({}),
+  }).prefault({}),
   actions: z.array(
     z.object({
       type: AutomationActionTypeSchema,
@@ -217,13 +217,13 @@ export const DiscordFormSchema = z.object({
   ]),
   fields: z.array(FormFieldSchema).default([]),
   conditions: z.array(FormConditionSchema).default([]),
-  scoring: FormScoringConfigSchema.default({
+  scoring: FormScoringConfigSchema.prefault({
     enabled: false,
     maxScore: 100,
     passScore: 60,
     thresholds: { low: 39, medium: 69, high: 100 },
   }),
-  antiSpam: FormAntiSpamConfigSchema.default({
+  antiSpam: FormAntiSpamConfigSchema.prefault({
     cooldownMinutes: 1440,
     maxSubmissionsPerUser: 1,
     minAccountAgeDays: 7,
@@ -233,7 +233,7 @@ export const DiscordFormSchema = z.object({
     blacklistUserIds: [],
   }),
   automations: z.array(FormAutomationRuleSchema).default([]),
-  panelConfig: DiscordPanelConfigSchema.default({
+  panelConfig: DiscordPanelConfigSchema.prefault({
     channelId: '',
     embedTitle: '📝 Formulaire de Candidature',
     embedDescription: 'Cliquez sur le bouton ci-dessous pour postuler.',
@@ -293,7 +293,7 @@ export const FormResponseSchema = z.object({
     guildMemberDays: z.number().default(0),
     ip: z.string().optional(),
     userAgent: z.string().optional(),
-  }).default({
+  }).prefault({
     accountAgeDays: 0,
     guildMemberDays: 0,
   }),

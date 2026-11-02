@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { partialPatch } from '../../../utils/partialPatch.js';
 
 export const AntiRaidActionSchema = z.enum(['alert', 'kick', 'ban', 'timeout', 'lockdown']);
 export type AntiRaidAction = z.infer<typeof AntiRaidActionSchema>;
@@ -9,10 +10,6 @@ export type AntiNukeAction = z.infer<typeof AntiNukeActionSchema>;
 export const AntiSpamActionSchema = z.enum(['warn', 'delete', 'timeout']);
 export type AntiSpamAction = z.infer<typeof AntiSpamActionSchema>;
 
-// Extracted as its own named schema (rather than inlined in
-// SecurityConfigSchema below) so routes/commands touching only Anti-Nuke can
-// call AntiNukeConfigSchema.partial() directly — z.object(...).default({})
-// wraps the object in a ZodDefault, which has no .partial() of its own.
 export const AntiNukeConfigSchema = z.object({
   enabled: z.boolean().default(true),
   maxBans: z.number().min(2).max(20).default(4),
@@ -28,7 +25,7 @@ export const AntiNukeConfigSchema = z.object({
   /** Interrupteur par protection (page « Protections » de la console). */
   protections: z
     .object({ bans: z.boolean().default(true), channelDeletes: z.boolean().default(true), roleDeletes: z.boolean().default(true) })
-    .default({}),
+    .prefault({}),
 });
 
 export const SecurityConfigSchema = z.object({
@@ -43,10 +40,10 @@ export const SecurityConfigSchema = z.object({
       blockUnwhitelistedBots: z.boolean().default(true),
       autoLockdownDurationMinutes: z.number().min(1).max(120).default(15),
     })
-    .default({}),
+    .prefault({}),
 
   // 2. Anti-Nuke
-  antiNuke: AntiNukeConfigSchema.default({}),
+  antiNuke: AntiNukeConfigSchema.prefault({}),
 
   // 3. Anti-Spam & Contenu
   antiSpam: z
@@ -60,7 +57,7 @@ export const SecurityConfigSchema = z.object({
       antiInvite: z.boolean().default(true),
       allowedInviteGuildIds: z.array(z.string()).default([]),
     })
-    .default({}),
+    .prefault({}),
 
   // 4. Whitelists & Confiance
   whitelist: z
@@ -70,7 +67,7 @@ export const SecurityConfigSchema = z.object({
       trustedBotIds: z.array(z.string()).default([]),
       exemptChannelIds: z.array(z.string()).default([]),
     })
-    .default({}),
+    .prefault({}),
 
   // 5. État du Lockdown
   lockdown: z
@@ -80,7 +77,7 @@ export const SecurityConfigSchema = z.object({
       activatedAt: z.string().nullable().default(null),
       expiresAt: z.string().nullable().default(null),
     })
-    .default({}),
+    .prefault({}),
 });
 
 export type SecurityConfig = z.infer<typeof SecurityConfigSchema>;

@@ -265,7 +265,7 @@ export function createBotControlRouter(client: Client): Router {
       try {
         const parsed = BotSettingsSchema.safeParse(req.body);
         if (!parsed.success) {
-          res.status(400).json({ success: false, error: parsed.error.errors[0]?.message || 'Données invalides' });
+          res.status(400).json({ success: false, error: parsed.error.issues[0]?.message || 'Données invalides' });
           return;
         }
         const updated = configService.updateSettings(parsed.data);

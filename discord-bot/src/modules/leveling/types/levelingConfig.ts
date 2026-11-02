@@ -74,7 +74,7 @@ export const LevelingConfigSchema = z.object({
 
   // --- Personnalisation ---
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#f59e0b'),
-  rankCard: RankCardStyleSchema.default({}).catch(() => RankCardStyleSchema.parse({})),
+  rankCard: RankCardStyleSchema.prefault({}).catch(() => RankCardStyleSchema.parse({})),
 
   // --- Annonce des récompenses de rôle ---
   rewardAnnounceType: RewardAnnounceTypeSchema.default('with_levelup'),

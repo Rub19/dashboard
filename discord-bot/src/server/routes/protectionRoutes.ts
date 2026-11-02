@@ -8,6 +8,7 @@ import { checkProtection } from '../../modules/protections/protectionCheck.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /** Permissions dont Etho a besoin pour détecter et réparer (bandeau « Permission à vérifier »). */
 const NEEDED: [keyof typeof PermissionFlagsBits, string][] = [
@@ -23,7 +24,7 @@ const NEEDED: [keyof typeof PermissionFlagsBits, string][] = [
   ['ModerateMembers', 'Exclure temporairement des membres'],
 ];
 
-const PatchSchema = ProtectionSettingsSchema.partial().strict();
+const PatchSchema = partialPatch(ProtectionSettingsSchema).strict();
 
 /** /api/guilds/:guildId/protections — page « Protections » de la console (format Keeper). */
 export function createProtectionRouter(client: Client): Router {

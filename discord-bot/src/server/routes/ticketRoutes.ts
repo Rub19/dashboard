@@ -20,6 +20,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
 import { trq, trg } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 export function createTicketRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -536,8 +537,7 @@ export function createTicketRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       const current = ticketService.getConfig(guildId);
-      const forumPatch = TicketGlobalConfigSchema.pick({ mode: true, forumChannelId: true, forumTagIds: true })
-        .partial()
+      const forumPatch = partialPatch(TicketGlobalConfigSchema.pick({ mode: true, forumChannelId: true, forumTagIds: true }))
         .parse(req.body ?? {});
       const updated = { ...current, ...req.body, guildId };
       // Autre forum : les ids de tags de l'ancien ne valent plus rien.

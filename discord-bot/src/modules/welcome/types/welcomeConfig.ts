@@ -184,7 +184,7 @@ export const WelcomeDMConfigSchema = z.object({
   /** Joint la carte de bienvenue (même design que dans le salon) au message privé. */
   attachCard: z.boolean().default(false).catch(false),
   messageContent: z.string().default('👋 Bonjour {user}, bienvenue sur **{server}** !'),
-  embed: WelcomeEmbedConfigSchema.default({
+  embed: WelcomeEmbedConfigSchema.prefault({
     enabled: true,
     title: 'Bienvenue sur {server} !',
     description: 'Consulte les salons importants et fais vérifier ton compte si nécessaire.',
@@ -224,11 +224,11 @@ export const WelcomeMessageConfigSchema = z.object({
     .default('👋 Bienvenue {user} sur **{server}** ! Tu es notre **{membercount}ème** membre.'),
   mentionUser: z.boolean().default(true),
   sendForBots: z.boolean().default(false),
-  embed: WelcomeEmbedConfigSchema.default({}),
-  image: WelcomeImageConfigSchema.default({}),
+  embed: WelcomeEmbedConfigSchema.prefault({}),
+  image: WelcomeImageConfigSchema.prefault({}),
   buttons: z.array(WelcomeButtonConfigSchema).default([]),
-  dm: WelcomeDMConfigSchema.default({}),
-  conditions: WelcomeConditionSchema.default({}),
+  dm: WelcomeDMConfigSchema.prefault({}),
+  conditions: WelcomeConditionSchema.prefault({}),
   autoRoleIds: z.array(z.string()).default([]),
 });
 
@@ -248,7 +248,7 @@ export const GoodbyeMessageConfigSchema = z.object({
     .string()
     .default('📤 Au revoir **{username}** ! Nous ne sommes plus que **{membercount}** membres.'),
   sendForBots: z.boolean().default(false),
-  embed: WelcomeEmbedConfigSchema.default({
+  embed: WelcomeEmbedConfigSchema.prefault({
     enabled: true,
     title: 'Départ d’un membre',
     description: '**{username}** vient de quitter le serveur.',
@@ -259,7 +259,7 @@ export const GoodbyeMessageConfigSchema = z.object({
     showThumbnail: true,
     fields: [],
   }),
-  image: WelcomeImageConfigSchema.default({
+  image: WelcomeImageConfigSchema.prefault({
     enabled: false,
     template: 'default',
     titleText: 'À BIENTÔT',
@@ -288,10 +288,10 @@ export const WelcomeOptionsSchema = z.object({
 export type WelcomeOptions = z.infer<typeof WelcomeOptionsSchema>;
 
 export const FullWelcomeConfigSchema = z.object({
-  welcome: WelcomeMessageConfigSchema.default({}),
-  goodbye: GoodbyeMessageConfigSchema.default({}),
-  ghostPing: GhostPingConfigSchema.default({}),
-  options: WelcomeOptionsSchema.default({}),
+  welcome: WelcomeMessageConfigSchema.prefault({}),
+  goodbye: GoodbyeMessageConfigSchema.prefault({}),
+  ghostPing: GhostPingConfigSchema.prefault({}),
+  options: WelcomeOptionsSchema.prefault({}),
 });
 
 export type FullWelcomeConfig = z.infer<typeof FullWelcomeConfigSchema>;

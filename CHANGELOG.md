@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.92.1 — 2026-11-02
+
+**Correctifs de sécurité des dépendances**
+
+- Site : Next.js passe en 16.4.1 (2 failles critiques, 1 élevée).
+- Worker : undici 7.30.1 et postal-mime 4.0.8.
+- Bot : undici 6.29.1, body-parser 1.20.9, qs 6.16.1 et zod 4.6.6, avec le comportement des enregistrements partiels conservé.
+
 ## v1.92.0 — 2026-10-29
 
 **Orbyx devient Pullverse**

@@ -8,13 +8,12 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { GamesConfigSchema } from '../../modules/games/types/games.js';
 import { logger } from '../../utils/logger.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /** Plafond de la cagnotte alimentée depuis le dashboard. */
 const JACKPOT_MAX = 10_000_000;
 // Champs inconnus (ex. currencyName renvoyé par GET /config) ignorés ; jackpotPool retiré.
-const ConfigPatchSchema = GamesConfigSchema.omit({ jackpotPool: true })
-  .extend({ minBet: z.number().int().min(1).max(1_000_000), maxBet: z.number().int().min(10).max(1_000_000) })
-  .partial();
+const ConfigPatchSchema = partialPatch(GamesConfigSchema.omit({ jackpotPool: true }).extend({ minBet: z.number().int().min(1).max(1_000_000), maxBet: z.number().int().min(10).max(1_000_000) }));
 
 export function createGamesRoutes(client: Client): Router {
   const router = Router({ mergeParams: true });

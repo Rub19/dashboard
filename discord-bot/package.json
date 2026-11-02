@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "1.92.0",
+  "version": "1.92.1",
   "description": "Modern & secure Discord bot with unified slash and prefix command handling in TypeScript with Web Dashboard",
   "main": "dist/index.js",
   "type": "module",
@@ -40,7 +40,7 @@
     "opusscript": "^0.1.1",
     "play-dl": "^1.9.7",
     "shoukaku": "^4.3.0",
-    "zod": "^3.24.2"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
@@ -55,7 +55,7 @@
     "node": ">=20.0.0"
   },
   "overrides": {
-    "qs": "^6.16.0",
-    "undici": "6.28.1"
+    "qs": "^6.16.1",
+    "undici": "6.29.1"
   }
 }

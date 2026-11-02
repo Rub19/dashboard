@@ -59,26 +59,26 @@ const ReplyTemplateSchema = MessageTemplateSchema.extend({
   deleteAfterSeconds: z.number().int().min(0).max(300).default(0),
 });
 export type ReplyTemplate = z.infer<typeof ReplyTemplateSchema>;
-const pair = z.object({ reply: ReplyTemplateSchema.default({}), dm: MessageTemplateSchema.default({}) }).default({});
+const pair = z.object({ reply: ReplyTemplateSchema.prefault({}), dm: MessageTemplateSchema.prefault({}) }).prefault({});
 
 export const SanctionConfigSchema = z.object({
   messages: z
     .object({
       ...Object.fromEntries(MESSAGE_KEYS.map((k) => [k, pair])),
-      ...Object.fromEntries(EXTRA_KEYS.map((k) => [k, MessageTemplateSchema.default({})])),
-    } as Record<MessageKey, typeof pair> & Record<(typeof EXTRA_KEYS)[number], ReturnType<typeof MessageTemplateSchema.default>>)
-    .default({}),
+      ...Object.fromEntries(EXTRA_KEYS.map((k) => [k, MessageTemplateSchema.prefault({})])),
+    } as Record<MessageKey, typeof pair> & Record<(typeof EXTRA_KEYS)[number], ReturnType<typeof MessageTemplateSchema.prefault>>)
+    .prefault({}),
   tiers: z.array(TierSchema).max(10).default([]),
   warnings: z
     .object({
       severityEnabled: z.boolean().default(true),
-      points: z.object({ light: z.number().int().min(0).max(100).default(1), medium: z.number().int().min(0).max(100).default(2), grave: z.number().int().min(0).max(100).default(3) }).default({}),
+      points: z.object({ light: z.number().int().min(0).max(100).default(1), medium: z.number().int().min(0).max(100).default(2), grave: z.number().int().min(0).max(100).default(3) }).prefault({}),
       defaultSeverity: z.enum(SEVERITIES).default('light'),
       expiryDays: z.number().int().min(0).max(365).default(30),
-      autoPoints: z.object({ protection: z.number().int().min(0).max(100).default(1), automod: z.number().int().min(0).max(100).default(1) }).default({}),
-      goodConduct: z.object({ enabled: z.boolean().default(false), points: z.number().int().min(1).max(100).default(1), periodDays: z.number().int().min(1).max(365).default(14) }).default({}),
+      autoPoints: z.object({ protection: z.number().int().min(0).max(100).default(1), automod: z.number().int().min(0).max(100).default(1) }).prefault({}),
+      goodConduct: z.object({ enabled: z.boolean().default(false), points: z.number().int().min(1).max(100).default(1), periodDays: z.number().int().min(1).max(365).default(14) }).prefault({}),
     })
-    .default({}),
+    .prefault({}),
   replies: z
     .object({
       dmMember: z.boolean().default(true),
@@ -89,7 +89,7 @@ export const SanctionConfigSchema = z.object({
       publicByDefault: z.boolean().default(false),
       endReminder: z.boolean().default(false),
     })
-    .default({}),
+    .prefault({}),
   history: z
     .object({
       protection: z.boolean().default(true),
@@ -97,20 +97,20 @@ export const SanctionConfigSchema = z.object({
       discord: z.boolean().default(true),
       joins: z.boolean().default(false),
     })
-    .default({}),
+    .prefault({}),
   guard: z
     .object({
       enabled: z.boolean().default(false),
       perHour: z.number().int().min(1).max(500).default(15),
       alertChannelId: snowflake.nullable().default(null).catch(null),
     })
-    .default({}),
+    .prefault({}),
   presets: z
     .object({
       categories: z.array(z.string().min(1).max(30)).max(12).default(['Spam', 'Pub', 'Insultes', 'NSFW', 'Comportement', 'Autre']),
       reasons: z.array(PresetSchema).max(15).default([]),
     })
-    .default({}),
+    .prefault({}),
   appeals: z
     .object({
       enabled: z.boolean().default(false),
@@ -121,7 +121,7 @@ export const SanctionConfigSchema = z.object({
       question: z.string().max(45).default(''),
       windowDays: z.number().int().min(1).max(30).default(7),
     })
-    .default({}),
+    .prefault({}),
 });
 export type SanctionConfig = z.infer<typeof SanctionConfigSchema>;
 export type SanctionConfigInput = z.input<typeof SanctionConfigSchema>;

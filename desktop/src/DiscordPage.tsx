@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
 import { botCall, botLogin, botLogout, botStatus } from "./api";
-import { DISCORD_GROUPS, DISCORD_MODULES, DiscordModule } from "./discordSpecs";
+import { DISCORD_GROUPS, DISCORD_MODULES as SPEC_MODULES, DiscordModule } from "./discordSpecs";
 import { ConfigForm, firstArray, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
 import { errorText, tr } from "./i18n";
 import { Empty, ErrorBox, PageHead, Skeletons, Status, useLoad } from "./kit";
@@ -13,6 +13,38 @@ import { Button } from "./ui";
 
 interface Guild { id: string; name: string; icon?: string | null; botPresent?: boolean; owner?: boolean }
 const GUILD_KEY = "ethone-discord-guild";
+const [MODERATION, COMMUNITY, , , MEDIA] = DISCORD_GROUPS;
+const CUSTOM_MODULES: DiscordModule[] = [
+  { id: "moderation", title: "Modération et sanctions", group: MODERATION, overview: null, lists: [
+    { title: "Sanctions", path: "/cases", key: "cases", idKey: "caseNumber", rowActions: [{ title: "Annuler la sanction", path: "/cases/{id}/revert", destructive: true }] },
+    { title: "Bannis", path: "/bans", key: "bans", idKey: "userId", rowActions: [{ title: "Débannir", path: "/unban", destructive: true, idBody: "userId", body: { reason: "Débanni depuis Ethone" } }] },
+  ] },
+  { id: "members", title: "Membres", group: MODERATION, base: "guilds/{g}/server", overview: null, lists: [{ title: "Membres", path: "/members" }] },
+  { id: "anti-raid", title: "Anti-raid", group: MODERATION, overview: null,
+    configs: [{ title: "Réglages", get: "/config", put: "/config" }],
+    actions: [
+      { title: "Activer le mode raid", path: "/raid-mode", body: { active: true, reason: "Action depuis Ethone" } },
+      { title: "Désactiver le mode raid", path: "/raid-mode", body: { active: false, reason: "Action depuis Ethone" } },
+      { title: "Verrouiller le serveur", path: "/lockdown", destructive: true, body: { active: true, reason: "Action depuis Ethone" } },
+      { title: "Déverrouiller le serveur", path: "/lockdown", body: { active: false, reason: "Action depuis Ethone" } },
+    ] },
+  { id: "anti-nuke", title: "Anti-nuke", group: MODERATION, overview: null, configs: [{ title: "Réglages", get: "/config", put: "/config" }] },
+  { id: "audit-log", title: "Journal d'audit", group: MODERATION, base: "guilds/{g}/logs", overview: null, lists: [{ title: "Événements", path: "/events" }] },
+  { id: "tickets", title: "Tickets", group: COMMUNITY, overview: null, lists: [{ title: "Tickets", path: "/list", rowActions: [{ title: "Fermer", path: "/tickets/{id}/close", destructive: true, body: { closedBy: "Ethone", reason: "Fermé depuis Ethone" } }] }] },
+  { id: "giveaways", title: "Concours", group: COMMUNITY, overview: null, lists: [{ title: "Concours", path: "/list", rowActions: [
+    { title: "Terminer", path: "/{id}/end", destructive: true },
+    { title: "Retirer un gagnant", path: "/{id}/reroll" },
+    { title: "Annuler", path: "/{id}/cancel", destructive: true },
+  ] }] },
+  { id: "suggestions", title: "Suggestions", group: COMMUNITY, overview: null, lists: [{ title: "Suggestions", path: "/list", rowActions: [
+    { title: "Accepter", path: "/{id}/status", body: { status: "accepted" } },
+    { title: "Refuser", path: "/{id}/status", destructive: true, body: { status: "rejected" } },
+  ] }] },
+  { id: "music", title: "Musique", group: MEDIA, overview: "/state", actions: [
+    { title: "Pause", path: "/pause" }, { title: "Reprendre", path: "/resume" }, { title: "Suivant", path: "/skip" }, { title: "Précédent", path: "/previous" }, { title: "Mélanger", path: "/shuffle" }, { title: "Arrêter", path: "/stop", destructive: true },
+  ] },
+];
+const DISCORD_MODULES = [...CUSTOM_MODULES, ...SPEC_MODULES.filter((item) => !CUSTOM_MODULES.some((custom) => custom.id === item.id))];
 
 function moduleUrl(spec: DiscordModule, guild: string, sub: string): string {
   const root = (spec.base ?? `guilds/{g}/${spec.id}`).replace("{g}", guild);
@@ -48,7 +80,7 @@ function ListSection({ spec, guild, index }: { spec: DiscordModule; guild: strin
     run: (row: Json) => {
       const record = row && typeof row === "object" && !Array.isArray(row) ? row : {};
       const id = String(record[list.idKey ?? "id"] ?? "");
-      return botCall(moduleUrl(spec, guild, action.path.replace("{id}", encodeURIComponent(id))), (action.method ?? "POST") as "POST" | "PATCH" | "DELETE" | "PUT", action.method === "DELETE" ? undefined : action.body ?? {});
+      return botCall(moduleUrl(spec, guild, action.path.replace("{id}", encodeURIComponent(id))), (action.method ?? "POST") as "POST" | "PATCH" | "DELETE" | "PUT", action.method === "DELETE" ? undefined : { ...action.body, ...(action.idBody ? { [action.idBody]: id } : {}) });
     },
   }));
   return (
@@ -177,7 +209,7 @@ export default function DiscordPage() {
         title={tr("Connecte ton compte Discord", "Link your Discord account")}
         text={tr("La connexion s'ouvre dans ton navigateur, puis revient dans Ethone. Elle donne accès à la gestion du bot sur tes serveurs.", "Sign-in opens in your browser, then returns to Ethone. It gives access to bot management on your servers.")}
         action={<>
-          <Button variant="primary" disabled={waiting} onClick={connect}>{waiting ? tr("En attente du navigateur…", "Waiting for the browser…") : tr("Se connecter avec Discord", "Sign in with Discord")}</Button>
+          <Button variant="primary" onClick={connect}>{waiting ? tr("Rouvrir le navigateur", "Reopen the browser") : tr("Se connecter avec Discord", "Sign in with Discord")}</Button>
           {error && <p className="bad" role="alert">{error}</p>}
         </>}
       />

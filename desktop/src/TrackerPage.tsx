@@ -1,9 +1,10 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
-import { apiData, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, scoreboard, splitRiotId, statsFor, tierIcon } from "./eval";
+import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
@@ -117,7 +118,21 @@ function Session({ matches, puuid }: { matches: EvalMatch[]; puuid: string }) {
   );
 }
 
-function MatchRow({ match, puuid, history, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; onOpen: () => void }) {
+function useMapImages() {
+  const [images, setImages] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let active = true;
+    catalogGet<{ displayName: string; listViewIconTall?: string | null; listViewIcon?: string | null; splash?: string | null }[]>("/maps").then((maps) => {
+      if (active) setImages(Object.fromEntries(maps.map((item) => [item.displayName.toLowerCase(), item.listViewIcon ?? item.splash ?? ""])));
+    }, () => null);
+    return () => {
+      active = false;
+    };
+  }, []);
+  return images;
+}
+
+function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; image?: string; onOpen: () => void }) {
   const summary = matchSummary(match, puuid);
   if (!summary) return null;
   const { me, won, draw, score, mvp, kd } = summary;
@@ -138,7 +153,7 @@ function MatchRow({ match, puuid, history, onOpen }: { match: EvalMatch; puuid: 
           )}
         </span>
         <span className="eval-match-art">
-          {match.mapId && <img className="eval-map" src={mapImage(match.mapId)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
+          {(image || match.mapId) && <img className="eval-map" src={image || mapImage(match.mapId)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
           {me.agentId && <img className="eval-agent" src={agentIcon(me.agentId)} alt="" />}
           <span className="eval-match-copy">
             <b>{me.agent}</b>
@@ -158,29 +173,57 @@ function MatchRow({ match, puuid, history, onOpen }: { match: EvalMatch; puuid: 
   );
 }
 
-function MatchPanel({ match, puuid, onClose }: { match: EvalMatch; puuid: string; onClose: () => void }) {
+function MatchPanel({ match, puuid, image, onClose }: { match: EvalMatch; puuid: string; image?: string; onClose: () => void }) {
   const close = useRef<HTMLButtonElement>(null);
   const reduce = useReducedMotion();
+  const [view, setView] = useState<"board" | "rounds" | "kills">("board");
+  const nameOf = (id: string) => match.players.find((player) => player.puuid === id)?.name ?? "?";
+  const rounds = roundsFor(match, puuid);
   useEffect(() => {
     close.current?.focus();
     const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  return (
+  return createPortal(
     <>
       <motion.div className="eval-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} onClick={onClose} />
       <motion.aside role="dialog" aria-label={match.map} className="eval-panel" initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }} exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} transition={{ type: "spring", duration: 0.42, bounce: 0 }}>
         <header>
-          {match.mapId && <img src={mapImage(match.mapId)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
+          {(image || match.mapId) && <img src={image || mapImage(match.mapId)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
           <div>
             <h2>{match.map}</h2>
             <p>{modeName(match.mode)}{match.startedAt ? `, ${dateFormat.format(new Date(match.startedAt))}` : ""}{match.lengthSec > 0 ? `, ${Math.round(match.lengthSec / 60)} min` : ""}</p>
           </div>
           <button ref={close} type="button" className="icon-btn" aria-label={t("close")} onClick={onClose}><X size={18} /></button>
         </header>
+        {rounds.length > 0 && <div className="eval-panel-tabs"><Tabs id="match" label={tr("Vue du match", "Match view")} value={view} onChange={setView} tabs={[{ id: "board", label: tr("Tableau", "Scoreboard") }, { id: "rounds", label: tr("Manches", "Rounds") }, { id: "kills", label: tr("Éliminations", "Kills") }]} /></div>}
         <div className="eval-board-scroll">
-          {scoreboard(match, puuid).map((team) => (
+          {view === "rounds" && (
+            <ol className="eval-rounds">
+              {rounds.map((round) => (
+                <li key={round.n} className={round.won ? "won" : "lost"}>
+                  <b>{round.n}</b>
+                  <span>{round.won ? tr("Gagnée", "Won") : tr("Perdue", "Lost")}{round.end ? `, ${round.end}` : ""}</span>
+                  <small>{round.site ? tr(`Spike en ${round.site}`, `Spike at ${round.site}`) : ""}</small>
+                  <small>{round.kills} {tr("élim.", "kills")}{round.died ? tr(", mort", ", died") : ""}</small>
+                </li>
+              ))}
+            </ol>
+          )}
+          {view === "kills" && (
+            <ol className="eval-feed">
+              {(match.kills ?? []).map((kill, index) => (
+                <li key={index} className={kill.k === puuid ? "mine" : kill.v === puuid ? "theirs" : ""}>
+                  <small>{kill.r}</small>
+                  <b>{nameOf(kill.k)}</b>
+                  {kill.w && <img src={weaponIcon(kill.w)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
+                  <b>{nameOf(kill.v)}</b>
+                </li>
+              ))}
+            </ol>
+          )}
+          {view === "board" && scoreboard(match, puuid).map((team) => (
             <table key={team.team} className={team.won ? "won" : "lost"}>
               <caption><b>{team.rounds}</b>{t(team.won ? "evalTeamWon" : "evalTeamLost")}</caption>
               <thead><tr><th scope="col">{t("evalPlayer")}</th><th scope="col">ACS</th><th scope="col">K/D/A</th><th scope="col">{t("evalHeadshots")}</th><th scope="col">{t("evalDamage")}</th></tr></thead>
@@ -208,7 +251,8 @@ function MatchPanel({ match, puuid, onClose }: { match: EvalMatch; puuid: string
           ))}
         </div>
       </motion.aside>
-    </>
+    </>,
+    document.body,
   );
 }
 
@@ -293,8 +337,6 @@ function Connect({ error, connecting, onConnect, onLinked, onSearch }: { error: 
   );
 }
 
-const linked0 = (data: Loaded) => data.linked;
-
 export default function TrackerPage() {
   const [data, setData] = useState<Loaded | null>(memory);
   const [loading, setLoading] = useState(!memory);
@@ -307,6 +349,7 @@ export default function TrackerPage() {
   const [limit, setLimit] = useState(MATCH_LIMIT);
   const [loadingMore, setLoadingMore] = useState(false);
   const firstLoad = useRef(!memory);
+  const mapImages = useMapImages();
 
   const load = useCallback(async (name: string, tag: string, linkedId: string | null) => {
     const account = await trackerSync<EvalAccount>(name, tag);
@@ -447,8 +490,8 @@ export default function TrackerPage() {
       <div className="eval-tabs-row">
         <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
       </div>
-      {tab === "game" && <EvalGame linked={linked0(data)} onConnect={connect} />}
-      {tab === "hub" && <EvalHub account={account} />}
+      {tab === "game" && <EvalGame linked={isLinked} onConnect={connect} />}
+      {tab === "hub" && <EvalHub account={account} linked={isLinked} />}
       {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
           <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />
@@ -467,7 +510,7 @@ export default function TrackerPage() {
               <Session matches={matches} puuid={account.puuid} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
                 {matches.map((match) => (
-                  <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} onOpen={() => setOpen(match)} />
+                  <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} image={mapImages[match.map.toLowerCase()]} onOpen={() => setOpen(match)} />
                 ))}
               </motion.ul>
               {matches.length >= limit && <Button disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? t("loading") : tr("Charger plus de matchs", "Load more matches")}</Button>}
@@ -475,7 +518,7 @@ export default function TrackerPage() {
           )}
         </div>
       </div>}
-      <AnimatePresence>{open && <MatchPanel key={open.id} match={open} puuid={account.puuid} onClose={closeMatch} />}</AnimatePresence>
+      <AnimatePresence>{open && <MatchPanel key={open.id} match={open} puuid={account.puuid} image={mapImages[open.map.toLowerCase()]} onClose={closeMatch} />}</AnimatePresence>
     </>
   );
 }

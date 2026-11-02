@@ -58,9 +58,23 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 - Nouvelle direction visuelle (2 novembre 2026, non committée au moment de l'écriture) : barre verticale à icônes, trace de lumière animée reprise du logo, Accueil « Aujourd'hui » avec vraies tâches et vrais événements, et E:VAL repris de l'interface iOS (profil, rangs, résumé, session, matchs, tableau de match). E:VAL passe par `tracker_identity`, `tracker_sync` et `tracker_matches` côté Rust. L'interface a été contrôlée uniquement dans `desktop/preview.html`, avec des données d'exemple signalées à l'écran. Le build release du 2 novembre 2026 (19 h 21) a affiché le vrai Accueil, les vraies applications et les vraies tâches. Une tâche « TEST Ethone Desktop » a été créée, terminée, modifiée puis supprimée sur le vrai compte, et la liste relue ensuite ne contient plus que la tâche existante, intacte. La connexion Riot par fenêtre Ethone a été faite par Rub19 : profil, rang, résumé et matchs réels affichés dans E:VAL. Le premier chargement est lent, car le Worker synchronise les matchs. Connexion par navigateur par défaut : Riot n'accepte que sa redirection vers playvalorant.com, Ethone ne peut donc pas récupérer la session seul ; l'utilisateur colle l'adresse de la page, et la session dure environ une heure sans renouvellement. Ce parcours est écrit mais pas testé en réel. Notes et Calendrier utilisent les mêmes commandes mais n'ont pas été testés en écriture.
 - Vérifications du lot identité du 2 novembre 2026 : 54 tests Rust Desktop, 11 tests frontend, contrôle TypeScript, build Vite et build Tauri release `--no-bundle` réussis.
 
+**Portage du 2 novembre 2026 (soir), vérifié dans le build release avec le vrai compte**
+
+- E:VAL Profil, tableau, manches, éliminations ; Jeu (portefeuille, boutique, packs, accessoires, passe, récompense quotidienne, missions, équipement) ; Hub (classement). League of Legends ; Quotidien (lecture des habitudes) ; Mail (liste réception) ; Compte (profil) ; Analyses (activité).
+
+**Écrit, testé seulement par les contrôles automatiques, pas en réel**
+
+- Discord : la connexion attend Rub19, aucun module n'a été ouvert en réel. Moteur commun, pas de page sur mesure par module.
+- Connexion Riot par navigateur, écritures Mail et Habitudes, Factures, Fichiers (aucun fichier sur le compte), partage, Équipe, Brain (aucun message envoyé), Météo, RSS, TFT, Steam, Minecraft, appareils, clés d'accès, déconnexion de services, recherche de joueur, cartes, agents, armes, collection, groupe et partie en direct.
+
+**Non porté**
+
+- E:VAL : amis et chat, signets, historique d'achats, objectifs de saison, line-ups, archives de contrats, profils d'apparences, modification de l'équipement, récap Discord, paramètres de jeu.
+- Dashboard : marketplace, soundscape, clip, navigateur intégré, éditeurs de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Factures séparées du site, qui les garde dans le navigateur. Concentration et mémo restent sur le PC.
+
 ## Reste à faire, dans l'ordre
 
-1. **Continuer la refonte du dashboard d'Ethone en vraie version Windows, tout-en-un avec les applications.** L'inventaire des 170 pages et l'ordre sont validés. Suivre `dashboard-capabilities.md`, `SPEC-desktop-foundation.md` et `tasks/todo.md`, avec de vraies données Supabase et Worker en passant par la session Rust.
+1. **Tester avec Rub19 ce qui est écrit mais pas vérifié, puis porter ce qui manque** (liste ci-dessus).
 2. Flux signé pour Nova (`Rub19/nova-pc-suite`).
 3. Breach : releases signées, fenêtre dédiée, hors ligne.
 4. Mobile, puis services. Voir `roadmap.md`.

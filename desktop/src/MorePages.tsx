@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, KeyRound, Link2, MessageSquare, Plug, Rss, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite } from "./api";
-import { ConfigForm, firstArray, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
+import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
 import { errorText, tr } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Skeletons, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
@@ -48,11 +48,12 @@ function ProfileEditor() {
       <Status state={state} height={120}>
         {(data) => {
           const { body } = unwrapConfig(data);
+          const hidden = ["avatar_url", "banner_url", "user_id", "id", "public_id", "avatar_frame_id", "banner_frame_id", "profile_background_id"];
           const editable = Object.fromEntries(Object.entries(body).filter(([key]) => ["display_name", "username", "bio", "status_text", "pronouns", "location", "website"].includes(key)));
           return (
             <>
               {Object.keys(editable).length > 0 && <ConfigForm value={editable} onSave={async (next) => { await apiData("api/profile", "PATCH", next); state.reload(); }} />}
-              <JsonFields value={Object.fromEntries(Object.entries(body).filter(([key]) => !(key in editable) && !["avatar_url", "banner_url", "user_id"].includes(key)))} />
+              <JsonFields value={Object.fromEntries(Object.entries(body).filter(([key]) => !(key in editable) && !hidden.includes(key)))} />
             </>
           );
         }}
@@ -276,7 +277,7 @@ export function BrainPage() {
 function Weather() {
   const [city, setCity] = useState(() => readJson<string>("ethone-weather-city") ?? "Paris");
   const [query, setQuery] = useState(city);
-  const state = useLoad(() => apiData<Json>(`api/weather?city=${encodeURIComponent(city)}`), [city]);
+  const state = useLoad(() => apiData<{ city?: string; condition?: string; description?: string; temperature?: number; feelsLike?: number; humidity?: number; windSpeedKmh?: number; uvIndex?: number; hourly?: { time?: string; temperature?: number; precipitationProbability?: number }[]; daily?: { date?: string; temperatureMax?: number; temperatureMin?: number; condition?: string }[]; [key: string]: unknown }>(`api/weather?city=${encodeURIComponent(city)}`), [city]);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!query.trim()) return;
@@ -287,7 +288,19 @@ function Weather() {
     <>
       <PageHead title={tr("Météo", "Weather")} text={city} />
       <form className="daily-add" onSubmit={submit}><input value={query} placeholder={tr("Ville", "City")} aria-label={tr("Ville", "City")} onChange={(event) => setQuery(event.target.value)} /><Button type="submit">{tr("Afficher", "Show")}</Button></form>
-      <Status state={state}>{(data) => <JsonFields value={data} />}</Status>
+      <Status state={state}>
+        {(data) => (
+          <>
+            <div className="focus-stats">
+              {data.temperature !== undefined && <Stat label={data.condition ?? data.description ?? tr("Température", "Temperature")} value={`${Math.round(Number(data.temperature))} °C`} hint={data.feelsLike !== undefined ? tr(`Ressenti ${Math.round(Number(data.feelsLike))} °C`, `Feels like ${Math.round(Number(data.feelsLike))} °C`) : undefined} />}
+              {data.humidity !== undefined && <Stat label={tr("Humidité", "Humidity")} value={`${data.humidity} %`} />}
+              {data.windSpeedKmh !== undefined && <Stat label={tr("Vent", "Wind")} value={`${Math.round(Number(data.windSpeedKmh))} km/h`} />}
+              {data.uvIndex !== undefined && <Stat label="UV" value={String(data.uvIndex)} />}
+            </div>
+            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(undefined, { weekday: "short" }) : ""}</small><b>{Math.round(Number(day.temperatureMax ?? 0))}°</b><small>{Math.round(Number(day.temperatureMin ?? 0))}°</small></li>)}</ul>}
+          </>
+        )}
+      </Status>
     </>
   );
 }
@@ -328,16 +341,36 @@ function RssReader() {
 }
 
 function ActivityView() {
-  const state = useLoad(() => apiData<{ events?: Json[] }>("api/cloud/activity?limit=200"));
-  const summary = useLoad(() => apiData<Json>("api/cloud/activity/summary").catch(() => null));
+  const state = useLoad(() => apiData<{ events?: { id?: string; created_at?: string; event_type?: string; metadata?: { title?: string } | null }[] }>("api/cloud/activity?limit=200"));
   const dashboard = useLoad(() => apiData<Json>("api/cloud/dashboard").catch(() => null));
   const numbers = useMemo(() => Object.entries(asRecord(dashboard.data ?? null)).filter(([, value]) => typeof value === "number").slice(0, 6), [dashboard.data]);
   return (
     <>
       <PageHead title={tr("Activité", "Activity")} onRefresh={state.reload} refreshing={state.loading} />
-      {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={key.replace(/([A-Z_])/g, " $1").toLowerCase()} value={(value as number).toLocaleString()} />)}</div>}
-      {summary.data ? <JsonFields value={summary.data} /> : null}
-      <Status state={state}>{(data) => <JsonList rows={data.events ?? []} />}</Status>
+      {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={humanize(key)} value={(value as number).toLocaleString()} />)}</div>}
+      <Status state={state}>
+        {(data) => (data.events ?? []).length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : (
+          <ul className="activity-list">
+            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.metadata?.title ?? humanize(event.event_type ?? "event")}</b><time>{event.created_at ? new Date(event.created_at).toLocaleString() : ""}</time></li>)}
+          </ul>
+        )}
+      </Status>
+    </>
+  );
+}
+
+function Support() {
+  const links = [
+    { label: tr("Nouveautés d'Ethone", "What's new"), url: "https://ethone.dev/changelog" },
+    { label: tr("Documentation", "Documentation"), url: "https://ethone.dev/docs" },
+    { label: tr("Conditions d'utilisation", "Terms"), url: "https://ethone.dev/terms" },
+    { label: tr("Confidentialité", "Privacy"), url: "https://ethone.dev/privacy" },
+  ];
+  return (
+    <>
+      <RemoteFields title={tr("Diagnostic", "Diagnostics")} path="api/diagnostic" text={tr("L'état des services Ethone vu par ton compte.", "Ethone service status as seen by your account.")} />
+      <h2 className="group-title">{tr("Liens", "Links")}</h2>
+      <div className="row">{links.map((link) => <Button key={link.url} onClick={() => void openExternal(link.url)}><ExternalLink size={15} />{link.label}</Button>)}</div>
     </>
   );
 }
@@ -357,7 +390,7 @@ export function InsightsPage() {
       {section === "mail" && <RemoteFields title={tr("Statistiques mail", "Mail stats")} path="api/mail/analytics" />}
       {section === "weather" && <Weather />}
       {section === "rss" && <RssReader />}
-      {section === "diagnostic" && <RemoteFields title={tr("Diagnostic", "Diagnostics")} path="api/diagnostic" text={tr("L'état des services Ethone vu par ton compte.", "Ethone service status as seen by your account.")} />}
+      {section === "diagnostic" && <Support />}
     </Split>
   );
 }
@@ -397,6 +430,67 @@ const riotParts = (value: string) => {
   return `name=${encodeURIComponent(name.trim())}&tag=${encodeURIComponent(tag.trim())}`;
 };
 
+interface LolStat { value?: number; displayValue?: string }
+interface LolRaw { id?: string; metadata?: { agentName?: string; agentImageUrl?: string; modeName?: string; result?: string; gameDuration?: string; timestamp?: string }; segments?: { stats?: Record<string, LolStat> }[] }
+
+function LolView() {
+  const key = "ethone-lol-id";
+  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
+  const [data, setData] = useState<{ profile: { handle?: string; avatarUrl?: string; rankSolo?: string; rankFlex?: string; segments?: { stats?: Record<string, LolStat> }[] }; matches: LolRaw[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!value.includes("#")) {
+      setError(tr("Écris l'identifiant sous la forme Pseudo#TAG.", "Write the ID as Name#TAG."));
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    write(key, JSON.stringify(value.trim()));
+    try {
+      const [profile, matches] = await Promise.all([apiData<NonNullable<typeof data>["profile"]>(`api/stats/lol-profile?${riotParts(value)}`), apiData<LolRaw[]>(`api/stats/lol-matches?${riotParts(value)}`).catch(() => [])]);
+      setData({ profile, matches: Array.isArray(matches) ? matches : [] });
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <PageHead title="League of Legends" />
+      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder="Pseudo#TAG" aria-label={tr("Identifiant Riot", "Riot ID")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
+      {error && <ErrorBox message={error} />}
+      {busy && <Skeletons count={3} height={70} />}
+      {data && !busy && (
+        <>
+          <div className="lol-head">
+            {data.profile.avatarUrl && <img src={data.profile.avatarUrl} alt="" />}
+            <div><h2>{data.profile.handle}</h2><p className="muted">{tr("Niveau", "Level")} {data.profile.segments?.[0]?.stats?.level?.displayValue ?? "–"}</p></div>
+            <div className="focus-stats"><Stat label="Solo" value={data.profile.rankSolo ?? tr("Non classé", "Unranked")} /><Stat label="Flex" value={data.profile.rankFlex ?? tr("Non classé", "Unranked")} /></div>
+          </div>
+          <ul className="lol-matches">
+            {data.matches.map((match, index) => {
+              const stats = match.segments?.[0]?.stats;
+              const won = match.metadata?.result === "Victory";
+              return (
+                <li key={match.id ?? index} className={won ? "won" : "lost"}>
+                  {match.metadata?.agentImageUrl && <img src={match.metadata.agentImageUrl} alt="" />}
+                  <span><b>{match.metadata?.agentName}</b><small>{match.metadata?.modeName}{match.metadata?.gameDuration ? `, ${match.metadata.gameDuration}` : ""}</small></span>
+                  <b>{stats?.kills?.value ?? 0}/{stats?.deaths?.value ?? 0}/{stats?.assists?.value ?? 0}</b>
+                  <small>{stats?.cs?.value ?? 0} CS</small>
+                  <b className={won ? "ok" : "bad"}>{won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</b>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </>
+  );
+}
+
 export function GamesPage() {
   const [section, setSection] = useState<"lol" | "tft" | "rotation" | "steam" | "minecraft">("lol");
   const items = [
@@ -408,7 +502,7 @@ export function GamesPage() {
   ] as const;
   return (
     <Split id="games" label={tr("Jeux", "Games")} items={items} value={section} onChange={setSection}>
-      {section === "lol" && <Lookup key="lol" title="League of Legends" label={tr("Identifiant Riot", "Riot ID")} placeholder="Pseudo#TAG" load={async (value) => ({ profil: await apiData<Json>(`api/stats/lol-profile?${riotParts(value)}`), matchs: await apiData<Json>(`api/stats/lol-matches?${riotParts(value)}`) })} />}
+      {section === "lol" && <LolView />}
       {section === "tft" && <Lookup key="tft" title="Teamfight Tactics" label={tr("Identifiant Riot", "Riot ID")} placeholder="Pseudo#TAG" load={(value) => apiData<Json>(`api/stats/tft-matches?${riotParts(value)}`)} />}
       {section === "rotation" && <RemoteFields title={tr("Rotation LoL", "LoL rotation")} path="api/stats/lol-rotation" />}
       {section === "steam" && <Lookup key="steam" title="Steam" label="Steam ID" placeholder="SteamID64" load={async (value) => ({ joueur: await apiData<Json>(`api/steam/player?steamId=${encodeURIComponent(value)}`), recents: await apiData<Json>(`api/steam/recent-games?steamId=${encodeURIComponent(value)}`).catch(() => null) })} />}

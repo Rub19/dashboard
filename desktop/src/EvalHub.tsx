@@ -1,12 +1,12 @@
 import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, Map as MapIcon, Search, Trophy, Users } from "lucide-react";
-import { apiData, catalogGet, trackerMatches, trackerSync } from "./api";
+import { BookOpen, Crosshair, History, Map as MapIcon, Search, Sparkles, Trophy, Users } from "lucide-react";
+import { apiData, catalogGet, restCall, riotCall, trackerMatches, trackerSync } from "./api";
 import { bannerImage, EvalAccount, EvalMatch, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr } from "./i18n";
 import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
 
-type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons";
+type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -199,6 +199,38 @@ function Weapons() {
   );
 }
 
+function NameHistory({ account }: { account: EvalAccount | null }) {
+  const state = useLoad(async () => (account ? restCall<{ name: string; tag: string; first_seen_at: string }[]>(`ethone_valorant_name_history?select=name,tag,first_seen_at&puuid=eq.${account.puuid}&order=first_seen_at.desc`) : []), [account?.puuid]);
+  return <Status state={state}>{(rows) => rows.length === 0 ? <Empty title={tr("Aucun ancien pseudo", "No previous names")} /> : (
+    <table className="eval-table">
+      <thead><tr><th scope="col">{tr("Vu depuis", "Seen since")}</th><th scope="col">{tr("Pseudo", "Name")}</th></tr></thead>
+      <tbody>{rows.map((row) => <tr key={`${row.name}-${row.first_seen_at}`}><td>{new Date(row.first_seen_at).toLocaleDateString()}</td><th scope="row">{row.name}<span>#{row.tag}</span></th></tr>)}</tbody>
+    </table>
+  )}</Status>;
+}
+
+function Collection({ linked }: { linked: boolean }) {
+  const [query, setQuery] = useState("");
+  const state = useLoad(async () => {
+    if (!linked) return [];
+    const [owned, skins] = await Promise.all([
+      riotCall<{ Entitlements?: { ItemID: string }[] }>("/store/v1/entitlements/{puuid}/e7c63390-eda7-46e0-bb7a-a6abdacd2433"),
+      catalogGet<{ uuid: string; displayName: string; displayIcon?: string | null; levels?: { uuid: string; displayIcon?: string | null }[] }[]>(`/weapons/skins?${language}`),
+    ]);
+    const ids = new Set((owned.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+    return skins.filter((skin) => skin.levels?.[0] && ids.has(skin.levels[0].uuid.toLowerCase())).map((skin) => ({ id: skin.uuid, name: skin.displayName, icon: skin.levels?.[0]?.displayIcon ?? skin.displayIcon ?? "" }));
+  }, [linked]);
+  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} text={tr("Connecte ton compte pour voir tes skins.", "Link your account to see your skins.")} />;
+  const text = query.trim().toLowerCase();
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Mes skins", "My skins")}{state.data ? ` (${state.data.length})` : ""}</h2></div>
+      <form className="eval-search" onSubmit={(event) => event.preventDefault()}><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
+      <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => !text || row.name.toLowerCase().includes(text)).map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></li>)}</ul>}</Status>
+    </>
+  );
+}
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
@@ -210,12 +242,14 @@ function Seasons({ account }: { account: EvalAccount | null }) {
   );
 }
 
-export default function EvalHub({ account }: { account: EvalAccount | null }) {
+export default function EvalHub({ account, linked }: { account: EvalAccount | null; linked: boolean }) {
   const [section, setSection] = useState<Section>("leaderboard");
   const items = [
     { id: "leaderboard", label: tr("Classement", "Leaderboard"), icon: <Trophy size={16} />, group: tr("Joueurs", "Players") },
     { id: "players", label: tr("Rechercher un joueur", "Find a player"), icon: <Users size={16} />, group: tr("Joueurs", "Players") },
     { id: "seasons", label: tr("Mes saisons", "My seasons"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
+    { id: "names", label: tr("Mes anciens pseudos", "My past names"), icon: <History size={16} />, group: tr("Joueurs", "Players") },
+    { id: "collection", label: tr("Ma collection", "My collection"), icon: <Sparkles size={16} />, group: tr("Joueurs", "Players") },
     { id: "maps", label: tr("Cartes", "Maps"), icon: <MapIcon size={16} />, group: tr("Le jeu", "The game") },
     { id: "agents", label: tr("Agents", "Agents"), icon: <Users size={16} />, group: tr("Le jeu", "The game") },
     { id: "weapons", label: tr("Armes", "Weapons"), icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
@@ -230,6 +264,8 @@ export default function EvalHub({ account }: { account: EvalAccount | null }) {
         {section === "agents" && <Agents />}
         {section === "weapons" && <Weapons />}
         {section === "seasons" && <Seasons account={account} />}
+        {section === "names" && <NameHistory account={account} />}
+        {section === "collection" && <Collection linked={linked} />}
       </div>
     </div>
   );

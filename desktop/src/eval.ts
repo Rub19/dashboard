@@ -19,6 +19,9 @@ export interface EvalPlayer {
   dmg: number;
 }
 
+export interface EvalRound { n: number; winner: string; end: string; plant: string; site: string; defuse: string }
+export interface EvalKill { r: number; t: number; k: string; v: string; w: string; a: string[] }
+
 export interface EvalMatch {
   id: string;
   map: string;
@@ -30,6 +33,8 @@ export interface EvalMatch {
   lengthSec: number;
   teams: { Red: { won: boolean; rounds: number }; Blue: { won: boolean; rounds: number } };
   players: EvalPlayer[];
+  rounds?: EvalRound[];
+  kills?: EvalKill[];
 }
 
 export interface EvalHistoryPoint {
@@ -65,6 +70,7 @@ export const tierIcon = (tier: number) => `${MEDIA}/competitivetiers/03621f52-34
 export const agentIcon = (id: string) => `${MEDIA}/agents/${id}/displayicon.png`;
 export const mapImage = (id: string) => `${MEDIA}/maps/${id}/listviewicon.png`;
 export const bannerImage = (card: string) => `${MEDIA}/playercards/${card}/wideart.png`;
+export const weaponIcon = (id: string) => `${MEDIA}/weapons/${id}/killstreamicon.png`;
 export const modeName = (mode: string) => MODES[mode.toLowerCase().replace(/[\s_-]/g, "")] ?? mode;
 
 export function rankColor(tier: number): string {
@@ -139,6 +145,14 @@ export function lastSession(matches: EvalMatch[]): EvalMatch[] {
     session.push(match);
   }
   return session;
+}
+
+export function roundsFor(match: EvalMatch, puuid: string) {
+  const me = match.players.find((player) => player.puuid === puuid);
+  return (match.rounds ?? []).map((round) => {
+    const kills = (match.kills ?? []).filter((kill) => kill.r === round.n);
+    return { ...round, won: round.winner === me?.team, kills: kills.filter((kill) => kill.k === puuid).length, died: kills.some((kill) => kill.v === puuid), total: kills.length };
+  });
 }
 
 export function scoreboard(match: EvalMatch, puuid: string) {

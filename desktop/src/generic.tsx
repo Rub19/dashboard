@@ -4,9 +4,9 @@ import { Drawer, Empty, ErrorBox, Stagger, StaggerItem, staggerItem } from "./ki
 import { Button } from "./ui";
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-const TITLE_KEYS = ["title", "name", "label", "subject", "prize", "displayName", "userTag", "tag", "username", "guildName", "email", "id"];
-const SUB_KEYS = ["status", "type", "category", "description", "reason", "authorTag", "action", "createdAt", "created_at", "updatedAt"];
-const HIDDEN = new Set(["__v", "_id"]);
+const TITLE_KEYS = ["title", "name", "label", "subject", "prize", "displayName", "device_name", "platform", "userTag", "tag", "username", "guildName", "email", "event_type", "eventType", "id"];
+const SUB_KEYS = ["status", "type", "category", "description", "reason", "authorTag", "action", "browser", "last_seen_at", "createdAt", "created_at", "updatedAt"];
+const HIDDEN = new Set(["__v", "_id", "user_id", "userId", "profile_id", "workspace_id", "slug", "public_id"]);
 
 export function humanize(key: string): string {
   const text = key.replace(/_/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/\s+/g, " ").trim();

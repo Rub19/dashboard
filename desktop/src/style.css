@@ -495,6 +495,35 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .discord-section { display: grid; gap: 10px; }
 .discord-section > h2 { font: 650 16px/22px var(--display); }
 @media (max-width: 1000px) { .discord { grid-template-columns: minmax(0, 1fr); } .discord-side { position: static; } }
+.eval-panel-tabs { padding: 12px 24px 0; flex: none; }
+.eval-rounds, .eval-feed { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.eval-rounds li { display: grid; grid-template-columns: 34px 1fr auto auto; align-items: center; gap: 12px; padding: 7px 12px; border-radius: 10px; background: var(--eval-card2); font-variant-numeric: tabular-nums; }
+.eval-rounds li b { color: #ff6b73; }
+.eval-rounds li.won b { color: #4ade80; }
+.eval-rounds small, .eval-feed small { color: var(--eval-muted); font-size: 12px; }
+.eval-feed li { display: grid; grid-template-columns: 26px 1fr 72px 1fr; align-items: center; gap: 10px; padding: 5px 12px; border-radius: 8px; }
+.eval-feed li.mine { background: color-mix(in srgb, #4ade80 13%, transparent); }
+.eval-feed li.theirs { background: color-mix(in srgb, #ff6b73 13%, transparent); }
+.eval-feed b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eval-feed b:last-child { text-align: right; }
+.eval-feed img { width: 72px; height: 18px; object-fit: contain; filter: brightness(1.8); }
+.weather-days { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.weather-days li { display: grid; justify-items: center; padding: 12px 8px; border-radius: 12px; background: var(--row); }
+.weather-days small { color: var(--muted); font-size: 12px; }
+.weather-days b { font: 650 18px/24px var(--display); }
+.activity-list { display: grid; margin: 0; padding: 0; list-style: none; }
+.activity-list li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 2px; border-bottom: 1px solid var(--line); }
+.activity-list b { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity-list time { flex: none; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.lol-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.lol-head img { width: 64px; height: 64px; border-radius: 14px; }
+.lol-head h2 { font: 700 22px/28px var(--display); }
+.lol-head .focus-stats { flex: 1 1 280px; width: auto; }
+.lol-matches { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.lol-matches li { display: grid; grid-template-columns: 40px minmax(0, 1fr) 90px 60px 80px; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 12px; background: var(--row); font-variant-numeric: tabular-nums; }
+.lol-matches img { width: 40px; height: 40px; border-radius: 9px; }
+.lol-matches span { display: grid; min-width: 0; }
+.lol-matches small { color: var(--muted); font-size: 12px; }
 .kit-skeletons { display: grid; gap: 10px; }
 .kit-skeletons span { display: block; border-radius: var(--r-m); background: var(--row); animation: pulse 1.2s ease-in-out infinite alternate; }
 .kit-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding: 10px 14px; border-radius: var(--r-s); background: var(--danger-bg); color: var(--danger); }

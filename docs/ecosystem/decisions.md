@@ -75,3 +75,18 @@ Limite connue : la session n'est effacée que par Ethone Setup, pas par la dési
 Le nom et l'avatar affichés dans Ethone Desktop viennent de `ethone_public_profiles`, comme sur le site et l'app iOS. La photo Discord, Google ou GitHub ne sert jamais de photo de profil Desktop.
 
 Desktop lit d'abord `/api/profile` par le Worker après l'enregistrement de l'appareil, puis utilise Supabase en secours. Les avatars de bibliothèque sont servis avec `Cross-Origin-Resource-Policy: same-origin`, donc WebView2 ne peut pas les charger directement depuis `tauri.localhost`. Rust télécharge uniquement les chemins `/avatars/` d'ethone.dev ou le stockage public `profile-media` du projet Supabase, contrôle le type et la taille, puis transmet l'image en mémoire à l'interface. L'image n'est pas stockée dans le Gestionnaire d'identifiants Windows.
+
+## 15. Accès aux services par une passerelle Rust
+
+Décision du 2 novembre 2026, sur demande de Rub19 de brancher tout le dashboard. L'interface appelle `api_call`, `rest_call`, `bot_call`, `riot_call` et `catalog_get`. Rust garde tous les jetons et n'accepte que les chemins prévus dans `gateway.rs` et `bot.rs`.
+
+Limite connue : une faille de script dans l'interface pourrait appeler toutes les routes du Worker avec la session de l'utilisateur, comme sur le site. La CSP stricte et l'absence de page distante réduisent ce risque.
+
+## 16. Connexion Riot d'E:VAL
+
+Comme sur iOS, la connexion passe par la page officielle de Riot et une API non officielle, que Riot peut bloquer. Deux parcours : fenêtre Ethone (cookies dans un dossier séparé, reconnexion silencieuse) ou navigateur par défaut (l'utilisateur colle l'adresse de retour, session d'environ une heure). Riot n'accepte que la redirection vers playvalorant.com : aucun retour automatique n'est possible depuis le navigateur sans identifiant officiel. Les jetons de jeu restent en mémoire, seule l'identité est dans le Gestionnaire d'identifiants.
+
+## 17. Connexion Discord
+
+Même mécanisme qu'iOS : navigateur, retour `ethone://discord-auth?code=`, échange du code contre un jeton gardé dans le Gestionnaire d'identifiants. Les modules du bot sont décrits par `discordSpecs.ts`, généré depuis `AdminSpecs.swift`, et affichés par un moteur commun.
+

@@ -1,4 +1,4 @@
-export interface DiscordRowAction { title: string; path: string; method?: string; destructive?: boolean; body?: Record<string, unknown>; textPrompt?: string; textPromptKey?: string }
+export interface DiscordRowAction { title: string; path: string; method?: string; destructive?: boolean; body?: Record<string, unknown>; idBody?: string; textPrompt?: string; textPromptKey?: string }
 export interface DiscordConfig { title: string; get: string; put: string; method?: string; strict?: boolean }
 export interface DiscordList { title: string; path: string; key?: string; idKey?: string; drill?: string; rowActions?: DiscordRowAction[] }
 export interface DiscordAction { title: string; path: string; method?: string; destructive?: boolean; body?: Record<string, unknown> }

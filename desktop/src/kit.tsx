@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RefreshCw, X } from "lucide-react";
 import { errorText, t } from "./i18n";
@@ -146,7 +147,7 @@ export function Drawer({ open, title, onClose, children, width = 560 }: { open: 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, open]);
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -160,7 +161,8 @@ export function Drawer({ open, title, onClose, children, width = 560 }: { open: 
           </motion.aside>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
 

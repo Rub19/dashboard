@@ -42,22 +42,22 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 
 - Audit des six dépôts : `audit.md`.
 - Ethone Desktop : détection, vrais flux, signatures, installation de Kairo et HDV testée dans Windows Sandbox avant la refonte.
+- Ethone Setup 0.1.0 : build complet et scénario réel réussi dans Windows Sandbox le 2 novembre 2026. Installation personnalisée d'Ethone, Kairo 0.3.3 et HDV Tracker 1.5.0, réparation, refus d'un module inconnu, protection pendant l'exécution et désinstallation sélective vérifiés.
 - Connexion réelle confirmée par Rub19.
 - Interface Windows : Mica, navigation, lignes dépliables.
 
 **Écrit mais pas vérifié en réel**
 
-- Ethone Setup (`desktop/setup/`) : tests Rust et interface sur faux moteur seulement. Le premier build complet a échoué avec « Accès refusé » sur `target/release/ethone-desktop.exe` ; la cause probable est Ethone resté ouvert depuis ce dossier. Fermer Ethone, puis lancer `node tools/build-setup.mjs "Notes"`, puis `node tools/sandbox-setup.mjs` avec l'accord de Rub19.
 - Mise à jour d'Ethone : impossible à tester sans une première release.
 - Agrandissement de la fenêtre, interface sombre avec Mica : à confirmer par Rub19.
+- Refonte du dashboard : carte des capacités, plan, navigation Accueil/Applications/Productivité et synthèse réelle écrits. Notes et Tâches passent par la session Rust et le Worker, avec lecture, création, modification, complétion et suppression reliées. Huit tests frontend, contrôle TypeScript, build Vite, 49 tests Rust Desktop et 36 tests Rust Setup réussis. Le rendu et les opérations réelles de la nouvelle interface n'ont pas encore été ouverts ni validés par Rub19.
 
 ## Reste à faire, dans l'ordre
 
-1. Terminer le test réel d'Ethone Setup.
-2. **Demande de Rub19 : refaire le dashboard d'Ethone en vraie version Windows, tout-en-un avec les applications.** Pas une WebView d'ethone.dev : de vraies pages natives dans `desktop/`, avec les vraies données Supabase et Worker, en passant par la session Rust. Inventorier d'abord `ethone-next/app` (170 pages), proposer l'ordre à Rub19, puis livrer par petites tranches vérifiées. Rub19 laisse carte blanche sur toutes les interfaces.
-3. Flux signé pour Nova (`Rub19/nova-pc-suite`).
-4. Breach : releases signées, fenêtre dédiée, hors ligne.
-5. Mobile, puis services. Voir `roadmap.md`.
+1. **Continuer la refonte du dashboard d'Ethone en vraie version Windows, tout-en-un avec les applications.** L'inventaire des 170 pages et l'ordre sont validés. Suivre `dashboard-capabilities.md`, `SPEC-desktop-foundation.md` et `tasks/todo.md`, avec de vraies données Supabase et Worker en passant par la session Rust.
+2. Flux signé pour Nova (`Rub19/nova-pc-suite`).
+3. Breach : releases signées, fenêtre dédiée, hors ligne.
+4. Mobile, puis services. Voir `roadmap.md`.
 
 ## Ce que l'IA ne reçoit pas par GitHub
 

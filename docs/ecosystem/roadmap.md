@@ -10,7 +10,7 @@ Chaque étape se termine par une preuve vérifiable. Aucune durée n'est annonc�
 | Fait | 3. Installation de Kairo et HDV | Test réel dans Windows Sandbox |
 | Fait | 3 bis. Connexion au compte Ethone et motion du site | Parcours testé sur un serveur local, connexion réelle confirmée par Rub19 le 2 novembre 2026 |
 | À faire | 4. Flux signé pour Nova | Nova vérifié par signature |
-| En cours | 5. Ethone Setup et mise à jour d'Ethone | Code et interface faits. Reste : test réel dans Windows Sandbox, puis mise à jour réelle après une première release validée par Rub19 |
+| En cours | 5. Ethone Setup et mise à jour d'Ethone | Setup 0.1.0 testé en réel dans Windows Sandbox le 2 novembre 2026. Reste : mise à jour réelle après une première release validée par Rub19 |
 | À faire | 6. Breach : releases signées, fenêtre dédiée, hors ligne, export de sauvegarde | Partie hors ligne, site inchangé |
 | À faire | 7. Confort : notifications, diagnostic, paramètres | Tests d'interface et accessibilité |
 | À faire | 8. Mobile : page Modules sur iOS, rattrapage Android, signature | Build signé, test sur appareil |

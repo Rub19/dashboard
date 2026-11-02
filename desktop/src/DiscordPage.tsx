@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
-import { botCall, botLogin, botLogout, botStatus } from "./api";
+import { botCached, botCall, botLogin, botLogout, botStatus } from "./api";
 import { CreateButtons, DISCORD_CREATORS } from "./DiscordCreate";
 import { CUSTOM_DISCORD_PAGES } from "./DiscordPages";
 import { DISCORD_GROUPS, DISCORD_MODULES as SPEC_MODULES, DiscordModule } from "./discordSpecs";
 import { ConfigForm, Directory, factsOf, firstArray, flattenEntries, humanize, Json, JsonList, displayValue, unwrapConfig } from "./generic";
 import { errorText, tr } from "./i18n";
-import { Empty, ErrorBox, PageHead, Skeletons, Stagger, StaggerItem, staggerItem, Stat, Status, useLoad } from "./kit";
+import { Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, Status, Tabs, useLoad } from "./kit";
 import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
@@ -57,8 +57,7 @@ function ConfigSection({ spec, guild, index, directory }: { spec: DiscordModule;
   const config = spec.configs![index];
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, config.get)), [spec.id, guild, config.get]);
   return (
-    <section className="discord-section">
-      <h2>{config.title}</h2>
+    <section className="discord-pane">
       <Status state={state} height={120}>
         {(data) => {
           const { body, wrapper } = unwrapConfig(data);
@@ -87,8 +86,7 @@ function ListSection({ spec, guild, index }: { spec: DiscordModule; guild: strin
     },
   }));
   return (
-    <section className="discord-section">
-      <h2>{list.title}</h2>
+    <section className="discord-pane">
       <Status state={state}>{(data) => <JsonList rows={firstArray(data, list.key)} actions={actions} onChanged={state.reload} emptyTitle={tr("Liste vide", "Empty list")} />}</Status>
     </section>
   );
@@ -112,8 +110,7 @@ function ActionButtons({ spec, guild }: { spec: DiscordModule; guild: string }) 
     }
   };
   return (
-    <section className="discord-section">
-      <h2>{tr("Actions", "Actions")}</h2>
+    <div className="discord-actions">
       <div className="row">
         {spec.actions?.map((action) => confirm === action.title ? (
           <span key={action.title} className="row">
@@ -126,22 +123,22 @@ function ActionButtons({ spec, guild }: { spec: DiscordModule; guild: string }) 
         ))}
       </div>
       {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
-    </section>
+    </div>
   );
 }
 
 function Overview({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, spec.overview ?? "/")), [spec.id, guild]);
   if (state.error) return null;
-  if (!state.data) return <Skeletons count={1} height={72} />;
+  if (!state.data) return <Skeletons count={1} height={28} />;
   const facts = factsOf(state.data);
   if (facts.length === 0) return null;
-  return <div className="focus-stats">{facts.map((fact) => <Stat key={fact.key} label={humanize(fact.key)} value={displayValue(fact.value)} />)}</div>;
+  return <dl className="discord-facts">{facts.map((fact) => <div key={fact.key}><dt>{humanize(fact.key)}</dt><dd>{displayValue(fact.value)}</dd></div>)}</dl>;
 }
 
 function useDirectory(guild: string): Directory | undefined {
-  const channels = useLoad(() => botCall<Json>(`api/guilds/${guild}/server/channels`), [guild]);
-  const roles = useLoad(() => botCall<Json>(`api/guilds/${guild}/server/roles`), [guild]);
+  const channels = useLoad(() => botCached<Json>(`api/guilds/${guild}/server/channels`), [guild]);
+  const roles = useLoad(() => botCached<Json>(`api/guilds/${guild}/server/roles`), [guild]);
   if (!channels.data || !roles.data) return undefined;
   return { channels: flattenEntries(channels.data), roles: flattenEntries(roles.data) };
 }
@@ -149,21 +146,34 @@ function useDirectory(guild: string): Directory | undefined {
 function ModuleView({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const directory = useDirectory(guild);
   const [created, setCreated] = useState(0);
+  const [pane, setPane] = useState("0");
   const Custom = CUSTOM_DISCORD_PAGES[spec.id];
   if (Custom) return <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate"><Custom guild={guild} /></motion.div>;
+  const panes: { id: string; label: string; config?: number; list?: number }[] = [
+    ...(spec.configs ?? []).map((config, index) => ({ id: String(index), label: config.title, config: index })),
+    ...(spec.lists ?? []).map((list, index) => ({ id: `l${index}`, label: list.title, list: index })),
+  ];
+  const active = panes.some((item) => item.id === pane) ? pane : panes[0]?.id;
   return (
     <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate">
-      <PageHead title={spec.title}>{DISCORD_CREATORS[spec.id] && <CreateButtons key={created} specs={DISCORD_CREATORS[spec.id]} root={moduleUrl(spec, guild, "/")} directory={directory} onCreated={() => setCreated((value) => value + 1)} />}</PageHead>
+      <header className="discord-module-head">
+        <h1>{spec.title}</h1>
+        {spec.actions && <ActionButtons spec={spec} guild={guild} />}
+        {DISCORD_CREATORS[spec.id] && <CreateButtons key={created} specs={DISCORD_CREATORS[spec.id]} root={moduleUrl(spec, guild, "/")} directory={directory} onCreated={() => setCreated((value) => value + 1)} />}
+      </header>
       {spec.overview && <Overview spec={spec} guild={guild} />}
-      {spec.actions && <ActionButtons spec={spec} guild={guild} />}
-      {spec.configs?.map((_, index) => <ConfigSection key={index} spec={spec} guild={guild} index={index} directory={directory} />)}
-      {spec.lists?.map((_, index) => <ListSection key={`${index}-${created}`} spec={spec} guild={guild} index={index} />)}
+      {panes.length > 1 && <Tabs id={`module-${spec.id}`} label={spec.title} value={active} onChange={setPane} tabs={panes} />}
+      {panes.filter((item) => item.id === active).map((item) => (item.list !== undefined
+        ? <ListSection key={`${item.id}-${created}`} spec={spec} guild={guild} index={item.list} />
+        : <ConfigSection key={item.id} spec={spec} guild={guild} index={item.config ?? 0} directory={directory} />))}
     </motion.div>
   );
 }
 
 interface GuildData { guild?: { memberCount?: number; channelsCount?: number; rolesCount?: number }; botStatus?: { online?: boolean; pingMs?: number; uptimeMs?: number }; stats?: { totalCommands?: number; commandsToday?: number; recentActivities?: { id?: string; message?: string; description?: string; action?: string; title?: string; user?: string; timestamp?: string }[] } }
 interface ModuleState { id: string; name: string; description?: string; enabled: boolean }
+
+const GROUP_LABELS: Record<string, string> = { "Modération et sécurité": "Modération", "IA, musique et vocal": "IA et musique", "Bot (propriétaire)": "Bot" };
 
 function uptime(milliseconds: number) {
   const hours = Math.floor(milliseconds / 3600000);
@@ -196,14 +206,15 @@ function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) =
         </div>
       </header>
       {state.error && <ErrorBox message={state.error} onRetry={state.reload} />}
-      {!data ? (state.loading ? <Skeletons count={1} height={72} /> : null) : (
-        <div className="focus-stats">
-          <Stat label={tr("Membres", "Members")} value={(data.guild?.memberCount ?? 0).toLocaleString()} />
-          <Stat label={tr("Salons", "Channels")} value={data.guild?.channelsCount ?? 0} />
-          <Stat label={tr("Rôles", "Roles")} value={data.guild?.rolesCount ?? 0} />
-          <Stat label={tr("Commandes", "Commands")} value={(data.stats?.totalCommands ?? 0).toLocaleString()} hint={tr(`${data.stats?.commandsToday ?? 0} aujourd'hui`, `${data.stats?.commandsToday ?? 0} today`)} />
-          {data.botStatus?.uptimeMs ? <Stat label={tr("Bot en ligne depuis", "Bot up for")} value={uptime(data.botStatus.uptimeMs)} /> : null}
-        </div>
+      {!data ? (state.loading ? <Skeletons count={1} height={28} /> : null) : (
+        <dl className="discord-facts">
+          <div><dt>{tr("Membres", "Members")}</dt><dd>{(data.guild?.memberCount ?? 0).toLocaleString()}</dd></div>
+          <div><dt>{tr("Salons", "Channels")}</dt><dd>{data.guild?.channelsCount ?? 0}</dd></div>
+          <div><dt>{tr("Rôles", "Roles")}</dt><dd>{data.guild?.rolesCount ?? 0}</dd></div>
+          <div><dt>{tr("Commandes", "Commands")}</dt><dd>{(data.stats?.totalCommands ?? 0).toLocaleString()}</dd></div>
+          <div><dt>{tr("Aujourd'hui", "Today")}</dt><dd>{data.stats?.commandsToday ?? 0}</dd></div>
+          {data.botStatus?.uptimeMs ? <div><dt>{tr("En ligne depuis", "Up for")}</dt><dd>{uptime(data.botStatus.uptimeMs)}</dd></div> : null}
+        </dl>
       )}
       <section className="discord-section">
         <h2>{tr("Modules du serveur", "Server modules")}</h2>
@@ -214,7 +225,7 @@ function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) =
               const openable = DISCORD_MODULES.some((spec) => spec.id === item.id);
               return (
                 <StaggerItem key={item.id} variants={staggerItem}>
-                  <button type="button" className="discord-module-open" disabled={!openable} onClick={() => onOpen(item.id)}><b>{item.name}</b>{item.description && <small>{item.description}</small>}</button>
+                  <button type="button" className="discord-module-open" title={item.description} disabled={!openable} onClick={() => onOpen(item.id)}><b>{item.name}</b></button>
                   <input type="checkbox" role="switch" aria-label={item.name} checked={item.enabled} onChange={() => void toggle(item)} />
                 </StaggerItem>
               );
@@ -225,7 +236,7 @@ function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) =
       {activities.length > 0 && (
         <section className="discord-section">
           <h2>{tr("Activité récente", "Recent activity")}</h2>
-          <ul className="activity-list">{activities.slice(0, 12).map((item, index) => <li key={item.id ?? index}><b>{item.message ?? item.description ?? item.title ?? item.action}</b>{item.timestamp && <time>{new Date(item.timestamp).toLocaleString()}</time>}</li>)}</ul>
+          <ul className="activity-list">{activities.slice(0, 6).map((item, index) => <li key={item.id ?? index}><b>{item.message ?? item.description ?? item.title ?? item.action}</b>{item.timestamp && <time>{new Date(item.timestamp).toLocaleString()}</time>}</li>)}</ul>
         </section>
       )}
     </div>
@@ -239,6 +250,13 @@ export default function DiscordPage() {
   const [guild, setGuild] = useState<string | null>(() => readJson<string>(GUILD_KEY));
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [section, setSection] = useState("home");
+  const searching = query.trim().length > 0;
+  const openSection = (next: string) => {
+    setQuery("");
+    setSection(next);
+    setModuleId(next === "home" ? null : DISCORD_MODULES.find((item) => item.group === next)?.id ?? null);
+  };
 
   useEffect(() => {
     botStatus().then(setLinked, () => setLinked(false));
@@ -300,33 +318,29 @@ export default function DiscordPage() {
 
   return (
     <div className="discord">
-      <aside className="discord-side">
-        {guilds.loading && !guilds.data ? <Skeletons count={1} height={36} /> : (
+      <header className="discord-bar">
+        {guilds.loading && !guilds.data ? <Skeletons count={1} height={34} /> : (
           <select className="discord-guild" aria-label={tr("Serveur", "Server")} value={guild ?? ""} onChange={(event) => { setGuild(event.target.value); }}>
             {usable.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
         )}
         <label className="discord-search"><Search size={14} /><input value={query} placeholder={tr("Chercher un module", "Find a module")} aria-label={tr("Chercher un module", "Find a module")} onChange={(event) => setQuery(event.target.value)} /></label>
-        <button type="button" className={`discord-home ${moduleId ? "" : "on"}`} onClick={() => setModuleId(null)}>{tr("Vue d'ensemble", "Overview")}</button>
-        <nav aria-label={tr("Modules Discord", "Discord modules")}>
-          {DISCORD_GROUPS.map((group) => {
-            const items = modules.filter((item) => item.group === group);
-            if (items.length === 0) return null;
-            return (
-              <div key={group}>
-                <h2>{group}</h2>
-                {items.map((item) => <button key={item.id} type="button" className={moduleId === item.id ? "on" : ""} aria-current={moduleId === item.id ? "page" : undefined} onClick={() => setModuleId(item.id)}>{item.title}</button>)}
-              </div>
-            );
-          })}
-        </nav>
-        <button type="button" className="link discord-logout" onClick={() => void botLogout().then(() => setLinked(false))}><LogOut size={13} />{tr("Déconnecter Discord", "Disconnect Discord")}</button>
-      </aside>
+        <button type="button" className="link discord-logout" onClick={() => void botLogout().then(() => setLinked(false))}><LogOut size={13} />{tr("Déconnecter", "Disconnect")}</button>
+      </header>
+      <nav className="discord-nav" aria-label={tr("Modules Discord", "Discord modules")}>
+        <Tabs id="discord-groups" label={tr("Catégories", "Categories")} value={searching ? "" : section} onChange={openSection} tabs={[{ id: "home", label: tr("Vue d'ensemble", "Overview") }, ...DISCORD_GROUPS.map((item) => ({ id: item, label: GROUP_LABELS[item] ?? item }))]} />
+        {(searching || section !== "home") && (
+          <div className="discord-chips">
+            {modules.filter((item) => searching || item.group === section).map((item) => <button key={item.id} type="button" className={moduleId === item.id ? "on" : ""} aria-current={moduleId === item.id ? "page" : undefined} onClick={() => { setModuleId(item.id); setSection(item.group); setQuery(""); }}>{item.title}</button>)}
+            {searching && modules.length === 0 && <p className="muted">{tr("Aucun module trouvé.", "No module found.")}</p>}
+          </div>
+        )}
+      </nav>
       <div className="discord-main">
         {guilds.error && !guilds.data && <ErrorBox message={guilds.error} onRetry={guilds.reload} />}
         {!guilds.loading && usable.length === 0 && !guilds.error && <Empty title={tr("Aucun serveur avec le bot", "No server with the bot")} text={tr("Invite le bot sur un de tes serveurs depuis ethone.dev.", "Invite the bot to one of your servers from ethone.dev.")} />}
         <AnimatePresence mode="wait" initial={false}>
-          {guild && current && (spec ? <ModuleView key={`${spec.id}-${guild}`} spec={spec} guild={guild} /> : <GuildOverview key={guild} guild={current} onOpen={setModuleId} />)}
+          {guild && current && (spec ? <ModuleView key={`${spec.id}-${guild}`} spec={spec} guild={guild} /> : <GuildOverview key={guild} guild={current} onOpen={(id) => { setModuleId(id); setSection(DISCORD_MODULES.find((item) => item.id === id)?.group ?? "home"); }} />)}
         </AnimatePresence>
       </div>
     </div>

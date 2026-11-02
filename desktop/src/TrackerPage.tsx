@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
+import { readCache, writeCache, clearCache } from "./cache";
 import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
@@ -27,6 +28,8 @@ interface Loaded {
 type RiotRank = NonNullable<EvalAccount["mmr"]>;
 
 let memory: Loaded | null = null;
+const SNAPSHOT = "eval-snapshot";
+const SNAPSHOT_FRESH = 5 * 60 * 1000;
 
 const dateFormat = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const decimal = (value: number) => value.toFixed(1).replace(".", ",");
@@ -358,6 +361,7 @@ export default function TrackerPage() {
   const [connecting, setConnecting] = useState(false);
   const [tab, setTab] = useState<EvalTab>("profile");
   const [limit, setLimit] = useState(MATCH_LIMIT);
+  const [visited, setVisited] = useState<EvalTab[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const firstLoad = useRef(!memory);
   const mapImages = useMapImages();
@@ -370,6 +374,7 @@ export default function TrackerPage() {
     ]);
     if (rank && (rank.tier ?? 0) > 0) account.mmr = { ...account.mmr, ...rank };
     memory = { account, matches, linked: Boolean(linkedId) };
+    writeCache(SNAPSHOT, memory);
     setData(memory);
     setNeedsId(false);
     setError(null);
@@ -380,6 +385,17 @@ export default function TrackerPage() {
     setError(null);
     try {
       const riot = await riotStatus();
+      const saved = await readCache<Loaded>(SNAPSHOT);
+      if (saved && saved.value.linked === Boolean(riot) && (!riot || saved.value.account.puuid.toLowerCase() === riot.puuid.toLowerCase())) {
+        memory = saved.value;
+        setData(memory);
+        setLoading(false);
+        if (Date.now() - saved.at < SNAPSHOT_FRESH) return;
+        setRefreshing(true);
+        await load(memory.account.name, memory.account.tag, riot?.puuid ?? null).catch(() => undefined);
+        setRefreshing(false);
+        return;
+      }
       const id = riot ?? readJson<{ name: string; tag: string }>(LOCAL_ID) ?? (await trackerIdentity());
       if (id) await load(id.name, id.tag, riot?.puuid ?? null);
       else setNeedsId(true);
@@ -398,6 +414,8 @@ export default function TrackerPage() {
     const stop = listen<{ status: string; message: string | null }>("riot-login", ({ payload }) => {
       setConnecting(false);
       if (payload.status === "linked") {
+        clearCache("riot:");
+        clearCache(SNAPSHOT);
         memory = null;
         setData(null);
         void start();
@@ -411,6 +429,7 @@ export default function TrackerPage() {
   const refresh = async () => {
     if (!data) return;
     setRefreshing(true);
+    clearCache("riot:");
     try {
       await load(data.account.name, data.account.tag, data.linked ? data.account.puuid : null);
     } catch (reason) {
@@ -463,6 +482,7 @@ export default function TrackerPage() {
       await apiData(`api/valorant/eval/history?puuid=${data.account.puuid}&page=${Math.floor(limit / 10) + 1}`);
       const matches = await trackerMatches<EvalMatch>(data.account.puuid, Math.min(100, next));
       memory = { ...data, matches };
+      writeCache(SNAPSHOT, memory);
       setData(memory);
       setLimit(next);
     } catch (reason) {
@@ -499,11 +519,11 @@ export default function TrackerPage() {
   return (
     <>
       <div className="eval-tabs-row">
-        <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
+        <Tabs id="eval" label="E:VAL" value={tab} onChange={(next) => { setTab(next); setVisited((seen) => (seen.includes(next) ? seen : [...seen, next])); }} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
       </div>
       {tab === "live" && <EvalLive linked={isLinked} onConnect={connect} />}
-      {tab === "game" && <EvalGame linked={isLinked} onConnect={connect} />}
-      {tab === "hub" && <EvalHub account={account} linked={isLinked} matches={matches} />}
+      {visited.includes("game") && <div style={{ display: tab === "game" ? "contents" : "none" }}><EvalGame linked={isLinked} onConnect={connect} /></div>}
+      {visited.includes("hub") && <div style={{ display: tab === "hub" ? "contents" : "none" }}><EvalHub account={account} linked={isLinked} matches={matches} /></div>}
       {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
           <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />

@@ -114,3 +114,16 @@ cargo test
 ```
 
 Autres documents : `decisions.md`, `roadmap.md`, `audit.md`, `desktop/README.md`, ainsi que `HANDOFF.md` et `AGENTS.md` à la racine pour le site.
+
+## Test réel du 2 novembre 2026
+
+Fait sur la vraie app et le vrai compte, en pilotant la WebView par un port de débogage local temporaire (`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`), sans souris ni capture de l'écran.
+
+- Vérifié : toutes les pages s'ouvrent, tâche TEST créée, terminée puis supprimée, épingle, barre réduite, recherche Ctrl+K, agrandir et restaurer, détail d'un match, sélecteurs de couleur.
+- Non vérifié : envoi d'un mail, actions Discord qui écrivent, vue en direct pendant une vraie partie, connexions Riot et Discord depuis zéro, envoi d'un fichier.
+- E:VAL : `cache.ts` garde le catalogue 24 h, les réponses Riot `pd` 5 min et le profil 5 min dans IndexedDB. Mesure : 0 appel au 2e passage sur Jeu ; le Hub reste chargé entre deux onglets. Le bouton Actualiser vide le cache Riot.
+- Discord : navigation par catégories puis modules, sections en onglets, options avancées repliées, barre d'enregistrement flottante, sélecteurs de couleur.
+- Retiré : page Plugins (la route `api/user-data/plugins` n'existe pas), liste Quêtes du module Mini-Jeux (route absente côté bot).
+- Journal de sécurité : limité à 20 lignes, car `api/auth/security-events` renvoie une erreur serveur à partir de 30. Cause non trouvée.
+
+**Urgent, à faire avec l'accord de Rub19** : `api/ai/quota` renvoie à tout compte connecté le jeton Cloudflare du worker et l'identifiant de compte. Le correctif et son test sont sur la branche (`worker/src/services/ai-quota-durable-object.js`), pas encore déployés. Après déploiement, le jeton doit être remplacé, car il a déjà été exposé.

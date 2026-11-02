@@ -1,4 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { cached, clearCache } from "./cache";
 
 export type Action =
   | "open"
@@ -85,7 +86,10 @@ export const authOtpVerify = (email: string, code: string, remember: boolean) =>
 export const authOauthStart = (provider: Provider) => invoke<void>("auth_oauth_start", { provider });
 export const authOauthCancel = () => invoke<void>("auth_oauth_cancel");
 export const authMfa = (code: string | null, backupCode: string | null) => invoke<Stage>("auth_mfa", { code, backupCode });
-export const authSignOut = () => invoke<void>("auth_sign_out");
+export const authSignOut = () => {
+  clearCache();
+  return invoke<void>("auth_sign_out");
+};
 export const profileAvatar = () => invoke<string | null>("profile_avatar");
 export const openSite = (page: SitePage) => invoke<void>("open_site", { page });
 
@@ -102,15 +106,25 @@ export const apiData = async <T,>(path: string, method: Method = "GET", body?: u
   return (response && typeof response === "object" && "data" in response ? response.data : response) as T;
 };
 export const restCall = <T,>(path: string, method: Method = "GET", body?: unknown, prefer?: string) => invoke<T>("rest_call", { method, path, body: body ?? null, prefer: prefer ?? null });
-export const catalogGet = <T,>(path: string) => invoke<{ data: T }>("catalog_get", { path }).then(({ data }) => data);
+export const catalogGet = <T,>(path: string) => cached<T>(`catalog:${path}`, 24 * 60 * 60 * 1000, () => invoke<{ data: T }>("catalog_get", { path }).then(({ data }) => data), true);
 export interface RiotFriend { id: string; name: string; tag: string; online: boolean; product: string; state: string; queue: string; tier: number; partySize: number; card: string }
 export const riotFriends = () => invoke<RiotFriend[]>("riot_friends");
 export const lineupsGet = <T,>() => invoke<T>("lineups_get");
-export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz" | "prefs"; method?: Method; body?: unknown } = {}) => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
+export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz" | "prefs"; method?: Method; body?: unknown } = {}) => {
+  const send = () => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
+  if ((options.host ?? "pd") !== "pd") return send();
+  if ((options.method ?? "GET") === "GET") return cached<T>(`riot:${path}`, 5 * 60 * 1000, send);
+  clearCache("riot:");
+  return send();
+};
 export const openExternal = (url: string) => invoke<void>("open_external", { url });
 export const botStatus = () => invoke<boolean>("bot_status");
 export const botLogin = () => invoke<void>("bot_login");
-export const botLogout = () => invoke<void>("bot_logout");
+export const botLogout = () => {
+  clearCache("bot:");
+  return invoke<void>("bot_logout");
+};
+export const botCached = <T,>(path: string) => cached<T>(`bot:${path}`, 5 * 60 * 1000, () => botCall<T>(path));
 export const botCall = <T,>(path: string, method: Method = "GET", body?: unknown) => invoke<T>("bot_call", { method, path, body: body ?? null });
 export interface RiotIdentity {
   puuid: string;
@@ -122,7 +136,11 @@ export const riotStatus = () => invoke<RiotIdentity | null>("riot_status");
 export const riotLogin = () => invoke<void>("riot_login");
 export const riotOpenBrowser = () => invoke<void>("riot_open_browser");
 export const riotLinkUrl = (url: string) => invoke<RiotIdentity>("riot_link_url", { url });
-export const riotLogout = () => invoke<void>("riot_logout");
+export const riotLogout = () => {
+  clearCache("riot:");
+  clearCache("eval-snapshot");
+  return invoke<void>("riot_logout");
+};
 export const riotRank = <T,>() => invoke<T>("riot_rank");
 export const trackerIdentity = () => invoke<{ name: string; tag: string } | null>("tracker_identity");
 export const trackerSync = <T,>(name: string, tag: string) => invoke<T>("tracker_sync", { name, tag });

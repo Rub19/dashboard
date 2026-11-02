@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { botCall } from "./api";
-import type { Directory } from "./generic";
+import { ColorField, type Directory } from "./generic";
 import { errorText, tr } from "./i18n";
 import { Drawer, ErrorBox, Field } from "./kit";
 import { Button } from "./ui";
@@ -160,7 +160,8 @@ function CreateForm({ spec, root, directory, onClose, onCreated }: { spec: Creat
         const list = field.kind === "channel" ? directory?.channels : field.kind === "role" ? directory?.roles : undefined;
         return (
           <Field key={field.key} label={field.label}>
-            {field.choices ? <select value={value} onChange={(event) => set(field.key, event.target.value)}>{field.choices.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select>
+            {/color$/i.test(field.key) ? <ColorField label={tr("Choisir la couleur", "Pick a color")} value={value} onChange={(hex) => set(field.key, hex)} />
+              : field.choices ? <select value={value} onChange={(event) => set(field.key, event.target.value)}>{field.choices.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select>
               : list ? <select value={value} onChange={(event) => set(field.key, event.target.value)}><option value="">{tr("Choisir…", "Choose…")}</option>{list.map((entry) => <option key={entry.id} value={entry.id}>{field.kind === "channel" ? "#" : "@"}{entry.name}</option>)}</select>
                 : field.kind === "multiline" ? <textarea rows={3} value={value} onChange={(event) => set(field.key, event.target.value)} />
                   : <input type={field.kind === "number" ? "number" : field.kind === "dateTime" ? "datetime-local" : "text"} value={value} placeholder={field.hint} onChange={(event) => set(field.key, event.target.value)} />}

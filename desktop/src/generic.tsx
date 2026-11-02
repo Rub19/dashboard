@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { errorText, lang, tr } from "./i18n";
 import { LABELS } from "./labels";
 import { Drawer, Empty, ErrorBox, Stagger, StaggerItem, staggerItem } from "./kit";
@@ -143,6 +144,30 @@ export function JsonFields({ value }: { value: Json }) {
   );
 }
 
+const isColorKey = (key: string) => /colou?r\d?$/i.test(key);
+const READ_ONLY = /^(last|total|current|next|high|started|published)[A-Z]|(At|Count|Today|Masked)$/;
+const ADVANCED = /(threshold|interval|retention|window|burst|strategy|regex|webhook|template|cooldown|seconds|minutes|hours|percent|multiplier|maximum|^max|^min)/i;
+
+export function toHex(value: Json | undefined): string | null {
+  if (typeof value === "number") return `#${Math.max(0, value).toString(16).padStart(6, "0").slice(0, 6)}`;
+  if (typeof value !== "string") return null;
+  const short = /^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(value);
+  if (short) return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toLowerCase();
+  const long = /^#?([0-9a-f]{6})/i.exec(value);
+  return long ? `#${long[1]}`.toLowerCase() : null;
+}
+
+export function ColorField({ label, value, onChange }: { label: string; value: Json | undefined; onChange: (next: string) => void }) {
+  const hex = toHex(value);
+  return (
+    <label className="color-field">
+      <input type="color" value={hex ?? "#5865f2"} onChange={(event) => onChange(event.target.value)} />
+      <span>{label}</span>
+      <small>{hex ? hex.toUpperCase() : tr("Par défaut", "Default")}</small>
+    </label>
+  );
+}
+
 export function ConfigForm({ value, onSave, directory }: { value: { [key: string]: Json }; onSave: (next: { [key: string]: Json }) => Promise<void>; directory?: Directory }) {
   const [draft, setDraft] = useState(value);
   const [saving, setSaving] = useState(false);
@@ -181,12 +206,17 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
     </div>
   );
   const render = (node: { [key: string]: Json }, path: string[]) => {
-    const entries = Object.entries(node).filter(([key]) => !HIDDEN.has(key));
-    const rank = ([, item]: [string, Json]) => (typeof item === "boolean" ? 0 : item && typeof item === "object" && !Array.isArray(item) ? 2 : 1);
+    return fields(Object.entries(node).filter(([key]) => !HIDDEN.has(key) && !READ_ONLY.test(key)), path);
+  };
+  const fields = (entries: [string, Json][], path: string[]) => {
+    const rank = ([key, item]: [string, Json]) => (typeof item === "boolean" ? 0 : isColorKey(key) ? 1 : item && typeof item === "object" && !Array.isArray(item) ? 3 : 2);
     return [...entries].sort((left, right) => rank(left) - rank(right)).map(([key, item]) => {
       const next = [...path, key];
       const id = next.join(".");
       const lower = key.toLowerCase();
+      if (isColorKey(key) && (typeof item === "string" || typeof item === "number" || item === null)) {
+        return <ColorField key={id} label={humanize(key)} value={item} onChange={(hex) => change(next, typeof item === "number" ? parseInt(hex.slice(1), 16) : hex)} />;
+      }
       if (typeof item === "boolean") {
         return <label key={id} className="generic-toggle"><span>{humanize(key)}</span><input type="checkbox" role="switch" checked={item} onChange={(event) => change(next, event.target.checked)} /></label>;
       }
@@ -223,15 +253,29 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
       setSaving(false);
     }
   };
-  if (Object.keys(draft).length === 0) return <p className="muted">{tr("Aucun réglage disponible.", "No settings available.")}</p>;
+  const visible = Object.entries(draft).filter(([key, item]) => !HIDDEN.has(key) && !READ_ONLY.test(key) && !(Array.isArray(item) && item.some((entry) => entry !== null && typeof entry === "object")));
+  if (visible.length === 0) return <p className="muted">{tr("Aucun réglage disponible.", "No settings available.")}</p>;
+  const advanced = (key: string, item: Json) => (item !== null && typeof item === "object" && !Array.isArray(item)) || (typeof item !== "boolean" && !isColorKey(key) && ADVANCED.test(key));
+  const main = visible.filter(([key, item]) => !advanced(key, item));
+  const more = visible.filter(([key, item]) => advanced(key, item));
+  const master = main.filter(([key]) => key === "enabled");
+  const rest = main.filter(([key]) => key !== "enabled");
   return (
     <div className="generic-form">
-      <div className="generic-form-grid">{render(draft, [])}</div>
+      {master.length > 0 && <div className="generic-master">{fields(master, [])}</div>}
+      {rest.length > 0 && <div className="generic-form-grid">{fields(rest, [])}</div>}
+      {more.length > 0 && <details className="generic-more" open={rest.length < 3}><summary>{tr(`Options avancées (${more.length})`, `Advanced options (${more.length})`)}</summary><div className="generic-form-grid">{fields(more, [])}</div></details>}
       {error && <ErrorBox message={error} />}
-      <div className="row">
-        <Button variant="primary" disabled={!dirty || saving} onClick={() => void save()}>{saving ? tr("Enregistrement…", "Saving…") : tr("Enregistrer", "Save")}</Button>
-        {saved && !dirty && <span className="ok">{tr("Enregistré.", "Saved.")}</span>}
-      </div>
+      {saved && !dirty && <p className="ok" role="status">{tr("Enregistré.", "Saved.")}</p>}
+      <AnimatePresence initial={false}>
+        {dirty && (
+          <motion.div className="generic-savebar" initial={{ opacity: 0, transform: "translateY(8px)" }} animate={{ opacity: 1, transform: "translateY(0px)" }} exit={{ opacity: 0, transform: "translateY(8px)" }} transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}>
+            <span>{tr("Modifications non enregistrées", "Unsaved changes")}</span>
+            <Button disabled={saving} onClick={() => setDraft(value)}>{tr("Annuler", "Discard")}</Button>
+            <Button variant="primary" disabled={saving} onClick={() => void save()}>{saving ? tr("Enregistrement…", "Saving…") : tr("Enregistrer", "Save")}</Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

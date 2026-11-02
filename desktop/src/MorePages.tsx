@@ -125,6 +125,19 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
   );
 }
 
+function RemoveMember({ id, onDone }: { id: string; onDone: () => void }) {
+  const [asking, setAsking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (!asking) return <Button className="danger" onClick={() => setAsking(true)}>{tr("Retirer", "Remove")}</Button>;
+  return (
+    <span className="row">
+      {error && <span className="bad">{error}</span>}
+      <Button onClick={() => setAsking(false)}>{tr("Annuler", "Cancel")}</Button>
+      <Button className="danger" onClick={() => void apiData("api/team/members", "DELETE", { id }).then(onDone, (reason) => setError(errorText(reason)))}>{tr("Confirmer", "Confirm")}</Button>
+    </span>
+  );
+}
+
 function SharedSpaces() {
   const [name, setName] = useState("");
   const state = useLoad(() => apiCall<Json>("api/shared-spaces"));
@@ -145,6 +158,29 @@ function SharedSpaces() {
   );
 }
 
+function Diagnostic() {
+  const state = useLoad(() => apiData<{ worker?: string; version?: string; services?: { id: string; available: boolean }[] }>("api/diagnostic"));
+  return (
+    <>
+      <PageHead title={tr("Diagnostic", "Diagnostics")} text={tr("L'état des services Ethone vu par ton compte.", "Ethone service status as seen by your account.")} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>
+        {(data) => (
+          <>
+            <div className="focus-stats">
+              <Stat label="Worker" value={data.worker === "connected" ? tr("Connecté", "Connected") : tr("Indisponible", "Unavailable")} />
+              <Stat label={tr("Version", "Version")} value={data.version ?? "–"} />
+              <Stat label={tr("Services disponibles", "Available services")} value={`${(data.services ?? []).filter((service) => service.available).length} / ${(data.services ?? []).length}`} />
+            </div>
+            <ul className="service-grid">
+              {(data.services ?? []).map((service) => <li key={service.id} className={service.available ? "up" : "down"}><i />{humanize(service.id)}<small>{service.available ? tr("Disponible", "Available") : tr("Indisponible", "Unavailable")}</small></li>)}
+            </ul>
+          </>
+        )}
+      </Status>
+    </>
+  );
+}
+
 function Team() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
@@ -160,7 +196,26 @@ function Team() {
       <PageHead title={tr("Équipe", "Team")} onRefresh={state.reload} refreshing={state.loading} />
       <form className="daily-add" onSubmit={invite}><input type="email" value={email} placeholder={tr("Adresse e-mail à inviter", "Email to invite")} aria-label={tr("Adresse e-mail à inviter", "Email to invite")} onChange={(event) => setEmail(event.target.value)} /><Button type="submit" variant="primary" disabled={!email.includes("@")}><UserPlus size={15} />{tr("Inviter", "Invite")}</Button></form>
       {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
-      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Retirer", "Remove"), destructive: true, run: (row) => apiData("api/team/members", "DELETE", { id: asRecord(row).id }) }]} />}</Status>
+      <Status state={state}>
+        {(data) => {
+          const rows = firstArray(data).map(asRecord);
+          if (rows.length === 0) return <Empty title={tr("Ton équipe est vide", "Your team is empty")} text={tr("Invite quelqu'un avec son adresse e-mail.", "Invite someone with their email address.")} />;
+          return (
+            <ul className="card-rows">
+              {rows.map((row) => (
+                <li key={String(row.id)}>
+                  <div>
+                    <span><b>{String(row.name ?? row.display_name ?? row.email ?? "")}</b><small>{String(row.email ?? "")}</small></span>
+                    {row.role ? <span className="badge">{String(row.role)}</span> : null}
+                    {row.status ? <span className="badge">{String(row.status)}</span> : null}
+                    <RemoveMember id={String(row.id)} onDone={state.reload} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          );
+        }}
+      </Status>
     </>
   );
 }
@@ -377,7 +432,7 @@ function Support() {
   ];
   return (
     <>
-      <RemoteFields title={tr("Diagnostic", "Diagnostics")} path="api/diagnostic" text={tr("L'état des services Ethone vu par ton compte.", "Ethone service status as seen by your account.")} />
+      <Diagnostic />
       <h2 className="group-title">{tr("Liens", "Links")}</h2>
       <div className="row">{links.map((link) => <Button key={link.url} onClick={() => void openExternal(link.url)}><ExternalLink size={15} />{link.label}</Button>)}</div>
     </>
@@ -401,36 +456,6 @@ export function InsightsPage() {
       {section === "rss" && <RssReader />}
       {section === "diagnostic" && <Support />}
     </Split>
-  );
-}
-
-function Lookup({ title, label, placeholder, load }: { title: string; label: string; placeholder: string; load: (value: string) => Promise<Json> }) {
-  const key = `ethone-lookup-${title}`;
-  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
-  const [result, setResult] = useState<Json>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.trim()) return;
-    setBusy(true);
-    setError(null);
-    write(key, JSON.stringify(value.trim()));
-    try {
-      setResult(await load(value.trim()));
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <>
-      <PageHead title={title} />
-      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder={placeholder} aria-label={label} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy || !value.trim()}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      {busy ? <Skeletons count={2} height={110} /> : result !== null && <JsonFields value={result} />}
-    </>
   );
 }
 
@@ -559,6 +584,80 @@ function TftView() {
   );
 }
 
+function SteamView() {
+  const key = "ethone-steam-id";
+  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
+  const [data, setData] = useState<{ player: { displayName?: string; avatarUrl?: string; profileUrl?: string; status?: string; [name: string]: unknown }; games: { name?: string; recentPlaytimeMinutes?: number; playtimeMinutes?: number }[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!value.trim()) return;
+    setBusy(true);
+    setError(null);
+    write(key, JSON.stringify(value.trim()));
+    try {
+      const id = encodeURIComponent(value.trim());
+      const [player, recent] = await Promise.all([apiData<NonNullable<typeof data>["player"]>(`api/steam/player?steamId=${id}`), apiData<Json>(`api/steam/recent-games?steamId=${id}`).catch(() => [])]);
+      setData({ player, games: firstArray(recent) as unknown as NonNullable<typeof data>["games"] });
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <PageHead title="Steam" />
+      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder={tr("SteamID64 ou nom de profil", "SteamID64 or profile name")} aria-label="Steam ID" onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy || !value.trim()}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
+      {error && <ErrorBox message={error} />}
+      {busy && <Skeletons count={3} height={60} />}
+      {data && !busy && (
+        <>
+          <div className="lol-head">{data.player.avatarUrl && <img src={data.player.avatarUrl} alt="" />}<div><h2>{data.player.displayName}</h2>{data.player.profileUrl && <button type="button" className="link" onClick={() => void openExternal(data.player.profileUrl ?? "")}>{tr("Voir le profil", "View profile")}</button>}</div></div>
+          <h2 className="group-title">{tr("Joué récemment", "Recently played")}</h2>
+          {data.games.length === 0 ? <p className="muted">{tr("Aucun jeu récent visible.", "No visible recent games.")}</p> : <ul className="card-rows">{data.games.map((game, index) => <li key={index}><div><span><b>{game.name}</b><small>{game.playtimeMinutes !== undefined ? tr(`${Math.round(game.playtimeMinutes / 60)} h au total`, `${Math.round(game.playtimeMinutes / 60)} h total`) : ""}</small></span></div></li>)}</ul>}
+        </>
+      )}
+    </>
+  );
+}
+
+function MinecraftView() {
+  const key = "ethone-minecraft-name";
+  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
+  const [data, setData] = useState<{ username?: string; uuid?: string; skinUrl?: string; avatarUrl?: string; capeUrl?: string; model?: string; nameHistory?: unknown[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!value.trim()) return;
+    setBusy(true);
+    setError(null);
+    write(key, JSON.stringify(value.trim()));
+    try {
+      setData(await apiData<NonNullable<typeof data>>(`api/minecraft/profile?username=${encodeURIComponent(value.trim())}`));
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <PageHead title="Minecraft" />
+      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder={tr("Pseudo", "Username")} aria-label={tr("Pseudo", "Username")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy || !value.trim()}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
+      {error && <ErrorBox message={error} />}
+      {data && !busy && (
+        <div className="lol-head">
+          {(data.avatarUrl || data.skinUrl) && <img className="pixel" src={data.avatarUrl || data.skinUrl} alt="" />}
+          <div><h2>{data.username ?? value}</h2>{data.model && <p className="muted">{tr("Modèle", "Model")} {data.model}</p>}</div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function GamesPage() {
   const [section, setSection] = useState<"lol" | "tft" | "rotation" | "steam" | "minecraft">("lol");
   const items = [
@@ -573,8 +672,8 @@ export function GamesPage() {
       {section === "lol" && <LolView />}
       {section === "tft" && <TftView />}
       {section === "rotation" && <RemoteFields title={tr("Rotation LoL", "LoL rotation")} path="api/stats/lol-rotation" />}
-      {section === "steam" && <Lookup key="steam" title="Steam" label="Steam ID" placeholder="SteamID64" load={async (value) => ({ joueur: await apiData<Json>(`api/steam/player?steamId=${encodeURIComponent(value)}`), recents: await apiData<Json>(`api/steam/recent-games?steamId=${encodeURIComponent(value)}`).catch(() => null) })} />}
-      {section === "minecraft" && <Lookup key="minecraft" title="Minecraft" label={tr("Pseudo", "Username")} placeholder={tr("Pseudo", "Username")} load={(value) => apiData<Json>(`api/minecraft/profile?username=${encodeURIComponent(value)}`)} />}
+      {section === "steam" && <SteamView />}
+      {section === "minecraft" && <MinecraftView />}
     </Split>
   );
 }

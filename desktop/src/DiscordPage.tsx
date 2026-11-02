@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut, Search } from "lucide-react";
 import { botCall, botLogin, botLogout, botStatus } from "./api";
+import { CUSTOM_DISCORD_PAGES } from "./DiscordPages";
 import { DISCORD_GROUPS, DISCORD_MODULES as SPEC_MODULES, DiscordModule } from "./discordSpecs";
 import { ConfigForm, Directory, factsOf, firstArray, flattenEntries, humanize, Json, JsonList, displayValue, unwrapConfig } from "./generic";
 import { errorText, tr } from "./i18n";
@@ -146,6 +147,8 @@ function useDirectory(guild: string): Directory | undefined {
 
 function ModuleView({ spec, guild }: { spec: DiscordModule; guild: string }) {
   const directory = useDirectory(guild);
+  const Custom = CUSTOM_DISCORD_PAGES[spec.id];
+  if (Custom) return <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate"><Custom guild={guild} /></motion.div>;
   return (
     <motion.div key={`${spec.id}-${guild}`} className="discord-module" variants={stepEnter} initial="initial" animate="animate">
       <PageHead title={spec.title} />

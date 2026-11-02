@@ -56,6 +56,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const [palette, setPalette] = useState(false);
   const [menu, setMenu] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [compact, setCompact] = useState(() => readJson<boolean>("ethone-sidebar-compact") ?? false);
   const [visited, setVisited] = useState<Page[]>(["home"]);
   const [pinned, setPinned] = useState<string[]>(() => readJson<string[]>("ethone-pinned-apps") ?? []);
   const layer = useRef<HTMLElement>(null);
@@ -114,6 +115,13 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       return next;
     });
     setVisited((current) => (current.includes(next) ? current : [...current, next]));
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setCompact((value) => {
+      write("ethone-sidebar-compact", JSON.stringify(!value));
+      return !value;
+    });
   }, []);
 
   const pin = useCallback((id: string) => {
@@ -175,7 +183,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
 
   return (
-    <motion.div className="shell" data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
+    <motion.div className={`shell ${compact ? "compact" : ""}`} data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
       <header className="titlebar" data-tauri-drag-region>
         <span className="title-brand" data-tauri-drag-region>{page === "tracker" ? <span className="title-valorant"><ValorantMark size={20} /></span> : <BrandMark size={24} />}<b>{page === "tracker" ? "E:VAL" : "Ethone"}</b></span>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
@@ -193,6 +201,8 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         onGo={go}
         onOpenPinned={openPinned}
         onUnpin={pin}
+        compact={compact}
+        onToggle={toggleSidebar}
         note={!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
         account={<div className="usermenu" ref={menuRef}>
             <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={profile.name} onClick={() => setMenu((open) => !open)}>

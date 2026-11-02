@@ -3,7 +3,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { RefreshCw, Search, Star, X } from "lucide-react";
 import { trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchLine, matchSummary, modeName, rankColor, rankName, scoreboard, splitRiotId, statsFor, tierIcon } from "./eval";
-import { errorText, t } from "./i18n";
+import { errorText, lang, t } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
@@ -18,7 +18,7 @@ interface Loaded {
 
 let memory: Loaded | null = null;
 
-const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const dateFormat = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const decimal = (value: number) => value.toFixed(1).replace(".", ",");
 
 function Count({ value, format = String }: { value: number; format?: (value: number) => string }) {

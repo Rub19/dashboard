@@ -35,7 +35,8 @@
   - Acceptation : chargement, vide et erreur ; aucune donnée de démonstration.
   - Vérification : tests frontend, contrôle TypeScript et build.
   - Fichiers : `desktop/src/api.ts`, `desktop/src/ProductivityPage.tsx`, `desktop/src/productivity.ts`, `desktop/src/productivity.test.mjs`, `desktop/src/Shell.tsx`.
-- [ ] Relier la création, la modification et la suppression de Notes/Tâches.
+- [x] Relier la création, la modification et la suppression de Notes/Tâches.
+  - Preuve : tâche TEST créée, terminée, modifiée et supprimée sur le vrai compte le 2 novembre 2026. Notes non testées en écriture.
   - Acceptation : validation, confirmation de suppression et résultat Worker réel.
   - Vérification : tests Rust et frontend, build.
 - [x] Livrer Calendrier comme tranche séparée.

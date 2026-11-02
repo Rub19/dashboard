@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, Crosshair, RefreshCw, WifiOff } from "lucide-react";
 import { EthoneItem, itemsList, ModuleStatus, Profile } from "./api";
 import { dayProgress, connectionStatus, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
-import { errorText, Key, t } from "./i18n";
+import { errorText, Key, lang, t } from "./i18n";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
 import { Button } from "./ui";
@@ -23,8 +23,8 @@ interface Props {
 }
 
 const RUNNABLE = new Set<ModuleStatus["action"]>(["open", "openWeb", "install", "update", "openToUpdate", "releasePage"]);
-const longDate = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-const clockFormat = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
+const longDate = new Intl.DateTimeFormat(lang, { weekday: "long", day: "numeric", month: "long" });
+const clockFormat = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" });
 
 function greeting(now: Date): string {
   const hour = now.getHours();

@@ -1,8 +1,9 @@
+import { PageHead } from "./kit";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import { about, JournalEntry, openSite, Profile, readJournal, SitePage } from "./api";
-import { errorText, Key, lang, t } from "./i18n";
+import { errorText, Key, lang, t, tr } from "./i18n";
 import { listItem, listStagger, SPRING_PILL, SPRING_SWAP } from "./motion";
 import { AccentId, ACCENTS, applyAppearance, currentAccent, currentTheme, setLanguage, Theme } from "./settings";
 import { Button } from "./ui";
@@ -19,7 +20,7 @@ export function JournalPage() {
 
   return (
     <>
-      <div className="pagehead"><div><h1>{t("journal")}</h1></div></div>
+      <PageHead title={t("journal")} />
       {error && <p role="alert" className="bad">{error}</p>}
       {entries?.length === 0 && <p className="muted empty">{t("emptyJournal")}</p>}
       {!!entries?.length && (
@@ -55,7 +56,7 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
 
   return (
     <>
-      <div className="pagehead"><div><h1>{t("settings")}</h1></div></div>
+      <PageHead title={tr("Apparence et compte", "Appearance and account")} />
       <h2 className="group-title">{t("appearance")}</h2>
       <ul className="settings">
         <li>
@@ -114,7 +115,7 @@ export function AboutPage() {
 
   return (
     <>
-      <div className="pagehead"><div><h1>{t("about")}</h1></div></div>
+      <PageHead title={t("about")} />
       <p className="prose">{t("aboutText")}</p>
       <ul className="settings">
         <li><span>{t("version")}</span><span className="muted">{info?.version ?? "—"}</span></li>

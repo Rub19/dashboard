@@ -71,7 +71,8 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 **Non porté**
 
 - E:VAL : amis et chat, historique d'achats, objectifs de saison, line-ups, archives de contrats, profils d'apparences, changement des skins d'armes, récap Discord, paramètres de jeu.
-- Dashboard : marketplace, soundscape, clip, navigateur intégré, éditeurs de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Factures séparées du site, qui les garde dans le navigateur. Concentration et mémo restent sur le PC.
+- Dashboard : marketplace, clip, navigateur intégré, éditeur détaillé de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Ambiance est une version simple générée sur le PC, sans les préréglages du soundscape web.
+- Cohérence du 2 novembre 2026 : Productivité regroupe Tâches, Calendrier, Notes, Mémo, Habitudes, Concentration, Ambiance et Factures ; Réglages regroupe Apparence, Journal, À propos, Compte et Sécurité. Français par défaut, accent bleu par défaut. Contrôlé dans `desktop/preview.html` avec des données d'exemple, pas encore dans un build. Factures séparées du site, qui les garde dans le navigateur. Concentration et mémo restent sur le PC.
 
 ## Reste à faire, dans l'ordre
 

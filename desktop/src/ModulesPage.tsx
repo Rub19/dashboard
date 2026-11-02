@@ -1,6 +1,7 @@
+import { PageHead } from "./kit";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Download, Gamepad2, RefreshCw } from "lucide-react";
+import { ChevronDown, Download, Gamepad2 } from "lucide-react";
 import { ethoneUpdateCheck, ethoneUpdateInstall, ModuleStatus } from "./api";
 import { errorText, Key, lang, t } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_GLIDE } from "./motion";
@@ -169,16 +170,7 @@ function EthoneUpdate() {
 export default function ModulesPage({ name, modules, checking, busy, errors, loadError, onRun, onRefresh, onDismiss }: Props) {
   return (
     <>
-      <div className="pagehead">
-        <div>
-          <h1>{t("modules")}</h1>
-          <p className="muted" role="status">{summary(modules, checking, name)}</p>
-        </div>
-        <Button disabled={checking} onClick={onRefresh}>
-          <RefreshCw size={14} className={checking ? "spin" : ""} />
-          {t("refresh")}
-        </Button>
-      </div>
+      <PageHead title={t("modules")} text={summary(modules, checking, name)} onRefresh={onRefresh} refreshing={checking} />
       <EthoneUpdate />
       {loadError && (
         <div className="home-error" role="alert">

@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Archive, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2 } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
 
@@ -103,7 +103,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
           {state.data.map((message) => (
             <StaggerItem key={message.id} variants={staggerItem} className={message.is_read ? "" : "unread"}>
               <button type="button" onClick={() => read(message)}>
-                <span><b>{message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString()}</time></span>
+                <span><b>{message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang)}</time></span>
                 <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
                 {message.snippet && <small>{message.snippet}</small>}
               </button>
@@ -114,7 +114,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       <Drawer open={Boolean(open)} title={open?.subject || tr("(sans objet)", "(no subject)")} onClose={() => setOpen(null)} width={720}>
         {open && (
           <>
-            <p className="muted small">{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}, {new Date(open.received_at ?? open.sent_at ?? "").toLocaleString()}</p>
+            <p className="muted small">{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}, {new Date(open.received_at ?? open.sent_at ?? "").toLocaleString(lang)}</p>
             <div className="row">
               <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
               <Button onClick={() => void act(() => apiData("api/mail/read", "POST", { id: open.id, is_starred: !open.is_starred }))}><Star size={15} />{open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Étoile", "Star")}</Button>

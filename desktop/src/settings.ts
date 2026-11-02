@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 export type Theme = "system" | "dark" | "light";
 
 export const ACCENTS = [
+  { id: "ocean", color: "#6fc3ff", on: "#06121d", dim: "#0a6fc2" },
   { id: "emerald", color: "#34d399", on: "#052e20", dim: "#0b7a55" },
   { id: "violet", color: "#a78bfa", on: "#1d1147", dim: "#6d3fd6" },
   { id: "rose", color: "#f4638b", on: "#3b0519", dim: "#c1234f" },
@@ -43,7 +44,7 @@ export function currentTheme(): Theme {
 }
 
 export function currentAccent(): AccentId {
-  return ACCENTS.find((accent) => accent.id === read("ethone-accent"))?.id ?? "emerald";
+  return ACCENTS.find((accent) => accent.id === read("ethone-accent-choice"))?.id ?? "ocean";
 }
 
 export function applyAppearance(theme = currentTheme(), accentId = currentAccent()) {
@@ -55,7 +56,7 @@ export function applyAppearance(theme = currentTheme(), accentId = currentAccent
   root.style.setProperty("--on-accent-bright", accent.on);
   root.style.setProperty("--accent-dim", accent.dim);
   write("ethone-theme", theme);
-  write("ethone-accent", accent.id);
+  write("ethone-accent-choice", accent.id);
   void invoke("window_theme", { theme }).catch(() => undefined);
 }
 

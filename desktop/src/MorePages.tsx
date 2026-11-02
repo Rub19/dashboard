@@ -1,9 +1,10 @@
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, KeyRound, Link2, MessageSquare, Plug, Rss, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
-import { apiCall, apiData, openExternal, openSite } from "./api";
+import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
+import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
+import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig } from "./generic";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Skeletons, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
@@ -94,19 +95,25 @@ function Connections() {
   );
 }
 
-export function AccountPage() {
-  const [section, setSection] = useState<"profile" | "connections" | "devices" | "passkeys" | "events" | "ai" | "profiles">("profile");
+export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
+  const [section, setSection] = useState<"appearance" | "profile" | "connections" | "devices" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("appearance");
   const items = [
-    { id: "profile", label: tr("Profil", "Profile"), icon: <User size={16} /> },
-    { id: "profiles", label: tr("Espaces de profil", "Profile spaces"), icon: <Users size={16} /> },
-    { id: "connections", label: tr("Connexions", "Connections"), icon: <Plug size={16} /> },
+    { id: "appearance", label: tr("Apparence et compte", "Appearance and account"), icon: <Palette size={16} />, group: tr("Application", "App") },
+    { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
+    { id: "about", label: tr("À propos", "About"), icon: <Info size={16} />, group: tr("Application", "App") },
+    { id: "profile", label: tr("Profil", "Profile"), icon: <User size={16} />, group: tr("Compte", "Account") },
+    { id: "profiles", label: tr("Espaces de profil", "Profile spaces"), icon: <Users size={16} />, group: tr("Compte", "Account") },
+    { id: "connections", label: tr("Connexions", "Connections"), icon: <Plug size={16} />, group: tr("Compte", "Account") },
     { id: "devices", label: tr("Appareils", "Devices"), icon: <Shield size={16} />, group: tr("Sécurité", "Security") },
     { id: "passkeys", label: tr("Clés d'accès", "Passkeys"), icon: <KeyRound size={16} />, group: tr("Sécurité", "Security") },
     { id: "events", label: tr("Journal de sécurité", "Security log"), icon: <Activity size={16} />, group: tr("Sécurité", "Security") },
     { id: "ai", label: tr("Intelligence artificielle", "AI"), icon: <Sparkles size={16} />, group: tr("Services", "Services") },
   ] as const;
   return (
-    <Split id="account" label={tr("Compte", "Account")} items={items} value={section} onChange={setSection}>
+    <Split id="account" label={tr("Réglages", "Settings")} items={items} value={section} onChange={setSection}>
+      {section === "appearance" && <SettingsPage profile={profile} onSignOut={onSignOut} />}
+      {section === "journal" && <JournalPage />}
+      {section === "about" && <AboutPage />}
       {section === "profile" && <ProfileEditor />}
       {section === "profiles" && <Remote title={tr("Espaces de profil", "Profile spaces")} path="api/profiles" actions={[{ title: tr("Activer", "Activate"), run: (row) => apiData("api/profiles/activate", "POST", { id: asRecord(row).id }) }]} />}
       {section === "connections" && <Connections />}
@@ -174,21 +181,23 @@ export function TeamPage() {
   );
 }
 
-function Collection({ kind, title, text, placeholder, defaults }: { kind: string; title: string; text?: string; placeholder: string; defaults: { [key: string]: Json } }) {
+function Collection({ kind, title, text, placeholder, defaults, choice }: { kind: string; title: string; text?: string; placeholder: string; defaults: { [key: string]: Json }; choice?: { label: string; keys: string[]; options: { id: string; label: string }[] } }) {
   const path = `api/user-data/${kind}`;
   const state = useLoad(() => apiCall<Json>(path), [path]);
   const [label, setLabel] = useState("");
+  const [selected, setSelected] = useState(choice?.options[0]?.id ?? "");
   const [error, setError] = useState<string | null>(null);
   const add = (event: FormEvent) => {
     event.preventDefault();
     if (!label.trim()) return;
     setError(null);
-    apiData(path, "POST", { slug: `${kind}-${Date.now()}`, label: label.trim(), data: defaults }).then(() => { setLabel(""); state.reload(); }, (reason) => setError(errorText(reason)));
+    const data = { ...defaults, ...Object.fromEntries((choice?.keys ?? []).map((key) => [key, selected])) };
+    apiData(path, "POST", { slug: `${kind}-${Date.now()}`, label: label.trim(), data }).then(() => { setLabel(""); state.reload(); }, (reason) => setError(errorText(reason)));
   };
   return (
     <>
       <PageHead title={title} text={text} onRefresh={state.reload} refreshing={state.loading} />
-      <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} /><Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
+      <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} />{choice && <select value={selected} aria-label={choice.label} onChange={(event) => setSelected(event.target.value)}>{choice.options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select>}<Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
       {error && <ErrorBox message={error} />}
       <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
     </>
@@ -265,8 +274,8 @@ export function BrainPage() {
   return (
     <Split id="brain" label="Brain" items={items} value={section} onChange={setSection}>
       {section === "chat" && <BrainChat />}
-      {section === "flows" && <Collection kind="flows" title="Flows" placeholder={tr("Nom du flow", "Flow name")} defaults={{ templateId: "focus", workspaceId: "focus" }} />}
-      {section === "macros" && <Collection kind="macros" title="Macros" placeholder={tr("Nom de la macro", "Macro name")} defaults={{ action: "navigate", href: "/" }} />}
+      {section === "flows" && <Collection kind="flows" title="Flows" placeholder={tr("Nom du flow", "Flow name")} defaults={{}} choice={{ label: tr("Modèle", "Template"), keys: ["templateId", "workspaceId"], options: [{ id: "personal", label: tr("Personnel", "Personal") }, { id: "focus", label: tr("Concentration", "Focus") }, { id: "studio", label: "Studio" }, { id: "gaming", label: "Gaming" }] }} />}
+      {section === "macros" && <Collection kind="macros" title="Macros" placeholder={tr("Nom de la macro", "Macro name")} defaults={{ action: "navigate" }} choice={{ label: tr("Page à ouvrir", "Page to open"), keys: ["href"], options: [{ id: "/", label: tr("Accueil", "Home") }, { id: "/tasks", label: tr("Tâches", "Tasks") }, { id: "/notes", label: "Notes" }, { id: "/calendar", label: tr("Calendrier", "Calendar") }, { id: "/mail", label: "Mail" }, { id: "/files", label: tr("Fichiers", "Files") }, { id: "/tracker", label: "Tracker" }, { id: "/discord", label: "Discord" }, { id: "/brain", label: "Brain" }] }} />}
       {section === "interactions" && <Collection kind="interactions" title={tr("Interactions", "Interactions")} placeholder={tr("Nom de l'interaction", "Interaction name")} defaults={{ action: "navigate" }} />}
       {section === "personas" && <Collection kind="personas" title="Personas" placeholder={tr("Nom du persona", "Persona name")} defaults={{ theme: "obsidian" }} />}
       {section === "plugins" && <Remote title="Plugins" path="api/user-data/plugins" text={tr("Les plugins installés sur ton compte.", "Plugins installed on your account.")} />}
@@ -297,7 +306,7 @@ function Weather() {
               {data.windSpeedKmh !== undefined && <Stat label={tr("Vent", "Wind")} value={`${Math.round(Number(data.windSpeedKmh))} km/h`} />}
               {data.uvIndex !== undefined && <Stat label="UV" value={String(data.uvIndex)} />}
             </div>
-            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(undefined, { weekday: "short" }) : ""}</small><b>{Math.round(Number(day.temperatureMax ?? 0))}°</b><small>{Math.round(Number(day.temperatureMin ?? 0))}°</small></li>)}</ul>}
+            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(lang, { weekday: "short" }) : ""}</small><b>{Math.round(Number(day.temperatureMax ?? 0))}°</b><small>{Math.round(Number(day.temperatureMin ?? 0))}°</small></li>)}</ul>}
           </>
         )}
       </Status>
@@ -330,7 +339,7 @@ function RssReader() {
           {(data) => (
             <ul className="rss-list">
               {(data?.items ?? []).slice(0, 50).map((item, index) => (
-                <li key={index}><button type="button" disabled={!item.link} onClick={() => item.link && void openExternal(item.link)}><b>{item.title}</b>{item.pubDate && <small>{new Date(item.pubDate).toLocaleString()}</small>}</button></li>
+                <li key={index}><button type="button" disabled={!item.link} onClick={() => item.link && void openExternal(item.link)}><b>{item.title}</b>{item.pubDate && <small>{new Date(item.pubDate).toLocaleString(lang)}</small>}</button></li>
               ))}
             </ul>
           )}
@@ -347,11 +356,11 @@ function ActivityView() {
   return (
     <>
       <PageHead title={tr("Activité", "Activity")} onRefresh={state.reload} refreshing={state.loading} />
-      {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={humanize(key)} value={(value as number).toLocaleString()} />)}</div>}
+      {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={humanize(key)} value={(value as number).toLocaleString(lang)} />)}</div>}
       <Status state={state}>
         {(data) => (data.events ?? []).length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : (
           <ul className="activity-list">
-            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.metadata?.title ?? humanize(event.event_type ?? "event")}</b><time>{event.created_at ? new Date(event.created_at).toLocaleString() : ""}</time></li>)}
+            {(data.events ?? []).map((event, index) => <li key={event.id ?? index}><b>{event.metadata?.title ?? humanize(event.event_type ?? "event")}</b><time>{event.created_at ? new Date(event.created_at).toLocaleString(lang) : ""}</time></li>)}
           </ul>
         )}
       </Status>
@@ -537,7 +546,7 @@ function TftView() {
               <li key={match.id ?? index}>
                 <div className="tft-top">
                   <span className={`tft-place ${(match.me?.placement ?? 9) <= 4 ? "good" : ""}`}>{match.me?.placement ?? "–"}</span>
-                  <span><b>{match.mode ?? "TFT"}</b><small>Set {match.setNumber}, {tr("niveau", "level")} {match.me?.level}{match.playedAt ? `, ${new Date(match.playedAt).toLocaleString()}` : ""}</small></span>
+                  <span><b>{match.mode ?? "TFT"}</b><small>Set {match.setNumber}, {tr("niveau", "level")} {match.me?.level}{match.playedAt ? `, ${new Date(match.playedAt).toLocaleString(lang)}` : ""}</small></span>
                 </div>
                 {(match.me?.traits?.length ?? 0) > 0 && <div className="tft-line">{match.me?.traits?.slice(0, 6).map((trait) => `${trait.name} ${trait.numUnits}`).join(", ")}</div>}
                 {(match.me?.units?.length ?? 0) > 0 && <div className="tft-line">{match.me?.units?.slice(0, 9).map((unit) => `${unit.name} ${"★".repeat(unit.tier ?? 1)}`).join(", ")}</div>}

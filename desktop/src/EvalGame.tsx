@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import { catalogGet, riotCall } from "./api";
 import { agentIcon } from "./eval";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
 import { Button } from "./ui";
 import { EASE_SNAP } from "./motion";
@@ -75,7 +75,7 @@ function Wallet() {
       {items.map((item) => (
         <div key={item.id}>
           <img src={`${MEDIA}/currencies/${item.id}/displayicon.png`} alt="" />
-          <span><small>{item.label}</small><b>{state.error ? "–" : (item.value ?? 0).toLocaleString("fr-FR")}</b></span>
+          <span><small>{item.label}</small><b>{state.error ? "–" : (item.value ?? 0).toLocaleString(lang)}</b></span>
         </div>
       ))}
     </section>
@@ -119,7 +119,7 @@ function Shop() {
         return (
           <section key={bundle.ID} className="eval-bundle">
             {meta?.image && <img src={meta.image} alt="" />}
-            <div><b>{meta?.name ?? tr("Pack", "Bundle")}</b><span>{price.toLocaleString("fr-FR")} VP</span></div>
+            <div><b>{meta?.name ?? tr("Pack", "Bundle")}</b><span>{price.toLocaleString(lang)} VP</span></div>
           </section>
         );
       })}
@@ -133,7 +133,7 @@ function Shop() {
             <StaggerItem key={offer.OfferID} variants={staggerItem} className="eval-offer" style={{ "--tier": tier?.color ?? "#8e8e93" } as React.CSSProperties}>
               {skin?.icon ? <img src={skin.icon} alt="" /> : <span className="eval-offer-empty" />}
               <b>{skin?.name ?? tr("Chargement…", "Loading…")}</b>
-              <span><small>{tier?.label ?? ""}</small><small>{(offer.Cost[VP] ?? 0).toLocaleString("fr-FR")} VP</small></span>
+              <span><small>{tier?.label ?? ""}</small><small>{(offer.Cost[VP] ?? 0).toLocaleString(lang)} VP</small></span>
             </StaggerItem>
           );
         })}
@@ -151,7 +151,7 @@ function Shop() {
                 <StaggerItem key={offer.OfferID} variants={staggerItem}>
                   {type ? <img src={type.image(id)} alt="" /> : <span className="eval-offer-empty" />}
                   <small>{type?.label ?? tr("Titre", "Title")}</small>
-                  <b>{(offer.Cost[KC] ?? Object.values(offer.Cost)[0] ?? 0).toLocaleString("fr-FR")}</b>
+                  <b>{(offer.Cost[KC] ?? Object.values(offer.Cost)[0] ?? 0).toLocaleString(lang)}</b>
                 </StaggerItem>
               );
             })}
@@ -201,7 +201,7 @@ function Missions() {
         <section className="eval-card eval-pad">
           <div className="eval-section-head"><h2>{tr("Passe de combat", "Battle pass")}</h2><span>{tr("Niveau", "Tier")} {reached} / {levels.length}</span></div>
           <Progress value={levels.length ? reached / levels.length : 0} />
-          {nextXp > 0 && <small>{(mine?.ProgressionTowardsNextLevel ?? 0).toLocaleString("fr-FR")} / {nextXp.toLocaleString("fr-FR")} XP</small>}
+          {nextXp > 0 && <small>{(mine?.ProgressionTowardsNextLevel ?? 0).toLocaleString(lang)} / {nextXp.toLocaleString(lang)} XP</small>}
         </section>
       )}
       {milestones.length > 0 && (
@@ -218,9 +218,9 @@ function Missions() {
           <ul className="eval-mission-list">
             {missions.map((mission) => (
               <li key={mission.id}>
-                <span><b>{mission.title}</b><small>{mission.xp.toLocaleString("fr-FR")} XP</small></span>
+                <span><b>{mission.title}</b><small>{mission.xp.toLocaleString(lang)} XP</small></span>
                 <Progress value={mission.complete ? 1 : mission.target ? mission.progress / mission.target : 0} />
-                <small>{mission.progress.toLocaleString("fr-FR")} / {mission.target.toLocaleString("fr-FR")}</small>
+                <small>{mission.progress.toLocaleString(lang)} / {mission.target.toLocaleString(lang)}</small>
               </li>
             ))}
           </ul>

@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { CalendarDays, CheckCircle2, Circle, ListChecks, NotebookPen, Pencil, Plus, RefreshCw, RotateCcw, Trash2 } from "lucide-react";
+import { CalendarDays, CheckCircle2, Circle, NotebookPen, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { PageHead } from "./kit";
 import { EthoneItem, EthoneItemInput, ItemKind, itemsCreate, itemsDelete, itemsList, itemsUpdate } from "./api";
 import { errorText, lang, t } from "./i18n";
 import { dateTimeInputToIso, eventsByStart, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity";
@@ -17,8 +18,9 @@ function itemDate(value: string | null): string {
   return date.toLocaleString(lang, { dateStyle: "medium", timeStyle: "short" });
 }
 
-export default function ProductivityPage() {
-  const [kind, setKind] = useState<ProductivityKind>("notes");
+const TITLES: Record<ProductivityKind, () => string> = { notes: () => t("notes"), tasks: () => t("tasks"), events: () => t("calendar") };
+
+export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
   const [items, setItems] = useState<EthoneItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,11 +47,10 @@ export default function ProductivityPage() {
     void load();
   }, [load]);
 
-  const chooseKind = (next: ProductivityKind) => {
-    setKind(next);
+  useEffect(() => {
     setEditor(null);
     setConfirmDelete(null);
-  };
+  }, [kind]);
 
   const openNew = () => {
     setDraft(EMPTY_DRAFT);
@@ -119,22 +120,9 @@ export default function ProductivityPage() {
 
   return (
     <>
-      <div className="pagehead">
-        <div>
-          <h1>{t("productivity")}</h1>
-          <p className="muted">{t("productivityLine")}</p>
-        </div>
-        <div className="row">
-          <Button disabled={loading || saving} onClick={load}><RefreshCw size={14} className={loading ? "spin" : ""} />{t("refresh")}</Button>
-          <Button variant="primary" disabled={saving} onClick={openNew}><Plus size={14} />{newLabel}</Button>
-        </div>
-      </div>
-
-      <div className="segmented productivity-tabs" role="tablist" aria-label={t("productivity")}>
-        <button type="button" role="tab" aria-selected={kind === "notes"} className={kind === "notes" ? "on" : ""} onClick={() => chooseKind("notes")}><NotebookPen size={15} /><span>{t("notes")}</span></button>
-        <button type="button" role="tab" aria-selected={kind === "tasks"} className={kind === "tasks" ? "on" : ""} onClick={() => chooseKind("tasks")}><ListChecks size={15} /><span>{t("tasks")}</span></button>
-        <button type="button" role="tab" aria-selected={kind === "events"} className={kind === "events" ? "on" : ""} onClick={() => chooseKind("events")}><CalendarDays size={15} /><span>{t("calendar")}</span></button>
-      </div>
+      <PageHead title={TITLES[kind]()} text={t("productivityLine")} onRefresh={load} refreshing={loading || saving}>
+        <Button variant="primary" disabled={saving} onClick={openNew}><Plus size={14} />{newLabel}</Button>
+      </PageHead>
 
       {error && <div className="home-error" role="alert"><span>{error}</span><Button onClick={load}>{t("retry")}</Button></div>}
 
@@ -142,7 +130,7 @@ export default function ProductivityPage() {
         <ProductivityEditor kind={kind} draft={draft} saving={saving} onChange={setDraft} onCancel={() => setEditor(null)} onSubmit={save} />
       )}
 
-      <section className="productivity-panel" role="tabpanel" aria-busy={loading}>
+      <section className="productivity-panel" aria-busy={loading}>
         {loading && <div className="item-skeletons" aria-label={t("loading")}><span /><span /><span /></div>}
         {!loading && !error && items.length === 0 && <p className="muted empty">{emptyText}</p>}
         {!loading && !error && items.length > 0 && (

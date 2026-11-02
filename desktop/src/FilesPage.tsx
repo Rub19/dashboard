@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronRight, ExternalLink, FileText, Folder, Link2, Search, Star, Trash2 } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, formatBytes, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
 
@@ -58,7 +58,7 @@ function Browser({ favorites }: { favorites: boolean }) {
                 <b>{file.name}</b>
                 {file.isFavorite && <Star size={13} className="files-star" />}
                 <small>{file.isFolder ? "" : formatBytes(file.size)}</small>
-                <small>{file.updatedAt ? new Date(file.updatedAt).toLocaleDateString() : ""}</small>
+                <small>{file.updatedAt ? new Date(file.updatedAt).toLocaleDateString(lang) : ""}</small>
               </button>
             </StaggerItem>
           ))}
@@ -70,7 +70,7 @@ function Browser({ favorites }: { favorites: boolean }) {
             <dl className="generic-fields">
               <div><dt>{tr("Taille", "Size")}</dt><dd>{formatBytes(open.size)}</dd></div>
               <div><dt>{tr("Type", "Type")}</dt><dd>{open.mimeType}</dd></div>
-              {open.updatedAt && <div><dt>{tr("Modifié", "Modified")}</dt><dd>{new Date(open.updatedAt).toLocaleString()}</dd></div>}
+              {open.updatedAt && <div><dt>{tr("Modifié", "Modified")}</dt><dd>{new Date(open.updatedAt).toLocaleString(lang)}</dd></div>}
               {open.brainSummary && <div className="block"><dt>{tr("Résumé", "Summary")}</dt><dd>{open.brainSummary}</dd></div>}
             </dl>
             <div className="row">

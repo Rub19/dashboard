@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Search, Sparkles, Trophy, Users } from "lucide-react";
 import { apiData, catalogGet, restCall, riotCall, trackerMatches, trackerSync } from "./api";
 import { bannerImage, EvalAccount, EvalMatch, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
@@ -215,7 +215,7 @@ function NameHistory({ account }: { account: EvalAccount | null }) {
   return <Status state={state}>{(rows) => rows.length === 0 ? <Empty title={tr("Aucun ancien pseudo", "No previous names")} /> : (
     <table className="eval-table">
       <thead><tr><th scope="col">{tr("Vu depuis", "Seen since")}</th><th scope="col">{tr("Pseudo", "Name")}</th></tr></thead>
-      <tbody>{rows.map((row) => <tr key={`${row.name}-${row.first_seen_at}`}><td>{new Date(row.first_seen_at).toLocaleDateString()}</td><th scope="row">{row.name}<span>#{row.tag}</span></th></tr>)}</tbody>
+      <tbody>{rows.map((row) => <tr key={`${row.name}-${row.first_seen_at}`}><td>{new Date(row.first_seen_at).toLocaleDateString(lang)}</td><th scope="row">{row.name}<span>#{row.tag}</span></th></tr>)}</tbody>
     </table>
   )}</Status>;
 }

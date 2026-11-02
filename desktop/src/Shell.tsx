@@ -1,16 +1,14 @@
 import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, BrainCircuit, CalendarCheck, CircleUser, Folder, Gamepad2, House, Info, LayoutGrid, ListChecks, LogOut, Mail, MessagesSquare, ScrollText, Search, Settings as SettingsIcon, UserRound, Users, WifiOff } from "lucide-react";
-import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, openSite, Profile, profileAvatar, Progress } from "./api";
+import { Activity, BrainCircuit, CircleUser, Folder, Gamepad2, House, LayoutGrid, ListChecks, LogOut, Mail, MessagesSquare, Search, Settings as SettingsIcon, Users, WifiOff } from "lucide-react";
+import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, pageShift, popover, SPRING_PILL } from "./motion";
 import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
-import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import Palette, { Command } from "./Palette";
-import ProductivityPage from "./ProductivityPage";
-import DailyPage from "./DailyPage";
+import WorkPage from "./DailyPage";
 import DiscordPage from "./DiscordPage";
 import FilesPage from "./FilesPage";
 import MailPage from "./MailPage";
@@ -18,10 +16,9 @@ import { AccountPage, BrainPage, GamesPage, InsightsPage, TeamPage } from "./Mor
 import TrackerPage from "./TrackerPage";
 import { BrandMark, ValorantMark, WindowControls } from "./ui";
 
-const WIDE: Page[] = ["home", "tracker", "daily", "files", "mail", "games", "discord", "brain", "team", "insights", "account"];
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, daily: CalendarCheck, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, account: UserRound, journal: ScrollText, settings: SettingsIcon, about: Info };
+const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -189,7 +186,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
               {menu && (
                 <motion.div role="menu" className="menu" variants={popover} initial="initial" animate="animate" exit="exit" style={{ transformOrigin: "bottom left" }}>
                   <div className="menu-head"><b>{profile.name}</b><small className="muted">{profile.email}</small></div>
-                  <button type="button" role="menuitem" autoFocus onClick={() => { setMenu(false); void openSite("account"); }}><CircleUser size={15} />{t("manageAccount")}</button>
+                  <button type="button" role="menuitem" autoFocus onClick={() => { setMenu(false); go("settings"); }}><CircleUser size={15} />{t("manageAccount")}</button>
                   <button type="button" role="menuitem" onClick={signOut}><LogOut size={15} />{t("signOut")}</button>
                 </motion.div>
               )}
@@ -200,12 +197,11 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
       <main className="layer">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
-          <motion.div key={page} className={`page ${WIDE.includes(page) ? "wide" : ""}`} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
-            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("daily")} />}
+          <motion.div key={page} className={"page"} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
+            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />}
             {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
-            {page === "productivity" && <ProductivityPage />}
+            {page === "productivity" && <WorkPage />}
             {page === "tracker" && <TrackerPage />}
-            {page === "daily" && <DailyPage />}
             {page === "files" && <FilesPage />}
             {page === "mail" && <MailPage />}
             {page === "games" && <GamesPage />}
@@ -213,10 +209,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
             {page === "brain" && <BrainPage />}
             {page === "team" && <TeamPage />}
             {page === "insights" && <InsightsPage />}
-            {page === "account" && <AccountPage />}
-            {page === "journal" && <JournalPage />}
-            {page === "settings" && <SettingsPage profile={profile} onSignOut={signOut} />}
-            {page === "about" && <AboutPage />}
+            {page === "settings" && <AccountPage profile={profile} onSignOut={signOut} />}
           </motion.div>
         </AnimatePresence>
       </main>

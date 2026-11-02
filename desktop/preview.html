@@ -45,6 +45,11 @@
           if (command === "tracker_sync") { await pause(500); if (params.has("fail")) throw "Service indisponible"; return account; }
           if (command === "tracker_matches") return matches;
           if (command === "read_journal") return [];
+          if (command === "bot_status") return false;
+          if (command === "open_external") return null;
+          if (command === "catalog_get") return { data: [] };
+          if (command === "rest_call") return [];
+          if (command === "api_call") return { data: [], meta: { unread: 3 } };
           if (command === "about") return { version: "0.1.0", catalogSchema: 1 };
           if (command === "window_setup") return false;
           return null;

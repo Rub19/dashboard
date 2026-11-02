@@ -606,7 +606,7 @@ const en: Record<Key, string> = {
   "setupError.uninstallTimeout": "Uninstalling is taking too long. Check in Windows Settings.",
 };
 
-export const lang = storedLanguage() ?? (navigator.languages.some((item) => item.toLowerCase().startsWith("fr")) ? "fr" : "en");
+export const lang = storedLanguage() ?? "fr";
 const table = lang === "fr" ? fr : en;
 
 export const tr = (french: string, english: string) => (lang === "fr" ? french : english);

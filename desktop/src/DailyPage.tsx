@@ -1,14 +1,15 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, FileText, Flame, Pause, Play, Receipt, RotateCcw, Timer, Trash2 } from "lucide-react";
+import { CalendarDays, Check, FileText, Flame, Headphones, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2 } from "lucide-react";
+import ProductivityPage from "./ProductivityPage";
 import { apiData, restCall } from "./api";
-import { errorText, tr } from "./i18n";
+import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stat, useLoad } from "./kit";
 import { EASE_SNAP, SPRING_PRESS } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "habits" | "focus" | "bills" | "scratchpad";
+type Section = "notes" | "tasks" | "events" | "habits" | "focus" | "bills" | "scratchpad" | "ambience";
 interface Habit { id: string; name: string; description: string | null; emoji: string | null; color: string | null; target_per_week: number; archived: boolean }
 interface Completion { id: string; habit_id: string; completed_on: string }
 interface FocusEntry { completedAt: string; seconds: number }
@@ -47,7 +48,7 @@ function Habits() {
   const [error, setError] = useState<string | null>(null);
   const today = dayKey(new Date());
   const week = useMemo(() => lastDays(7), []);
-  const dayFormat = useMemo(() => new Intl.DateTimeFormat(undefined, { weekday: "narrow" }), []);
+  const dayFormat = useMemo(() => new Intl.DateTimeFormat(lang, { weekday: "narrow" }), []);
 
   const add = async (event: FormEvent) => {
     event.preventDefault();
@@ -108,7 +109,7 @@ function Habits() {
                     const key = dayKey(date);
                     const on = days.has(key);
                     return (
-                      <motion.button key={key} type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} className={`${on ? "on" : ""} ${key === today ? "today" : ""}`} aria-pressed={on} aria-label={`${habit.name}, ${date.toLocaleDateString()}`} onClick={() => void toggle(habit, key)}>
+                      <motion.button key={key} type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} className={`${on ? "on" : ""} ${key === today ? "today" : ""}`} aria-pressed={on} aria-label={`${habit.name}, ${date.toLocaleDateString(lang)}`} onClick={() => void toggle(habit, key)}>
                         {on ? <Check size={14} /> : dayFormat.format(date)}
                       </motion.button>
                     );
@@ -199,7 +200,7 @@ function Bills() {
   const [dueDate, setDueDate] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const money = useMemo(() => new Intl.NumberFormat(undefined, { style: "currency", currency: "EUR" }), []);
+  const money = useMemo(() => new Intl.NumberFormat(lang, { style: "currency", currency: "EUR" }), []);
   const action = async (run: () => Promise<unknown>) => {
     setBusy(true);
     setError(null);
@@ -241,13 +242,129 @@ function Bills() {
           {bills.map((bill) => (
             <li key={bill.id} className={bill.data?.paid ? "paid" : ""}>
               <button type="button" className="bill-check" aria-pressed={Boolean(bill.data?.paid)} aria-label={tr(`Marquer ${bill.label} comme payée`, `Mark ${bill.label} as paid`)} disabled={busy} onClick={() => void action(() => apiData("api/user-data/bills", "PATCH", { id: bill.id, data: { ...bill.data, paid: !bill.data?.paid } }))}>{bill.data?.paid && <Check size={13} />}</button>
-              <span><b>{bill.label}</b>{bill.data?.dueDate && <small>{new Date(bill.data.dueDate).toLocaleDateString()}</small>}</span>
+              <span><b>{bill.label}</b>{bill.data?.dueDate && <small>{new Date(bill.data.dueDate).toLocaleDateString(lang)}</small>}</span>
               <b>{money.format(bill.data?.amount ?? 0)}</b>
               <button type="button" className="icon-btn" disabled={busy} aria-label={tr(`Supprimer ${bill.label}`, `Delete ${bill.label}`)} onClick={() => void action(() => apiData("api/user-data/bills", "DELETE", { id: bill.id }))}><Trash2 size={15} /></button>
             </li>
           ))}
         </ul>
       )}
+    </>
+  );
+}
+
+type SoundId = "brown" | "pink" | "rain" | "binaural";
+const SOUNDS: { id: SoundId; label: () => string; text: () => string }[] = [
+  { id: "brown", label: () => tr("Bruit brun", "Brown noise"), text: () => tr("Grave et enveloppant.", "Deep and enveloping.") },
+  { id: "pink", label: () => tr("Bruit rose", "Pink noise"), text: () => tr("Doux et équilibré.", "Soft and balanced.") },
+  { id: "rain", label: () => tr("Pluie", "Rain"), text: () => tr("Pluie continue simulée.", "Simulated steady rain.") },
+  { id: "binaural", label: () => tr("Ondes alpha", "Alpha waves"), text: () => tr("Battement binaural de 10 Hz, à écouter au casque.", "10 Hz binaural beat, best on headphones.") },
+];
+
+function noiseBuffer(context: AudioContext, kind: "brown" | "pink"): AudioBuffer {
+  const buffer = context.createBuffer(2, context.sampleRate * 4, context.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const data = buffer.getChannelData(channel);
+    let last = 0;
+    const pink = [0, 0, 0];
+    for (let index = 0; index < data.length; index++) {
+      const white = Math.random() * 2 - 1;
+      if (kind === "brown") {
+        last = (last + 0.02 * white) / 1.02;
+        data[index] = last * 3.5;
+      } else {
+        pink[0] = 0.997 * pink[0] + 0.029 * white;
+        pink[1] = 0.985 * pink[1] + 0.033 * white;
+        pink[2] = 0.95 * pink[2] + 0.07 * white;
+        data[index] = (pink[0] + pink[1] + pink[2]) * 1.6;
+      }
+    }
+  }
+  return buffer;
+}
+
+function Ambience() {
+  const context = useRef<AudioContext | null>(null);
+  const playing = useRef(new Map<SoundId, { gain: GainNode; stop: () => void }>());
+  const [levels, setLevels] = useState<Record<SoundId, number>>(() => readJson<Record<SoundId, number>>("ethone-ambience") ?? { brown: 0.5, pink: 0.5, rain: 0.5, binaural: 0.3 });
+  const [active, setActive] = useState<SoundId[]>([]);
+  useEffect(() => {
+    const sounds = playing.current;
+    return () => {
+      sounds.forEach((sound) => sound.stop());
+      sounds.clear();
+      void context.current?.close();
+    };
+  }, []);
+  const start = (id: SoundId) => {
+    const audio = (context.current ??= new AudioContext());
+    void audio.resume();
+    const gain = audio.createGain();
+    gain.gain.value = 0;
+    gain.gain.linearRampToValueAtTime(levels[id], audio.currentTime + 0.6);
+    gain.connect(audio.destination);
+    if (id === "binaural") {
+      const merger = audio.createChannelMerger(2);
+      const left = audio.createOscillator();
+      const right = audio.createOscillator();
+      left.frequency.value = 200;
+      right.frequency.value = 210;
+      left.connect(merger, 0, 0);
+      right.connect(merger, 0, 1);
+      merger.connect(gain);
+      left.start();
+      right.start();
+      playing.current.set(id, { gain, stop: () => { left.stop(); right.stop(); gain.disconnect(); } });
+      return;
+    }
+    const source = audio.createBufferSource();
+    source.buffer = noiseBuffer(audio, id === "brown" ? "brown" : "pink");
+    source.loop = true;
+    if (id === "rain") {
+      const filter = audio.createBiquadFilter();
+      filter.type = "highpass";
+      filter.frequency.value = 900;
+      source.connect(filter);
+      filter.connect(gain);
+    } else {
+      source.connect(gain);
+    }
+    source.start();
+    playing.current.set(id, { gain, stop: () => { source.stop(); gain.disconnect(); } });
+  };
+  const toggle = (id: SoundId) => {
+    const sound = playing.current.get(id);
+    if (sound) {
+      sound.stop();
+      playing.current.delete(id);
+      setActive((current) => current.filter((item) => item !== id));
+    } else {
+      start(id);
+      setActive((current) => [...current, id]);
+    }
+  };
+  const level = (id: SoundId, value: number) => {
+    const next = { ...levels, [id]: value };
+    setLevels(next);
+    write("ethone-ambience", JSON.stringify(next));
+    const sound = playing.current.get(id);
+    if (sound && context.current) sound.gain.gain.linearRampToValueAtTime(value, context.current.currentTime + 0.1);
+  };
+  return (
+    <>
+      <PageHead title={tr("Ambiance", "Ambience")} text={tr("Des sons générés sur ce PC, que tu peux mélanger. Ils s'arrêtent quand tu quittes cette page.", "Sounds generated on this PC that you can mix. They stop when you leave this page.")} />
+      <ul className="ambience-sounds">
+        {SOUNDS.map((sound) => {
+          const on = active.includes(sound.id);
+          return (
+            <li key={sound.id}>
+              <div><b className={on ? "on" : ""}>{sound.label()}</b><button type="button" className="icon-btn" aria-pressed={on} aria-label={sound.label()} onClick={() => toggle(sound.id)}>{on ? <Pause size={16} /> : <Play size={16} />}</button></div>
+              <small className="muted">{sound.text()}</small>
+              <input type="range" min={0} max={1} step={0.01} value={levels[sound.id]} aria-label={tr(`Volume : ${sound.label()}`, `Volume: ${sound.label()}`)} onChange={(event) => level(sound.id, Number(event.target.value))} />
+            </li>
+          );
+        })}
+      </ul>
     </>
   );
 }
@@ -266,20 +383,26 @@ function Scratchpad() {
   );
 }
 
-export default function DailyPage() {
-  const [section, setSection] = useState<Section>("habits");
+export default function WorkPage() {
+  const [section, setSection] = useState<Section>("tasks");
   const items = [
-    { id: "habits", label: tr("Habitudes", "Habits"), icon: <Flame size={16} /> },
-    { id: "focus", label: tr("Concentration", "Focus"), icon: <Timer size={16} /> },
-    { id: "bills", label: tr("Factures", "Bills"), icon: <Receipt size={16} /> },
-    { id: "scratchpad", label: tr("Mémo", "Scratchpad"), icon: <FileText size={16} /> },
+    { id: "tasks", label: tr("Tâches", "Tasks"), icon: <ListChecks size={16} />, group: tr("Organisation", "Organize") },
+    { id: "events", label: tr("Calendrier", "Calendar"), icon: <CalendarDays size={16} />, group: tr("Organisation", "Organize") },
+    { id: "notes", label: tr("Notes", "Notes"), icon: <NotebookPen size={16} />, group: tr("Organisation", "Organize") },
+    { id: "scratchpad", label: tr("Mémo", "Scratchpad"), icon: <FileText size={16} />, group: tr("Organisation", "Organize") },
+    { id: "habits", label: tr("Habitudes", "Habits"), icon: <Flame size={16} />, group: tr("Quotidien", "Daily") },
+    { id: "focus", label: tr("Concentration", "Focus"), icon: <Timer size={16} />, group: tr("Quotidien", "Daily") },
+    { id: "ambience", label: tr("Ambiance", "Ambience"), icon: <Headphones size={16} />, group: tr("Quotidien", "Daily") },
+    { id: "bills", label: tr("Factures", "Bills"), icon: <Receipt size={16} />, group: tr("Quotidien", "Daily") },
   ] as const;
   return (
     <div className="kit-split">
-      <SideNav items={items} value={section} onChange={setSection} id="daily" label={tr("Quotidien", "Daily")} />
+      <SideNav items={items} value={section} onChange={setSection} id="work" label={tr("Productivité", "Productivity")} />
       <div className="kit-split-body">
+        {(section === "notes" || section === "tasks" || section === "events") && <ProductivityPage kind={section} />}
         {section === "habits" && <Habits />}
         {section === "focus" && <Focus />}
+        {section === "ambience" && <Ambience />}
         {section === "bills" && <Bills />}
         {section === "scratchpad" && <Scratchpad />}
       </div>

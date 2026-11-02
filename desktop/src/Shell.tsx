@@ -1,11 +1,14 @@
-import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, BrainCircuit, CircleUser, Folder, Gamepad2, House, LayoutGrid, ListChecks, LogOut, Mail, MessagesSquare, Search, Settings as SettingsIcon, Users, WifiOff } from "lucide-react";
+import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t } from "./i18n";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
-import { EASE_SNAP, pageShift, popover, SPRING_PILL } from "./motion";
+import { EASE_SNAP, popover } from "./motion";
+import { togglePinned } from "./pinned";
+import { readJson, write } from "./settings";
+import Sidebar from "./Sidebar";
 import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import Palette, { Command } from "./Palette";
 import WorkPage from "./DailyPage";
@@ -18,7 +21,6 @@ import { BrandMark, ValorantMark, WindowControls } from "./ui";
 
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
-const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
 const CAN_RUN: Action[] = ["open", "openWeb", "install", "update", "openToUpdate", "releasePage"];
 
 function progressState(progress: Progress): Busy {
@@ -54,6 +56,9 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const [palette, setPalette] = useState(false);
   const [menu, setMenu] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [visited, setVisited] = useState<Page[]>(["home"]);
+  const [pinned, setPinned] = useState<string[]>(() => readJson<string[]>("ethone-pinned-apps") ?? []);
+  const layer = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -103,7 +108,18 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   const go = useCallback((next: Page) => {
     setPage((current) => {
+      if (current === next) return current;
       setDirection(ALL_PAGES.indexOf(next) >= ALL_PAGES.indexOf(current) ? 1 : -1);
+      if (layer.current) layer.current.scrollTop = 0;
+      return next;
+    });
+    setVisited((current) => (current.includes(next) ? current : [...current, next]));
+  }, []);
+
+  const pin = useCallback((id: string) => {
+    setPinned((current) => {
+      const next = togglePinned(current, id);
+      write("ethone-pinned-apps", JSON.stringify(next));
       return next;
     });
   }, []);
@@ -135,6 +151,14 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   const signOut = () => authSignOut().then(onSignedOut);
 
+  const openPinned = useCallback(
+    (status: ModuleStatus) => {
+      if (CAN_RUN.includes(status.action) && status.installed !== null) void run(status);
+      else go("modules");
+    },
+    [go, run],
+  );
+
   const commands = useMemo<Command[]>(
     () => [
       ...modules
@@ -147,16 +171,6 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     [modules, run, refresh, go],
   );
 
-  const navItem = ({ id }: { id: Page }) => {
-    const Icon = PAGE_ICONS[id];
-    return (
-      <button key={id} type="button" className={`nav-item ${page === id ? "on" : ""}`} aria-current={page === id ? "page" : undefined} onClick={() => go(id)}>
-        {page === id && <motion.span layoutId="nav-trace" className="nav-trace" transition={SPRING_PILL} />}
-        <Icon size={20} />
-        <span className="nav-label">{id === "tracker" ? "E:VAL" : t(id)}</span>
-      </button>
-    );
-  };
 
   const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
 
@@ -172,12 +186,15 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         <WindowControls />
       </header>
 
-      <nav className="nav" aria-label={t("navigation")}>
-        <div className="nav-group">{MAIN_PAGES.map(navItem)}</div>
-        <div className="nav-group nav-foot">
-          {!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
-          {FOOT_PAGES.map(navItem)}
-          <div className="usermenu" ref={menuRef}>
+      <Sidebar
+        page={page}
+        modules={modules}
+        pinned={pinned}
+        onGo={go}
+        onOpenPinned={openPinned}
+        onUnpin={pin}
+        note={!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
+        account={<div className="usermenu" ref={menuRef}>
             <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={profile.name} onClick={() => setMenu((open) => !open)}>
               <Avatar profile={profile} />
               <span className="nav-label">{profile.name}</span>
@@ -191,27 +208,30 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </div>
-      </nav>
+          </div>}
+      />
 
-      <main className="layer">
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
-          <motion.div key={page} className={"page"} custom={direction} variants={pageShift} initial="initial" animate="animate" exit="exit">
-            {page === "home" && <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />}
-            {page === "modules" && <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} />}
-            {page === "productivity" && <WorkPage />}
-            {page === "tracker" && <TrackerPage />}
-            {page === "files" && <FilesPage />}
-            {page === "mail" && <MailPage />}
-            {page === "games" && <GamesPage />}
-            {page === "discord" && <DiscordPage />}
-            {page === "brain" && <BrainPage />}
-            {page === "team" && <TeamPage />}
-            {page === "insights" && <InsightsPage />}
-            {page === "settings" && <AccountPage profile={profile} onSignOut={signOut} />}
-          </motion.div>
-        </AnimatePresence>
+      <main className="layer" ref={layer}>
+        {(
+          [
+            ["home", <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],
+            ["modules", <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} pinned={pinned} onPin={pin} />],
+            ["productivity", <WorkPage />],
+            ["tracker", <TrackerPage />],
+            ["files", <FilesPage />],
+            ["mail", <MailPage />],
+            ["games", <GamesPage />],
+            ["discord", <DiscordPage />],
+            ["brain", <BrainPage />],
+            ["team", <TeamPage />],
+            ["insights", <InsightsPage />],
+            ["settings", <AccountPage profile={profile} onSignOut={signOut} />],
+          ] as [Page, ReactNode][]
+        )
+          .filter(([id]) => visited.includes(id))
+          .map(([id, content]) => (
+            <div key={id} className="page" hidden={id !== page} data-direction={direction > 0 ? "down" : "up"}>{content}</div>
+          ))}
       </main>
 
       {palette && <Palette commands={commands} onClose={() => setPalette(false)} />}

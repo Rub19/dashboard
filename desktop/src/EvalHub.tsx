@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Search, Sparkles, Trophy, Users } from "lucide-react";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Search, Sparkles, Target, Trophy, Users } from "lucide-react";
 import { apiData, catalogGet, restCall, riotCall, trackerMatches, trackerSync } from "./api";
 import { bannerImage, EvalAccount, EvalMatch, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
@@ -7,7 +7,7 @@ import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, stag
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts";
+type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -272,6 +272,47 @@ function AgentContracts({ linked }: { linked: boolean }) {
   );
 }
 
+function SeasonGoal({ account }: { account: EvalAccount | null }) {
+  const [goal, setGoal] = useState(() => readJson<number>("ethone-eval-goal-tier") ?? 0);
+  const tier = account?.mmr?.tier || account?.tier || 0;
+  const rr = account?.mmr?.rr ?? 0;
+  const left = goal > tier ? (goal - tier) * 100 - rr : 0;
+  const tiers = Array.from({ length: 25 }, (_, index) => index + 3);
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Objectif de saison", "Season goal")}</h2></div>
+      <label className="kit-field"><span>{tr("Rang visé", "Target rank")}</span>
+        <select className="eval-select" value={goal} onChange={(event) => { const value = Number(event.target.value); setGoal(value); write("ethone-eval-goal-tier", JSON.stringify(value)); }}>
+          <option value={0}>{tr("Aucun", "None")}</option>
+          {tiers.map((value) => <option key={value} value={value}>{rankName(value)}</option>)}
+        </select>
+      </label>
+      {goal > 0 && (
+        <section className="eval-card eval-pad">
+          <p>{tr("Actuel", "Current")} : <b style={{ color: rankColor(tier) }}>{rankName(tier)}</b>{tier > 0 ? `, ${rr} RR` : ""}</p>
+          <p>{goal <= tier ? tr("Objectif atteint.", "Goal reached.") : tr(`Il te reste environ ${left} RR avant ${rankName(goal)}.`, `About ${left} RR left to ${rankName(goal)}.`)}</p>
+        </section>
+      )}
+    </>
+  );
+}
+
+function ContractArchive({ linked }: { linked: boolean }) {
+  const state = useLoad(async () => {
+    const [mine, contracts] = await Promise.all([
+      linked ? riotCall<{ Contracts?: { ContractDefinitionID: string; ProgressionLevelReached?: number }[] }>("/contracts/v1/contracts/{puuid}") : null,
+      catalogGet<{ uuid: string; displayName: string; content: { relationType?: string | null; chapters?: { levels?: unknown[] }[] } }[]>(`/contracts?${language}`),
+    ]);
+    return contracts.filter((contract) => contract.content.relationType !== "Agent").map((contract) => ({ id: contract.uuid, name: contract.displayName, total: contract.content.chapters?.reduce((sum, chapter) => sum + (chapter.levels?.length ?? 0), 0) ?? 0, reached: mine?.Contracts?.find((item) => item.ContractDefinitionID.toLowerCase() === contract.uuid.toLowerCase())?.ProgressionLevelReached ?? 0 }));
+  }, [linked]);
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Archives des contrats", "Contract archive")}</h2></div>
+      <Status state={state}>{(rows) => <table className="eval-table"><thead><tr><th scope="col">{tr("Niveau", "Tier")}</th><th scope="col">{tr("Contrat", "Contract")}</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.reached} / {row.total}</td><th scope="row">{row.name}</th></tr>)}</tbody></table>}</Status>
+    </>
+  );
+}
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
@@ -291,7 +332,9 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
     { id: "seasons", label: tr("Mes saisons", "My seasons"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
     { id: "names", label: tr("Mes anciens pseudos", "My past names"), icon: <History size={16} />, group: tr("Joueurs", "Players") },
     { id: "collection", label: tr("Ma collection", "My collection"), icon: <Sparkles size={16} />, group: tr("Joueurs", "Players") },
+    { id: "goal", label: tr("Objectif de saison", "Season goal"), icon: <Target size={16} />, group: tr("Joueurs", "Players") },
     { id: "contracts", label: tr("Contrats d'agents", "Agent contracts"), icon: <FileText size={16} />, group: tr("Joueurs", "Players") },
+    { id: "archive", label: tr("Archives des contrats", "Contract archive"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
     { id: "maps", label: tr("Cartes", "Maps"), icon: <MapIcon size={16} />, group: tr("Le jeu", "The game") },
     { id: "agents", label: tr("Agents", "Agents"), icon: <Users size={16} />, group: tr("Le jeu", "The game") },
     { id: "weapons", label: tr("Armes", "Weapons"), icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
@@ -309,6 +352,8 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
         {section === "names" && <NameHistory account={account} />}
         {section === "collection" && <Collection linked={linked} />}
         {section === "contracts" && <AgentContracts linked={linked} />}
+        {section === "goal" && <SeasonGoal account={account} />}
+        {section === "archive" && <ContractArchive linked={linked} />}
       </div>
     </div>
   );

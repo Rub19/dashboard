@@ -1,9 +1,9 @@
 import { PageHead } from "./kit";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Download, Gamepad2 } from "lucide-react";
+import { ChevronDown, Download, Gamepad2, Pin, PinOff } from "lucide-react";
 import { ethoneUpdateCheck, ethoneUpdateInstall, ModuleStatus } from "./api";
-import { errorText, Key, lang, t } from "./i18n";
+import { errorText, Key, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_GLIDE } from "./motion";
 import { Button } from "./ui";
 
@@ -22,6 +22,8 @@ interface Props {
   onRun: (status: ModuleStatus) => void;
   onRefresh: () => void;
   onDismiss: (id: string) => void;
+  pinned: string[];
+  onPin: (id: string) => void;
 }
 
 const ICONS = import.meta.glob<string>("./assets/modules/*.png", { eager: true, import: "default" });
@@ -54,7 +56,7 @@ export function AppIcon({ id }: { id: string }) {
   return <span className="app-icon glyph"><Gamepad2 size={20} /></span>;
 }
 
-function Row({ status, working, error, onRun, onDismiss }: { status: ModuleStatus; working?: Busy; error?: string; onRun: () => void; onDismiss: () => void }) {
+function Row({ status, working, error, onRun, onDismiss, pinned, onPin }: { status: ModuleStatus; working?: Busy; error?: string; onRun: () => void; onDismiss: () => void; pinned: boolean; onPin: () => void }) {
   const [open, setOpen] = useState(false);
   const { module, action, latest, feedError, running } = status;
   const line = versionLine(status);
@@ -87,6 +89,7 @@ function Row({ status, working, error, onRun, onDismiss }: { status: ModuleStatu
             <span className="muted small">{t(`action.${action}` as Key)}</span>
           )}
         </div>
+        <button type="button" className={`icon-btn app-pin ${pinned ? "on" : ""}`} aria-pressed={pinned} aria-label={pinned ? tr(`Désépingler ${module.name}`, `Unpin ${module.name}`) : tr(`Épingler ${module.name} dans la barre`, `Pin ${module.name} to the sidebar`)} title={pinned ? tr("Désépingler", "Unpin") : tr("Épingler dans la barre", "Pin to the sidebar")} onClick={onPin}>{pinned ? <PinOff size={15} /> : <Pin size={15} />}</button>
         <button type="button" className="app-chev" tabIndex={-1} aria-hidden="true" onClick={() => setOpen((value) => !value)}>
           <ChevronDown size={15} className={`chev ${open ? "up" : ""}`} />
         </button>
@@ -167,7 +170,7 @@ function EthoneUpdate() {
   );
 }
 
-export default function ModulesPage({ name, modules, checking, busy, errors, loadError, onRun, onRefresh, onDismiss }: Props) {
+export default function ModulesPage({ name, modules, checking, busy, errors, loadError, onRun, onRefresh, onDismiss, pinned, onPin }: Props) {
   return (
     <>
       <PageHead title={t("modules")} text={summary(modules, checking, name)} onRefresh={onRefresh} refreshing={checking} />
@@ -185,7 +188,7 @@ export default function ModulesPage({ name, modules, checking, busy, errors, loa
       ) : (
         <motion.ul className="apps" variants={listStagger} initial="initial" animate="animate">
           {modules.map((status) => (
-            <Row key={status.module.id} status={status} working={busy[status.module.id]} error={errors[status.module.id]} onRun={() => onRun(status)} onDismiss={() => onDismiss(status.module.id)} />
+            <Row key={status.module.id} pinned={pinned.includes(status.module.id)} onPin={() => onPin(status.module.id)} status={status} working={busy[status.module.id]} error={errors[status.module.id]} onRun={() => onRun(status)} onDismiss={() => onDismiss(status.module.id)} />
           ))}
         </motion.ul>
       )}

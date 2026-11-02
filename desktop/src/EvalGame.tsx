@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Users } from "lucide-react";
 import { catalogGet, riotCall } from "./api";
 import { agentIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
+import { readJson, write } from "./settings";
 import { Button } from "./ui";
 import { EASE_SNAP } from "./motion";
 
@@ -273,13 +274,92 @@ function Picker({ kind, current, loadout, onClose, onSaved }: { kind: "card" | "
   );
 }
 
+interface CatalogWeapon { uuid: string; displayName: string; displayIcon?: string; skins?: { uuid: string; displayName: string; displayIcon?: string | null; levels?: { uuid: string; displayIcon?: string | null }[]; chromas?: { uuid: string; displayIcon?: string | null; fullRender?: string | null }[] }[] }
+interface SavedProfile { id: string; name: string; loadout: unknown }
+const PROFILES_KEY = "ethone-eval-appearance-profiles";
+
+function SkinPicker({ weapon, loadout, onClose, onSaved }: { weapon: CatalogWeapon | null; loadout: unknown; onClose: () => void; onSaved: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const owned = useLoad(async () => {
+    const result = await riotCall<{ Entitlements?: { ItemID: string }[] }>("/store/v1/entitlements/{puuid}/e7c63390-eda7-46e0-bb7a-a6abdacd2433");
+    return new Set((result.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+  });
+  const skins = (weapon?.skins ?? []).flatMap((skin) => {
+    const levels = (skin.levels ?? []).filter((level) => owned.data?.has(level.uuid.toLowerCase()));
+    const level = levels.at(-1);
+    const chroma = skin.chromas?.[0];
+    return level && chroma ? [{ skin, level, chroma }] : [];
+  });
+  const defaults = (weapon?.skins ?? []).filter((skin) => /standard|par défaut/i.test(skin.displayName) || skin.levels?.length === 1 && !skin.displayIcon);
+  const equip = async (skinId: string, levelId: string, chromaId: string) => {
+    if (!weapon) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const body = structuredClone(loadout) as { Guns?: Record<string, unknown>[] };
+      body.Guns = (body.Guns ?? []).map((gun) => (String(gun.ID).toLowerCase() === weapon.uuid.toLowerCase() ? { ...gun, SkinID: skinId, SkinLevelID: levelId, ChromaID: chromaId } : gun));
+      await riotCall("/personalization/v3/players/{puuid}/playerloadout", { method: "PUT", body });
+      onSaved();
+      onClose();
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Drawer open={Boolean(weapon)} title={weapon?.displayName ?? ""} onClose={onClose} width={640}>
+      {error && <ErrorBox message={error} />}
+      {!owned.data ? (owned.error ? <ErrorBox message={owned.error} onRetry={owned.reload} /> : <Skeletons count={4} height={60} />) : skins.length === 0 ? <p className="eval-soft">{tr("Tu n'as pas d'autre apparence pour cette arme.", "You have no other skin for this weapon.")}</p> : (
+        <ul className="eval-skins eval-skin-picker">
+          {skins.map(({ skin, level, chroma }) => <li key={skin.uuid}><button type="button" disabled={busy} onClick={() => void equip(skin.uuid, level.uuid, chroma.uuid)}>{(level.displayIcon ?? skin.displayIcon) && <img src={level.displayIcon ?? skin.displayIcon ?? ""} alt="" loading="lazy" />}<small>{skin.displayName}</small></button></li>)}
+        </ul>
+      )}
+      {defaults.length > 0 && <p className="eval-soft">{tr("Pour revenir à l'apparence de base, utilise le jeu.", "To go back to the base skin, use the game.")}</p>}
+    </Drawer>
+  );
+}
+
+function Profiles({ loadout, onApplied }: { loadout: unknown; onApplied: () => void }) {
+  const [profiles, setProfiles] = useState<SavedProfile[]>(() => readJson<SavedProfile[]>(PROFILES_KEY) ?? []);
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const store = (next: SavedProfile[]) => {
+    setProfiles(next);
+    write(PROFILES_KEY, JSON.stringify(next));
+  };
+  const apply = async (profile: SavedProfile) => {
+    setError(null);
+    try {
+      const saved = profile.loadout as Record<string, unknown>;
+      await riotCall("/personalization/v3/players/{puuid}/playerloadout", { method: "PUT", body: { ...(loadout as Record<string, unknown>), Guns: saved.Guns, Sprays: saved.Sprays, Identity: saved.Identity, Incognito: saved.Incognito } });
+      onApplied();
+    } catch (reason) {
+      setError(errorText(reason));
+    }
+  };
+  return (
+    <section className="eval-card eval-pad">
+      <h2>{tr("Profils d'apparences", "Appearance profiles")}</h2>
+      <form className="eval-search" onSubmit={(event) => { event.preventDefault(); if (name.trim()) { store([{ id: String(Date.now()), name: name.trim(), loadout }, ...profiles]); setName(""); } }}>
+        <input value={name} placeholder={tr("Nom du profil", "Profile name")} aria-label={tr("Nom du profil", "Profile name")} onChange={(event) => setName(event.target.value)} />
+        <Button type="submit" disabled={!name.trim()}>{tr("Enregistrer l'équipement", "Save loadout")}</Button>
+      </form>
+      {error && <ErrorBox message={error} />}
+      {profiles.length > 0 && <ul className="eval-live">{profiles.map((profile) => <li key={profile.id}><b>{profile.name}</b><Button onClick={() => void apply(profile)}>{tr("Appliquer", "Apply")}</Button><Button className="danger" onClick={() => store(profiles.filter((item) => item.id !== profile.id))}>{tr("Supprimer", "Delete")}</Button></li>)}</ul>}
+    </section>
+  );
+}
+
 function Loadout() {
   const [picking, setPicking] = useState<"card" | "title" | null>(null);
+  const [gun, setGun] = useState<CatalogWeapon | null>(null);
   const state = useLoad(async () => {
     const loadout = await riotCall<{ Identity?: { PlayerCardID?: string; PlayerTitleID?: string }; Guns?: { ID: string; SkinLevelID?: string }[]; Sprays?: { SprayID?: string }[] }>("/personalization/v3/players/{puuid}/playerloadout").catch(() => riotCall<{ Identity?: { PlayerCardID?: string; PlayerTitleID?: string }; Guns?: { ID: string; SkinLevelID?: string }[]; Sprays?: { SprayID?: string }[] }>("/personalization/v2/players/{puuid}/playerloadout"));
     const [skins, weapons, title] = await Promise.all([
       skinCatalog(),
-      catalogGet<{ uuid: string; displayName: string; displayIcon?: string }[]>(`/weapons?${language}`),
+      catalogGet<CatalogWeapon[]>(`/weapons?${language}`),
       loadout.Identity?.PlayerTitleID ? catalogGet<{ titleText?: string }>(`/playertitles/${loadout.Identity.PlayerTitleID}?${language}`).catch(() => null) : null,
     ]);
     return { loadout, skins, weapons, title: title?.titleText ?? "" };
@@ -303,19 +383,24 @@ function Loadout() {
           const skin = gun.SkinLevelID ? skins.get(gun.SkinLevelID.toLowerCase()) : undefined;
           return (
             <StaggerItem key={gun.ID} variants={staggerItem}>
-              {(skin?.icon || weapon?.displayIcon) && <img src={skin?.icon || weapon?.displayIcon} alt="" />}
-              <small>{weapon?.displayName}</small>
-              <b>{skin?.name ?? weapon?.displayName}</b>
+              <button type="button" disabled={!weapon} aria-label={tr(`Changer d'apparence : ${weapon?.displayName}`, `Change skin: ${weapon?.displayName}`)} onClick={() => weapon && setGun(weapon)}>
+                {(skin?.icon || weapon?.displayIcon) && <img src={skin?.icon || weapon?.displayIcon} alt="" />}
+                <small>{weapon?.displayName}</small>
+                <b>{skin?.name ?? weapon?.displayName}</b>
+              </button>
             </StaggerItem>
           );
         })}
       </Stagger>
+      <Profiles loadout={loadout} onApplied={state.reload} />
+      <SkinPicker weapon={gun} loadout={loadout} onClose={() => setGun(null)} onSaved={state.reload} />
       <Picker kind={picking} current={picking === "card" ? loadout.Identity?.PlayerCardID : loadout.Identity?.PlayerTitleID} loadout={loadout} onClose={() => setPicking(null)} onSaved={state.reload} />
     </div>
   );
 }
 
 function PartyAndLive() {
+  const root = useRef<HTMLDivElement>(null);
   const state = useLoad(async () => {
     const player = await riotCall<{ CurrentPartyID: string }>("/parties/v1/players/{puuid}", { host: "glz" }).catch(() => null);
     const party = player ? await riotCall<{ State?: string; Accessibility?: string; MatchmakingData?: { QueueID?: string }; Members: { Subject: string; IsOwner?: boolean; PlayerIdentity?: { PlayerCardID?: string } }[] }>(`/parties/v1/parties/${player.CurrentPartyID}`, { host: "glz" }).catch(() => null) : null;
@@ -333,7 +418,7 @@ function PartyAndLive() {
     return { party, players, inGame: Boolean(liveId), names };
   });
   useEffect(() => {
-    const timer = setInterval(state.reload, 20000);
+    const timer = setInterval(() => root.current?.offsetParent && state.reload(), 20000);
     return () => clearInterval(timer);
   }, [state.reload]);
   if (!state.data) return state.error ? <ErrorBox message={state.error} onRetry={state.reload} /> : <Skeletons count={1} height={96} />;
@@ -343,7 +428,7 @@ function PartyAndLive() {
     return found?.GameName ? `${found.GameName}#${found.TagLine}` : tr("Joueur masqué", "Hidden player");
   };
   return (
-    <div className="eval-party">
+    <div className="eval-party" ref={root}>
       {players.length > 0 && (
         <section className="eval-card eval-pad">
           <h2>{inGame ? tr("Partie en cours", "Live match") : tr("Sélection des agents", "Agent select")}</h2>

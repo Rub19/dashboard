@@ -36,7 +36,10 @@
 - [ ] Relier la création, la modification et la suppression de Notes/Tâches.
   - Acceptation : validation, confirmation de suppression et résultat Worker réel.
   - Vérification : tests Rust et frontend, build.
-- [ ] Livrer Calendrier, Habitudes et Focus en tranches séparées.
+- [x] Livrer Calendrier comme tranche séparée.
+  - Acceptation : lecture et mutations Worker, validation des dates, ordre chronologique et formulaire Début/Fin.
+  - Vérification : onze tests frontend, 50 tests Rust, contrôle TypeScript, build Vite et ouverture réelle de l'exécutable release. Le formulaire a été annulé sans modifier les données.
+- [ ] Livrer Habitudes et Focus en tranches séparées.
 - [ ] Spécifier puis livrer `cloud-files` par tranches Liste, Transfert et Partage.
 - [ ] Spécifier puis livrer `identity-connections` par tranches Profil, Connexions, Sécurité et Réglages.
 - [ ] Spécifier puis livrer `gaming` par tranches Vue générale, Matchs et suivis Riot.

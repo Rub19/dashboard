@@ -243,6 +243,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .item-editor label { display: grid; gap: 4px; font-weight: 600; }
 .item-editor input, .item-editor textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-bottom-color: var(--input-edge); border-radius: var(--r-s); outline: 0; background: var(--control); color: var(--fg); font: inherit; resize: vertical; user-select: text; }
 .item-editor input:focus, .item-editor textarea:focus { border-bottom: 2px solid var(--accent); background: var(--layer); }
+.event-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .editor-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .item-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .item-list li { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--r-m); background: var(--row); }
@@ -325,6 +326,7 @@ dd { margin: 0; }
 @media (max-width: 720px) {
   .home-head, .section-head { align-items: stretch; flex-direction: column; }
   .home-stats, .home-loading { grid-template-columns: 1fr; }
+  .event-dates { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   .spinner, .spin, .bar.busy i, .app.skeleton, .home-loading span, .item-skeletons span { animation: none; }

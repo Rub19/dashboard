@@ -172,7 +172,7 @@ async fn items_list(kind: String, state: State<'_, App>) -> Result<Vec<sync::Ite
 #[tauri::command]
 async fn items_create(kind: String, mut input: sync::ItemInput, state: State<'_, App>) -> Result<String, String> {
     let kind = sync::ItemKind::try_from(kind.as_str())?;
-    sync::validate_input(&input)?;
+    kind.validate(&input)?;
     input.title = input.title.trim().to_string();
     let body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
     sync::parse_created(state.auth.worker_json(reqwest::Method::POST, kind.path(), Some(body)).await?)
@@ -182,7 +182,7 @@ async fn items_create(kind: String, mut input: sync::ItemInput, state: State<'_,
 async fn items_update(kind: String, id: String, mut input: sync::ItemInput, state: State<'_, App>) -> Result<(), String> {
     let kind = sync::ItemKind::try_from(kind.as_str())?;
     sync::validate_id(&id)?;
-    sync::validate_input(&input)?;
+    kind.validate(&input)?;
     input.title = input.title.trim().to_string();
     let mut body = serde_json::to_value(input).map_err(|_| "Donnée invalide".to_string())?;
     body.as_object_mut().ok_or("Donnée invalide")?.insert("id".into(), serde_json::Value::String(id));

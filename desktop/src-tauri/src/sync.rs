@@ -29,6 +29,21 @@ impl ItemKind {
             Self::Events => "api/events",
         }
     }
+
+    pub fn validate(self, input: &ItemInput) -> Result<(), String> {
+        validate_input(input)?;
+        if self == Self::Events {
+            let start = input.start_at.as_deref().filter(|value| valid_date(value)).ok_or("Date invalide")?;
+            if !start.contains('T') || input.end_at.as_deref().is_some_and(|value| !valid_date(value) || !value.contains('T')) {
+                return Err("Date invalide".into());
+            }
+        }
+        Ok(())
+    }
+}
+
+fn valid_date(value: &str) -> bool {
+    (16..=64).contains(&value.len()) && value.chars().all(|character| character.is_ascii_digit() || matches!(character, '-' | ':' | 'T' | 'Z' | '+' | '.'))
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -201,5 +216,20 @@ mod tests {
         assert!(parse_created(json!({ "data": {} })).is_err());
         assert!(parse_mutated(json!({ "data": { "ok": true } })).is_ok());
         assert!(parse_mutated(json!({ "data": { "ok": false } })).is_err());
+    }
+
+    #[test]
+    fn events_require_a_bounded_date() {
+        let valid = ItemInput {
+            title: "Rendez-vous".into(),
+            body: String::new(),
+            done: false,
+            start_at: Some("2026-11-02T17:30".into()),
+            end_at: None,
+            data: json!({}),
+        };
+        assert!(ItemKind::Events.validate(&valid).is_ok());
+        assert!(ItemKind::Events.validate(&ItemInput { start_at: None, ..valid.clone() }).is_err());
+        assert!(ItemKind::Events.validate(&ItemInput { start_at: Some("demain".into()), ..valid }).is_err());
     }
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { itemPreview, newestItemsFirst } from "./productivity.ts";
+import { dateTimeInputToIso, eventsByStart, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity.ts";
 
 test("l'aperçu transforme le contenu de note en texte sans exécutable", () => {
   const preview = itemPreview("<p>Bonjour <strong>Ethone</strong></p><script>alert(1)</script>");
@@ -16,4 +16,22 @@ test("les éléments les plus récents apparaissent en premier", () => {
 
   assert.deepEqual(newestItemsFirst(items).map(({ id }) => id), ["new", "old", "unknown"]);
   assert.deepEqual(items.map(({ id }) => id), ["old", "new", "unknown"]);
+});
+
+test("les événements sont ordonnés par prochaine date", () => {
+  const items = [
+    { id: "later", startAt: "2026-11-03T10:00:00Z" },
+    { id: "first", startAt: "2026-11-02T10:00:00Z" },
+    { id: "unknown", startAt: null },
+  ];
+
+  assert.deepEqual(eventsByStart(items).map(({ id }) => id), ["first", "later", "unknown"]);
+});
+
+test("une date serveur traverse le champ local sans changer d'instant", () => {
+  const source = "2026-11-02T17:30:00.000Z";
+  const local = toDateTimeInput(source);
+
+  assert.match(local, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
+  assert.equal(new Date(dateTimeInputToIso(local)).getTime(), new Date(source).getTime());
 });

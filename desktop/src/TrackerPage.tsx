@@ -491,7 +491,7 @@ export default function TrackerPage() {
         <Tabs id="eval" label="E:VAL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "game", label: tr("Jeu", "Game") }, { id: "hub", label: "Hub" }]} />
       </div>
       {tab === "game" && <EvalGame linked={isLinked} onConnect={connect} />}
-      {tab === "hub" && <EvalHub account={account} linked={isLinked} />}
+      {tab === "hub" && <EvalHub account={account} linked={isLinked} matches={matches} />}
       {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
           <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />

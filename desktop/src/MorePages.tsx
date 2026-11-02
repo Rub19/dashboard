@@ -199,7 +199,7 @@ function Collection({ kind, title, text, placeholder, defaults, choice }: { kind
       <PageHead title={title} text={text} onRefresh={state.reload} refreshing={state.loading} />
       <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} />{choice && <select value={selected} aria-label={choice.label} onChange={(event) => setSelected(event.target.value)}>{choice.options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select>}<Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
       {error && <ErrorBox message={error} />}
-      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
+      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Renommer", "Rename"), prompt: tr("Nouveau nom", "New name"), run: (row, text) => apiData(path, "PATCH", { id: asRecord(row).id, label: text }) }, { title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
     </>
   );
 }

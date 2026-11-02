@@ -1,15 +1,15 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, Check, FileText, Flame, Headphones, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2 } from "lucide-react";
+import { CalendarDays, Check, FileText, Flame, Headphones, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2, Zap } from "lucide-react";
 import ProductivityPage from "./ProductivityPage";
-import { apiData, restCall } from "./api";
+import { apiData, itemsCreate, restCall } from "./api";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stat, useLoad } from "./kit";
 import { EASE_SNAP, SPRING_PRESS } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "notes" | "tasks" | "events" | "habits" | "focus" | "bills" | "scratchpad" | "ambience";
+type Section = "capture" | "notes" | "tasks" | "events" | "habits" | "focus" | "bills" | "scratchpad" | "ambience";
 interface Habit { id: string; name: string; description: string | null; emoji: string | null; color: string | null; target_per_week: number; archived: boolean }
 interface Completion { id: string; habit_id: string; completed_on: string }
 interface FocusEntry { completedAt: string; seconds: number }
@@ -369,6 +369,40 @@ function Ambience() {
   );
 }
 
+function Capture() {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const save = async (kind: "notes" | "tasks") => {
+    if (!title.trim() && !body.trim()) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      await itemsCreate(kind, { title: title.trim() || body.trim().slice(0, 80), body: body.trim(), done: false, startAt: null, endAt: null, data: { source: "desktop-capture" } });
+      setTitle("");
+      setBody("");
+      setMessage({ text: kind === "notes" ? tr("Note enregistrée.", "Note saved.") : tr("Tâche ajoutée.", "Task added."), ok: true });
+    } catch (reason) {
+      setMessage({ text: errorText(reason), ok: false });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <PageHead title={tr("Capture rapide", "Quick capture")} text={tr("Colle un lien, un texte ou une idée, puis garde-le en note ou en tâche.", "Paste a link, text or idea, then keep it as a note or task.")} />
+      <Field label={tr("Titre", "Title")}><input value={title} onChange={(event) => setTitle(event.target.value)} /></Field>
+      <Field label={tr("Contenu", "Content")}><textarea rows={8} value={body} onChange={(event) => setBody(event.target.value)} /></Field>
+      <div className="row">
+        <Button variant="primary" disabled={busy || (!title.trim() && !body.trim())} onClick={() => void save("notes")}><NotebookPen size={15} />{tr("Garder en note", "Save as note")}</Button>
+        <Button disabled={busy || (!title.trim() && !body.trim())} onClick={() => void save("tasks")}><ListChecks size={15} />{tr("Garder en tâche", "Save as task")}</Button>
+      </div>
+      {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
+    </>
+  );
+}
+
 function Scratchpad() {
   const [text, setText] = useState(() => readJson<string>("ethone-scratchpad") ?? "");
   useEffect(() => {
@@ -390,6 +424,7 @@ export default function WorkPage() {
     { id: "events", label: tr("Calendrier", "Calendar"), icon: <CalendarDays size={16} />, group: tr("Organisation", "Organize") },
     { id: "notes", label: tr("Notes", "Notes"), icon: <NotebookPen size={16} />, group: tr("Organisation", "Organize") },
     { id: "scratchpad", label: tr("Mémo", "Scratchpad"), icon: <FileText size={16} />, group: tr("Organisation", "Organize") },
+    { id: "capture", label: tr("Capture rapide", "Quick capture"), icon: <Zap size={16} />, group: tr("Organisation", "Organize") },
     { id: "habits", label: tr("Habitudes", "Habits"), icon: <Flame size={16} />, group: tr("Quotidien", "Daily") },
     { id: "focus", label: tr("Concentration", "Focus"), icon: <Timer size={16} />, group: tr("Quotidien", "Daily") },
     { id: "ambience", label: tr("Ambiance", "Ambience"), icon: <Headphones size={16} />, group: tr("Quotidien", "Daily") },
@@ -405,6 +440,7 @@ export default function WorkPage() {
         {section === "ambience" && <Ambience />}
         {section === "bills" && <Bills />}
         {section === "scratchpad" && <Scratchpad />}
+        {section === "capture" && <Capture />}
       </div>
     </div>
   );

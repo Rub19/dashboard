@@ -74,13 +74,14 @@ function ConfigSection({ spec, guild, index, directory }: { spec: DiscordModule;
 function ListSection({ spec, guild, index }: { spec: DiscordModule; guild: string; index: number }) {
   const list = spec.lists![index];
   const state = useLoad(() => botCall<Json>(moduleUrl(spec, guild, list.path)), [spec.id, guild, list.path]);
-  const actions = (list.rowActions ?? []).filter((action) => !action.textPrompt).map((action) => ({
+  const actions = (list.rowActions ?? []).map((action) => ({
     title: action.title,
     destructive: action.destructive,
-    run: (row: Json) => {
+    prompt: action.textPrompt,
+    run: (row: Json, text?: string) => {
       const record = row && typeof row === "object" && !Array.isArray(row) ? row : {};
       const id = String(record[list.idKey ?? "id"] ?? "");
-      return botCall(moduleUrl(spec, guild, action.path.replace("{id}", encodeURIComponent(id))), (action.method ?? "POST") as "POST" | "PATCH" | "DELETE" | "PUT", action.method === "DELETE" ? undefined : { ...action.body, ...(action.idBody ? { [action.idBody]: id } : {}) });
+      return botCall(moduleUrl(spec, guild, action.path.replace("{id}", encodeURIComponent(id))), (action.method ?? "POST") as "POST" | "PATCH" | "DELETE" | "PUT", action.method === "DELETE" ? undefined : { ...action.body, ...(action.idBody ? { [action.idBody]: id } : {}), ...(action.textPrompt ? { [action.textPromptKey ?? "name"]: text } : {}) });
     },
   }));
   return (

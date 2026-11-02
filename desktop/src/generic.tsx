@@ -235,7 +235,8 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
 export interface RowAction<T> {
   title: string;
   destructive?: boolean;
-  run: (row: T) => Promise<unknown>;
+  prompt?: string;
+  run: (row: T, text?: string) => Promise<unknown>;
 }
 
 export function JsonList({ rows, actions = [], onChanged, emptyTitle, emptyText, onOpen }: { rows: Json[]; actions?: RowAction<Json>[]; onChanged?: () => void; emptyTitle?: string; emptyText?: string; onOpen?: (row: Json) => void }) {
@@ -243,14 +244,18 @@ export function JsonList({ rows, actions = [], onChanged, emptyTitle, emptyText,
   const [confirm, setConfirm] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [asking, setAsking] = useState<string | null>(null);
+  const [text, setText] = useState("");
   if (rows.length === 0) return <Empty title={emptyTitle ?? tr("Rien pour l'instant", "Nothing yet")} text={emptyText} />;
   const run = async (action: RowAction<Json>, row: Json) => {
     setBusy(true);
     setError(null);
     try {
-      await action.run(row);
+      await action.run(row, text.trim());
       setOpen(null);
       setConfirm(null);
+      setAsking(null);
+      setText("");
       onChanged?.();
     } catch (reason) {
       setError(errorText(reason));
@@ -270,19 +275,25 @@ export function JsonList({ rows, actions = [], onChanged, emptyTitle, emptyText,
           </StaggerItem>
         ))}
       </Stagger>
-      <Drawer open={open !== null} title={open === null ? "" : rowTitle(open)} onClose={() => { setOpen(null); setConfirm(null); setError(null); }}>
+      <Drawer open={open !== null} title={open === null ? "" : rowTitle(open)} onClose={() => { setOpen(null); setConfirm(null); setAsking(null); setError(null); }}>
         {open !== null && <JsonFields value={open} />}
         {error && <ErrorBox message={error} />}
         {actions.length > 0 && open !== null && (
           <div className="row generic-actions">
-            {actions.map((action) => confirm === action.title ? (
+            {actions.map((action) => asking === action.title ? (
+              <form key={action.title} className="row" onSubmit={(event) => { event.preventDefault(); if (text.trim()) void run(action, open); }}>
+                <input className="generic-prompt" autoFocus value={text} placeholder={action.prompt} aria-label={action.prompt} onChange={(event) => setText(event.target.value)} />
+                <Button type="submit" variant="primary" disabled={busy || !text.trim()}>{action.title}</Button>
+                <Button onClick={() => setAsking(null)}>{tr("Annuler", "Cancel")}</Button>
+              </form>
+            ) : confirm === action.title ? (
               <span key={action.title} className="row">
                 <span className="bad">{tr("Confirmer ?", "Confirm?")}</span>
                 <Button onClick={() => setConfirm(null)}>{tr("Annuler", "Cancel")}</Button>
                 <Button disabled={busy} className="danger" onClick={() => void run(action, open)}>{action.title}</Button>
               </span>
             ) : (
-              <Button key={action.title} disabled={busy} className={action.destructive ? "danger" : ""} onClick={() => (action.destructive ? setConfirm(action.title) : void run(action, open))}>{action.title}</Button>
+              <Button key={action.title} disabled={busy} className={action.destructive ? "danger" : ""} onClick={() => (action.prompt ? setAsking(action.title) : action.destructive ? setConfirm(action.title) : void run(action, open))}>{action.title}</Button>
             ))}
           </div>
         )}

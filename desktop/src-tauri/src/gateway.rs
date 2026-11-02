@@ -11,7 +11,10 @@ const TABLES: [&str; 9] = [
     "ethone_focus_sessions",
     "ethone_activity",
 ];
-const RIOT_PREFIXES: [&str; 14] = [
+pub const LINEUPS_URL: &str = "https://uh5it8zn19.execute-api.us-east-1.amazonaws.com/development";
+const RIOT_PREFIXES: [&str; 16] = [
+    "/getPreference/Ares.PlayerSettings",
+    "/savePreference",
     "/core-game/v1/",
     "/pregame/v1/",
     "/store/v1/wallet/",

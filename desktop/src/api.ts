@@ -103,7 +103,8 @@ export const apiData = async <T,>(path: string, method: Method = "GET", body?: u
 };
 export const restCall = <T,>(path: string, method: Method = "GET", body?: unknown, prefer?: string) => invoke<T>("rest_call", { method, path, body: body ?? null, prefer: prefer ?? null });
 export const catalogGet = <T,>(path: string) => invoke<{ data: T }>("catalog_get", { path }).then(({ data }) => data);
-export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz"; method?: Method; body?: unknown } = {}) => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
+export const lineupsGet = <T,>() => invoke<T>("lineups_get");
+export const riotCall = <T,>(path: string, options: { host?: "pd" | "glz" | "prefs"; method?: Method; body?: unknown } = {}) => invoke<T>("riot_call", { host: options.host ?? "pd", path, method: options.method ?? "GET", body: options.body ?? null });
 export const openExternal = (url: string) => invoke<void>("open_external", { url });
 export const botStatus = () => invoke<boolean>("bot_status");
 export const botLogin = () => invoke<void>("bot_login");

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
@@ -8,7 +8,7 @@ import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, popover } from "./motion";
 import { togglePinned } from "./pinned";
 import { readJson, write } from "./settings";
-import Sidebar from "./Sidebar";
+import Sidebar, { PAGE_TINTS } from "./Sidebar";
 import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import Palette, { Command } from "./Palette";
 import WorkPage from "./DailyPage";
@@ -230,7 +230,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         )
           .filter(([id]) => visited.includes(id))
           .map(([id, content]) => (
-            <div key={id} className="page" hidden={id !== page} data-direction={direction > 0 ? "down" : "up"}>{content}</div>
+            <div key={id} className="page" style={{ "--tint": PAGE_TINTS[id] } as CSSProperties} hidden={id !== page} data-direction={direction > 0 ? "down" : "up"}>{content}</div>
           ))}
       </main>
 

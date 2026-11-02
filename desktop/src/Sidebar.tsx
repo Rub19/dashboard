@@ -1,4 +1,4 @@
-import { ComponentType, memo, ReactNode, useState } from "react";
+import { ComponentType, CSSProperties, memo, ReactNode, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, BrainCircuit, Folder, Gamepad2, House, LayoutGrid, ListChecks, Mail, MessagesSquare, Settings as SettingsIcon, Users } from "lucide-react";
 import type { ModuleStatus } from "./api";
@@ -8,6 +8,8 @@ import { SPRING_PILL, SPRING_PRESS } from "./motion";
 import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import { resolvePinned } from "./pinned";
 import { ValorantMark } from "./ui";
+
+export const PAGE_TINTS: Record<Page, string> = { home: "#5aa9ff", modules: "#a78bfa", productivity: "#2fd08a", files: "#f0a92b", mail: "#35bfe0", tracker: "#ff4655", games: "#f4638b", discord: "#7c86ff", brain: "#c084fc", team: "#2dd4a0", insights: "#fb923c", settings: "#94a3b8" };
 
 const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
 
@@ -32,6 +34,7 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, acc
         key={id}
         type="button"
         className={`nav-item ${active ? "on" : ""}`}
+        style={{ "--tint": PAGE_TINTS[id] } as CSSProperties}
         aria-current={active ? "page" : undefined}
         onPointerEnter={() => setHover(id)}
         onPointerDown={(event) => event.button === 0 && onGo(id)}

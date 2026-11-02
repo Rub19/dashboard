@@ -240,6 +240,14 @@ async fn catalog_get(path: String, state: State<'_, App>) -> Result<serde_json::
 }
 
 #[tauri::command]
+async fn lineups_get(state: State<'_, App>) -> Result<serde_json::Value, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().catalog(gateway::LINEUPS_URL).await
+}
+
+#[tauri::command]
 async fn riot_call(host: String, path: String, method: String, body: Option<serde_json::Value>, app: tauri::AppHandle, state: State<'_, App>) -> Result<serde_json::Value, String> {
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
@@ -557,6 +565,7 @@ fn main() {
             rest_call,
             catalog_get,
             riot_call,
+            lineups_get,
             riot_status,
             riot_login,
             riot_open_browser,

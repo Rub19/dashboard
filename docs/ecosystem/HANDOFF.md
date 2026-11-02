@@ -70,8 +70,8 @@ Voir `decisions.md`. L'essentiel : chaque application garde son dépôt et son a
 
 **Non porté**
 
-- E:VAL : amis et chat, historique d'achats, line-ups, porte-bonheur et variantes de skins, récap Discord, paramètres de jeu. Objectif de saison et profils d'apparences restent sur le PC, pas synchronisés.
-- Dashboard : marketplace, clip, navigateur intégré, éditeur détaillé de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Ambiance est une version simple générée sur le PC, sans les préréglages du soundscape web.
+- E:VAL : amis et chat (connexion XMPP à écrire en Rust), historique d'achats (session web Riot), porte-bonheur et variantes de skins, récap automatique. Objectif de saison, profils d'apparences, sauvegardes de paramètres et réglages du récap restent sur le PC. Line-ups, paramètres de jeu et récap manuel écrits, jamais lancés.
+- Dashboard : marketplace (ses extensions n'agissent que sur les widgets du site), navigateur intégré, éditeur détaillé de flows et d'interactions, connexion de nouveaux services (renvoie vers ethone.dev). Ambiance est une version simple générée sur le PC, sans les préréglages du soundscape web.
 - Cohérence du 2 novembre 2026 : Productivité regroupe Tâches, Calendrier, Notes, Mémo, Habitudes, Concentration, Ambiance et Factures ; Réglages regroupe Apparence, Journal, À propos, Compte et Sécurité. Français par défaut, accent bleu par défaut. Contrôlé dans `desktop/preview.html` avec des données d'exemple, pas encore dans un build.
 - Barre latérale : applications épinglées (bouton sur la page Applications, clic droit pour désépingler), navigation dès l'appui, pages gardées en mémoire après la première visite pour conserver leur état. Changement de skin et profils d'apparences écrits mais jamais lancés : ils modifient le vrai équipement Riot. Factures séparées du site, qui les garde dans le navigateur. Concentration et mémo restent sur le PC.
 

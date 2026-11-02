@@ -1,13 +1,14 @@
 import { FormEvent, useMemo, useState } from "react";
-import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Search, Sparkles, Target, Trophy, Users } from "lucide-react";
-import { apiData, catalogGet, restCall, riotCall, trackerMatches, trackerSync } from "./api";
-import { bannerImage, EvalAccount, EvalMatch, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, Users } from "lucide-react";
+import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, trackerMatches, trackerSync } from "./api";
+import { flattenEntries, Json } from "./generic";
+import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
-type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive";
+type Section = "leaderboard" | "players" | "maps" | "agents" | "weapons" | "seasons" | "names" | "collection" | "contracts" | "goal" | "archive" | "lineups" | "settings" | "recap";
 const language = "language=fr-FR";
 const REGIONS = ["eu", "na", "ap", "kr", "latam", "br"];
 
@@ -313,6 +314,151 @@ function ContractArchive({ linked }: { linked: boolean }) {
   );
 }
 
+interface Lineup { id: string; name: string; description: string; agent: number; ability: number; mapId: number; tags: number[]; images: string[]; video: string; credits: string }
+const LINEUP_AGENTS: Record<number, string> = { 2: "Breach", 3: "Brimstone", 4: "Cypher", 6: "Killjoy", 11: "Sage", 13: "Sova", 14: "Viper", 16: "KAY/O", 18: "Fade", 20: "Gekko" };
+const LINEUP_MAPS: Record<number, string> = { 11: "Abyss", 1: "Ascent", 2: "Bind", 3: "Breeze", 7: "Fracture", 4: "Haven", 5: "Icebox", 9: "Lotus", 8: "Pearl", 6: "Split", 12: "Summit", 10: "Sunset" };
+
+function Lineups() {
+  const state = useLoad(() => lineupsGet<Lineup[]>());
+  const [map, setMap] = useState(0);
+  const [agent, setAgent] = useState(0);
+  const rows = (state.data ?? []).filter((item) => (!map || item.mapId === map) && (!agent || item.agent === agent));
+  const open = (item: Lineup) => {
+    const [id, query] = item.video.split("?");
+    if (id) void openExternal(`https://www.youtube.com/watch?v=${encodeURIComponent(id)}${query ? `&${query.replace("start=", "t=")}` : ""}`);
+  };
+  const thumb = (item: Lineup) => item.images[0] ?? (item.video ? `https://img.youtube.com/vi/${encodeURIComponent(item.video.split("?")[0])}/hqdefault.jpg` : "");
+  return (
+    <>
+      <div className="eval-section-head">
+        <h2>Line-ups</h2>
+        <span>
+          <select className="eval-select" value={map} aria-label={tr("Carte", "Map")} onChange={(event) => setMap(Number(event.target.value))}><option value={0}>{tr("Toutes les cartes", "All maps")}</option>{Object.entries(LINEUP_MAPS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
+          <select className="eval-select" value={agent} aria-label={tr("Agent", "Agent")} onChange={(event) => setAgent(Number(event.target.value))}><option value={0}>{tr("Tous les agents", "All agents")}</option>{Object.entries(LINEUP_AGENTS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
+        </span>
+      </div>
+      <Status state={state} height={120}>
+        {() => rows.length === 0 ? <Empty title={tr("Aucun line-up pour ce choix", "No line-up for this choice")} /> : (
+          <Stagger className="eval-gallery">
+            {rows.slice(0, 120).map((item) => (
+              <StaggerItem key={item.id} variants={staggerItem}>
+                <button type="button" title={item.description} onClick={() => open(item)}>{thumb(item) && <img src={thumb(item)} alt="" loading="lazy" />}<span><b>{item.name}</b><small>{LINEUP_AGENTS[item.agent]}, {LINEUP_MAPS[item.mapId]}</small></span></button>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        )}
+      </Status>
+    </>
+  );
+}
+
+interface Snapshot { id: string; name: string; data: string; createdAt: string }
+const SNAPSHOT_KEY = "ethone-eval-settings-snapshots";
+
+function GameSettings({ linked }: { linked: boolean }) {
+  const [snapshots, setSnapshots] = useState<Snapshot[]>(() => readJson<Snapshot[]>(SNAPSHOT_KEY) ?? []);
+  const [name, setName] = useState("");
+  const [confirm, setConfirm] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const store = (next: Snapshot[]) => {
+    setSnapshots(next);
+    write(SNAPSHOT_KEY, JSON.stringify(next));
+  };
+  if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} />;
+  const create = async (event: FormEvent) => {
+    event.preventDefault();
+    setMessage(null);
+    try {
+      const preference = await riotCall<{ data: string }>("/getPreference/Ares.PlayerSettings", { host: "prefs" });
+      store([{ id: String(Date.now()), name: name.trim(), data: preference.data, createdAt: new Date().toISOString() }, ...snapshots]);
+      setName("");
+      setMessage({ text: tr("Paramètres sauvegardés sur ce PC.", "Settings saved on this PC."), ok: true });
+    } catch (reason) {
+      setMessage({ text: errorText(reason), ok: false });
+    }
+  };
+  const apply = async (snapshot: Snapshot) => {
+    setMessage(null);
+    try {
+      await riotCall("/savePreference", { host: "prefs", method: "PUT", body: { type: "Ares.PlayerSettings", data: snapshot.data } });
+      setConfirm(null);
+      setMessage({ text: tr("Paramètres appliqués. Relance VALORANT pour les voir.", "Settings applied. Restart VALORANT to see them."), ok: true });
+    } catch (reason) {
+      setMessage({ text: errorText(reason), ok: false });
+    }
+  };
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Paramètres de jeu", "Game settings")}</h2></div>
+      <p className="eval-soft">{tr("Sauvegarde tes réglages VALORANT (sensibilité, viseur, touches) et remets-les quand tu veux.", "Back up your VALORANT settings (sensitivity, crosshair, keybinds) and restore them any time.")}</p>
+      <form className="eval-search" onSubmit={(event) => void create(event)}><input value={name} placeholder={tr("Nom de la sauvegarde", "Backup name")} aria-label={tr("Nom de la sauvegarde", "Backup name")} onChange={(event) => setName(event.target.value)} /><Button type="submit" variant="primary" disabled={!name.trim()}>{tr("Sauvegarder", "Back up")}</Button></form>
+      {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
+      <ul className="eval-live">
+        {snapshots.map((snapshot) => (
+          <li key={snapshot.id}>
+            <b>{snapshot.name}</b>
+            <small>{new Date(snapshot.createdAt).toLocaleDateString(lang)}</small>
+            {confirm === snapshot.id ? <><Button onClick={() => setConfirm(null)}>{tr("Annuler", "Cancel")}</Button><Button className="danger" onClick={() => void apply(snapshot)}>{tr("Remplacer mes réglages", "Replace my settings")}</Button></> : <Button onClick={() => setConfirm(snapshot.id)}>{tr("Appliquer", "Apply")}</Button>}
+            <Button className="danger" onClick={() => store(snapshots.filter((item) => item.id !== snapshot.id))}>{tr("Supprimer", "Delete")}</Button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+function DiscordRecap({ account, matches }: { account: EvalAccount | null; matches: EvalMatch[] }) {
+  const saved = readJson<{ guild: string; channel: string }>("ethone-eval-recap");
+  const [guild, setGuild] = useState(saved?.guild ?? "");
+  const [channel, setChannel] = useState(saved?.channel ?? "");
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const guilds = useLoad(async () => ((await botStatus()) ? (await botCall<{ guilds?: { id: string; name: string; botPresent?: boolean }[] }>("api/guilds")).guilds?.filter((item) => item.botPresent !== false) ?? [] : null));
+  const channels = useLoad(async () => (guild ? flattenEntries(await botCall<Json>(`api/guilds/${guild}/server/channels`)) : []), [guild]);
+  if (guilds.data === null && !guilds.loading) return <Empty title={tr("Discord non connecté", "Discord not linked")} text={tr("Connecte Discord depuis la page Discord pour publier tes récaps.", "Link Discord from the Discord page to post your recaps.")} />;
+  const match = matches[0];
+  const post = async () => {
+    if (!match || !account) return;
+    const summary = matchSummary(match, account.puuid);
+    if (!summary) return;
+    setBusy(true);
+    setMessage(null);
+    write("ethone-eval-recap", JSON.stringify({ guild, channel }));
+    try {
+      await botCall(`api/guilds/${guild}/valorant/recap`, "POST", {
+        channelId: channel,
+        won: summary.won,
+        author: `${account.name}#${account.tag}`,
+        title: `${summary.won ? "🟢 VICTOIRE" : "🔴 DÉFAITE"}  ${summary.score[0]} — ${summary.score[1]}`,
+        description: `**${summary.me.agent}**, ${modeName(match.mode)}, ${match.map}`,
+        fields: [
+          { name: "🎯 K / D / A", value: `**${summary.me.kills} / ${summary.me.deaths} / ${summary.me.assists}**`, inline: true },
+          { name: "📈 ACS", value: String(summary.acs), inline: true },
+          { name: "💥 ADR", value: String(summary.adr), inline: true },
+          { name: "🧠 HS%", value: `${summary.hs} %`, inline: true },
+        ],
+        players: [],
+        rounds: "",
+        footer: "E:VAL, ETHONE",
+      });
+      setMessage({ text: tr("Récap publié.", "Recap posted."), ok: true });
+    } catch (reason) {
+      setMessage({ text: errorText(reason), ok: false });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <div className="eval-section-head"><h2>{tr("Récap Discord", "Discord recap")}</h2></div>
+      <label className="kit-field"><span>{tr("Serveur", "Server")}</span><select className="eval-select" value={guild} onChange={(event) => { setGuild(event.target.value); setChannel(""); }}><option value="">{tr("Choisir", "Choose")}</option>{guilds.data?.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+      <label className="kit-field"><span>{tr("Salon", "Channel")}</span><select className="eval-select" value={channel} onChange={(event) => setChannel(event.target.value)}><option value="">{tr("Choisir", "Choose")}</option>{channels.data?.map((item) => <option key={item.id} value={item.id}>#{item.name}</option>)}</select></label>
+      <div className="row"><Button variant="primary" disabled={busy || !guild || !channel || !match} onClick={() => void post()}>{tr("Publier mon dernier match", "Post my last match")}</Button></div>
+      {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
+    </>
+  );
+}
+
 function Seasons({ account }: { account: EvalAccount | null }) {
   const seasons = (account?.mmr as { seasons?: { season: string; short?: string; wins: number; games: number; endTier: number }[] } | undefined)?.seasons ?? [];
   if (seasons.length === 0) return <Empty title={tr("Aucune saison enregistrée", "No recorded seasons")} text={tr("L'historique des saisons de ce compte n'est pas disponible.", "This account's season history is not available.")} />;
@@ -324,7 +470,7 @@ function Seasons({ account }: { account: EvalAccount | null }) {
   );
 }
 
-export default function EvalHub({ account, linked }: { account: EvalAccount | null; linked: boolean }) {
+export default function EvalHub({ account, linked, matches }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[] }) {
   const [section, setSection] = useState<Section>("leaderboard");
   const items = [
     { id: "leaderboard", label: tr("Classement", "Leaderboard"), icon: <Trophy size={16} />, group: tr("Joueurs", "Players") },
@@ -335,6 +481,9 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
     { id: "goal", label: tr("Objectif de saison", "Season goal"), icon: <Target size={16} />, group: tr("Joueurs", "Players") },
     { id: "contracts", label: tr("Contrats d'agents", "Agent contracts"), icon: <FileText size={16} />, group: tr("Joueurs", "Players") },
     { id: "archive", label: tr("Archives des contrats", "Contract archive"), icon: <BookOpen size={16} />, group: tr("Joueurs", "Players") },
+    { id: "recap", label: tr("Récap Discord", "Discord recap"), icon: <Send size={16} />, group: tr("Outils", "Tools") },
+    { id: "settings", label: tr("Paramètres de jeu", "Game settings"), icon: <Save size={16} />, group: tr("Outils", "Tools") },
+    { id: "lineups", label: "Line-ups", icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
     { id: "maps", label: tr("Cartes", "Maps"), icon: <MapIcon size={16} />, group: tr("Le jeu", "The game") },
     { id: "agents", label: tr("Agents", "Agents"), icon: <Users size={16} />, group: tr("Le jeu", "The game") },
     { id: "weapons", label: tr("Armes", "Weapons"), icon: <Crosshair size={16} />, group: tr("Le jeu", "The game") },
@@ -354,6 +503,9 @@ export default function EvalHub({ account, linked }: { account: EvalAccount | nu
         {section === "contracts" && <AgentContracts linked={linked} />}
         {section === "goal" && <SeasonGoal account={account} />}
         {section === "archive" && <ContractArchive linked={linked} />}
+        {section === "lineups" && <Lineups />}
+        {section === "settings" && <GameSettings linked={linked} />}
+        {section === "recap" && <DiscordRecap account={account} matches={matches} />}
       </div>
     </div>
   );

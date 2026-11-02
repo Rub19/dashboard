@@ -321,7 +321,9 @@ impl Riot {
     pub async fn call(&self, app: &AppHandle, host: &str, path: &str, method: reqwest::Method, body: Option<Value>) -> Result<Value, String> {
         let credentials = self.valid(app).await?;
         let version = self.client_version().await;
-        let base = if host == "glz" {
+        let base = if host == "prefs" {
+            "https://playerpreferences.riotgames.com/playerPref/v3".to_string()
+        } else if host == "glz" {
             format!("https://glz-{}-1.{}.a.pvp.net", credentials.region, credentials.shard)
         } else {
             format!("https://pd.{}.a.pvp.net", credentials.shard)

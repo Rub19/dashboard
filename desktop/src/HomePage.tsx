@@ -8,7 +8,7 @@ import { firstArray, Json } from "./generic";
 import { dayProgress, connectionStatus, groupMail, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { lolRank, LolProfile } from "./lol";
-import { usePersisted } from "./qol";
+import { setPersisted, usePersisted } from "./qol";
 import { readJson } from "./settings";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
@@ -101,7 +101,7 @@ function HomeTiles({ visible, shown, onMail, onTracker, onLol, onWeather, onDail
     const city = readJson<string>("ethone-weather-city") ?? "Paris";
     const data = await apiData<{ temperature?: number }>(`api/weather?city=${encodeURIComponent(city)}`);
     return { city, temperature: data.temperature };
-  });
+  }, visible);
   const focus = readJson<{ completedAt: string; seconds: number }[]>("ethone-focus-history") ?? [];
   const today = new Date().toDateString();
   const focusMinutes = Math.round(focus.filter((entry) => new Date(entry.completedAt).toDateString() === today).reduce((total, entry) => total + entry.seconds, 0) / 60);
@@ -110,7 +110,7 @@ function HomeTiles({ visible, shown, onMail, onTracker, onLol, onWeather, onDail
       {shown("mail") && unread !== null && <button type="button" className="home-tile" onClick={onMail}><small>{tr("Mails non lus", "Unread mail")}</small><b>{unread}</b></button>}
       {shown("valorant") && rank && (rank.tier ?? 0) > 0 && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b><img src={tierIcon(rank.tier ?? 0)} alt="" />{rank.rr} RR</b><small>{rankName(rank.tier ?? 0)}</small></button>}
       {shown("league") && league?.emblem && <button type="button" className="home-tile eval" onClick={onLol}><small>League of Legends</small><b><img src={league.emblem} alt="" />{league.lp} LP</b><small>{league.name}</small></button>}
-      {shown("weather") && weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={onWeather}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
+      {shown("weather") && weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={() => { setPersisted("ethone-section-insights", "weather"); onWeather(); }}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
       {shown("focus") && <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>}
     </div>
   );

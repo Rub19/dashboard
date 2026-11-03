@@ -61,6 +61,16 @@ pub fn launch(detect: &Detect) -> Result<(), String> {
     launch_with(detect, &[])
 }
 
+const BLOCKED_BY_ANTIVIRUS: i32 = 225;
+
+fn launch_error(error: &std::io::Error) -> String {
+    if error.raw_os_error() == Some(BLOCKED_BY_ANTIVIRUS) {
+        "Windows Defender bloque ce fichier. Va dans Sécurité Windows, Historique de protection, pour voir la détection.".to_string()
+    } else {
+        error.to_string()
+    }
+}
+
 pub fn launch_with(detect: &Detect, args: &[&str]) -> Result<(), String> {
     let installed = read_installed(detect).ok_or("Application introuvable dans Windows")?;
     let dir = installed.dir.ok_or("Dossier d'installation inconnu")?;
@@ -73,11 +83,11 @@ pub fn launch_with(detect: &Detect, args: &[&str]) -> Result<(), String> {
         .current_dir(&dir)
         .spawn()
         .map(|_| ())
-        .map_err(|e| e.to_string())
+        .map_err(|e| launch_error(&e))
 }
 
 pub fn run_installer(path: &Path, args: &[String]) -> Result<(), String> {
-    let status = Command::new(path).args(args).status().map_err(|e| e.to_string())?;
+    let status = Command::new(path).args(args).status().map_err(|e| launch_error(&e))?;
     if status.success() {
         Ok(())
     } else {
@@ -88,6 +98,12 @@ pub fn run_installer(path: &Path, args: &[String]) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_antivirus_block_is_explained() {
+        assert!(launch_error(&std::io::Error::from_raw_os_error(225)).contains("Windows Defender"));
+        assert!(!launch_error(&std::io::Error::from_raw_os_error(2)).contains("Windows Defender"));
+    }
 
     #[test]
     fn removes_registry_quotes() {

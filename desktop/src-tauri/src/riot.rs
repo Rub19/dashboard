@@ -103,7 +103,7 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
     let seasonal = season.map_or(0, |info| number(&info["CompetitiveTier"]));
     let after_match = number(&latest["TierAfterUpdate"]);
     let leaderboard_rank = season.map_or(0, |info| number(&info["LeaderboardRank"]));
-    let tier = settled_tier(if after_match > 0 { after_match } else { seasonal }, leaderboard_rank);
+    let tier = settled_tier(if seasonal > 0 { seasonal } else { after_match }, leaderboard_rank);
     let peak_tier = seasons
         .into_iter()
         .flat_map(|all| all.values())
@@ -404,11 +404,11 @@ mod tests {
             } } }
         });
         let rank = parse_rank(&player, &json!({}));
-        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (26, 300, 27));
+        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (24, 300, 27));
     }
 
     #[test]
-    fn radiant_needs_a_leaderboard_place_and_the_last_match_wins() {
+    fn the_season_rank_wins_and_radiant_needs_a_leaderboard_place() {
         let rank = |tier_after: i64, seasonal: i64, board: i64| {
             parse_rank(
                 &json!({
@@ -419,9 +419,11 @@ mod tests {
             )
             .tier
         };
-        assert_eq!(rank(27, 24, 0), 26);
-        assert_eq!(rank(27, 24, 412), 27);
-        assert_eq!(rank(25, 24, 0), 25);
+        assert_eq!(rank(27, 24, 0), 24);
+        assert_eq!(rank(26, 24, 0), 24);
+        assert_eq!(rank(25, 0, 0), 25);
+        assert_eq!(rank(27, 0, 0), 26);
+        assert_eq!(rank(27, 0, 412), 27);
         assert_eq!(rank(0, 24, 0), 24);
     }
 

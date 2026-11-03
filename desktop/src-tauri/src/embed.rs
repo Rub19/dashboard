@@ -87,6 +87,20 @@ unsafe extern "system" fn visit(window: HWND, data: LPARAM) -> BOOL {
     1
 }
 
+pub fn bring_forward(exe: &str) -> bool {
+    let Some(window) = find_window(exe) else { return false };
+    let handle = window as HWND;
+    unsafe {
+        if IsIconic(handle) != 0 {
+            ShowWindow(handle, SW_RESTORE);
+        } else {
+            ShowWindow(handle, SW_SHOW);
+        }
+        SetForegroundWindow(handle);
+    }
+    true
+}
+
 pub fn find_window(exe: &str) -> Option<usize> {
     let ids = process_ids(exe);
     if ids.is_empty() {

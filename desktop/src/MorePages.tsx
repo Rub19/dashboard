@@ -13,6 +13,7 @@ import { Empty, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
 import { activityWeeks } from "./productivity";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
+import WeatherPage from "./WeatherPage";
 
 interface Champion { id: number; name: string; title?: string; icon?: string }
 const asRecord = (row: Json): { [key: string]: Json } => (row && typeof row === "object" && !Array.isArray(row) ? row : {});
@@ -267,37 +268,6 @@ export function BrainPage() {
   );
 }
 
-function Weather() {
-  const [city, setCity] = useState(() => readJson<string>("ethone-weather-city") ?? "Paris");
-  const [query, setQuery] = useState(city);
-  const state = useLoad(() => apiData<{ city?: string; condition?: string; description?: string; temperature?: number; apparentTemperature?: number; humidityPercent?: number; windSpeedKmh?: number; uvIndex?: number; hourly?: { time?: string; temperature?: number; precipitationProbability?: number }[]; daily?: { date?: string; max?: number; min?: number; precipitationProbability?: number }[]; [key: string]: unknown }>(`api/weather?city=${encodeURIComponent(city)}`), [city]);
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (!query.trim()) return;
-    setCity(query.trim());
-    write("ethone-weather-city", JSON.stringify(query.trim()));
-  };
-  return (
-    <>
-      <PageHead title={tr("Météo", "Weather")} text={city} />
-      <form className="daily-add" onSubmit={submit}><input value={query} placeholder={tr("Ville", "City")} aria-label={tr("Ville", "City")} onChange={(event) => setQuery(event.target.value)} /><Button type="submit">{tr("Afficher", "Show")}</Button></form>
-      <Status state={state}>
-        {(data) => (
-          <>
-            <div className="focus-stats">
-              {data.temperature !== undefined && <Stat label={data.description ?? tr("Température", "Temperature")} value={`${Math.round(Number(data.temperature))} °C`} hint={data.apparentTemperature !== undefined ? tr(`Ressenti ${Math.round(data.apparentTemperature)} °C`, `Feels like ${Math.round(data.apparentTemperature)} °C`) : undefined} />}
-              {data.humidityPercent !== undefined && <Stat label={tr("Humidité", "Humidity")} value={`${data.humidityPercent} %`} />}
-              {data.windSpeedKmh !== undefined && <Stat label={tr("Vent", "Wind")} value={`${Math.round(Number(data.windSpeedKmh))} km/h`} />}
-              {data.uvIndex !== undefined && <Stat label="UV" value={String(data.uvIndex)} />}
-            </div>
-            {(data.daily?.length ?? 0) > 0 && <ul className="weather-days">{data.daily?.map((day, index) => <li key={index}><small>{day.date ? new Date(day.date).toLocaleDateString(lang, { weekday: "short" }) : ""}</small><b>{day.max === undefined ? "–" : `${Math.round(day.max)}°`}</b><small>{day.min === undefined ? "–" : `${Math.round(day.min)}°`}</small></li>)}</ul>}
-          </>
-        )}
-      </Status>
-    </>
-  );
-}
-
 function RssReader() {
   const [feeds, setFeeds] = useState<string[]>(() => readJson<string[]>("ethone-rss-feeds") ?? []);
   const [url, setUrl] = useState("");
@@ -394,7 +364,7 @@ export function InsightsPage() {
     <Split id="insights" label={tr("Analyses", "Insights")} items={items} value={section} onChange={setSection}>
       {section === "activity" && <ActivityView />}
       {section === "mail" && <RemoteFields title={tr("Statistiques mail", "Mail stats")} path="api/mail/analytics" />}
-      {section === "weather" && <Weather />}
+      {section === "weather" && <WeatherPage />}
       {section === "rss" && <RssReader />}
       {section === "diagnostic" && <Support />}
     </Split>

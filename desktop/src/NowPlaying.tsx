@@ -121,15 +121,28 @@ export function MusicCapsule() {
         >
           <motion.button layout="position" type="button" className="capsule-info" title={tr("Ouvrir dans Spotify", "Open in Spotify")} transition={spring} onClick={() => track.id && void openExternal(`https://open.spotify.com/track/${track.id}`)}>
             {cover ? <img src={cover} alt="" /> : <span className="capsule-noart" />}
-            <span className="capsule-text"><b>{track.title}</b><small>{track.artist}</small></span>
+            <span className="capsule-text">
+              {open && <small className="capsule-status">{state.playing ? tr("En écoute sur Spotify", "Playing on Spotify") : tr("En pause sur Spotify", "Paused on Spotify")}</small>}
+              <b>{track.title}</b>
+              <small>{track.artist}</small>
+              {open && track.album && <small>{track.album}</small>}
+            </span>
           </motion.button>
-          {!open && <Bars on={state.playing} />}
-          <motion.div layout="position" className="capsule-controls" transition={spring}>
-            {open && <button type="button" aria-label={tr("Titre précédent", "Previous track")} onClick={() => void control("previous")}><SkipBack size={14} /></button>}
-            <button type="button" aria-label={state.playing ? tr("Pause", "Pause") : tr("Lecture", "Play")} onClick={() => void control(state.playing ? "pause" : "play")}>{state.playing ? <Pause size={15} /> : <Play size={15} />}</button>
-            {open && <button type="button" aria-label={tr("Titre suivant", "Next track")} onClick={() => void control("next")}><SkipForward size={14} /></button>}
-          </motion.div>
-          <i className="capsule-progress" aria-hidden="true" style={{ transform: `scaleX(${total ? position / total : 0})` }} />
+          {open && (
+            <div className="capsule-time">
+              <small>{clock(position)}</small>
+              <i><em style={{ transform: `scaleX(${total ? position / total : 0})` }} /></i>
+              <small>{clock(total)}</small>
+            </div>
+          )}
+          {open ? (
+            <motion.div layout="position" className="capsule-controls" transition={spring}>
+              <button type="button" aria-label={tr("Titre précédent", "Previous track")} onClick={() => void control("previous")}><SkipBack size={14} /></button>
+              <button type="button" aria-label={state.playing ? tr("Pause", "Pause") : tr("Lecture", "Play")} onClick={() => void control(state.playing ? "pause" : "play")}>{state.playing ? <Pause size={15} /> : <Play size={15} />}</button>
+              <button type="button" aria-label={tr("Titre suivant", "Next track")} onClick={() => void control("next")}><SkipForward size={14} /></button>
+            </motion.div>
+          ) : <Bars on={state.playing} />}
+          {!open && <i className="capsule-progress" aria-hidden="true" style={{ transform: `scaleX(${total ? position / total : 0})` }} />}
         </motion.aside>
       )}
     </AnimatePresence>

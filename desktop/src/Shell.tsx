@@ -283,6 +283,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         }
       } catch (error) {
         setErrors((all) => ({ ...all, [id]: errorText(error) }));
+        toast(`${status.module.name} : ${errorText(error)}`);
       } finally {
         setBusy(({ [id]: _, ...rest }) => rest);
       }

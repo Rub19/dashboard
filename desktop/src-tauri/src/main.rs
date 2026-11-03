@@ -458,7 +458,24 @@ async fn open_module(id: String, app: AppHandle, state: State<'_, App>) -> Resul
     require_session(&state).await?;
     let module = find(&state, &id)?;
     let result = if let Some(detect) = &module.detect {
-        system::launch(detect)
+        embed::detach(&id);
+        if system::is_running(&detect.exe).unwrap_or(false) && embed::bring_forward(&detect.exe) {
+            Ok(())
+        } else {
+            let launched = system::launch(detect);
+            if launched.is_ok() {
+                let exe = detect.exe.clone();
+                tauri::async_runtime::spawn(async move {
+                    for _ in 0..40 {
+                        tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+                        if embed::bring_forward(&exe) {
+                            break;
+                        }
+                    }
+                });
+            }
+            launched
+        }
     } else if let Some(url) = &module.launch_url {
         app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
     } else {

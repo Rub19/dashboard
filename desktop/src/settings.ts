@@ -77,7 +77,7 @@ export function readJson<T>(key: string): T | null {
   }
 }
 
-const SETTINGS_KEYS = ["ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+const SETTINGS_KEYS = ["ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 export function exportSettings(): string {
   const values = Object.fromEntries(SETTINGS_KEYS.flatMap((key) => {

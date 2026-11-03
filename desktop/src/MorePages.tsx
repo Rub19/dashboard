@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { usePersisted } from "./qol";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, Bot, CloudSun, ExternalLink, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
@@ -6,12 +6,10 @@ import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
-import { Empty, ErrorBox, PageHead, SideNav, Skeletons, Stat, Status, useLoad } from "./kit";
+import { Empty, ErrorBox, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
-import { Button, LeagueMark } from "./ui";
-import TftView from "./TftView";
-import { elolSection, ElolSection } from "./tft";
+import { Button } from "./ui";
 
 interface Champion { id: number; name: string; title?: string; icon?: string }
 const asRecord = (row: Json): { [key: string]: Json } => (row && typeof row === "object" && !Array.isArray(row) ? row : {});
@@ -569,77 +567,8 @@ export function InsightsPage() {
   );
 }
 
-const riotParts = (value: string) => {
-  const [name, tag = ""] = value.split("#");
-  return `name=${encodeURIComponent(name.trim())}&tag=${encodeURIComponent(tag.trim())}`;
-};
 
-interface LolStat { value?: number; displayValue?: string }
-interface LolRaw { id?: string; metadata?: { agentName?: string; agentImageUrl?: string; modeName?: string; result?: string; gameDuration?: string; timestamp?: string }; segments?: { stats?: Record<string, LolStat> }[] }
-
-function LolView() {
-  const key = "ethone-lol-id";
-  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
-  const [data, setData] = useState<{ profile: { handle?: string; avatarUrl?: string; rankSolo?: string; rankFlex?: string; segments?: { stats?: Record<string, LolStat> }[] }; matches: LolRaw[] } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.includes("#")) {
-      setError(tr("Écris l'identifiant sous la forme Pseudo#TAG.", "Write the ID as Name#TAG."));
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    write(key, JSON.stringify(value.trim()));
-    try {
-      const [profile, matches] = await Promise.all([apiData<NonNullable<typeof data>["profile"]>(`api/stats/lol-profile?${riotParts(value)}`), apiData<LolRaw[]>(`api/stats/lol-matches?${riotParts(value)}`).catch(() => [])]);
-      setData({ profile, matches: Array.isArray(matches) ? matches : [] });
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  useEffect(() => {
-    if (value) void submit({ preventDefault() {} } as FormEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return (
-    <>
-      <PageHead title="League of Legends" />
-      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder="Pseudo#TAG" aria-label={tr("Identifiant Riot", "Riot ID")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      {busy && <Skeletons count={3} height={70} />}
-      {data && !busy && (
-        <>
-          <div className="lol-head">
-            {data.profile.avatarUrl && <img src={data.profile.avatarUrl} alt="" />}
-            <div><h2>{data.profile.handle}</h2><p className="muted">{tr("Niveau", "Level")} {data.profile.segments?.[0]?.stats?.level?.displayValue ?? "–"}</p></div>
-            <div className="focus-stats"><Stat label="Solo" value={data.profile.rankSolo ?? tr("Non classé", "Unranked")} /><Stat label="Flex" value={data.profile.rankFlex ?? tr("Non classé", "Unranked")} /></div>
-          </div>
-          <ul className="lol-matches">
-            {data.matches.map((match, index) => {
-              const stats = match.segments?.[0]?.stats;
-              const won = match.metadata?.result === "Victory";
-              return (
-                <li key={match.id ?? index} className={won ? "won" : "lost"}>
-                  {match.metadata?.agentImageUrl && <img src={match.metadata.agentImageUrl} alt="" />}
-                  <span><b>{match.metadata?.agentName}</b><small>{match.metadata?.modeName}{match.metadata?.gameDuration ? `, ${match.metadata.gameDuration}` : ""}</small></span>
-                  <b>{stats?.kills?.value ?? 0}/{stats?.deaths?.value ?? 0}/{stats?.assists?.value ?? 0}</b>
-                  <small>{stats?.cs?.value ?? 0} CS</small>
-                  <b className={won ? "ok" : "bad"}>{won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</b>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
-    </>
-  );
-}
-
-function RotationView() {
+export function RotationView() {
   const state = useLoad(() => apiData<{ free?: Champion[]; freeForNewPlayers?: Champion[]; gameVersion?: string; region?: string }>("api/stats/lol-rotation"));
   const group = (title: string, rows?: Champion[]) => (rows?.length ?? 0) > 0 && (
     <>
@@ -655,20 +584,4 @@ function RotationView() {
   );
 }
 
-export function GamesPage() {
-  const [savedSection, setSection] = usePersisted<ElolSection>("ethone-section-games", "lol");
-  const section = elolSection(savedSection);
-  const items = [
-    { id: "lol", label: "League", icon: <LeagueMark size={16} />, group: "E:LOL" },
-    { id: "tft", label: "TFT", icon: <Sparkles size={16} />, group: "E:LOL" },
-    { id: "rotation", label: tr("Rotation LoL", "LoL rotation"), icon: <LeagueMark size={16} />, group: "Riot" },
-  ] as const;
-  return (
-    <Split id="games" label="E:LOL" items={items} value={section} onChange={setSection}>
-      {section === "lol" && <LolView />}
-      {section === "tft" && <TftView />}
-      {section === "rotation" && <RotationView />}
-    </Split>
-  );
-}
 

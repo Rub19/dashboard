@@ -580,7 +580,7 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
   );
 }
 
-function Friends({ linked, account, onOpen, onConnect, connecting }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void; onConnect: () => void; connecting: boolean }) {
+export function Friends({ linked, account, onOpen, onConnect, connecting }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void; onConnect: () => void; connecting: boolean }) {
   const [friends, setFriends] = useState<RiotFriend[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -155,3 +155,14 @@ Menu du profil : déplacé dans un portail hors de la sidebar pour éviter l'ét
 - Mail utilise une liste visuelle avec avatars calculés localement, état non lu, étoile et pièces jointes, puis un panneau de lecture détaillé. Vérifié dans la vraie WebView avec 27 messages réels, ouverture d'un message, corps et six actions disponibles, sans mutation.
 - La connexion Riot ouvre désormais uniquement le navigateur par défaut. L'utilisateur colle ensuite l'adresse finale de playvalorant.com dans le panneau sécurisé d'Ethone. Aucun navigateur intégré n'est proposé.
 - Vérifications : 49 tests frontend, TypeScript, build Vite et build Tauri release `--no-bundle` réussis. Le build release a été contrôlé par le port DevTools local, sans contrôle du bureau ni capture de l'écran.
+
+## Reprise d'E:VAL et E:LOL (3 novembre 2026)
+
+Cette section remplace ce qui est écrit plus haut sur la connexion Riot par navigateur, les cartes de match et la page E:LOL.
+
+- Connexion Riot : retour à la fenêtre intégrée `riotLogin`, sans URL à coller. Le lien par navigateur reste une option secondaire. Vérifié : `riot_login` renvoie `linked` sur le vrai compte, sans action manuelle.
+- Matchs E:VAL : retour à une ligne par match avec colonnes alignées. Les grandes cartes sont retirées.
+- E:LOL : `LolPage.tsx` et `lol.ts` reprennent l'interface d'E:VAL (onglets Profil, TFT, Rotation, Amis ; carte de profil, résumé, session, lignes de match par jour, panneau de détail). Vérifié avec 36 parties réelles, le tableau des 10 joueurs et l'analyse. L'état vide de TFT a été vu car le compte n'a aucune partie TFT : les cartes TFT n'ont pas été vues avec de vraies données.
+- Pas d'onglet En direct dans E:LOL : le worker n'a pas de route pour les parties en cours.
+- Steam et Minecraft restent absents de cette page depuis le passage à E:LOL. Le code est dans l'historique git (`203c2f6f`, `desktop/src/MorePages.tsx`).
+- La release `desktop-v0.1.0` ne contient pas ces changements.

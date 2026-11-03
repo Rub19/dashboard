@@ -3,19 +3,18 @@ import { usePersisted } from "./qol";
 import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
-import { BarChart3, ChevronRight, ExternalLink, Flag, LogOut, Monitor, RefreshCw, Search, Star, Target, X } from "lucide-react";
+import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
-import { apiData, catalogGet, riotLinkUrl, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentIcon, agentPortrait, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
+import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import EvalGame from "./EvalGame";
 import EvalHub from "./EvalHub";
 import EvalLive from "./EvalLive";
-import { Drawer, Tabs } from "./kit";
+import { Tabs } from "./kit";
 import { Button, ValorantMark } from "./ui";
-import { openRiotLoginInBrowser } from "./riot-session";
 
 const LOCAL_ID = "ethone-eval-riot-id";
 const MATCH_LIMIT = 25;
@@ -141,7 +140,7 @@ function useMapImages() {
 const hourFormat = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" });
 const dayFormat = new Intl.DateTimeFormat(lang, { weekday: "long", day: "numeric", month: "long" });
 
-function dayLabel(iso: string) {
+export function dayLabel(iso: string) {
   const date = new Date(iso);
   const today = new Date();
   const days = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()) / 86400000);
@@ -153,30 +152,34 @@ function dayLabel(iso: string) {
 function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; image?: string; onOpen: () => void }) {
   const summary = matchSummary(match, puuid);
   if (!summary) return null;
-  const { me, won, draw, score, mvp } = summary;
+  const { me, won, draw, score, mvp, kd } = summary;
   const result = draw ? "draw" : won ? "win" : "loss";
   return (
     <motion.li variants={listItem}>
-      <button type="button" className={`match-card ${result}`} onClick={onOpen}>
-        <span className="match-card-head">
-          <span className="match-mode"><Monitor size={16} /><b>{modeName(match.mode)}</b></span>
-          <small>{match.startedAt ? hourFormat.format(new Date(match.startedAt)) : ""}{match.lengthSec > 0 ? ` · ${Math.round(match.lengthSec / 60)} min` : ""}</small>
+      <button type="button" className={`match-row ${result}`} onClick={onOpen}>
+        {(image || match.mapId) && <img className="match-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
+        {me.agentId ? <img className="match-agent" src={agentIcon(me.agentId)} alt={me.agent} title={me.agent} /> : <span className="match-agent" />}
+        <span className="match-result">
+          <b><span>{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</span> {score[0]} – {score[1]}</b>
+          <small>{modeName(match.mode)} · {match.map}{match.startedAt ? ` · ${hourFormat.format(new Date(match.startedAt))}` : ""}</small>
         </span>
-        <span className="match-card-hero">
-          {(image || match.mapId) && <img className="match-card-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
-          <span className="match-card-shade" />
-          {me.agentId && <img className="match-card-agent" src={agentPortrait(me.agentId)} alt={me.agent} title={me.agent} loading="lazy" onError={(event) => { event.currentTarget.src = agentIcon(me.agentId); }} />}
-          <span className="match-card-copy"><b>{me.agent}</b><small>{match.map}</small>{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
-          <strong className="match-card-result">{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</strong>
-        </span>
-        <span className="match-card-foot">
-          <span><Target size={15} /><b>{me.kills} / {me.deaths} / {me.assists}</b><small>K / D / A</small></span>
-          <span><BarChart3 size={15} /><b>{summary.acs}</b><small>ACS</small></span>
-          <span><Flag size={15} /><b>{score[0]} – {score[1]}</b><small>{history ? `${history.change >= 0 ? "+" : ""}${history.change} RR` : `${summary.hs} % HS`}</small></span>
-          <ChevronRight size={17} />
-        </span>
+        <span className="match-mvp">{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
+        <span className="match-stat"><b>{me.kills} / {me.deaths} / {me.assists}</b></span>
+        <span className="match-stat"><b>{decimal(kd)}</b></span>
+        <span className="match-stat"><b>{summary.acs}</b></span>
+        <span className="match-stat wide"><b>{summary.hs} %</b></span>
+        <span className="match-stat wide"><b>{summary.adr}</b></span>
+        <span className="match-rr">{history && <><b className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change}</b>{history.tier > 0 && <img src={tierIcon(history.tier)} alt={rankName(history.tier)} title={rankName(history.tier)} />}</>}</span>
       </button>
     </motion.li>
+  );
+}
+
+function MatchColumns() {
+  return (
+    <li className="match-columns" aria-hidden="true">
+      <span /><span>{tr("Partie", "Match")}</span><span /><span>K / D / A</span><span>K/D</span><span>ACS</span><span className="wide">{t("evalHeadshots")}</span><span className="wide">{t("evalDamage")}</span><span>RR</span>
+    </li>
   );
 }
 
@@ -273,7 +276,7 @@ function MatchPanel({ match, puuid, image, onClose }: { match: EvalMatch; puuid:
   );
 }
 
-function RiotIdForm({ onSubmit }: { onSubmit: (name: string, tag: string) => void }) {
+export function RiotIdForm({ onSubmit }: { onSubmit: (name: string, tag: string) => void }) {
   const [value, setValue] = useState("");
   const [invalid, setInvalid] = useState(false);
   const submit = (event: FormEvent) => {
@@ -330,17 +333,25 @@ function BrowserLink({ onLinked }: { onLinked: () => void }) {
   );
 }
 
-function Connect({ error, connecting, onConnect, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onSearch: (name: string, tag: string) => void }) {
+function Connect({ error, connecting, onConnect, onLinked, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onLinked: () => void; onSearch: (name: string, tag: string) => void }) {
+  const [browser, setBrowser] = useState(false);
+  const [browserError, setBrowserError] = useState<string | null>(null);
+  const openBrowser = () => {
+    setBrowserError(null);
+    riotOpenBrowser().then(() => setBrowser(true), (reason) => setBrowserError(errorText(reason)));
+  };
   return (
     <div className="eval-connect">
       <ValorantMark size={44} />
       <h1>E:VAL</h1>
       <p>{t("evalConnectText")}</p>
       <div className="eval-connect-actions">
-        <Button variant="primary" disabled={connecting} onClick={onConnect}><ExternalLink size={15} />{t("evalConnectBrowser")}</Button>
+        <Button variant="primary" onClick={openBrowser}><ExternalLink size={15} />{t("evalConnectBrowser")}</Button>
+        <Button disabled={connecting} onClick={onConnect}>{t("evalConnectWindow")}</Button>
       </div>
+      {browser && <BrowserLink onLinked={onLinked} />}
       {connecting && <p role="status">{t("evalConnecting")}</p>}
-      {error && <p className="bad" role="alert">{error}</p>}
+      {(error || browserError) && <p className="bad" role="alert">{error ?? browserError}</p>}
       <RiotIdForm onSubmit={onSearch} />
     </div>
   );
@@ -354,7 +365,6 @@ export default function TrackerPage() {
   const [needsId, setNeedsId] = useState(false);
   const [open, setOpen] = useState<EvalMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
-  const [browserLink, setBrowserLink] = useState(false);
   const [tab, setTab] = usePersisted<EvalTab>("ethone-section-eval", "profile");
   const [limit, setLimit] = useState(MATCH_LIMIT);
   const [visited, setVisited] = useState<EvalTab[]>([tab]);
@@ -450,17 +460,15 @@ export default function TrackerPage() {
   };
 
   const connect = () => {
-    if (connecting) return;
     setConnecting(true);
     setError(null);
-    openRiotLoginInBrowser(riotOpenBrowser)
-      .then(() => setBrowserLink(true))
-      .catch((reason) => setError(errorText(reason)))
-      .finally(() => setConnecting(false));
+    riotLogin().catch((reason) => {
+      setConnecting(false);
+      setError(errorText(reason));
+    });
   };
 
   const linked = () => {
-    setBrowserLink(false);
     memory = null;
     setData(null);
     void start();
@@ -502,7 +510,7 @@ export default function TrackerPage() {
       </div>
     );
   }
-  if (needsId) return <><Connect error={error} connecting={connecting} onConnect={connect} onSearch={(name, tag) => void search(name, tag)} /><Drawer open={browserLink} title={t("evalConnectBrowser")} onClose={() => setBrowserLink(false)}><BrowserLink onLinked={linked} /></Drawer></>;
+  if (needsId) return <Connect error={error} connecting={connecting} onConnect={connect} onLinked={linked} onSearch={(name, tag) => void search(name, tag)} />;
   if (!data) {
     return (
       <div className="eval-error" role="alert">
@@ -540,6 +548,7 @@ export default function TrackerPage() {
             <>
               <Session matches={matches} puuid={account.puuid} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
+                <MatchColumns />
                 {matches.map((match, position) => (
                   <Fragment key={match.id}>
                     {match.startedAt && (position === 0 || !matches[position - 1].startedAt || new Date(matches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}
@@ -553,7 +562,6 @@ export default function TrackerPage() {
         </div>
       </div>}
       <AnimatePresence>{open && <MatchPanel key={open.id} match={open} puuid={account.puuid} image={mapImages[open.map.toLowerCase()]} onClose={closeMatch} />}</AnimatePresence>
-      <Drawer open={browserLink} title={t("evalConnectBrowser")} onClose={() => setBrowserLink(false)}><BrowserLink onLinked={linked} /></Drawer>
     </>
   );
 }

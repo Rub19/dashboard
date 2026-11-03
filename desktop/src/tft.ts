@@ -76,8 +76,3 @@ export function tftRiotId(identity: { name: string; tag: string } | null): strin
   return `${identity.name}#${identity.tag}`;
 }
 
-export type ElolSection = "lol" | "tft" | "rotation";
-
-export function elolSection(value: string): ElolSection {
-  return value === "tft" || value === "rotation" ? value : "lol";
-}

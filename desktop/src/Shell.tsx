@@ -17,9 +17,10 @@ import WorkPage from "./DailyPage";
 import DiscordPage from "./DiscordPage";
 import FilesPage from "./FilesPage";
 import MailPage from "./MailPage";
-import { AccountPage, BrainPage, GamesPage, InsightsPage, TeamPage } from "./MorePages";
+import { AccountPage, BrainPage, InsightsPage, TeamPage } from "./MorePages";
+import LolPage from "./LolPage";
 import TrackerPage from "./TrackerPage";
-import { BrandMark, ValorantMark, WindowControls } from "./ui";
+import { BrandMark, LeagueMark, ValorantMark, WindowControls } from "./ui";
 import { anchoredMenuPosition } from "./menu-position";
 
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
@@ -40,7 +41,7 @@ function SECTION_COMMANDS(): { page: Page; key: string; id: string; label: strin
     ...group("productivity", "ethone-section-productivity", tr("Productivité", "Productivity"), [["tasks", tr("Tâches", "Tasks")], ["events", tr("Calendrier", "Calendar")], ["notes", "Notes"], ["scratchpad", tr("Mémo", "Scratchpad")], ["capture", tr("Capture rapide", "Quick capture")], ["habits", tr("Habitudes", "Habits")], ["focus", tr("Concentration", "Focus")], ["ambience", tr("Ambiance", "Ambience")], ["bills", tr("Factures", "Bills")]]),
     ...group("tracker", "ethone-section-eval", "E:VAL", [["profile", tr("Profil", "Profile")], ["live", tr("En direct", "Live")], ["game", tr("Jeu et boutique", "Game and store")], ["hub", "Hub"]]),
     ...group("insights", "ethone-section-insights", tr("Analyses", "Insights"), [["activity", tr("Activité", "Activity")], ["mail", tr("Statistiques mail", "Mail stats")], ["weather", tr("Météo", "Weather")], ["rss", tr("Flux RSS", "RSS feeds")], ["diagnostic", tr("Diagnostic", "Diagnostics")]]),
-    ...group("games", "ethone-section-games", "E:LOL", [["lol", "League of Legends"], ["tft", "Teamfight Tactics"], ["rotation", tr("Rotation LoL", "LoL rotation")]]),
+    ...group("games", "ethone-section-games", "E:LOL", [["profile", tr("Profil", "Profile")], ["tft", "Teamfight Tactics"], ["rotation", tr("Rotation LoL", "LoL rotation")], ["hub", tr("Amis", "Friends")]]),
   ];
 }
 
@@ -235,7 +236,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       ...modules
         .filter((status) => CAN_RUN.includes(status.action))
         .map((status) => ({ id: `run-${status.module.id}`, label: `${t(`action.${status.action}` as Key)} : ${status.module.name}`, run: () => void run(status) })),
-      ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: id === "tracker" ? "E:VAL" : t(id), hint: PAGE_ORDER.includes(id) ? `Ctrl+${PAGE_ORDER.indexOf(id) + 1}` : id === "settings" ? "Ctrl+," : undefined, run: () => go(id) })),
+      ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id), hint: PAGE_ORDER.includes(id) ? `Ctrl+${PAGE_ORDER.indexOf(id) + 1}` : id === "settings" ? "Ctrl+," : undefined, run: () => go(id) })),
       ...SECTION_COMMANDS().map(({ page: target, key, id, label }) => ({ id: `section-${target}-${id}`, label, run: () => { setPersisted(key, id); go(target); } })),
       { id: "sidebar", label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B", run: toggleSidebar },
       { id: "refresh", label: tr("Actualiser les applications", "Refresh apps"), run: () => void refresh() },
@@ -270,7 +271,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         onUnpin={pin}
         compact={compact}
         onToggle={toggleSidebar}
-        brand={<div className="nav-brand" data-tauri-drag-region>{page === "tracker" ? <span className="title-valorant"><ValorantMark size={18} /></span> : <BrandMark size={22} />}<b data-tauri-drag-region>{page === "tracker" ? "E:VAL" : "Ethone"}</b></div>}
+        brand={<div className="nav-brand" data-tauri-drag-region>{page === "tracker" ? <span className="title-valorant"><ValorantMark size={18} /></span> : page === "games" ? <span className="title-valorant"><LeagueMark size={18} /></span> : <BrandMark size={22} />}<b data-tauri-drag-region>{page === "tracker" ? "E:VAL" : page === "games" ? "E:LOL" : "Ethone"}</b></div>}
         note={!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
         account={<div className="usermenu" ref={menuRef}>
             <button type="button" ref={menuButton} className="nav-item user" aria-expanded={menu} aria-haspopup="menu" title={profile.name} onClick={() => setMenu((open) => !open)}>
@@ -302,7 +303,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
             ["tracker", <TrackerPage />],
             ["files", <FilesPage />],
             ["mail", <MailPage />],
-            ["games", <GamesPage />],
+            ["games", <LolPage />],
             ["discord", <DiscordPage />],
             ["brain", <BrainPage />],
             ["team", <TeamPage />],

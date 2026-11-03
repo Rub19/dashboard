@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { agentPortrait, lastSession, matchAnalysis, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
+import { lastSession, matchAnalysis, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
 
 const player = (puuid, team, score, extra = {}) => ({ puuid, name: puuid, tag: "EUW", team, agent: "Jett", agentId: "a", tier: 12, card: "", level: 1, party: "", score, kills: 10, deaths: 5, assists: 2, hs: 5, bs: 4, ls: 1, dmg: 2000, ...extra });
 const match = (id, startedAt, red, blue, players) => ({ id, map: "Ascent", mapId: "m", mode: "Competitive", queue: "competitive", startedAt, lengthSec: 1800, teams: { Red: { won: red > blue, rounds: red }, Blue: { won: blue > red, rounds: blue } }, players });
@@ -19,10 +19,6 @@ test("le résumé suit l'équipe du joueur", () => {
 test("le MVP du match prime sur celui de l'équipe", () => {
   const game = match("1", null, 13, 8, [player("me", "Red", 9000), player("foe", "Blue", 7000)]);
   assert.equal(matchSummary(game, "me").mvp, "match");
-});
-
-test("les cartes de match utilisent le portrait complet de l'agent", () => {
-  assert.equal(agentPortrait("agent-id"), "https://media.valorant-api.com/agents/agent-id/fullportraitv2.png");
 });
 
 test("les statistiques additionnent les vrais matchs", () => {

@@ -2013,3 +2013,9 @@ li:hover > .team-remove, .team-remove:focus-visible { opacity: 1; }
 :root[data-transparency="reduced"] .update-banner { background: var(--row-solid); backdrop-filter: none; }
 .mail-html { display: block; width: 100%; border: 0; border-radius: 10px; background: #fff; }
 .mail-images { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.conn-twitch input:first-child { flex: 1 1 120px; }
+.conn-twitch-row { display: flex; align-items: center; gap: 8px; }
+.conn-twitch-row .conn-detail { flex: 1; min-width: 0; }
+.conn-change { flex: none; color: var(--muted); font-size: 12px; }
+.conn-change:hover { color: var(--fg); }
+.conn-twitch-error { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; color: var(--danger); }

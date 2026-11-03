@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { ExternalLink, Plug } from "lucide-react";
 import { apiCall, apiData, openExternal } from "./api";
 import { firstArray, Json } from "./generic";
 import { errorText, lang, tr } from "./i18n";
 import { ErrorBox, PageHead, Status, useLoad } from "./kit";
 import { NowPlayingCard } from "./NowPlaying";
+import { usePersisted } from "./qol";
 import { Button } from "./ui";
 
 const BRANDS: Record<string, { name: string; color: string; path?: string }> = {
@@ -44,6 +45,40 @@ function GithubDetail() {
   );
 }
 
+const TWITCH_LOGIN = /^[a-zA-Z0-9_]{3,25}$/;
+
+function TwitchDetail() {
+  const [login, setLogin] = usePersisted<string>("ethone-twitch-login", "");
+  const [draft, setDraft] = useState("");
+  const state = useLoad(() => (login ? apiData<{ displayName?: string; profileImageUrl?: string; live?: boolean; stream?: { title?: string; viewers?: number } | null }>(`api/twitch/channel?login=${encodeURIComponent(login)}`) : Promise.resolve(null)), [login]);
+  const save = (event: FormEvent) => {
+    event.preventDefault();
+    if (TWITCH_LOGIN.test(draft.trim())) setLogin(draft.trim().toLowerCase());
+  };
+  if (!login) {
+    return (
+      <form className="daily-add conn-twitch" onSubmit={save}>
+        <input value={draft} placeholder={tr("Ton pseudo Twitch", "Your Twitch username")} aria-label={tr("Ton pseudo Twitch", "Your Twitch username")} maxLength={25} onChange={(event) => setDraft(event.target.value)} />
+        <Button type="submit" disabled={!TWITCH_LOGIN.test(draft.trim())}>{tr("Afficher", "Show")}</Button>
+      </form>
+    );
+  }
+  const data = state.data;
+  const change = <button type="button" className="conn-change" onClick={() => { setDraft(login); setLogin(""); }}>{tr("Changer", "Change")}</button>;
+  if (state.error) return <p className="conn-twitch-error"><small role="alert">{state.error}</small>{change}</p>;
+  if (!data) return null;
+  const viewers = (data.stream?.viewers ?? 0).toLocaleString(lang);
+  return (
+    <div className="conn-twitch-row">
+      <button type="button" className="conn-detail" onClick={() => void openExternal(`https://www.twitch.tv/${login}`)}>
+        {data.profileImageUrl && <img src={data.profileImageUrl} alt="" />}
+        <span><b>{data.displayName ?? login}</b><small>{data.live ? tr(`En direct, ${viewers} spectateur(s) : ${data.stream?.title ?? ""}`, `Live, ${viewers} viewer(s): ${data.stream?.title ?? ""}`) : tr("Hors ligne", "Offline")}</small></span>
+      </button>
+      {change}
+    </div>
+  );
+}
+
 function Card({ provider, onChanged }: { provider: string; onChanged: () => void }) {
   const [asking, setAsking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +94,7 @@ function Card({ provider, onChanged }: { provider: string; onChanged: () => void
         {asking ? <span className="row"><Button onClick={() => setAsking(false)}>{tr("Annuler", "Cancel")}</Button><Button className="danger" onClick={disconnect}>{tr("Confirmer", "Confirm")}</Button></span> : <Button onClick={() => setAsking(true)}>{tr("Déconnecter", "Disconnect")}</Button>}
       </div>
       {provider === "github" && <GithubDetail />}
+      {provider === "twitch" && <TwitchDetail />}
       {error && <ErrorBox message={error} />}
     </li>
   );

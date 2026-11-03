@@ -4,7 +4,8 @@ import { usePersisted } from "./qol";
 import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, Minus, Moon, RefreshCw } from "lucide-react";
 import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
 import { readCache, writeCache } from "./cache";
-import { boardOf, cardImage, lastSeenShort, lastSeenText, presenceKind } from "./friends";
+import { boardOf, lastSeenShort, lastSeenText, presenceKind } from "./friends";
+import { cardImage, friendPortrait, resolveFriendCard } from "./friend-portraits";
 import { SkinDrawer } from "./EvalSkins";
 import { flattenEntries, Json } from "./generic";
 import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
@@ -459,11 +460,13 @@ function DiscordRecap({ account, matches }: { account: EvalAccount | null; match
 }
 
 const CARD_KEY = "ethone-friend-cards";
+const ICON_KEY = "ethone-friend-icons";
 const TRIED_KEY = "ethone-friend-cards-tried";
-const WEEK = 7 * 24 * 60 * 60 * 1000;
+const RETRY_DELAY = 30 * 60 * 1000;
 
-function useFriendCards(friends: RiotFriend[]) {
+function useFriendPortraits(friends: RiotFriend[]) {
   const [cards, setCards] = useState<Record<string, string>>(() => readJson<Record<string, string>>(CARD_KEY) ?? {});
+  const [icons, setIcons] = useState<Record<string, string>>(() => readJson<Record<string, string>>(ICON_KEY) ?? {});
   const queue = useRef<string[]>([]);
   const running = useRef(false);
   const remember = (id: string, card: string) => setCards((current) => {
@@ -475,15 +478,22 @@ function useFriendCards(friends: RiotFriend[]) {
     for (const friend of friends) if (friend.card && cards[friend.id] !== friend.card) remember(friend.id, friend.card);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends]);
+  useEffect(() => {
+    const found = Object.fromEntries(friends.flatMap((friend) => friend.icon ? [[friend.id, friend.icon]] : []));
+    if (Object.keys(found).length === 0) return;
+    setIcons((current) => {
+      if (Object.entries(found).every(([id, icon]) => current[id] === icon)) return current;
+      const next = { ...current, ...found };
+      write(ICON_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, [friends]);
   const work = async () => {
     if (running.current) return;
     running.current = true;
     while (queue.current.length > 0) {
       const id = queue.current.shift() as string;
-      const history = await riotCall<{ History?: { MatchID: string }[] }>(`/match-history/v1/history/${id}?startIndex=0&endIndex=1`, { fresh: true }).catch(() => null);
-      const match = history?.History?.[0]?.MatchID;
-      const details = match ? await riotCall<{ players?: { subject: string; playerCard?: string }[] }>(`/match-details/v1/matches/${match}`).catch(() => null) : null;
-      const card = details?.players?.find((player) => player.subject.toLowerCase() === id)?.playerCard;
+      const card = await resolveFriendCard(id, (path, options) => riotCall<unknown>(path, options));
       if (card) remember(id, card);
       await new Promise((resolve) => setTimeout(resolve, 400));
     }
@@ -492,12 +502,12 @@ function useFriendCards(friends: RiotFriend[]) {
   const request = (id: string) => {
     if (cards[id] || queue.current.includes(id)) return;
     const tried = readJson<Record<string, number>>(TRIED_KEY) ?? {};
-    if (Date.now() - (tried[id] ?? 0) < WEEK) return;
+    if (Date.now() - (tried[id] ?? 0) < RETRY_DELAY) return;
     write(TRIED_KEY, JSON.stringify({ ...tried, [id]: Date.now() }));
     queue.current.push(id);
     void work();
   };
-  return { cards, request };
+  return { cards, icons, request };
 }
 
 function FriendAvatar({ friend, image, onVisible }: { friend: RiotFriend; image: string; onVisible: () => void }) {
@@ -575,7 +585,7 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const root = useRef<HTMLDivElement>(null);
-  const { cards, request } = useFriendCards(friends ?? []);
+  const { cards, icons, request } = useFriendPortraits(friends ?? []);
   const reload = useCallback(async () => {
     setBusy(true);
     try {
@@ -621,7 +631,7 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
   const maps = extras.data?.maps ?? {};
   const titles = extras.data?.titles ?? {};
   const item = (friend: RiotFriend) => (
-    <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friend.icon && !cards[friend.id] ? friend.icon : cardImage(cards[friend.id] ?? friend.card)} onVisible={() => request(friend.id)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
+    <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friendPortrait(friend, cards, icons)} onVisible={() => request(friend.id)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
   );
   const section = (heading: string, rows: RiotFriend[]) => rows.length > 0 && (
     <section key={heading} className="friend-section"><h3>{heading}</h3><ul className="friend-card">{rows.map(item)}</ul></section>

@@ -119,4 +119,3 @@ export function lastSeenShort(raw: string, now = Date.now()): string {
   return new Date(time).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" });
 }
 
-export const cardImage = (card: string) => (card ? `https://media.valorant-api.com/playercards/${card}/smallart.png` : "");

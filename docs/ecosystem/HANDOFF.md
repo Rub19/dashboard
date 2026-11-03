@@ -138,6 +138,7 @@ Interface refaite façon Apple sur Windows, voir `desktop/DESIGN.md`. Toutes les
 
 - Matchs : une ligne par match, colonnes alignées, regroupés par jour (`TrackerPage.tsx`).
 - Amis : en ligne à gauche, hors ligne à droite dans une liste qui défile seule (`EvalHub.tsx`).
+- Portraits des amis : la vraie carte VALORANT est maintenant lue directement dans l'équipement du joueur, avec l'historique en secours. La dernière vraie icône Riot/League connue est conservée pour les amis hors ligne. Les tests frontend et TypeScript passent ; l'affichage n'a pas été ouvert ni capturé sur le PC.
 - Skins : `EvalSkins.tsx` regroupe l'aperçu d'une arme (vidéo, améliorations, variantes) et le détail d'un bundle (armes, prix, remise). Ouvert depuis la boutique, la collection, les armes et le choix de skin. Les vidéos sont sur `valorant.dyn.riotcdn.net`, autorisé dans `media-src` de la CSP. Vérifié : lecture réelle au niveau 1, au niveau 3 et sur une variante. Les skins Select n'ont pas de vidéo : image affichée.
 - Session Riot : le silent login passe un seul à la fois (`refreshing` dans `riot.rs`), et un 403 n'efface plus la session, seul un 401 le fait. Un 403 arrive par exemple sur l'historique d'un ami.
 - Bouton Équiper du choix de skin : affiché, jamais cliqué pendant les tests.

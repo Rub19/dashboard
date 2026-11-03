@@ -2,18 +2,18 @@ import { ComponentType, CSSProperties, memo, ReactNode, useState } from "react";
 import { contextMenu } from "./qol";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, BrainCircuit, Folder, Gamepad2, House, LayoutGrid, ListChecks, Mail, MessagesSquare, Settings as SettingsIcon, Users } from "lucide-react";
+import { Activity, BrainCircuit, Folder, House, LayoutGrid, ListChecks, Mail, MessagesSquare, Settings as SettingsIcon, Users } from "lucide-react";
 import type { ModuleStatus } from "./api";
 import { t, tr } from "./i18n";
 import { AppIcon } from "./ModulesPage";
 import { SPRING_PILL, SPRING_PRESS } from "./motion";
 import { FOOT_PAGES, Page } from "./navigation";
 import { resolvePinned } from "./pinned";
-import { ValorantMark } from "./ui";
+import { LeagueMark, ValorantMark } from "./ui";
 
 export const PAGE_TINTS: Record<Page, string> = { home: "#5aa9ff", modules: "#a78bfa", productivity: "#2fd08a", files: "#f0a92b", mail: "#35bfe0", tracker: "#ff4655", games: "#f4638b", discord: "#7c86ff", brain: "#c084fc", team: "#2dd4a0", insights: "#fb923c", settings: "#94a3b8" };
 
-const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: Gamepad2, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
+const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: LeagueMark, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
 
 export const PAGE_ORDER: Page[] = ["home", "modules", "productivity", "files", "mail", "team", "tracker", "games", "discord"];
 const SHORTCUTS: Partial<Record<Page, string>> = { ...Object.fromEntries(PAGE_ORDER.map((id, index) => [id, `Ctrl+${index + 1}`])), settings: "Ctrl+," };
@@ -51,8 +51,8 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         className={`nav-item ${active ? "on" : ""}`}
         style={{ "--tint": PAGE_TINTS[id] } as CSSProperties}
         aria-current={active ? "page" : undefined}
-        aria-label={id === "tracker" ? "E:VAL" : t(id)}
-        title={`${id === "tracker" ? "E:VAL" : t(id)}${SHORTCUTS[id] ? ` (${SHORTCUTS[id]})` : ""}`}
+        aria-label={id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}
+        title={`${id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}${SHORTCUTS[id] ? ` (${SHORTCUTS[id]})` : ""}`}
         onPointerEnter={() => setHover(id)}
         onPointerDown={(event) => event.button === 0 && onGo(id)}
         onClick={(event) => event.detail === 0 && onGo(id)}
@@ -60,7 +60,7 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         {active && <motion.span layoutId="nav-active" className="nav-active" transition={SPRING_PILL} />}
         {hover === id && !active && <motion.span layoutId="nav-hover" className="nav-hover" transition={SPRING_PILL} />}
         <span className="nav-icon"><Icon size={18} /></span>
-        <span className="nav-label">{id === "tracker" ? "E:VAL" : t(id)}</span>
+        <span className="nav-label">{id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}</span>
       </button>
     );
   };

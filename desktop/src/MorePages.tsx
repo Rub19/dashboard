@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePersisted } from "./qol";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, Bot, CloudSun, ExternalLink, Gamepad2, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Bot, CloudSun, ExternalLink, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
 import { AboutPage, JournalPage, SettingsPage } from "./pages";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
@@ -9,7 +9,9 @@ import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Skeletons, Stat, Status, useLoad } from "./kit";
 import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
-import { Button } from "./ui";
+import { Button, LeagueMark } from "./ui";
+import TftView from "./TftView";
+import { elolSection, ElolSection } from "./tft";
 
 interface Champion { id: number; name: string; title?: string; icon?: string }
 const asRecord = (row: Json): { [key: string]: Json } => (row && typeof row === "object" && !Array.isArray(row) ? row : {});
@@ -637,151 +639,6 @@ function LolView() {
   );
 }
 
-interface TftMatch { id?: string; mode?: string; setNumber?: number; playedAt?: string; me?: { placement?: number; level?: number; traits?: { name?: string; numUnits?: number }[]; units?: { name?: string; tier?: number }[] } | null }
-
-function TftView() {
-  const key = "ethone-tft-id";
-  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
-  const [matches, setMatches] = useState<TftMatch[] | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.includes("#")) {
-      setError(tr("Écris l'identifiant sous la forme Pseudo#TAG.", "Write the ID as Name#TAG."));
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    write(key, JSON.stringify(value.trim()));
-    try {
-      const result = await apiData<TftMatch[]>(`api/stats/tft-matches?${riotParts(value)}`);
-      setMatches(Array.isArray(result) ? result : []);
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  const played = (matches ?? []).filter((match) => match.me?.placement);
-  const average = played.length ? played.reduce((total, match) => total + (match.me?.placement ?? 0), 0) / played.length : 0;
-  useEffect(() => {
-    if (value) void submit({ preventDefault() {} } as FormEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return (
-    <>
-      <PageHead title="Teamfight Tactics" />
-      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder="Pseudo#TAG" aria-label={tr("Identifiant Riot", "Riot ID")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      {busy && <Skeletons count={3} height={70} />}
-      {matches && !busy && (matches.length === 0 ? <Empty title={tr("Aucune partie TFT", "No TFT games")} /> : (
-        <>
-          <div className="focus-stats">
-            <Stat label={tr("Parties", "Games")} value={played.length} />
-            <Stat label={tr("Place moyenne", "Average place")} value={average.toFixed(1).replace(".", ",")} />
-            <Stat label="Top 4" value={played.filter((match) => (match.me?.placement ?? 9) <= 4).length} />
-          </div>
-          <ul className="tft-list">
-            {matches.map((match, index) => (
-              <li key={match.id ?? index}>
-                <div className="tft-top">
-                  <span className={`tft-place ${(match.me?.placement ?? 9) <= 4 ? "good" : ""}`}>{match.me?.placement ?? "–"}</span>
-                  <span><b>{match.mode ?? "TFT"}</b><small>Set {match.setNumber}, {tr("niveau", "level")} {match.me?.level}{match.playedAt ? `, ${new Date(match.playedAt).toLocaleString(lang)}` : ""}</small></span>
-                </div>
-                {(match.me?.traits?.length ?? 0) > 0 && <div className="tft-line">{match.me?.traits?.slice(0, 6).map((trait) => `${trait.name} ${trait.numUnits}`).join(", ")}</div>}
-                {(match.me?.units?.length ?? 0) > 0 && <div className="tft-line">{match.me?.units?.slice(0, 9).map((unit) => `${unit.name} ${"★".repeat(unit.tier ?? 1)}`).join(", ")}</div>}
-              </li>
-            ))}
-          </ul>
-        </>
-      ))}
-    </>
-  );
-}
-
-function SteamView() {
-  const key = "ethone-steam-id";
-  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
-  const [data, setData] = useState<{ player: { displayName?: string; avatarUrl?: string; profileUrl?: string; status?: string; [name: string]: unknown }; games: { name?: string; recentPlaytimeMinutes?: number; playtimeMinutes?: number }[] } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.trim()) return;
-    setBusy(true);
-    setError(null);
-    write(key, JSON.stringify(value.trim()));
-    try {
-      const id = encodeURIComponent(value.trim());
-      const [player, recent] = await Promise.all([apiData<NonNullable<typeof data>["player"]>(`api/steam/player?steamId=${id}`), apiData<Json>(`api/steam/recent-games?steamId=${id}`).catch(() => [])]);
-      setData({ player, games: firstArray(recent) as unknown as NonNullable<typeof data>["games"] });
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  useEffect(() => {
-    if (value) void submit({ preventDefault() {} } as FormEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return (
-    <>
-      <PageHead title="Steam" />
-      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder={tr("SteamID64 ou nom de profil", "SteamID64 or profile name")} aria-label="Steam ID" onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy || !value.trim()}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      {busy && <Skeletons count={3} height={60} />}
-      {data && !busy && (
-        <>
-          <div className="lol-head">{data.player.avatarUrl && <img src={data.player.avatarUrl} alt="" />}<div><h2>{data.player.displayName}</h2>{data.player.profileUrl && <button type="button" className="link" onClick={() => void openExternal(data.player.profileUrl ?? "")}>{tr("Voir le profil", "View profile")}</button>}</div></div>
-          <h2 className="group-title">{tr("Joué récemment", "Recently played")}</h2>
-          {data.games.length === 0 ? <p className="muted">{tr("Aucun jeu récent visible.", "No visible recent games.")}</p> : <ul className="card-rows">{data.games.map((game, index) => <li key={index}><div><span><b>{game.name}</b><small>{game.playtimeMinutes !== undefined ? tr(`${Math.round(game.playtimeMinutes / 60)} h au total`, `${Math.round(game.playtimeMinutes / 60)} h total`) : ""}</small></span></div></li>)}</ul>}
-        </>
-      )}
-    </>
-  );
-}
-
-function MinecraftView() {
-  const key = "ethone-minecraft-name";
-  const [value, setValue] = useState(() => readJson<string>(key) ?? "");
-  const [data, setData] = useState<{ username?: string; uuid?: string; skinUrl?: string; avatarUrl?: string; capeUrl?: string; model?: string; nameHistory?: unknown[] } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.trim()) return;
-    setBusy(true);
-    setError(null);
-    write(key, JSON.stringify(value.trim()));
-    try {
-      setData(await apiData<NonNullable<typeof data>>(`api/minecraft/profile?username=${encodeURIComponent(value.trim())}`));
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  useEffect(() => {
-    if (value) void submit({ preventDefault() {} } as FormEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return (
-    <>
-      <PageHead title="Minecraft" />
-      <form className="daily-add" onSubmit={(event) => void submit(event)}><input value={value} placeholder={tr("Pseudo", "Username")} aria-label={tr("Pseudo", "Username")} onChange={(event) => setValue(event.target.value)} /><Button type="submit" variant="primary" disabled={busy || !value.trim()}>{busy ? tr("Recherche…", "Searching…") : tr("Rechercher", "Search")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      {data && !busy && (
-        <div className="lol-head">
-          {(data.avatarUrl || data.skinUrl) && <img className="pixel" src={data.avatarUrl || data.skinUrl} alt="" />}
-          <div><h2>{data.username ?? value}</h2>{data.model && <p className="muted">{tr("Modèle", "Model")} {data.model}</p>}</div>
-        </div>
-      )}
-    </>
-  );
-}
-
 function RotationView() {
   const state = useLoad(() => apiData<{ free?: Champion[]; freeForNewPlayers?: Champion[]; gameVersion?: string; region?: string }>("api/stats/lol-rotation"));
   const group = (title: string, rows?: Champion[]) => (rows?.length ?? 0) > 0 && (
@@ -799,21 +656,18 @@ function RotationView() {
 }
 
 export function GamesPage() {
-  const [section, setSection] = usePersisted<"lol" | "tft" | "rotation" | "steam" | "minecraft">("ethone-section-games", "lol");
+  const [savedSection, setSection] = usePersisted<ElolSection>("ethone-section-games", "lol");
+  const section = elolSection(savedSection);
   const items = [
-    { id: "lol", label: "League of Legends", icon: <Gamepad2 size={16} />, group: "Riot" },
-    { id: "tft", label: "Teamfight Tactics", icon: <Gamepad2 size={16} />, group: "Riot" },
-    { id: "rotation", label: tr("Rotation LoL", "LoL rotation"), icon: <Gamepad2 size={16} />, group: "Riot" },
-    { id: "steam", label: "Steam", icon: <Gamepad2 size={16} />, group: tr("Autres jeux", "Other games") },
-    { id: "minecraft", label: "Minecraft", icon: <Gamepad2 size={16} />, group: tr("Autres jeux", "Other games") },
+    { id: "lol", label: "League", icon: <LeagueMark size={16} />, group: "E:LOL" },
+    { id: "tft", label: "TFT", icon: <Sparkles size={16} />, group: "E:LOL" },
+    { id: "rotation", label: tr("Rotation LoL", "LoL rotation"), icon: <LeagueMark size={16} />, group: "Riot" },
   ] as const;
   return (
-    <Split id="games" label={tr("Jeux", "Games")} items={items} value={section} onChange={setSection}>
+    <Split id="games" label="E:LOL" items={items} value={section} onChange={setSection}>
       {section === "lol" && <LolView />}
       {section === "tft" && <TftView />}
       {section === "rotation" && <RotationView />}
-      {section === "steam" && <SteamView />}
-      {section === "minecraft" && <MinecraftView />}
     </Split>
   );
 }

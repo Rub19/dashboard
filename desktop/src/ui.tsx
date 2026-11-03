@@ -21,6 +21,15 @@ export function ValorantMark({ size = 20 }: { size?: number }) {
   );
 }
 
+export function LeagueMark({ size = 20 }: { size?: number }) {
+  return (
+    <svg className="league-mark" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M7.1 3.25h6.15v2.2h-1.3v12.7h5.7l-.9 2.6H7.1v-2.2h1.3V5.45H7.1z" />
+      <path fill="none" stroke="currentColor" strokeWidth="1.35" d="M12 1.75a10.25 10.25 0 1 1-5.9 1.87" opacity=".72" />
+    </svg>
+  );
+}
+
 export function WindowControls({ canMaximize = true }: { canMaximize?: boolean }) {
   const appWindow = getCurrentWindow();
   const [maximized, setMaximized] = useState(false);

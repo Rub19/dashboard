@@ -32,7 +32,7 @@ export function appFromAtom(app, xml) {
   const entry = /<entry>([\s\S]*?)<\/entry>/.exec(String(xml || ""))?.[1] ?? "";
   const tag = /releases\/tag\/([^"<]+)/.exec(entry)?.[1];
   const notes = /<content[^>]*>([\s\S]*?)<\/content>/.exec(entry)?.[1] ?? "";
-  const text = unescapeXml(unescapeXml(notes).replace(/<[^>]+>/g, " ")).replace(/s+/g, " ").trim();
+  const text = unescapeXml(unescapeXml(notes).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
   return appFromFeed(app, { version: tag ? decodeURIComponent(tag) : null, notes: text, pub_date: /<updated>([^<]+)<\/updated>/.exec(entry)?.[1] });
 }
 

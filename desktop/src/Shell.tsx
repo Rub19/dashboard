@@ -239,7 +239,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   );
 
 
-  const reachable = !offline && (modules.length === 0 || checking || modules.some((status) => status.latest));
+  const reachable = !offline && navigator.onLine;
 
   return (
     <motion.div className={`shell ${compact ? "compact" : ""}`} data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>

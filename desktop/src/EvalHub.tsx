@@ -1,10 +1,11 @@
 import { FormEvent, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { contextMenu, copyText } from "./qol";
 import { usePersisted } from "./qol";
-import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, ChevronRight, Minus, Moon, RefreshCw } from "lucide-react";
+import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, Minus, Moon, RefreshCw } from "lucide-react";
 import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
 import { readCache, writeCache } from "./cache";
-import { boardOf, cardImage, lastSeenText, presenceKind } from "./friends";
+import { boardOf, cardImage, lastSeenShort, lastSeenText, presenceKind } from "./friends";
+import { SkinDrawer } from "./EvalSkins";
 import { flattenEntries, Json } from "./generic";
 import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
 import { errorText, tr, lang } from "./i18n";
@@ -182,8 +183,10 @@ function Agents() {
 function Weapons() {
   const state = useLoad(() => catalogGet<WeaponItem[]>(`/weapons?${language}`));
   const [open, setOpen] = useState<WeaponItem | null>(null);
+  const [skin, setSkin] = useState<string | null>(null);
   return (
     <>
+      <SkinDrawer skinId={skin} onClose={() => setSkin(null)} />
       <Status state={state} height={110}>
         {(weapons) => (
           <Stagger className="eval-weapons">
@@ -212,7 +215,7 @@ function Weapons() {
         )}
         <h3>{tr("Apparences", "Skins")}</h3>
         <ul className="eval-skins">
-          {open?.skins?.filter((skin) => skin.displayIcon).map((skin) => <li key={skin.uuid}><img src={skin.displayIcon ?? ""} alt="" loading="lazy" /><small>{skin.displayName}</small></li>)}
+          {open?.skins?.filter((skin) => skin.displayIcon).map((skin) => <li key={skin.uuid}><button type="button" onClick={() => setSkin(skin.uuid)}><img src={skin.displayIcon ?? ""} alt="" loading="lazy" /><small>{skin.displayName}</small></button></li>)}
         </ul>
       </Drawer>
     </>
@@ -231,13 +234,16 @@ function NameHistory({ account }: { account: EvalAccount | null }) {
 
 function Collection({ linked }: { linked: boolean }) {
   const [query, setQuery] = useState("");
+  const [skin, setSkin] = useState<string | null>(null);
+  const [owned, setOwned] = useState<Set<string>>(new Set());
   const state = useLoad(async () => {
     if (!linked) return [];
-    const [owned, skins] = await Promise.all([
+    const [entitled, skins] = await Promise.all([
       riotCall<{ Entitlements?: { ItemID: string }[] }>("/store/v1/entitlements/{puuid}/e7c63390-eda7-46e0-bb7a-a6abdacd2433"),
       catalogGet<{ uuid: string; displayName: string; displayIcon?: string | null; levels?: { uuid: string; displayIcon?: string | null }[] }[]>(`/weapons/skins?${language}`),
     ]);
-    const ids = new Set((owned.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+    const ids = new Set((entitled.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+    setOwned(ids);
     return skins.filter((skin) => skin.levels?.[0] && ids.has(skin.levels[0].uuid.toLowerCase())).map((skin) => ({ id: skin.uuid, name: skin.displayName, icon: skin.levels?.[0]?.displayIcon ?? skin.displayIcon ?? "" }));
   }, [linked]);
   if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} text={tr("Connecte ton compte pour voir tes skins.", "Link your account to see your skins.")} />;
@@ -246,7 +252,8 @@ function Collection({ linked }: { linked: boolean }) {
     <>
       <div className="eval-section-head"><h2>{tr("Mes skins", "My skins")}{state.data ? ` (${state.data.length})` : ""}</h2></div>
       <form className="eval-search" onSubmit={(event) => event.preventDefault()}><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
-      <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => !text || row.name.toLowerCase().includes(text)).map((row) => <li key={row.id}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></li>)}</ul>}</Status>
+      <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => !text || row.name.toLowerCase().includes(text)).map((row) => <li key={row.id}><button type="button" onClick={() => setSkin(row.id)}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></button></li>)}</ul>}</Status>
+      <SkinDrawer skinId={skin} ownedLevels={state.data ? owned : undefined} onClose={() => setSkin(null)} />
     </>
   );
 }
@@ -522,7 +529,7 @@ function friendLines(friend: RiotFriend, maps: Record<string, string>): [string,
   }
   const mode = friend.queue ? modeName(friend.queue) : "";
   const place = [mode, maps[friend.map.toLowerCase()]].filter(Boolean).join(" • ");
-  if (friend.state === "INGAME") return [tr(`En jeu | ${friend.allyScore} — ${friend.enemyScore}`, `In game | ${friend.allyScore} — ${friend.enemyScore}`), place];
+  if (friend.state === "INGAME") return [tr(`En jeu ${friend.allyScore} – ${friend.enemyScore}`, `In game ${friend.allyScore} – ${friend.enemyScore}`), place];
   if (friend.state === "PREGAME") return [tr("Sélection d'agent", "Agent select"), place];
   if (friend.partyState === "MATCHMAKING") return [tr("Recherche de partie", "In queue"), mode];
   if (friend.idle) return [tr("Inactif", "Away"), ""];
@@ -531,6 +538,20 @@ function friendLines(friend: RiotFriend, maps: Record<string, string>): [string,
 
 function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend: RiotFriend; image: string; title: string; maps: Record<string, string>; onVisible: () => void; onOpen: () => void }) {
   const [status, place] = friendLines(friend, maps);
+  if (!friend.online) {
+    return (
+      <li>
+        <button type="button" className="friend-row quiet" onClick={onOpen} onContextMenu={(event) => contextMenu(event, [
+          { label: tr("Voir le profil", "View profile"), run: onOpen },
+          { label: tr("Copier l'identifiant Riot", "Copy Riot ID"), run: () => void copyText(`${friend.name}#${friend.tag}`, tr("Identifiant copié", "Riot ID copied")) },
+        ])}>
+          <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
+          <span className="friend-text"><b>{friend.name}<small>#{friend.tag}</small></b></span>
+          <time>{lastSeenShort(friend.lastOnline)}</time>
+        </button>
+      </li>
+    );
+  }
   return (
     <li>
       <button type="button" className="friend-row" onClick={onOpen} onContextMenu={(event) => contextMenu(event, [
@@ -539,13 +560,10 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
       ])}>
         <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
         <span className="friend-text">
-          <b>{friend.name}<small>#{friend.tag}</small></b>
-          {title && <small className="friend-title">{title}</small>}
-          <small className={friend.online && friend.product === "valorant" ? "friend-state live" : "friend-state"}>{status}</small>
-          {place && <small className="friend-state">{place}</small>}
+          <b>{friend.name}<small>#{friend.tag}</small>{title && <em>{title}</em>}</b>
+          <small className="friend-state"><strong>{status}</strong>{place && ` · ${place}`}</small>
         </span>
         {friend.tier > 0 && <img className="friend-rank" src={tierIcon(friend.tier)} alt={rankName(friend.tier)} title={rankName(friend.tier)} />}
-        <ChevronRight size={16} className="friend-chevron" />
       </button>
     </li>
   );
@@ -606,7 +624,7 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
     <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friend.icon && !cards[friend.id] ? friend.icon : cardImage(cards[friend.id] ?? friend.card)} onVisible={() => request(friend.id)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
   );
   const section = (heading: string, rows: RiotFriend[]) => rows.length > 0 && (
-    <section key={heading} className={`friend-section ${rows.length > 4 ? "wide" : ""}`}><h3>{heading}</h3><ul className="friend-card">{rows.map(item)}</ul></section>
+    <section key={heading} className="friend-section"><h3>{heading}</h3><ul className="friend-card">{rows.map(item)}</ul></section>
   );
   const total = friends?.length ?? 0;
   const online = friends?.filter((friend) => friend.online).length ?? 0;
@@ -616,6 +634,7 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
       <label className="friend-search"><Search size={16} /><input value={query} placeholder={tr("Rechercher des amis", "Search friends")} aria-label={tr("Rechercher des amis", "Search friends")} onChange={(event) => setQuery(event.target.value)} /></label>
       {error && <ErrorBox message={error} onRetry={() => void reload()} />}
       {!friends && !error ? <Skeletons count={6} height={64} /> : (
+        <div className="friend-layout">
         <div className="friend-sections">
           {account && !query && (
             <section className="friend-section"><h3>{tr(`Votre groupe — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`, `Your party — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`)}</h3>
@@ -632,8 +651,9 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
           ))}
           {section(`VALORANT — ${board.valorant.length}`, board.valorant)}
           {board.platforms.map((group) => section(`${group.name} — ${group.rows.length}`, group.rows))}
-          {section(tr(`Hors ligne — ${board.offline.length}`, `Offline — ${board.offline.length}`), board.offline)}
           {query && board.parties.length + board.valorant.length + board.platforms.length + board.offline.length === 0 && <Empty title={tr("Aucun ami trouvé", "No friend found")} text={tr("Vérifie le pseudo ou le tag.", "Check the name or tag.")} />}
+        </div>
+        {board.offline.length > 0 && <section className="friend-section friend-offline"><h3>{tr(`Hors ligne — ${board.offline.length}`, `Offline — ${board.offline.length}`)}</h3><ul className="friend-card">{board.offline.map(item)}</ul></section>}
         </div>
       )}
       <p className="eval-soft">{tr("Tu restes invisible pour tes amis pendant cette lecture.", "You stay invisible to your friends during this check.")}</p>

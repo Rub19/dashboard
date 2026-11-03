@@ -174,13 +174,14 @@ pub struct Riot {
     credentials: Mutex<Option<Credentials>>,
     version: Mutex<String>,
     silent: Mutex<Option<Instant>>,
+    refreshing: Mutex<()>,
     catalog: Mutex<std::collections::HashMap<String, Value>>,
 }
 
 impl Riot {
     pub fn new() -> Self {
         let client = reqwest::Client::builder().timeout(Duration::from_secs(15)).build().unwrap_or_default();
-        Self { client, credentials: Mutex::new(None), version: Mutex::new(String::new()), silent: Mutex::new(None), catalog: Mutex::new(std::collections::HashMap::new()) }
+        Self { client, credentials: Mutex::new(None), version: Mutex::new(String::new()), silent: Mutex::new(None), refreshing: Mutex::new(()), catalog: Mutex::new(std::collections::HashMap::new()) }
     }
 
     async fn json(&self, request: reqwest::RequestBuilder) -> Result<Value, String> {
@@ -191,7 +192,7 @@ impl Riot {
             response = retry.send().await.map_err(|_| "riotUnreachable".to_string())?;
         }
         match response.status().as_u16() {
-            401 | 403 => Err("riotExpired".into()),
+            401 => Err("riotExpired".into()),
             status if !(200..300).contains(&status) => Err("riotFailed".into()),
             _ => response.json().await.map_err(|_| "riotFailed".to_string()),
         }
@@ -272,18 +273,15 @@ impl Riot {
         if load_identity().is_none() {
             return Err("riotRequired".into());
         }
-        let mut blocked = self.silent.lock().await;
-        if blocked.is_some_and(|until| until > Instant::now()) || app.get_webview_window(LOGIN_LABEL).is_some() {
-            return Err("riotExpired".into());
-        }
+        let _flight = self.refreshing.lock().await;
         if let Some(current) = fresh(&*self.credentials.lock().await) {
             return Ok(current);
         }
-        drop(blocked);
-        let outcome = self.silent_login(app).await;
-        blocked = self.silent.lock().await;
-        if let Err(message) = outcome {
-            *blocked = Some(Instant::now() + SILENT_RETRY);
+        if self.silent.lock().await.is_some_and(|until| until > Instant::now()) || app.get_webview_window(LOGIN_LABEL).is_some() {
+            return Err("riotExpired".into());
+        }
+        if let Err(message) = self.silent_login(app).await {
+            *self.silent.lock().await = Some(Instant::now() + SILENT_RETRY);
             return Err(message);
         }
         fresh(&*self.credentials.lock().await).ok_or_else(|| "riotExpired".to_string())

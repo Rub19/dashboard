@@ -106,4 +106,17 @@ export function lastSeenText(raw: string, now = Date.now()): string {
   return `Dernière connexion le ${new Date(time).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
+export function lastSeenShort(raw: string, now = Date.now()): string {
+  const time = lastOnlineTime(raw);
+  if (!time) return "";
+  const minutes = Math.floor((now - time) / 60000);
+  if (minutes < 1) return "à l'instant";
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} j`;
+  return new Date(time).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" });
+}
+
 export const cardImage = (card: string) => (card ? `https://media.valorant-api.com/playercards/${card}/smallart.png` : "");

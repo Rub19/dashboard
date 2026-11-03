@@ -4,6 +4,8 @@ import { Clock, Users } from "lucide-react";
 import { catalogGet, riotCall } from "./api";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Skeletons, Stagger, StaggerItem, staggerItem, useLoad } from "./kit";
+import { ArrowLeft } from "lucide-react";
+import { BundleData, BundleDrawer, CHROMA_TYPE, describeItem, ItemViewer, SKIN_TYPE, SkinDrawer, SkinViewer, StoreItem } from "./EvalSkins";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 import { EASE_SNAP } from "./motion";
@@ -20,17 +22,13 @@ const TIERS: Record<string, { color: string; label: string }> = {
 };
 const MEDIA = "https://media.valorant-api.com";
 const language = "language=fr-FR";
-const ACCESSORY_TYPES: Record<string, { label: string; image: (id: string) => string }> = {
-  "d5f120f8-ff8c-4aac-92ea-f2b5acbe9475": { label: "Graffiti", image: (id) => `${MEDIA}/sprays/${id}/displayicon.png` },
-  "3f296c07-64c3-494c-923b-fe692a4fa1bd": { label: "Carte", image: (id) => `${MEDIA}/playercards/${id}/smallart.png` },
-  "dd3bf334-87f3-40bd-b043-682a57a8dc3a": { label: "Porte-bonheur", image: (id) => `${MEDIA}/buddylevels/${id}/displayicon.png` },
-};
+const ACCESSORY_PRICE = KC;
 
 interface Offer { OfferID: string; Cost: Record<string, number>; Rewards?: { ItemID: string; ItemTypeID?: string }[] }
 interface Skin { name: string; icon: string; tier: string }
 interface Storefront {
   SkinsPanelLayout?: { SingleItemStoreOffers?: Offer[]; SingleItemOffersRemainingDurationInSeconds?: number };
-  FeaturedBundle?: { Bundles?: { ID: string; DataAssetID: string; DurationRemainingInSeconds?: number; TotalDiscountedCost?: Record<string, number>; Items?: { DiscountedPrice?: number }[] }[] };
+  FeaturedBundle?: { Bundles?: BundleData[] };
   AccessoryStore?: { AccessoryStoreOffers?: { Offer: Offer }[]; AccessoryStoreRemainingDurationInSeconds?: number };
 }
 interface Contracts {
@@ -87,12 +85,20 @@ function Shop() {
   const [skins, setSkins] = useState<Map<string, Skin>>(new Map());
   const [bundles, setBundles] = useState<Record<string, { name: string; image: string }>>({});
   const [error, setError] = useState<string | null>(null);
+  const [openBundle, setOpenBundle] = useState<string | null>(null);
+  const [openSkin, setOpenSkin] = useState<{ id: string; price: number } | null>(null);
+  const [accessories, setAccessories] = useState<Record<string, StoreItem>>({});
+  const [openItem, setOpenItem] = useState<{ item: StoreItem; price: number } | null>(null);
   useEffect(() => {
     let active = true;
     riotCall<Storefront>("/store/v3/storefront/{puuid}", { method: "POST", body: {} }).then(
       async (value) => {
         if (!active) return;
         setFront(value);
+        void Promise.all((value.AccessoryStore?.AccessoryStoreOffers ?? []).flatMap(({ Offer: offer }) => {
+          const reward = offer.Rewards?.[0];
+          return reward?.ItemTypeID ? [describeItem(reward.ItemTypeID, reward.ItemID).then((item) => [offer.OfferID, item] as const)] : [];
+        })).then((rows) => active && setAccessories(Object.fromEntries(rows)));
         const [catalog, metas] = await Promise.all([
           skinCatalog(),
           Promise.all((value.FeaturedBundle?.Bundles ?? []).map((bundle) => catalogGet<{ displayName: string; displayIcon?: string; displayIcon2?: string }>(`/bundles/${bundle.DataAssetID}?${language}`).then((meta) => [bundle.ID, { name: meta.displayName, image: meta.displayIcon2 ?? meta.displayIcon ?? "" }] as const).catch(() => null))),
@@ -109,20 +115,27 @@ function Shop() {
   }, []);
   const remaining = useCountdown(front?.SkinsPanelLayout?.SingleItemOffersRemainingDurationInSeconds);
   const accessoryLeft = useCountdown(front?.AccessoryStore?.AccessoryStoreRemainingDurationInSeconds);
+  const shown = front?.FeaturedBundle?.Bundles?.find((bundle) => bundle.ID === openBundle) ?? null;
+  const bundleLeft = useCountdown(shown?.DurationRemainingInSeconds);
   if (error) return <ErrorBox message={error} />;
   if (!front) return <Skeletons count={2} height={150} />;
   return (
     <>
-      {(front.FeaturedBundle?.Bundles ?? []).map((bundle) => {
-        const meta = bundles[bundle.ID];
-        const price = bundle.TotalDiscountedCost?.[VP] ?? bundle.Items?.reduce((total, item) => total + (item.DiscountedPrice ?? 0), 0) ?? 0;
-        return (
-          <section key={bundle.ID} className="eval-bundle">
-            {meta?.image && <img src={meta.image} alt="" />}
-            <div><b>{meta?.name ?? tr("Pack", "Bundle")}</b><span>{price.toLocaleString(lang)} VP</span></div>
-          </section>
-        );
-      })}
+      <div className="eval-bundles">
+        {(front.FeaturedBundle?.Bundles ?? []).map((bundle) => {
+          const meta = bundles[bundle.ID];
+          const price = bundle.TotalDiscountedCost?.[VP] ?? bundle.Items?.reduce((total, item) => total + (item.DiscountedPrice ?? 0), 0) ?? 0;
+          return (
+            <button key={bundle.ID} type="button" className="eval-bundle" onClick={() => setOpenBundle(bundle.ID)}>
+              {meta?.image && <img src={meta.image} alt="" />}
+              <div><b>{meta?.name ?? tr("Pack", "Bundle")}</b><span>{price.toLocaleString(lang)} VP</span></div>
+            </button>
+          );
+        })}
+      </div>
+      <BundleDrawer bundle={shown} name={bundles[openBundle ?? ""]?.name ?? tr("Pack", "Bundle")} image={bundles[openBundle ?? ""]?.image ?? ""} left={bundleLeft} onClose={() => setOpenBundle(null)} />
+      <SkinDrawer skinId={openSkin?.id ?? null} price={openSkin?.price} onClose={() => setOpenSkin(null)} />
+      <Drawer open={Boolean(openItem)} title={openItem?.item.name ?? ""} onClose={() => setOpenItem(null)} width={620}>{openItem && <ItemViewer item={openItem.item} price={undefined} />}{openItem && <p className="eval-soft">{openItem.price.toLocaleString(lang)} Kingdom Credits</p>}</Drawer>
       <div className="eval-section-head"><h2>{tr("Boutique du jour", "Daily store")}</h2>{remaining && <span><Clock size={13} />{remaining}</span>}</div>
       <Stagger className="eval-offers">
         {(front.SkinsPanelLayout?.SingleItemStoreOffers ?? []).map((offer) => {
@@ -131,9 +144,11 @@ function Shop() {
           const tier = TIERS[skin?.tier.toLowerCase() ?? ""];
           return (
             <StaggerItem key={offer.OfferID} variants={staggerItem} className="eval-offer" style={{ "--tier": tier?.color ?? "#8e8e93" } as React.CSSProperties}>
-              {skin?.icon ? <img src={skin.icon} alt="" /> : <span className="eval-offer-empty" />}
-              <b>{skin?.name ?? tr("Chargement…", "Loading…")}</b>
-              <span><small>{tier?.label ?? ""}</small><small>{(offer.Cost[VP] ?? 0).toLocaleString(lang)} VP</small></span>
+              <button type="button" className="eval-offer-open" onClick={() => setOpenSkin({ id, price: offer.Cost[VP] ?? 0 })}>
+                {skin?.icon ? <img src={skin.icon} alt="" /> : <span className="eval-offer-empty" />}
+                <b>{skin?.name ?? tr("Chargement…", "Loading…")}</b>
+                <span><small>{tier?.label ?? ""}</small><small>{(offer.Cost[VP] ?? 0).toLocaleString(lang)} VP</small></span>
+              </button>
             </StaggerItem>
           );
         })}
@@ -145,13 +160,16 @@ function Shop() {
             {(front.AccessoryStore?.AccessoryStoreOffers ?? []).map(({ Offer: offer }) => {
               const reward = offer.Rewards?.[0];
               if (!reward) return null;
-              const id = reward.ItemID.toLowerCase();
-              const type = ACCESSORY_TYPES[(reward.ItemTypeID ?? "").toLowerCase()];
+              const item = accessories[offer.OfferID];
+              const price = offer.Cost[ACCESSORY_PRICE] ?? Object.values(offer.Cost)[0] ?? 0;
               return (
                 <StaggerItem key={offer.OfferID} variants={staggerItem}>
-                  {type ? <img src={type.image(id)} alt="" /> : <span className="eval-offer-empty" />}
-                  <small>{type?.label ?? tr("Titre", "Title")}</small>
-                  <b>{(offer.Cost[KC] ?? Object.values(offer.Cost)[0] ?? 0).toLocaleString(lang)}</b>
+                  <button type="button" disabled={!item} title={item?.name} onClick={() => item && setOpenItem({ item, price })}>
+                    {item?.image ? <img src={item.image} alt="" /> : <span className="eval-offer-empty" />}
+                    <b className="eval-accessory-name">{item?.name ?? " "}</b>
+                    <small>{item?.kind ?? ""}</small>
+                    <b>{price.toLocaleString(lang)}</b>
+                  </button>
                 </StaggerItem>
               );
             })}
@@ -277,15 +295,20 @@ interface CatalogWeapon { uuid: string; displayName: string; displayIcon?: strin
 interface SavedProfile { id: string; name: string; loadout: unknown }
 const PROFILES_KEY = "ethone-eval-appearance-profiles";
 
-function SkinPicker({ weapon, loadout, onClose, onSaved }: { weapon: CatalogWeapon | null; loadout: unknown; onClose: () => void; onSaved: () => void }) {
+function SkinPicker({ weapon, current, loadout, onClose, onSaved }: { weapon: CatalogWeapon | null; current?: string; loadout: unknown; onClose: () => void; onSaved: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [detail, setDetail] = useState<string | null>(null);
+  useEffect(() => setDetail(null), [weapon?.uuid]);
   const owned = useLoad(async () => {
-    const result = await riotCall<{ Entitlements?: { ItemID: string }[] }>("/store/v1/entitlements/{puuid}/e7c63390-eda7-46e0-bb7a-a6abdacd2433");
-    return new Set((result.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
+    const [levels, chromas] = await Promise.all([
+      riotCall<{ Entitlements?: { ItemID: string }[] }>(`/store/v1/entitlements/{puuid}/${SKIN_TYPE}`),
+      riotCall<{ Entitlements?: { ItemID: string }[] }>(`/store/v1/entitlements/{puuid}/${CHROMA_TYPE}`).catch(() => ({ Entitlements: [] })),
+    ]);
+    return { levels: new Set((levels.Entitlements ?? []).map((item) => item.ItemID.toLowerCase())), chromas: new Set((chromas.Entitlements ?? []).map((item) => item.ItemID.toLowerCase())) };
   });
   const skins = (weapon?.skins ?? []).flatMap((skin) => {
-    const levels = (skin.levels ?? []).filter((level) => owned.data?.has(level.uuid.toLowerCase()));
+    const levels = (skin.levels ?? []).filter((level) => owned.data?.levels.has(level.uuid.toLowerCase()));
     const level = levels.at(-1);
     const chroma = skin.chromas?.[0];
     return level && chroma ? [{ skin, level, chroma }] : [];
@@ -308,14 +331,24 @@ function SkinPicker({ weapon, loadout, onClose, onSaved }: { weapon: CatalogWeap
     }
   };
   return (
-    <Drawer open={Boolean(weapon)} title={weapon?.displayName ?? ""} onClose={onClose} width={640}>
+    <Drawer open={Boolean(weapon)} title={weapon?.displayName ?? ""} onClose={onClose} width={760}>
       {error && <ErrorBox message={error} />}
+      {detail ? (
+        <>
+          <button type="button" className="skin-back" onClick={() => setDetail(null)}><ArrowLeft size={15} />{tr("Toutes les apparences", "All skins")}</button>
+          <SkinViewer key={detail} skinId={detail} ownedLevels={owned.data?.levels} action={({ skin, level, chroma, chromaIndex }) => {
+            const unlocked = Boolean(owned.data?.levels.has(level.uuid.toLowerCase())) && (chromaIndex === 0 || Boolean(owned.data?.chromas.has(chroma.uuid.toLowerCase())));
+            return <Button variant="primary" disabled={busy || !unlocked} onClick={() => void equip(skin.uuid, level.uuid, chroma.uuid)}>{unlocked ? tr("Équiper", "Equip") : tr("Pas encore débloqué", "Not unlocked yet")}</Button>;
+          }} />
+        </>
+      ) : <>
       {!owned.data ? (owned.error ? <ErrorBox message={owned.error} onRetry={owned.reload} /> : <Skeletons count={4} height={60} />) : skins.length === 0 ? <p className="eval-soft">{tr("Tu n'as pas d'autre apparence pour cette arme.", "You have no other skin for this weapon.")}</p> : (
         <ul className="eval-skins eval-skin-picker">
-          {skins.map(({ skin, level, chroma }) => <li key={skin.uuid}><button type="button" disabled={busy} onClick={() => void equip(skin.uuid, level.uuid, chroma.uuid)}>{(level.displayIcon ?? skin.displayIcon) && <img src={level.displayIcon ?? skin.displayIcon ?? ""} alt="" loading="lazy" />}<small>{skin.displayName}</small></button></li>)}
+          {[...skins].sort((a, b) => Number(b.skin.levels?.some((level) => level.uuid.toLowerCase() === current?.toLowerCase())) - Number(a.skin.levels?.some((level) => level.uuid.toLowerCase() === current?.toLowerCase()))).map(({ skin, level }) => <li key={skin.uuid}><button type="button" className={skin.levels?.some((item) => item.uuid.toLowerCase() === current?.toLowerCase()) ? "on" : ""} disabled={busy} onClick={() => setDetail(skin.uuid)}>{(level.displayIcon ?? skin.displayIcon) && <img src={level.displayIcon ?? skin.displayIcon ?? ""} alt="" loading="lazy" />}<small>{skin.displayName}</small></button></li>)}
         </ul>
       )}
       {defaults.length > 0 && <p className="eval-soft">{tr("Pour revenir à l'apparence de base, utilise le jeu.", "To go back to the base skin, use the game.")}</p>}
+      </>}
     </Drawer>
   );
 }
@@ -370,7 +403,7 @@ function Loadout() {
   return (
     <div className="eval-loadout">
       <section className="eval-card eval-identity">
-        {card && <img src={`${MEDIA}/playercards/${card}/largeart.png`} alt="" />}
+        {card && <img src={`${MEDIA}/playercards/${card}/wideart.png`} alt="" />}
         <div>{title && <b>{title}</b>}
           <div className="row eval-identity-actions"><Button onClick={() => setPicking("card")}>{tr("Changer de carte", "Change card")}</Button><Button onClick={() => setPicking("title")}>{tr("Changer de titre", "Change title")}</Button></div>
           {(loadout.Sprays?.length ?? 0) > 0 && <div className="eval-sprays">{loadout.Sprays?.map(({ SprayID }) => SprayID && <img key={SprayID} src={`${MEDIA}/sprays/${SprayID.toLowerCase()}/displayicon.png`} alt="" />)}</div>}
@@ -392,7 +425,7 @@ function Loadout() {
         })}
       </Stagger>
       <Profiles loadout={loadout} onApplied={state.reload} />
-      <SkinPicker weapon={gun} loadout={loadout} onClose={() => setGun(null)} onSaved={state.reload} />
+      <SkinPicker weapon={gun} current={loadout.Guns?.find((item) => item.ID.toLowerCase() === gun?.uuid.toLowerCase())?.SkinLevelID} loadout={loadout} onClose={() => setGun(null)} onSaved={state.reload} />
       <Picker kind={picking} current={picking === "card" ? loadout.Identity?.PlayerCardID : loadout.Identity?.PlayerTitleID} loadout={loadout} onClose={() => setPicking(null)} onSaved={state.reload} />
     </div>
   );

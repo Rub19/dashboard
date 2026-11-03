@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { boardOf, lastOnlineTime, lastSeenText, presenceKind } from "./friends.ts";
+import { boardOf, lastOnlineTime, lastSeenShort, lastSeenText, presenceKind } from "./friends.ts";
 
 const friend = (over) => ({ id: over.name, name: "x", tag: "EUW", online: true, show: "chat", product: "valorant", state: "MENUS", queue: "", tier: 0, partySize: 1, partyMax: 5, partyId: "", partyState: "", allyScore: 0, enemyScore: 0, map: "", idle: false, playing: false, icon: "", card: "", title: "", lastOnline: "", ...over });
 
@@ -18,6 +18,14 @@ test("friends sort into parties, solo players, other games and offline", () => {
   assert.deepEqual(board.valorant.map((row) => row.name), ["solo"]);
   assert.deepEqual(board.platforms.map((group) => group.name), ["League of Legends", "Riot Client"]);
   assert.deepEqual(board.offline.map((row) => row.name), ["recent", "old"]);
+});
+
+test("the short last connection stays compact", () => {
+  const now = Date.UTC(2026, 10, 2, 22);
+  assert.equal(lastSeenShort(String(now - 16 * 60000), now), "16 min");
+  assert.equal(lastSeenShort(String(now - 68 * 60000), now), "1 h");
+  assert.equal(lastSeenShort(String(now - 3 * 86400000), now), "3 j");
+  assert.equal(lastSeenShort("", now), "");
 });
 
 test("search filters on the full Riot ID", () => {

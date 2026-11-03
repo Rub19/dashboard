@@ -133,3 +133,11 @@ Suite du test : le rang affiché suit `CompetitiveTier` de la saison et non le d
 ## Refonte de l'interface (3 novembre 2026)
 
 Interface refaite façon Apple sur Windows, voir `desktop/DESIGN.md`. Toutes les pages passent par les mêmes jetons et composants. Vérifié par captures sur le vrai compte : accueil, applications, tâches, calendrier, mail, E:VAL, Discord, réglages, en sombre, et quatre pages en clair ; connexion et installateur sur l'aperçu. Vérifié en vrai : raccourcis, suppression avec annulation, menu contextuel, mémoire de la dernière page. Vérifié ensuite : vrai thème clair ; deux écrans réels (100 % et 150 %) avec retour de la position, fenêtre agrandie et écran disparu ; tailles de 900x600 à 3440x1440 et échelles 100 à 200 % en émulation ; navigation au clavier (Tab, flèches, Entrée, Échap, touche Menu, panneau qui garde le focus). La mémoire de position n'utilise plus le plugin window-state : la position est gardée dans `ethone-window` et vérifiée par `screen_at` dans `windowing.rs`. Non vérifié : changer l'échelle Windows réglée pendant que l'app tourne, lecteur d'écran.
+
+## E:VAL : matchs, amis et aperçu des skins (3 novembre 2026)
+
+- Matchs : une ligne par match, colonnes alignées, regroupés par jour (`TrackerPage.tsx`).
+- Amis : en ligne à gauche, hors ligne à droite dans une liste qui défile seule (`EvalHub.tsx`).
+- Skins : `EvalSkins.tsx` regroupe l'aperçu d'une arme (vidéo, améliorations, variantes) et le détail d'un bundle (armes, prix, remise). Ouvert depuis la boutique, la collection, les armes et le choix de skin. Les vidéos sont sur `valorant.dyn.riotcdn.net`, autorisé dans `media-src` de la CSP. Vérifié : lecture réelle au niveau 1, au niveau 3 et sur une variante. Les skins Select n'ont pas de vidéo : image affichée.
+- Session Riot : le silent login passe un seul à la fois (`refreshing` dans `riot.rs`), et un 403 n'efface plus la session, seul un 401 le fait. Un 403 arrive par exemple sur l'historique d'un ami.
+- Bouton Équiper du choix de skin : affiché, jamais cliqué pendant les tests.

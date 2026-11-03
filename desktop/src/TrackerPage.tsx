@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { usePersisted } from "./qol";
 import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
@@ -137,6 +137,18 @@ function useMapImages() {
   return images;
 }
 
+const hourFormat = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" });
+const dayFormat = new Intl.DateTimeFormat(lang, { weekday: "long", day: "numeric", month: "long" });
+
+function dayLabel(iso: string) {
+  const date = new Date(iso);
+  const today = new Date();
+  const days = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()) / 86400000);
+  if (days === 0) return tr("Aujourd'hui", "Today");
+  if (days === 1) return tr("Hier", "Yesterday");
+  return dayFormat.format(date);
+}
+
 function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; image?: string; onOpen: () => void }) {
   const summary = matchSummary(match, puuid);
   if (!summary) return null;
@@ -144,37 +156,30 @@ function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; 
   const result = draw ? "draw" : won ? "win" : "loss";
   return (
     <motion.li variants={listItem}>
-      <button type="button" className={`eval-match ${result}`} onClick={onOpen}>
-        <span className="eval-match-head">
-          <span className="eval-match-title">
-            <b>{modeName(match.mode)}</b>
-            {match.startedAt && <small>{dateFormat.format(new Date(match.startedAt))}</small>}
-          </span>
-          {history && (
-            <span className="eval-rr">
-              <span><b className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change}</b><small>{history.rr}</small></span>
-              <RankDisc tier={history.tier} progress={history.rr / 100} size={44} />
-            </span>
-          )}
+      <button type="button" className={`match-row ${result}`} onClick={onOpen}>
+        {(image || match.mapId) && <img className="match-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
+        {me.agentId ? <img className="match-agent" src={agentIcon(me.agentId)} alt={me.agent} title={me.agent} /> : <span className="match-agent" />}
+        <span className="match-result">
+          <b><span>{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</span> {score[0]} – {score[1]}</b>
+          <small>{modeName(match.mode)} · {match.map}{match.startedAt ? ` · ${hourFormat.format(new Date(match.startedAt))}` : ""}</small>
         </span>
-        <span className="eval-match-art">
-          {(image || match.mapId) && <img className="eval-map" src={image || mapImage(match.mapId)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
-          {me.agentId && <img className="eval-agent" src={agentIcon(me.agentId)} alt="" />}
-          <span className="eval-match-copy">
-            <b>{me.agent}</b>
-            <span className="eval-chip">{match.map}{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
-          </span>
-          <span className="eval-score"><b>{score[0]}</b><span>–</span><b>{score[1]}</b></span>
-        </span>
-        <span className="eval-match-foot">
-          <span><small>K/D/A</small><b>{me.kills}/{me.deaths}/{me.assists}</b></span>
-          <span><small>K/D</small><b>{decimal(kd)}</b></span>
-          <span><small>ACS</small><b>{summary.acs}</b></span>
-          <span><small>{t("evalHeadshots")}</small><b>{summary.hs} %</b></span>
-          <span><small>{t("evalDamage")}</small><b>{summary.adr}</b></span>
-        </span>
+        <span className="match-mvp">{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
+        <span className="match-stat"><b>{me.kills} / {me.deaths} / {me.assists}</b></span>
+        <span className="match-stat"><b>{decimal(kd)}</b></span>
+        <span className="match-stat"><b>{summary.acs}</b></span>
+        <span className="match-stat wide"><b>{summary.hs} %</b></span>
+        <span className="match-stat wide"><b>{summary.adr}</b></span>
+        <span className="match-rr">{history && <><b className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change}</b>{history.tier > 0 && <img src={tierIcon(history.tier)} alt={rankName(history.tier)} title={rankName(history.tier)} />}</>}</span>
       </button>
     </motion.li>
+  );
+}
+
+function MatchColumns() {
+  return (
+    <li className="match-columns" aria-hidden="true">
+      <span /><span>{tr("Partie", "Match")}</span><span /><span>K / D / A</span><span>K/D</span><span>ACS</span><span className="wide">{t("evalHeadshots")}</span><span className="wide">{t("evalDamage")}</span><span>RR</span>
+    </li>
   );
 }
 
@@ -543,8 +548,12 @@ export default function TrackerPage() {
             <>
               <Session matches={matches} puuid={account.puuid} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
-                {matches.map((match) => (
+                <MatchColumns />
+                {matches.map((match, position) => (
+                  <Fragment key={match.id}>
+                    {match.startedAt && (position === 0 || !matches[position - 1].startedAt || new Date(matches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}
                   <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} image={mapImages[match.map.toLowerCase()]} onOpen={() => setOpen(match)} />
+                  </Fragment>
                 ))}
               </motion.ul>
               {matches.length >= limit && <Button disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? t("loading") : tr("Charger plus de matchs", "Load more matches")}</Button>}

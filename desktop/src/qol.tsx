@@ -199,6 +199,37 @@ function Tooltips() {
   return tip ? <div className={`tip ${tip.instant ? "instant" : ""}`} role="tooltip" style={{ left: tip.x, top: tip.y }}>{tip.text}</div> : null;
 }
 
+function useKeyboardNavigation() {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
+        event.preventDefault();
+        const box = target.getBoundingClientRect();
+        target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: box.left + 24, clientY: box.bottom - 4 }));
+        return;
+      }
+      if (target.matches("input, textarea, select")) return;
+      const row = target.closest<HTMLElement>("[role='tablist'], .segmented");
+      const column = target.closest<HTMLElement>(".nav, .kit-sidenav, .discord-chips");
+      const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
+      const vertical = event.key === "ArrowUp" || event.key === "ArrowDown";
+      const group = horizontal && !event.altKey ? row ?? (target.closest(".discord-chips") as HTMLElement | null) : vertical ? column : null;
+      if (!group) return;
+      const buttons = [...group.querySelectorAll<HTMLButtonElement>("button:not(:disabled)")].filter((item) => item.offsetParent !== null);
+      const at = buttons.indexOf(target as HTMLButtonElement);
+      if (at < 0) return;
+      event.preventDefault();
+      const next = buttons[(at + (event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : buttons.length - 1)) % buttons.length];
+      next.focus();
+      if (row) next.click();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+}
+
 export function Overlays() {
+  useKeyboardNavigation();
   return createPortal(<><Toasts /><ContextMenu /><Tooltips /></>, document.body);
 }

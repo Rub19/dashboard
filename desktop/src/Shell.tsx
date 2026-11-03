@@ -243,6 +243,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   return (
     <motion.div className={`shell ${compact ? "compact" : ""}`} data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
+      <button type="button" className="skip-link" onClick={() => layer.current?.focus()}>{tr("Aller au contenu", "Skip to content")}</button>
       <header className="titlebar" data-tauri-drag-region>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
@@ -280,7 +281,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
           </div>}
       />
 
-      <main className="layer" ref={layer}>
+      <main className="layer" ref={layer} tabIndex={-1}>
         {(
           [
             ["home", <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],

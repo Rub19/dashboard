@@ -34,17 +34,17 @@ export function WindowControls({ canMaximize = true }: { canMaximize?: boolean }
 
   return (
     <div className="winbtns">
-      <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} className="win-min" aria-label={t("minimize")} title={t("minimize")} onClick={() => appWindow.minimize()}>
+      <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} tabIndex={-1} className="win-min" aria-label={t("minimize")} title={t("minimize")} onClick={() => appWindow.minimize()}>
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" /></svg>
       </motion.button>
       {canMaximize && (
-        <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} className="win-max" aria-label={t(maximized ? "restore" : "maximize")} title={t(maximized ? "restore" : "maximize")} onClick={() => appWindow.toggleMaximize()}>
+        <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} tabIndex={-1} className="win-max" aria-label={t(maximized ? "restore" : "maximize")} title={t(maximized ? "restore" : "maximize")} onClick={() => appWindow.toggleMaximize()}>
           <svg viewBox="0 0 16 16" aria-hidden="true">
             {maximized ? <path d="M6 3.500h4.500A2 2 0 0 1 12.500 5.500V10M3.500 7.500a1.500 1.500 0 0 1 1.500-1.500h4A1.500 1.500 0 0 1 10.500 7.500v3.500A1.500 1.500 0 0 1 9 12.500H5A1.500 1.500 0 0 1 3.500 11z" /> : <rect x="3.500" y="3.500" width="9" height="9" rx="2.500" />}
           </svg>
         </motion.button>
       )}
-      <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} className="close" aria-label={t("close")} title={t("close")} onClick={() => appWindow.close()}>
+      <motion.button type="button" whileTap={{ scale: 0.86 }} transition={SPRING_PRESS} tabIndex={-1} className="close" aria-label={t("close")} title={t("close")} onClick={() => appWindow.close()}>
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.500 4.500l7 7M11.500 4.500l-7 7" /></svg>
       </motion.button>
     </div>

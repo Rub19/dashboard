@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RefreshCw, X } from "lucide-react";
@@ -141,18 +141,33 @@ export const staggerItem = listItem;
 
 export function Drawer({ open, title, onClose, children, width = 560 }: { open: boolean; title: string; onClose: () => void; children: ReactNode; width?: number }) {
   const reduce = useReducedMotion();
+  const panel = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    const opener = document.activeElement;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab" || !panel.current) return;
+      const stops = [...panel.current.querySelectorAll<HTMLElement>("button, input, select, textarea, a[href], [tabindex='0']")].filter((item) => !item.hasAttribute("disabled") && item.offsetParent !== null);
+      if (stops.length === 0) return;
+      const at = stops.indexOf(document.activeElement as HTMLElement);
+      if (at < 0 || (event.shiftKey ? at === 0 : at === stops.length - 1)) {
+        event.preventDefault();
+        stops[event.shiftKey ? stops.length - 1 : 0].focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+    };
   }, [onClose, open]);
   return createPortal(
     <AnimatePresence>
       {open && (
         <>
           <motion.div key="scrim" className="kit-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} onClick={onClose} />
-          <motion.aside key="panel" tabIndex={-1} autoFocus role="dialog" aria-label={title} className="kit-drawer" style={{ width: `min(${width}px, 92vw)` }} initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }} exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} transition={{ type: "spring", duration: 0.42, bounce: 0 }}>
+          <motion.aside key="panel" ref={panel} tabIndex={-1} autoFocus aria-modal="true" role="dialog" aria-label={title} className="kit-drawer" style={{ width: `min(${width}px, 92vw)` }} initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }} exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }} transition={{ type: "spring", duration: 0.42, bounce: 0 }}>
             <header>
               <h2>{title}</h2>
               <button type="button" className="icon-btn" aria-label={t("close")} onClick={onClose}><X size={18} /></button>

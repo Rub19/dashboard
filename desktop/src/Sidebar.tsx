@@ -51,7 +51,8 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         className={`nav-item ${active ? "on" : ""}`}
         style={{ "--tint": PAGE_TINTS[id] } as CSSProperties}
         aria-current={active ? "page" : undefined}
-        title={compact ? `${id === "tracker" ? "E:VAL" : t(id)}${SHORTCUTS[id] ? ` (${SHORTCUTS[id]})` : ""}` : SHORTCUTS[id]}
+        aria-label={id === "tracker" ? "E:VAL" : t(id)}
+        title={`${id === "tracker" ? "E:VAL" : t(id)}${SHORTCUTS[id] ? ` (${SHORTCUTS[id]})` : ""}`}
         onPointerEnter={() => setHover(id)}
         onPointerDown={(event) => event.button === 0 && onGo(id)}
         onClick={(event) => event.detail === 0 && onGo(id)}

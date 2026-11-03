@@ -39,6 +39,23 @@ pub fn keep_inside(rect: Rect, area: Rect) -> Rect {
     }
 }
 
+pub fn is_on_a_screen(rect: Rect, screens: &[Rect]) -> bool {
+    let (x, y) = (rect.x + rect.width / 2.0, rect.y + rect.height / 2.0);
+    screens.iter().any(|screen| x >= screen.x && x < screen.x + screen.width && y >= screen.y && y < screen.y + screen.height)
+}
+
+fn screen_at(window: &WebviewWindow, x: i32, y: i32, width: f64, height: f64) -> Option<(f64, Rect)> {
+    window.available_monitors().unwrap_or_default().iter().find_map(|monitor| {
+        let scale = monitor.scale_factor();
+        let bounds = Rect { x: monitor.position().x as f64, y: monitor.position().y as f64, width: monitor.size().width as f64, height: monitor.size().height as f64 };
+        let rect = Rect { x: f64::from(x), y: f64::from(y), width: width * scale, height: height * scale };
+        is_on_a_screen(rect, &[bounds]).then(|| {
+            let area = monitor.work_area();
+            (scale, Rect { x: area.position.x as f64, y: area.position.y as f64, width: area.size.width as f64, height: area.size.height as f64 })
+        })
+    })
+}
+
 pub fn frame(start: Rect, target: Rect, progress: f64) -> Rect {
     let eased = 1.0 - (1.0 - progress.clamp(0.0, 1.0)).powi(3);
     let mix = |from: f64, to: f64| from + (to - from) * eased;
@@ -66,8 +83,7 @@ fn work_area(window: &WebviewWindow) -> Option<Rect> {
     })
 }
 
-pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, maximized: bool, animate: bool) -> Result<(), String> {
-    let scale = window.scale_factor().map_err(|e| e.to_string())?;
+pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, position: Option<(i32, i32)>, maximized: bool, animate: bool) -> Result<(), String> {
     let (logical_width, logical_height) = if login { LOGIN_SIZE } else { (width.max(APP_MIN.0), height.max(APP_MIN.1)) };
     if window.is_maximized().unwrap_or(false) {
         let _ = window.unmaximize();
@@ -76,14 +92,22 @@ pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, ma
     let _ = window.set_resizable(true);
 
     let size = window.outer_size().map_err(|e| e.to_string())?;
+    let saved = position.filter(|_| !login).and_then(|(x, y)| screen_at(window, x, y, logical_width, logical_height).map(|(scale, area)| (x, y, scale, area)));
+    let visible = window.is_visible().unwrap_or(false);
+    if let (Some((x, y, _, _)), false) = (saved, visible) {
+        let _ = window.set_position(PhysicalPosition::new(x, y));
+    }
+    let scale = window.scale_factor().map_err(|e| e.to_string())?;
     let position = window.outer_position().map_err(|e| e.to_string())?;
     let start = Rect { x: position.x as f64, y: position.y as f64, width: size.width as f64, height: size.height as f64 };
-    let mut target = centered_on(start, logical_width * scale, logical_height * scale);
-    if let Some(area) = work_area(window) {
-        target = keep_inside(target, area);
-    }
+    let target = match saved {
+        Some((x, y, scale, area)) => keep_inside(Rect { x: f64::from(x), y: f64::from(y), width: logical_width * scale, height: logical_height * scale }, area),
+        None => {
+            let centered = centered_on(start, logical_width * scale, logical_height * scale);
+            work_area(window).map_or(centered, |area| keep_inside(centered, area))
+        }
+    };
 
-    let visible = window.is_visible().unwrap_or(false);
     if animate && visible {
         for step in 1..=FRAMES {
             apply(window, frame(start, target, f64::from(step) / f64::from(FRAMES)));
@@ -91,6 +115,9 @@ pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, ma
         }
     }
     apply(window, target);
+    if saved.is_some() {
+        apply(window, target);
+    }
 
     let _ = window.set_resizable(!login);
     let _ = window.set_maximizable(!login);
@@ -142,6 +169,16 @@ pub fn set_theme(window: &WebviewWindow, theme: &str) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_saved_position_needs_a_screen_that_still_exists() {
+        let screens = [Rect { x: -1920.0, y: 0.0, width: 1920.0, height: 1080.0 }, Rect { x: 0.0, y: 0.0, width: 2560.0, height: 1440.0 }];
+        let at = |x: f64, y: f64| Rect { x, y, width: 800.0, height: 600.0 };
+        assert!(is_on_a_screen(at(-1500.0, 100.0), &screens));
+        assert!(is_on_a_screen(at(200.0, 100.0), &screens));
+        assert!(!is_on_a_screen(at(-9000.0, 5000.0), &screens));
+        assert!(!is_on_a_screen(at(-32000.0, -32000.0), &screens));
+    }
 
     const AREA: Rect = Rect { x: 0.0, y: 0.0, width: 1920.0, height: 1040.0 };
 

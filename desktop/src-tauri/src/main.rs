@@ -25,7 +25,6 @@ use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
 use tauri_plugin_updater::UpdaterExt;
-use tauri_plugin_window_state::StateFlags;
 use tokio::sync::Mutex;
 
 const ETHONE_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -470,8 +469,8 @@ fn window_setup(window: WebviewWindow) -> bool {
 }
 
 #[tauri::command]
-async fn window_mode(mode: String, width: f64, height: f64, maximized: bool, animate: bool, window: WebviewWindow) -> Result<(), String> {
-    windowing::set_mode(&window, mode == "login", width, height, maximized, animate)
+async fn window_mode(mode: String, width: f64, height: f64, x: Option<i32>, y: Option<i32>, maximized: bool, animate: bool, window: WebviewWindow) -> Result<(), String> {
+    windowing::set_mode(&window, mode == "login", width, height, x.zip(y), maximized, animate)
 }
 
 #[tauri::command]
@@ -524,7 +523,6 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| focus_main(app)))
         .plugin(tauri_plugin_deep_link::init())
-        .plugin(tauri_plugin_window_state::Builder::default().with_state_flags(StateFlags::POSITION).build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(App { modules, installing: Mutex::new(()), auth: auth::Auth::new(api) })

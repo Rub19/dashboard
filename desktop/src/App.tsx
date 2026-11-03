@@ -12,13 +12,15 @@ interface Saved {
   width: number;
   height: number;
   maximized: boolean;
+  x?: number;
+  y?: number;
 }
 
 const DEFAULT_SIZE: Saved = { width: 1180, height: 760, maximized: false };
 
 function setWindowMode(signedIn: boolean, animate: boolean) {
   const saved = readJson<Saved>("ethone-window") ?? DEFAULT_SIZE;
-  return invoke("window_mode", { mode: signedIn ? "app" : "login", ...saved, animate });
+  return invoke("window_mode", { mode: signedIn ? "app" : "login", ...saved, width: Math.max(saved.width, 900), height: Math.max(saved.height, 600), x: saved.x ?? null, y: saved.y ?? null, animate });
 }
 
 export default function App() {
@@ -46,19 +48,23 @@ export default function App() {
     if (!signedIn) return;
     const appWindow = getCurrentWindow();
     let timer = 0;
-    const stop = appWindow.onResized(() => {
+    const save = () => {
       clearTimeout(timer);
       timer = window.setTimeout(async () => {
+        if (await appWindow.isMinimized()) return;
         const maximized = await appWindow.isMaximized();
         const previous = readJson<Saved>("ethone-window") ?? DEFAULT_SIZE;
         if (maximized) return write("ethone-window", JSON.stringify({ ...previous, maximized }));
         const size = (await appWindow.innerSize()).toLogical(await appWindow.scaleFactor());
-        write("ethone-window", JSON.stringify({ width: size.width, height: size.height, maximized }));
+        const position = await appWindow.outerPosition();
+        if (size.width < 900 || size.height < 600) return;
+        write("ethone-window", JSON.stringify({ width: size.width, height: size.height, x: position.x, y: position.y, maximized }));
       }, 400);
-    });
+    };
+    const stops = [appWindow.onResized(save), appWindow.onMoved(save)];
     return () => {
       clearTimeout(timer);
-      void stop.then((unlisten) => unlisten());
+      for (const stop of stops) void stop.then((unlisten) => unlisten());
     };
   }, [signedIn]);
 

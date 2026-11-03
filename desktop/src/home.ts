@@ -49,3 +49,17 @@ export function connectionStatus(offline: boolean, error: string | null): "onlin
   if (error) return "degraded";
   return offline ? "offline" : "online";
 }
+
+const EVENT_LEAD = 10 * 60 * 1000;
+
+export function unseenMail<T extends { id: string }>(seen: Set<string> | null, mail: T[]): T[] {
+  return seen ? mail.filter((item) => !seen.has(item.id)) : [];
+}
+
+export function dueEvents<T extends { id: string; startAt: string | null }>(events: T[], notified: string[], now: number): T[] {
+  return events.filter((event) => {
+    if (!event.startAt || notified.includes(event.id)) return false;
+    const left = Date.parse(event.startAt) - now;
+    return left > 0 && left <= EVENT_LEAD;
+  });
+}

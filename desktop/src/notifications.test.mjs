@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { dueEvents, unseenMail } from "./notifications.ts";
+import { dueEvents, unseenMail } from "./home.ts";
 
 test("the first mail check only sets the baseline", () => {
   const mail = [{ id: "a" }, { id: "b" }];

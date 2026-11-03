@@ -1,7 +1,7 @@
 import { PageHead } from "./kit";
 import { ChangeEvent, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { DesktopPrefs, notifyWindows, readDesktopPrefs, saveDesktopPrefs } from "./notifications";
+import { DesktopPrefs, hdvBackground, notifyWindows, readDesktopPrefs, saveDesktopPrefs } from "./notifications";
 import { motion } from "framer-motion";
 import { Check, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import { about, JournalEntry, openSite, Profile, readJournal, SitePage } from "./api";
@@ -59,9 +59,17 @@ function DesktopSwitch({ title, text, checked, onChange }: { title: string; text
 export function DesktopSettings() {
   const [autostart, setAutostart] = useState(false);
   const [prefs, setPrefs] = useState<DesktopPrefs>(readDesktopPrefs);
+  const [hdv, setHdv] = useState<string | null>(null);
   useEffect(() => {
     void invoke<boolean>("autostart_get").then(setAutostart).catch(() => undefined);
+    void hdvBackground(prefs.hdvBackground).then(setHdv).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const toggleHdv = (next: boolean) => {
+    change({ hdvBackground: next });
+    hdvBackground(next).then(setHdv, () => toast(tr("HDV Tracker n'a pas répondu", "HDV Tracker did not respond"), { tone: "bad" }));
+  };
+  const hdvText = hdv === "absent" ? tr("HDV Tracker n'est pas installé.", "HDV Tracker is not installed.") : hdv === "needsUpdate" ? tr("Mets à jour HDV Tracker en version 1.6 pour l'activer.", "Update HDV Tracker to version 1.6 to enable this.") : hdv === "running" ? tr("Actif : les prix sont relevés tant qu'Ethone est ouvert.", "Active: prices are tracked while Ethone is open.") : tr("Relève les prix sans fenêtre tant qu'Ethone est ouvert.", "Tracks prices with no window while Ethone is open.");
   const change = (next: Partial<DesktopPrefs>) => {
     const merged = { ...prefs, ...next };
     setPrefs(merged);
@@ -90,6 +98,7 @@ export function DesktopSettings() {
       <ul className="settings settings-grid">
         <DesktopSwitch title={tr("Lancer avec Windows", "Start with Windows")} text={tr("Ethone démarre réduit dans la zone de notification.", "Ethone starts minimized to the notification area.")} checked={autostart} onChange={toggleAutostart} />
         <DesktopSwitch title={tr("Réduire à la fermeture", "Minimize on close")} text={tr("La croix garde Ethone actif dans la zone de notification.", "The close button keeps Ethone running in the notification area.")} checked={prefs.closeToTray} onChange={(closeToTray) => change({ closeToTray })} />
+        <DesktopSwitch title={tr("HDV Tracker en arrière-plan", "HDV Tracker in the background")} text={hdvText} checked={prefs.hdvBackground} onChange={toggleHdv} />
         <DesktopSwitch title={tr("Notifier les nouveaux mails", "Notify new mail")} text={tr("Vérifié toutes les 2 minutes tant qu'Ethone est ouvert.", "Checked every 2 minutes while Ethone is open.")} checked={prefs.notifyMail} onChange={(notifyMail) => change({ notifyMail })} />
         <DesktopSwitch title={tr("Rappeler les événements", "Remind events")} text={tr("Une notification 10 minutes avant le début.", "A notification 10 minutes before the start.")} checked={prefs.notifyEvents} onChange={(notifyEvents) => change({ notifyEvents })} />
         <li>

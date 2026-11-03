@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
 import { firstArray, Json } from "./generic";
 import { dueEvents, unseenMail } from "./home";
-import { notifiedEvents, notifyWindows, readDesktopPrefs, rememberEvents, saveDesktopPrefs } from "./notifications";
+import { hdvBackground, notifiedEvents, notifyWindows, readDesktopPrefs, rememberEvents, saveDesktopPrefs } from "./notifications";
 import { Action, apiCall, authSignOut, installModule, itemsList, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t, tr } from "./i18n";
 import HomePage from "./HomePage";
@@ -174,6 +174,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     let seen: Set<string> | null = null;
     const check = async () => {
       const prefs = readDesktopPrefs();
+      if (prefs.hdvBackground) await hdvBackground(true).catch(() => undefined);
       if (prefs.notifyMail) {
         const mail = await apiCall<Json>("api/mail/inbox?folder=inbox&limit=10").then((answer) => firstArray(answer) as unknown as { id: string; from_address: string; from_name?: string; subject?: string }[]).catch(() => null);
         if (mail) {

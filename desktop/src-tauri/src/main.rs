@@ -454,6 +454,30 @@ async fn open_module(id: String, app: AppHandle, state: State<'_, App>) -> Resul
 }
 
 #[tauri::command]
+async fn hdv_background(enabled: bool, state: State<'_, App>) -> Result<String, String> {
+    require_session(&state).await?;
+    let detect = find(&state, "hdv-tracker")?.detect.as_ref().ok_or("Module sans détection")?;
+    let Some(installed) = system::read_installed(detect) else {
+        return Ok("absent".into());
+    };
+    let version = semver::Version::parse(&installed.version).map_err(|e| e.to_string())?;
+    if version < semver::Version::new(1, 6, 0) {
+        return Ok("needsUpdate".into());
+    }
+    let running = system::is_running(&detect.exe)?;
+    if enabled {
+        if !running {
+            system::launch_with(detect, &["--background"])?;
+        }
+        return Ok("running".into());
+    }
+    if running {
+        system::launch_with(detect, &["--stop-background"])?;
+    }
+    Ok("off".into())
+}
+
+#[tauri::command]
 async fn open_releases(id: String, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
     require_session(&state).await?;
     let url = find(&state, &id)?.releases_url.as_ref().ok_or("Pas de page de versions")?;
@@ -639,6 +663,7 @@ fn main() {
             api_call,
             rest_call,
             drive_upload_chunk,
+            hdv_background,
             autostart_get,
             autostart_set,
             close_to_tray_set,

@@ -52,6 +52,10 @@ pub fn is_running(exe: &str) -> Result<bool, String> {
 }
 
 pub fn launch(detect: &Detect) -> Result<(), String> {
+    launch_with(detect, &[])
+}
+
+pub fn launch_with(detect: &Detect, args: &[&str]) -> Result<(), String> {
     let installed = read_installed(detect).ok_or("Application introuvable dans Windows")?;
     let dir = installed.dir.ok_or("Dossier d'installation inconnu")?;
     let exe = dir.join(&detect.exe);
@@ -59,6 +63,7 @@ pub fn launch(detect: &Detect) -> Result<(), String> {
         return Err(format!("Fichier manquant : {}", exe.display()));
     }
     Command::new(&exe)
+        .args(args)
         .current_dir(&dir)
         .spawn()
         .map(|_| ())

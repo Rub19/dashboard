@@ -151,6 +151,8 @@ export function championSplash(image = ""): string {
   return name ? `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${name}_0.jpg` : "";
 }
 
+const REMAKE_SECONDS = 300;
+
 export function lolLine(match: LolMatch) {
   const me = match.scoreboard?.players?.find((player) => player.isMe);
   const segment = match.segments?.[0]?.stats ?? {};
@@ -158,9 +160,12 @@ export function lolLine(match: LolMatch) {
   const kills = value("kills");
   const deaths = value("deaths");
   const assists = value("assists");
+  const duration = match.scoreboard?.duration;
+  const remake = match.metadata?.result === "Remake" || (duration !== undefined && duration > 0 && duration < REMAKE_SECONDS);
   return {
     me,
-    won: match.metadata?.result === "Victory",
+    won: !remake && match.metadata?.result === "Victory",
+    remake,
     kills,
     deaths,
     assists,
@@ -175,7 +180,7 @@ export function lolLine(match: LolMatch) {
 }
 
 export function lolStats(matches: LolMatch[]) {
-  const lines = matches.filter((match) => match.metadata?.modeName !== "Custom").map(lolLine);
+  const lines = matches.filter((match) => match.metadata?.modeName !== "Custom").map(lolLine).filter((line) => !line.remake);
   const sum = (pick: (line: ReturnType<typeof lolLine>) => number) => lines.reduce((total, line) => total + pick(line), 0);
   const wins = lines.filter((line) => line.won).length;
   const average = (pick: (line: ReturnType<typeof lolLine>) => number) => (lines.length ? sum(pick) / lines.length : 0);

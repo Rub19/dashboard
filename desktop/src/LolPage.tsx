@@ -226,7 +226,8 @@ function MatchRow({ match, assets, onOpen }: { match: LolMatch; assets: LolAsset
       onPortraitError={(element) => { if (data?.agentImageFallback && element.src !== data.agentImageFallback) element.src = data.agentImageFallback; }}
       title={data?.agentName ?? ""}
       chips={<><Icons ids={[line.me?.rune?.id]} table={assets?.runes} className="match-card-items" /><Icons ids={(line.me?.spells ?? []).map((spell) => spell.id)} table={assets?.spells} className="match-card-items" /><Items items={line.items} className="match-card-items" /></>}
-      result={line.won ? "win" : "loss"}
+      result={line.remake ? "draw" : line.won ? "win" : "loss"}
+      resultLabel={line.remake ? tr("Remake", "Remake") : undefined}
       kda={`${line.kills} / ${line.deaths} / ${line.assists}`}
       middle={`${line.cs} CS`}
       last={line.minutes > 0 ? `${line.score[0]} — ${line.score[1]} · ${line.minutes} min` : `${line.score[0]} — ${line.score[1]}`}
@@ -417,7 +418,7 @@ export default function LolPage() {
   };
 
   const matches = useMemo(() => data?.matches ?? [], [data]);
-  const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
+  const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, draw: lolLine(match).remake, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
   useEffect(() => {
     if (!own || id !== own || !data?.profile) return;
     setLpPoints((current) => {

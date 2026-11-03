@@ -8,7 +8,7 @@ import { filterActive, MatchFilter, NO_FILTER, ResultFilter, timeAgo } from "./m
 import { listItem, listStagger, SPRING_PILL } from "./motion";
 import { Button } from "./ui";
 
-export function MatchCard({ mode, at, headIcon, banner, portrait, round, title, chips, result, kda, middle, last, onOpen, onPortraitError }: { mode: string; at?: string | null; headIcon?: ReactNode; banner?: string; portrait?: string; round?: boolean; title: string; chips?: ReactNode; result: "win" | "loss" | "draw"; kda: string; middle: ReactNode; last: ReactNode; onOpen: () => void; onPortraitError?: (image: HTMLImageElement) => void }) {
+export function MatchCard({ mode, at, headIcon, banner, portrait, round, title, chips, result, resultLabel, kda, middle, last, onOpen, onPortraitError }: { resultLabel?: string; mode: string; at?: string | null; headIcon?: ReactNode; banner?: string; portrait?: string; round?: boolean; title: string; chips?: ReactNode; result: "win" | "loss" | "draw"; kda: string; middle: ReactNode; last: ReactNode; onOpen: () => void; onPortraitError?: (image: HTMLImageElement) => void }) {
   return (
     <motion.li variants={listItem}>
       <button type="button" className={`match-card ${result}`} onClick={onOpen}>
@@ -20,7 +20,7 @@ export function MatchCard({ mode, at, headIcon, banner, portrait, round, title, 
           {banner && <img className="match-card-map" src={banner} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
           {portrait && <img className={round ? "match-card-portrait round" : "match-card-portrait"} src={portrait} alt="" loading="lazy" onError={(event) => onPortraitError?.(event.currentTarget)} />}
           <span className="match-card-title"><b>{title}</b>{chips && <span className="match-card-chips">{chips}</span>}</span>
-          <em>{result === "draw" ? tr("Égalité", "Draw") : result === "win" ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</em>
+          <em>{resultLabel ?? (result === "draw" ? tr("Égalité", "Draw") : result === "win" ? tr("Victoire", "Win") : tr("Défaite", "Loss"))}</em>
         </span>
         <span className="match-card-foot">
           <span><Crosshair size={15} />{kda}</span>

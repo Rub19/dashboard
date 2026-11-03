@@ -93,3 +93,16 @@ test("le mode et l'illustration du champion", () => {
   assert.equal(championSplash("https://x/cdn/16.15.1/img/champion/Yone.png"), "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yone_0.jpg");
   assert.equal(championSplash(""), "");
 });
+
+test("a remake counts neither as a win nor a loss", () => {
+  const played = { id: "a", metadata: { result: "Victory", modeName: "Ranked" }, scoreboard: { duration: 1500 } };
+  const short = { id: "b", metadata: { result: "Victory", modeName: "Ranked" }, scoreboard: { duration: 180 } };
+  const flagged = { id: "c", metadata: { result: "Remake", modeName: "Ranked" } };
+  const unknown = { id: "d", metadata: { result: "Defeat", modeName: "Ranked" } };
+  assert.equal(lolLine(short).remake, true);
+  assert.equal(lolLine(short).won, false);
+  assert.equal(lolLine(played).remake, false);
+  assert.equal(lolLine(unknown).remake, false);
+  const stats = lolStats([played, short, flagged, unknown]);
+  assert.deepEqual([stats.count, stats.wins, stats.losses], [2, 1, 1]);
+});

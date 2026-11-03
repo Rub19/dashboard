@@ -1,4 +1,5 @@
-import { CSSProperties, FormEvent, useEffect, useState } from "react";
+import { Fragment, CSSProperties, FormEvent, useEffect, useState } from "react";
+import { dayLabel } from "./TrackerPage";
 import { contextMenu, copyText, toast } from "./qol";
 import { usePersisted } from "./qol";
 import { Archive, Clock, Copy, Inbox, MailOpen, Paperclip, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
@@ -10,6 +11,8 @@ import { Button } from "./ui";
 import { mailInitials, mailSenderHue } from "./mail";
 
 interface Message { id: string; thread_id: string; folder: string; direction: string; from_address: string; from_name?: string; to_addresses: string[]; subject: string; body_text?: string; body_html?: string; snippet?: string; is_read: boolean; is_starred: boolean; received_at: string; sent_at?: string; attachments?: { filename: string; size: number }[] }
+
+const mailDay = (message?: Message) => (message ? new Date(message.received_at ?? message.sent_at ?? "").toDateString() : "");
 type Folder = "inbox" | "sent" | "drafts" | "archive" | "spam" | "trash";
 type Section = Folder | "contacts" | "aliases" | "labels" | "rules" | "templates" | "signatures";
 
@@ -119,8 +122,10 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       <div>
       {!state.data ? (state.loading ? <Skeletons count={6} height={58} /> : null) : state.data.length === 0 ? <Empty title={tr("Aucun message", "No messages")} /> : (
         <Stagger className="mail-list">
-          {state.data.map((message) => (
-            <StaggerItem key={message.id} variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
+          {state.data.map((message, index) => (
+            <Fragment key={message.id}>
+            {mailDay(message) !== mailDay(state.data![index - 1]) && <li className="mail-day">{dayLabel(message.received_at ?? message.sent_at ?? "")}</li>}
+            <StaggerItem variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
               <button type="button" onClick={() => read(message)} onContextMenu={(event) => contextMenu(event, [
                 { label: tr("Ouvrir", "Open"), run: () => read(message) },
                 { label: tr("Répondre", "Reply"), run: () => onCompose({ to: message.from_address, subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`, body: "", inReplyTo: message.id }) },
@@ -137,6 +142,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
                 <span className="mail-card-flags">{message.is_starred && <Star size={13} fill="currentColor" />}{(message.attachments?.length ?? 0) > 0 && <Paperclip size={13} />}</span>
               </button>
             </StaggerItem>
+            </Fragment>
           ))}
         </Stagger>
       )}

@@ -4,13 +4,15 @@ import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Circle, Notebook
 import { PageHead } from "./kit";
 import { EthoneItem, EthoneItemInput, ItemKind, itemsCreate, itemsDelete, itemsList, itemsUpdate } from "./api";
 import { errorText, lang, t } from "./i18n";
-import { dateTimeInputToIso, dayKey, eventsByStart, monthCells, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity";
+import { tr } from "./i18n";
+import { taskDue, TaskFilter, taskLate, taskPriority, visibleTasks, dateTimeInputToIso, dayKey, eventsByStart, monthCells, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity";
+import { usePersisted } from "./qol";
 import ProductivityEditor, { ProductivityDraft } from "./ProductivityEditor";
 import { Button } from "./ui";
 
 type ProductivityKind = ItemKind;
 
-const EMPTY_DRAFT: ProductivityDraft = { title: "", body: "", startAt: "", endAt: "" };
+const EMPTY_DRAFT: ProductivityDraft = { title: "", body: "", startAt: "", endAt: "", due: "", priority: "medium" };
 
 function itemDate(value: string | null): string {
   if (!value) return "";
@@ -65,6 +67,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
   const [draft, setDraft] = useState<ProductivityDraft>(EMPTY_DRAFT);
   const [saving, setSaving] = useState(false);
   const [day, setDay] = useState<string | null>(null);
+  const [filter, setFilter] = usePersisted<TaskFilter>("ethone-task-filter", "open");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,7 +97,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
   };
 
   const openEdit = (item: EthoneItem) => {
-    setDraft({ title: item.title, body: item.body, startAt: toDateTimeInput(item.startAt), endAt: toDateTimeInput(item.endAt) });
+    setDraft({ title: item.title, body: item.body, startAt: toDateTimeInput(item.startAt), endAt: toDateTimeInput(item.endAt), due: taskDue(item), priority: taskPriority(item) });
     setEditor(item);
   };
 
@@ -104,7 +107,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     done: item?.done ?? false,
     startAt: kind === "events" ? dateTimeInputToIso(draft.startAt) || null : item?.startAt ?? null,
     endAt: kind === "events" ? dateTimeInputToIso(draft.endAt) || null : item?.endAt ?? null,
-    data: item?.data ?? {},
+    data: kind === "tasks" ? { ...item?.data, dueDate: draft.due || undefined, priority: draft.priority } : item?.data ?? {},
   });
 
   const save = async (event: FormEvent) => {
@@ -151,8 +154,15 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     );
   };
 
-  const shown = kind === "events" && day ? items.filter((item) => item.startAt && dayKey(new Date(item.startAt)) === day) : items;
-  const emptyText = kind === "notes" ? t("noNotes") : kind === "tasks" ? t("noTasks") : t("noEvents");
+  const today = dayKey(new Date());
+  const shown = kind === "tasks" ? visibleTasks(items, filter, today) : kind === "events" && day ? items.filter((item) => item.startAt && dayKey(new Date(item.startAt)) === day) : items;
+  const filters: [TaskFilter, string, number][] = [
+    ["open", tr("À faire", "To do"), visibleTasks(items, "open", today).length],
+    ["late", tr("En retard", "Late"), visibleTasks(items, "late", today).length],
+    ["done", tr("Terminées", "Done"), visibleTasks(items, "done", today).length],
+    ["all", tr("Toutes", "All"), items.length],
+  ];
+  const emptyText = kind === "notes" ? t("noNotes") : kind === "tasks" ? (items.length > 0 ? tr("Aucune tâche dans ce filtre.", "No tasks in this filter.") : t("noTasks")) : t("noEvents");
   const newLabel = kind === "notes" ? t("newNote") : kind === "tasks" ? t("newTask") : t("newEvent");
 
   return (
@@ -167,6 +177,11 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
         <ProductivityEditor kind={kind} draft={draft} saving={saving} onChange={setDraft} onCancel={() => setEditor(null)} onSubmit={save} />
       )}
 
+      {kind === "tasks" && !error && (
+        <div className="segmented task-filters" role="group" aria-label={tr("Filtrer les tâches", "Filter tasks")}>
+          {filters.map(([id, label, count]) => <button key={id} type="button" className={filter === id ? "on" : ""} aria-pressed={filter === id} onClick={() => setFilter(id)}>{filter === id && <span className="segmented-pill" />}<span>{label} {count}</span></button>)}
+        </div>
+      )}
       {kind === "events" && !error && <MonthGrid items={items} selected={day} onSelect={setDay} />}
       <section className="productivity-panel" aria-busy={loading}>
         {loading && <div className="item-skeletons" aria-label={t("loading")}><span /><span /><span /></div>}
@@ -183,6 +198,13 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
                   <span className="item-copy">
                     <b>{item.title}</b>
                     {preview && <small className="muted">{preview}</small>}
+                    {kind === "tasks" && (taskDue(item) || taskPriority(item) !== "medium") && (
+                      <span className="task-meta">
+                        {taskDue(item) && <small className={taskLate(item, today) ? "late" : "muted"}>{taskLate(item, today) ? tr("En retard : ", "Late: ") : tr("Pour le ", "Due ")}{new Date(`${taskDue(item)}T12:00:00`).toLocaleDateString(lang, { day: "numeric", month: "long" })}</small>}
+                        {taskPriority(item) === "high" && <small className="high">{tr("Priorité haute", "High priority")}</small>}
+                        {taskPriority(item) === "low" && <small className="muted">{tr("Priorité basse", "Low priority")}</small>}
+                      </span>
+                    )}
                   </span>
                     <span className="item-actions">
                       {(kind === "events" ? item.startAt : item.updatedAt) && <time className="muted small" dateTime={(kind === "events" ? item.startAt : item.updatedAt) ?? undefined}>{itemDate(kind === "events" ? item.startAt : item.updatedAt)}</time>}

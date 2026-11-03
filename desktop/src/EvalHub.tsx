@@ -236,25 +236,27 @@ function NameHistory({ account }: { account: EvalAccount | null }) {
 
 function Collection({ linked }: { linked: boolean }) {
   const [query, setQuery] = useState("");
+  const [weapon, setWeapon] = useState("");
   const [skin, setSkin] = useState<string | null>(null);
   const [owned, setOwned] = useState<Set<string>>(new Set());
   const state = useLoad(async () => {
     if (!linked) return [];
-    const [entitled, skins] = await Promise.all([
+    const [entitled, weapons] = await Promise.all([
       riotCall<{ Entitlements?: { ItemID: string }[] }>("/store/v1/entitlements/{puuid}/e7c63390-eda7-46e0-bb7a-a6abdacd2433"),
-      catalogGet<{ uuid: string; displayName: string; displayIcon?: string | null; levels?: { uuid: string; displayIcon?: string | null }[] }[]>(`/weapons/skins?${language}`),
+      catalogGet<{ displayName: string; skins?: { uuid: string; displayName: string; displayIcon?: string | null; levels?: { uuid: string; displayIcon?: string | null }[] }[] }[]>(`/weapons?${language}`),
     ]);
     const ids = new Set((entitled.Entitlements ?? []).map((item) => item.ItemID.toLowerCase()));
     setOwned(ids);
-    return skins.filter((skin) => skin.levels?.[0] && ids.has(skin.levels[0].uuid.toLowerCase())).map((skin) => ({ id: skin.uuid, name: skin.displayName, icon: skin.levels?.[0]?.displayIcon ?? skin.displayIcon ?? "" }));
+    const skins = weapons.flatMap((item) => (item.skins ?? []).map((skin) => ({ ...skin, weapon: item.displayName })));
+    return skins.filter((skin) => skin.levels?.[0] && ids.has(skin.levels[0].uuid.toLowerCase())).map((skin) => ({ id: skin.uuid, weapon: skin.weapon, name: skin.displayName, icon: skin.levels?.[0]?.displayIcon ?? skin.displayIcon ?? "" }));
   }, [linked]);
   if (!linked) return <Empty title={tr("Compte Riot non connecté", "Riot account not linked")} text={tr("Connecte ton compte pour voir tes skins.", "Link your account to see your skins.")} />;
   const text = query.trim().toLowerCase();
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Mes skins", "My skins")}{state.data ? ` (${state.data.length})` : ""}</h2></div>
-      <form className="eval-search" onSubmit={(event) => event.preventDefault()}><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
-      <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => !text || row.name.toLowerCase().includes(text)).map((row) => <li key={row.id}><button type="button" onClick={() => setSkin(row.id)}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></button></li>)}</ul>}</Status>
+      <form className="eval-search" onSubmit={(event) => event.preventDefault()}><select className="settings-select" value={weapon} aria-label={tr("Filtrer par arme", "Filter by weapon")} onChange={(event) => setWeapon(event.target.value)}><option value="">{tr("Toutes les armes", "All weapons")}</option>{[...new Set((state.data ?? []).map((row) => row.weapon))].sort().map((name) => <option key={name} value={name}>{name} ({(state.data ?? []).filter((row) => row.weapon === name).length})</option>)}</select><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
+      <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => (!weapon || row.weapon === weapon) && (!text || row.name.toLowerCase().includes(text))).map((row) => <li key={row.id}><button type="button" onClick={() => setSkin(row.id)}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></button></li>)}</ul>}</Status>
       <SkinDrawer skinId={skin} ownedLevels={state.data ? owned : undefined} onClose={() => setSkin(null)} />
     </>
   );

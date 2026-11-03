@@ -1,5 +1,18 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { taskLate, taskPriority, visibleTasks } from "./productivity.ts";
+
+test("tasks filter by state and sort by due date then priority", () => {
+  const task = (id, done, dueDate, priority) => ({ id, done, data: { ...(dueDate && { dueDate }), ...(priority && { priority }) } });
+  const tasks = [task("none", false), task("later", false, "2026-11-10"), task("late", false, "2026-11-01"), task("over", true, "2026-10-01"), task("high", false, "2026-11-10", "urgent")];
+  const ids = (filter) => visibleTasks(tasks, filter, "2026-11-03").map(({ id }) => id);
+  assert.deepEqual(ids("open"), ["late", "high", "later", "none"]);
+  assert.deepEqual(ids("late"), ["late"]);
+  assert.deepEqual(ids("done"), ["over"]);
+  assert.equal(ids("all").at(-1), "over");
+  assert.equal(taskLate(tasks[3], "2026-11-03"), false);
+  assert.equal(taskPriority(tasks[0]), "medium");
+});
 import { dateTimeInputToIso, eventsByStart, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity.ts";
 
 test("l'aperçu transforme le contenu de note en texte sans exécutable", () => {

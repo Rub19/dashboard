@@ -12,6 +12,23 @@ export function monthCells(month: Date): { key: string; date: Date; inMonth: boo
 
 export const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
+export type TaskFilter = "open" | "late" | "done" | "all";
+export type TaskPriority = "low" | "medium" | "high";
+interface TaskLike { done: boolean; data: Record<string, unknown> }
+
+export const taskDue = (task: TaskLike) => (typeof task.data.dueDate === "string" ? task.data.dueDate.slice(0, 10) : "");
+export const taskPriority = (task: TaskLike): TaskPriority => (task.data.priority === "high" || task.data.priority === "urgent" ? "high" : task.data.priority === "low" ? "low" : "medium");
+export const taskLate = (task: TaskLike, today: string) => !task.done && Boolean(taskDue(task)) && taskDue(task) < today;
+
+const PRIORITY_RANK: Record<TaskPriority, number> = { high: 0, medium: 1, low: 2 };
+
+export function visibleTasks<T extends TaskLike>(tasks: T[], filter: TaskFilter, today: string): T[] {
+  const kept = tasks.filter((task) => (filter === "all" ? true : filter === "done" ? task.done : filter === "late" ? taskLate(task, today) : !task.done));
+  return [...kept].sort((left, right) => Number(left.done) - Number(right.done)
+    || (taskDue(left) || "9999").localeCompare(taskDue(right) || "9999")
+    || PRIORITY_RANK[taskPriority(left)] - PRIORITY_RANK[taskPriority(right)]);
+}
+
 export function itemPreview(body: string): string {
   return body
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")

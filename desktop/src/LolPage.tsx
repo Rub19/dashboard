@@ -1,16 +1,17 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, RefreshCw, Search, Star, UserRound, X } from "lucide-react";
 import { apiData, riotLogin, riotStatus } from "./api";
-import { readCache, writeCache } from "./cache";
+import { cached, readCache, writeCache } from "./cache";
 import { splitRiotId } from "./eval";
 import { Friends } from "./EvalHub";
 import { errorText, lang, t, tr } from "./i18n";
 import { MatchCard, MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
 import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
-import { championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
+import { addLpPoint, LolAssets, LolLiveGame, LpPoint, parseLolAssets, championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
 import { listStagger, SPRING_SWAP } from "./motion";
 import { RotationView } from "./MorePages";
 import { usePersisted } from "./qol";
@@ -21,7 +22,7 @@ import { Button, LeagueMark } from "./ui";
 
 const ID_KEY = "ethone-lol-id";
 const FRESH = 5 * 60 * 1000;
-const TABS = ["profile", "tft", "rotation", "hub"] as const;
+const TABS = ["profile", "live", "tft", "rotation", "hub"] as const;
 type LolTab = (typeof TABS)[number];
 interface Loaded { profile: LolProfile; matches: LolMatch[] }
 
@@ -119,7 +120,99 @@ function Session({ matches }: { matches: LolMatch[] }) {
   );
 }
 
-function MatchRow({ match, onOpen }: { match: LolMatch; onOpen: () => void }) {
+function useLolAssets() {
+  const [assets, setAssets] = useState<LolAssets | null>(null);
+  useEffect(() => {
+    let active = true;
+    void cached("lol-assets", 86400000, async () => {
+      const [summoner, runes, champions] = await Promise.all(["summoner", "runesReforged", "champion"].map((file) => invoke<unknown>("ddragon_get", { file })));
+      return parseLolAssets(summoner as Parameters<typeof parseLolAssets>[0], runes as Parameters<typeof parseLolAssets>[1], champions as Parameters<typeof parseLolAssets>[2]);
+    }).then((value) => active && setAssets(value), () => null);
+    return () => {
+      active = false;
+    };
+  }, []);
+  return assets;
+}
+
+function Icons({ ids, table, className = "lol-icons" }: { ids: (number | undefined)[]; table?: Record<string, { image?: string; name?: string }>; className?: string }) {
+  const rows = ids.flatMap((id) => (id && table?.[String(id)]?.image ? [{ id, ...table[String(id)] }] : []));
+  return rows.length ? <span className={className}>{rows.map((row, index) => <img key={`${row.id}-${index}`} src={row.image} alt={row.name ?? ""} title={row.name} />)}</span> : null;
+}
+
+function LiveView({ id, assets, onOpen }: { id: string | null; assets: LolAssets | null; onOpen: (player: string) => void }) {
+  const [game, setGame] = useState<LolLiveGame | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    const load = () => apiData<LolLiveGame>(`api/stats/lol-live?${riotQuery(id)}`).then((value) => {
+      if (!active) return;
+      setGame(value);
+      setError(null);
+    }, (reason) => active && setError(errorText(reason)));
+    void load();
+    const poll = setInterval(() => void load(), 30000);
+    const clock = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      active = false;
+      clearInterval(poll);
+      clearInterval(clock);
+    };
+  }, [id]);
+  if (!id) return <div className="eval-card eval-empty"><h2>{tr("Aucun joueur", "No player")}</h2></div>;
+  if (error) return <ErrorBox message={error} />;
+  if (!game) return <Skeletons count={3} height={58} />;
+  if (!game.active) return <div className="eval-card eval-empty"><Star size={22} /><h2>{tr("Pas en partie", "Not in a game")}</h2><p>{tr(`${id} n'est pas en partie pour le moment. Cette page se met à jour toutes les 30 secondes.`, `${id} is not in a game right now. This page refreshes every 30 seconds.`)}</p></div>;
+  const seconds = game.startedAt ? Math.max(0, Math.floor((now - game.startedAt) / 1000)) : game.length ?? 0;
+  return (
+    <div className="lol-live">
+      <header className="eval-head"><h1>{lolMode(game.mode, lang) || tr("Partie en cours", "Game in progress")}</h1><span className="muted">{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</span></header>
+      <div className="lol-live-teams">
+        {["Blue", "Red"].map((team) => (
+          <section key={team} className={`lol-live-team ${team.toLowerCase()}`}>
+            <h2>{team === "Blue" ? tr("Équipe bleue", "Blue team") : tr("Équipe rouge", "Red team")}</h2>
+            <ul>
+              {(game.players ?? []).filter((player) => player.team === team).map((player) => (
+                <li key={`${player.name}#${player.tag}`} className={player.isMe ? "me" : ""}>
+                  <button type="button" disabled={!player.tag} onClick={() => onOpen(`${player.name}#${player.tag}`)}>
+                    {assets?.champions[String(player.championId)]?.image ? <img className="lol-live-champ" src={assets.champions[String(player.championId)].image} alt="" /> : <span className="lol-live-champ" />}
+                    <span><b>{player.name}</b><small>{assets?.champions[String(player.championId)]?.name ?? ""}</small></span>
+                    <Icons ids={player.spells} table={assets?.spells} />
+                    <Icons ids={[player.keystone, player.secondary]} table={assets?.runes} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LpHistory({ points }: { points: LpPoint[] }) {
+  if (points.length === 0) return null;
+  const low = Math.min(...points.map((point) => point.score));
+  const high = Math.max(...points.map((point) => point.score));
+  const recent = points.slice(-40);
+  const changes = points.slice(-5).reverse();
+  return (
+    <section className="eval-card lol-lp">
+      <h2>{tr("Historique des LP", "LP history")}</h2>
+      <p className="muted small">{tr(`${points.length} relevé(s) sur ce PC, à chaque ouverture d'E:LOL`, `${points.length} reading(s) on this PC, each time E:LOL opens`)}</p>
+      {points.length > 1 && <div className="lol-lp-bars" aria-hidden="true">{recent.map((point) => <i key={point.at} title={point.rank} style={{ height: `${high === low ? 50 : 10 + ((point.score - low) / (high - low)) * 90}%` }} />)}</div>}
+      <ul>{changes.map((point, index) => {
+        const before = points[points.length - 1 - index - 1];
+        const delta = before ? point.score - before.score : 0;
+        return <li key={point.at}><span>{lolRank(point.rank, lang === "fr" ? "fr" : "en").name} {lolRank(point.rank, lang === "fr" ? "fr" : "en").lp} LP</span>{before && <b className={delta >= 0 ? "ok" : "bad"}>{delta >= 0 ? "+" : ""}{delta}</b>}<small className="muted">{new Date(point.at).toLocaleDateString(lang, { day: "numeric", month: "short" })}</small></li>;
+      })}</ul>
+    </section>
+  );
+}
+
+function MatchRow({ match, assets, onOpen }: { match: LolMatch; assets: LolAssets | null; onOpen: () => void }) {
   const line = lolLine(match);
   const data = match.metadata;
   return (
@@ -132,7 +225,7 @@ function MatchRow({ match, onOpen }: { match: LolMatch; onOpen: () => void }) {
       round
       onPortraitError={(element) => { if (data?.agentImageFallback && element.src !== data.agentImageFallback) element.src = data.agentImageFallback; }}
       title={data?.agentName ?? ""}
-      chips={<Items items={line.items} className="match-card-items" />}
+      chips={<><Icons ids={[line.me?.rune?.id]} table={assets?.runes} className="match-card-items" /><Icons ids={(line.me?.spells ?? []).map((spell) => spell.id)} table={assets?.spells} className="match-card-items" /><Items items={line.items} className="match-card-items" /></>}
       result={line.won ? "win" : "loss"}
       kda={`${line.kills} / ${line.deaths} / ${line.assists}`}
       middle={`${line.cs} CS`}
@@ -142,7 +235,7 @@ function MatchRow({ match, onOpen }: { match: LolMatch; onOpen: () => void }) {
   );
 }
 
-function MatchPanel({ match, onClose }: { match: LolMatch; onClose: () => void }) {
+function MatchPanel({ match, assets, onClose }: { match: LolMatch; assets: LolAssets | null; onClose: () => void }) {
   const close = useRef<HTMLButtonElement>(null);
   const reduce = useReducedMotion();
   const [view, setView] = useState<"board" | "analysis">("board");
@@ -183,7 +276,10 @@ function MatchPanel({ match, onClose }: { match: LolMatch; onClose: () => void }
           )}
           {view === "board" && lolTeams(match).map((team) => (
             <table key={team.team} className={team.won ? "won" : "lost"}>
-              <caption><b>{team.kills}</b>{t(team.won ? "evalTeamWon" : "evalTeamLost")}</caption>
+              <caption><b>{team.kills}</b>{t(team.won ? "evalTeamWon" : "evalTeamLost")}{(() => {
+                const objectives = match.scoreboard?.teams?.[team.team];
+                return objectives ? <small className="lol-objectives">{tr(`${objectives.towers ?? 0} tours, ${objectives.dragons ?? 0} dragons, ${objectives.barons ?? 0} barons`, `${objectives.towers ?? 0} towers, ${objectives.dragons ?? 0} dragons, ${objectives.barons ?? 0} barons`)}</small> : null;
+              })()}</caption>
               <thead><tr><th scope="col">{t("evalPlayer")}</th><th scope="col">K/D/A</th><th scope="col">CS</th><th scope="col">{tr("Dégâts", "Damage")}</th><th scope="col">{tr("Or", "Gold")}</th><th scope="col">{tr("Objets", "Items")}</th></tr></thead>
               <tbody>
                 {team.players.map((player, index) => (
@@ -198,7 +294,7 @@ function MatchPanel({ match, onClose }: { match: LolMatch; onClose: () => void }
                     <td>{player.stats?.cs}</td>
                     <td>{player.stats?.damage?.toLocaleString(lang)}</td>
                     <td>{player.stats?.gold?.toLocaleString(lang)}</td>
-                    <td><Items items={(player.items ?? []).filter((item) => item.image)} /></td>
+                    <td><span className="lol-loadout"><Icons ids={[player.rune?.id]} table={assets?.runes} /><Icons ids={(player.spells ?? []).map((spell) => spell.id)} table={assets?.spells} /><Items items={(player.items ?? []).filter((item) => item.image)} /></span></td>
                   </tr>
                 ))}
               </tbody>
@@ -243,6 +339,8 @@ export default function LolPage() {
   const [open, setOpen] = useState<LolMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
   const firstLoad = useRef(true);
+  const assets = useLolAssets();
+  const [lpPoints, setLpPoints] = useState<LpPoint[]>(() => readJson<LpPoint[]>("ethone-lol-lp") ?? []);
   const [filter, setFilter] = useState<MatchFilter>(NO_FILTER);
 
   const load = useCallback(async (riotId: string, force = false) => {
@@ -321,6 +419,14 @@ export default function LolPage() {
   const matches = useMemo(() => data?.matches ?? [], [data]);
   const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
   useEffect(() => {
+    if (!own || id !== own || !data?.profile) return;
+    setLpPoints((current) => {
+      const next = addLpPoint(current, data.profile.rankSolo, Date.now());
+      if (next !== current) write("ethone-lol-lp", JSON.stringify(next));
+      return next;
+    });
+  }, [own, id, data]);
+  useEffect(() => {
     if (matches.length > 0) firstLoad.current = false;
   }, [matches]);
 
@@ -342,8 +448,9 @@ export default function LolPage() {
   return (
     <>
       <div className="eval-tabs-row">
-        <Tabs id="lol" label="E:LOL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "tft", label: "TFT" }, { id: "rotation", label: tr("Rotation", "Rotation") }, { id: "hub", label: tr("Amis", "Friends") }]} />
+        <Tabs id="lol" label="E:LOL" value={tab} onChange={setTab} tabs={[{ id: "profile", label: tr("Profil", "Profile") }, { id: "live", label: tr("En direct", "Live") }, { id: "tft", label: "TFT" }, { id: "rotation", label: tr("Rotation", "Rotation") }, { id: "hub", label: tr("Amis", "Friends") }]} />
       </div>
+      {tab === "live" && <LiveView id={id} assets={assets} onOpen={(player) => { setTab("profile"); show(player); }} />}
       {tab === "tft" && <TftView />}
       {tab === "rotation" && <RotationView />}
       {tab === "hub" && <Friends game="lol" linked={Boolean(own)} account={null} connecting={connecting} onConnect={connect} onOpen={show} />}
@@ -352,6 +459,7 @@ export default function LolPage() {
           <div className="eval-side">
             {data ? <ProfileCard profile={data.profile} matches={matches} id={id} /> : <Skeletons count={1} height={280} />}
             {matches.length > 0 && <Summary matches={matches} />}
+            {id === own && <LpHistory points={lpPoints} />}
             {matches.length > 0 && <Champions matches={matches} />}
           </div>
           <div className="eval-main">
@@ -371,14 +479,14 @@ export default function LolPage() {
                 <Session matches={matches} />
                 <MatchFilters filter={filter} onChange={setFilter} modes={options(matches.map((match) => lolMode(match.metadata?.modeName, lang)))} picks={options(matches.map((match) => match.metadata?.agentName ?? ""))} pickLabel={tr("Tous les champions", "All champions")} shown={shownMatches.length} total={matches.length} />
                 <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
-                  {shownMatches.map((match) => <MatchRow key={match.id} match={match} onOpen={() => setOpen(match)} />)}
+                  {shownMatches.map((match) => <MatchRow key={match.id} match={match} assets={assets} onOpen={() => setOpen(match)} />)}
                 </motion.ul>
               </>
             )}
           </div>
         </div>
       )}
-      <AnimatePresence>{open && <MatchPanel key={open.id} match={open} onClose={() => setOpen(null)} />}</AnimatePresence>
+      <AnimatePresence>{open && <MatchPanel key={open.id} match={open} assets={assets} onClose={() => setOpen(null)} />}</AnimatePresence>
     </>
   );
 }

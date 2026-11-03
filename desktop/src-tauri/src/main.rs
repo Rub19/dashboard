@@ -304,6 +304,17 @@ async fn catalog_get(path: String, state: State<'_, App>) -> Result<serde_json::
 }
 
 #[tauri::command]
+async fn ddragon_get(file: String, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    require_session(&state).await?;
+    if !["summoner", "runesReforged", "champion"].contains(&file.as_str()) {
+        return Err("Requête refusée".into());
+    }
+    let versions = riot_session().catalog("https://ddragon.leagueoflegends.com/api/versions.json").await?;
+    let version = versions[0].as_str().ok_or("server")?;
+    riot_session().catalog(&format!("https://ddragon.leagueoflegends.com/cdn/{version}/data/fr_FR/{file}.json")).await
+}
+
+#[tauri::command]
 async fn riot_friends(app: tauri::AppHandle, state: State<'_, App>) -> Result<Vec<chat::Friend>, String> {
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
@@ -670,6 +681,7 @@ fn main() {
             notify_windows,
             settings_export,
             catalog_get,
+            ddragon_get,
             riot_call,
             lineups_get,
             riot_friends,

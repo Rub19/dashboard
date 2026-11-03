@@ -44,7 +44,7 @@ function SECTION_COMMANDS(): { page: Page; key: string; id: string; label: strin
     ...group("productivity", "ethone-section-productivity", tr("Productivité", "Productivity"), [["tasks", tr("Tâches", "Tasks")], ["events", tr("Calendrier", "Calendar")], ["notes", "Notes"], ["scratchpad", tr("Mémo", "Scratchpad")], ["capture", tr("Capture rapide", "Quick capture")], ["habits", tr("Habitudes", "Habits")], ["focus", tr("Concentration et ambiance", "Focus and ambience")], ["bills", tr("Factures", "Bills")]]),
     ...group("tracker", "ethone-section-eval", "E:VAL", [["profile", tr("Profil", "Profile")], ["live", tr("En direct", "Live")], ["game", tr("Jeu et boutique", "Game and store")], ["hub", "Hub"]]),
     ...group("insights", "ethone-section-insights", tr("Analyses", "Insights"), [["activity", tr("Activité", "Activity")], ["mail", tr("Statistiques mail", "Mail stats")], ["weather", tr("Météo", "Weather")], ["rss", tr("Flux RSS", "RSS feeds")], ["diagnostic", tr("Diagnostic", "Diagnostics")]]),
-    ...group("games", "ethone-section-games", "E:LOL", [["profile", tr("Profil", "Profile")], ["tft", "Teamfight Tactics"], ["rotation", tr("Rotation LoL", "LoL rotation")], ["hub", tr("Amis", "Friends")]]),
+    ...group("games", "ethone-section-games", "E:LOL", [["profile", tr("Profil", "Profile")], ["live", tr("En direct", "Live")], ["tft", "Teamfight Tactics"], ["rotation", tr("Rotation LoL", "LoL rotation")], ["hub", tr("Amis", "Friends")]]),
   ];
 }
 

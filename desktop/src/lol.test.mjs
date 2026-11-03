@@ -1,5 +1,31 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { addLpPoint, lpScore, parseLolAssets } from "./lol.ts";
+
+test("spells, runes and champions are found by their identifier", () => {
+  const assets = parseLolAssets(
+    { version: "1.2.3", data: { SummonerFlash: { key: "4", name: "Saut", image: { full: "SummonerFlash.png" } } } },
+    [{ id: 8000, name: "Précision", icon: "p.png", slots: [{ runes: [{ id: 8008, name: "Tempo", icon: "t.png" }] }] }],
+    { version: "1.2.3", data: { Yone: { key: "777", name: "Yone", image: { full: "Yone.png" } } } },
+  );
+  assert.equal(assets.spells["4"].image, "https://ddragon.leagueoflegends.com/cdn/1.2.3/img/spell/SummonerFlash.png");
+  assert.equal(assets.runes["8008"].name, "Tempo");
+  assert.equal(assets.runes["8000"].image, "https://ddragon.leagueoflegends.com/cdn/img/p.png");
+  assert.equal(assets.champions["777"].name, "Yone");
+});
+
+test("the LP history only keeps real changes", () => {
+  assert.equal(lpScore("BRONZE I (52 LP)"), 752);
+  assert.equal(lpScore("IRON IV (0 LP)"), 0);
+  assert.equal(lpScore("MASTER (10 LP)"), 2810);
+  assert.equal(lpScore("Non classé"), null);
+  let points = addLpPoint([], "BRONZE I (52 LP)", 1);
+  points = addLpPoint(points, "BRONZE I (52 LP)", 2);
+  assert.equal(points.length, 1);
+  points = addLpPoint(points, "BRONZE I (70 LP)", 3);
+  assert.equal(points.at(-1).score, 770);
+  assert.equal(addLpPoint(points, undefined, 4).length, 2);
+});
 import { championSplash, lolLine, lolMode, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol.ts";
 
 const stats = (kills, deaths, assists) => ({ kills, deaths, assists, kda: 0, cs: 100, csPerMin: 6, damage: 1000, damagePerMin: 500, gold: 1000, goldPerMin: 300 });

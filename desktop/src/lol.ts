@@ -19,11 +19,61 @@ export interface LolPlayerStats {
   wardsPlaced?: number;
 }
 
+export interface LolAsset { id?: number; image?: string; name?: string }
+export interface LolAssets { spells: Record<string, LolAsset>; runes: Record<string, LolAsset>; champions: Record<string, LolAsset> }
+
+interface DragonFile { version?: string; data?: Record<string, { key?: string; name?: string; image?: { full?: string } }> }
+interface RuneRow { id?: number; name?: string; icon?: string; slots?: { runes?: RuneRow[] }[] }
+
+export function parseLolAssets(summoner: DragonFile, runes: RuneRow[], champions: DragonFile): LolAssets {
+  const dragon = "https://ddragon.leagueoflegends.com/cdn";
+  const table = (file: DragonFile, folder: string) => Object.fromEntries(Object.values(file.data ?? {}).flatMap((item) => (item.key && item.image?.full ? [[item.key, { name: item.name, image: `${dragon}/${file.version}/img/${folder}/${item.image.full}` }]] : [])));
+  const runeTable: Record<string, LolAsset> = {};
+  const addRune = (rune: RuneRow) => {
+    if (rune.id && rune.icon) runeTable[String(rune.id)] = { name: rune.name, image: `${dragon}/img/${rune.icon}` };
+  };
+  for (const path of runes) {
+    addRune(path);
+    for (const slot of path.slots ?? []) (slot.runes ?? []).forEach(addRune);
+  }
+  return { spells: table(summoner, "spell"), runes: runeTable, champions: table(champions, "champion") };
+}
+
+const LADDER = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"];
+const DIVISIONS: Record<string, number> = { IV: 0, III: 1, II: 2, I: 3 };
+
+export function lpScore(text: string | undefined): number | null {
+  const found = /^([A-Z]+)(?:\s+([IV]+))?\s*(?:\((\d+)\s*LP\))?/.exec((text ?? "").trim());
+  const tier = found ? LADDER.indexOf(found[1]) : -1;
+  if (!found || tier < 0) return null;
+  return tier * 400 + (DIVISIONS[found[2] ?? ""] ?? 0) * 100 + Number(found[3] ?? 0);
+}
+
+export interface LpPoint { at: number; rank: string; score: number }
+
+export function addLpPoint(points: LpPoint[], rank: string | undefined, at: number): LpPoint[] {
+  const score = lpScore(rank);
+  if (score === null || !rank || points.at(-1)?.score === score) return points;
+  return [...points, { at, rank, score }].slice(-200);
+}
+
+export interface LolLiveGame {
+  active: boolean;
+  mode?: string;
+  queueId?: number;
+  startedAt?: number;
+  length?: number;
+  players?: { name: string; tag: string; team: string; isMe: boolean; championId: number; spells: number[]; keystone: number; secondary: number }[];
+  bans?: { championId: number; team: string }[];
+}
+
 export interface LolPlayer {
   assets?: { champion?: { small?: string; fallback?: string } };
   character?: string;
   isMe?: boolean;
   items?: LolItem[];
+  spells?: LolItem[];
+  rune?: LolItem;
   level?: number;
   name?: string;
   position?: string;
@@ -46,7 +96,7 @@ export interface LolMatch {
     score?: { team?: number; opponent?: number };
     timestamp?: string;
   };
-  scoreboard?: { duration?: number; players?: LolPlayer[]; teams?: Record<string, { kills?: number; won?: boolean }> };
+  scoreboard?: { duration?: number; players?: LolPlayer[]; teams?: Record<string, { kills?: number; won?: boolean; towers?: number; dragons?: number; barons?: number; riftHeralds?: number }> };
   segments?: { stats?: Record<string, { value?: number }> }[];
 }
 

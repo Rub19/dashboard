@@ -5,7 +5,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
-import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
+import { apiData, catalogGet, riotLinkUrl, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
@@ -13,8 +13,9 @@ import { readJson, write } from "./settings";
 import EvalGame from "./EvalGame";
 import EvalHub from "./EvalHub";
 import EvalLive from "./EvalLive";
-import { Tabs } from "./kit";
+import { Drawer, Tabs } from "./kit";
 import { Button, ValorantMark } from "./ui";
+import { openRiotLoginInBrowser } from "./riot-session";
 
 const LOCAL_ID = "ethone-eval-riot-id";
 const MATCH_LIMIT = 25;
@@ -333,25 +334,17 @@ function BrowserLink({ onLinked }: { onLinked: () => void }) {
   );
 }
 
-function Connect({ error, connecting, onConnect, onLinked, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onLinked: () => void; onSearch: (name: string, tag: string) => void }) {
-  const [browser, setBrowser] = useState(false);
-  const [browserError, setBrowserError] = useState<string | null>(null);
-  const openBrowser = () => {
-    setBrowserError(null);
-    riotOpenBrowser().then(() => setBrowser(true), (reason) => setBrowserError(errorText(reason)));
-  };
+function Connect({ error, connecting, onConnect, onSearch }: { error: string | null; connecting: boolean; onConnect: () => void; onSearch: (name: string, tag: string) => void }) {
   return (
     <div className="eval-connect">
       <ValorantMark size={44} />
       <h1>E:VAL</h1>
       <p>{t("evalConnectText")}</p>
       <div className="eval-connect-actions">
-        <Button variant="primary" onClick={openBrowser}><ExternalLink size={15} />{t("evalConnectBrowser")}</Button>
-        <Button disabled={connecting} onClick={onConnect}>{t("evalConnectWindow")}</Button>
+        <Button variant="primary" disabled={connecting} onClick={onConnect}><ExternalLink size={15} />{t("evalConnectBrowser")}</Button>
       </div>
-      {browser && <BrowserLink onLinked={onLinked} />}
       {connecting && <p role="status">{t("evalConnecting")}</p>}
-      {(error || browserError) && <p className="bad" role="alert">{error ?? browserError}</p>}
+      {error && <p className="bad" role="alert">{error}</p>}
       <RiotIdForm onSubmit={onSearch} />
     </div>
   );
@@ -365,6 +358,7 @@ export default function TrackerPage() {
   const [needsId, setNeedsId] = useState(false);
   const [open, setOpen] = useState<EvalMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [browserLink, setBrowserLink] = useState(false);
   const [tab, setTab] = usePersisted<EvalTab>("ethone-section-eval", "profile");
   const [limit, setLimit] = useState(MATCH_LIMIT);
   const [visited, setVisited] = useState<EvalTab[]>([tab]);
@@ -463,13 +457,14 @@ export default function TrackerPage() {
     if (connecting) return;
     setConnecting(true);
     setError(null);
-    riotLogin().catch((reason) => {
-      setConnecting(false);
-      setError(errorText(reason));
-    });
+    openRiotLoginInBrowser(riotOpenBrowser)
+      .then(() => setBrowserLink(true))
+      .catch((reason) => setError(errorText(reason)))
+      .finally(() => setConnecting(false));
   };
 
   const linked = () => {
+    setBrowserLink(false);
     memory = null;
     setData(null);
     void start();
@@ -511,7 +506,7 @@ export default function TrackerPage() {
       </div>
     );
   }
-  if (needsId) return <Connect error={error} connecting={connecting} onConnect={connect} onLinked={linked} onSearch={(name, tag) => void search(name, tag)} />;
+  if (needsId) return <><Connect error={error} connecting={connecting} onConnect={connect} onSearch={(name, tag) => void search(name, tag)} /><Drawer open={browserLink} title={t("evalConnectBrowser")} onClose={() => setBrowserLink(false)}><BrowserLink onLinked={linked} /></Drawer></>;
   if (!data) {
     return (
       <div className="eval-error" role="alert">
@@ -563,6 +558,7 @@ export default function TrackerPage() {
         </div>
       </div>}
       <AnimatePresence>{open && <MatchPanel key={open.id} match={open} puuid={account.puuid} image={mapImages[open.map.toLowerCase()]} onClose={closeMatch} />}</AnimatePresence>
+      <Drawer open={browserLink} title={t("evalConnectBrowser")} onClose={() => setBrowserLink(false)}><BrowserLink onLinked={linked} /></Drawer>
     </>
   );
 }

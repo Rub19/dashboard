@@ -13,3 +13,7 @@ export function riotReconnectRequired(reason: unknown): boolean {
   const text = reasonText(reason);
   return text.includes("riotExpired") || text.includes("riotRequired");
 }
+
+export async function openRiotLoginInBrowser(open: () => Promise<void>): Promise<void> {
+  await open();
+}

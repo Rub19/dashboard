@@ -51,6 +51,66 @@ async function getPuuid(env, name, tag, apiKey) {
   return response.data?.puuid;
 }
 
+export function normalizeLolLive(game, puuid) {
+  const players = (game?.participants || []).map((p) => {
+    const [riotName, riotTag] = String(p.riotId || "").split("#");
+    return Object.freeze({
+      name: safeText(riotName || p.summonerName || "Summoner", 32),
+      tag: safeText(riotTag || "", 16),
+      team: lolTeamName(p.teamId),
+      isMe: p.puuid === puuid,
+      championId: Number(p.championId) || 0,
+      spells: Object.freeze([Number(p.spell1Id) || 0, Number(p.spell2Id) || 0]),
+      keystone: Number(p.perks?.perkIds?.[0]) || 0,
+      secondary: Number(p.perks?.perkSubStyle) || 0
+    });
+  });
+  return Object.freeze({
+    active: true,
+    mode: safeText(game?.gameMode, 32),
+    queueId: Number(game?.gameQueueConfigId) || 0,
+    startedAt: Number(game?.gameStartTime) || 0,
+    length: Number(game?.gameLength) || 0,
+    players: Object.freeze(players),
+    bans: Object.freeze((game?.bannedChampions || []).map((ban) => Object.freeze({ championId: Number(ban.championId) || 0, team: lolTeamName(ban.teamId) })))
+  });
+}
+
+export async function getLolLive(env, riotId, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
+  const [name, tag] = riotId.split("#");
+  const puuid = await getPuuid(env, name, tag, apiKey);
+  if (!puuid) return { active: false };
+  let platformId = "euw1";
+  try {
+    const recent = await requestExternal(new URL(`/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1`, RIOT_EUROPE), {
+      env,
+      expectedOrigin: RIOT_EUROPE,
+      service: "tracker",
+      dedupeKey: `riot:recent_match:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    if (recent.data?.[0]) platformId = recent.data[0].split("_")[0].toLowerCase();
+  } catch {}
+  const origin = `https://${platformId}.api.riotgames.com`;
+  try {
+    const live = await requestExternal(new URL(`/lol/spectator/v5/active-games/by-summoner/${puuid}`, origin), {
+      env,
+      expectedOrigin: origin,
+      service: "tracker",
+      dedupeKey: `riot:spectator:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 0
+    });
+    return normalizeLolLive(live.data, puuid);
+  } catch (error) {
+    const status = error?.status ?? error?.detail?.status;
+    if (status === 404) return { active: false };
+    throw error;
+  }
+}
+
 export async function getLolProfile(env, riotId, apiKeyOverride) {
   const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
   const [name, tag] = riotId.split("#");
@@ -453,17 +513,17 @@ function safeLolTag(p) {
   return safeText(p.riotIdTagline || p.tagLine || "", 16);
 }
 
-function normalizeLolTeamObjectives(info) {
+export function normalizeLolTeamObjectives(info) {
   const objectives = { Blue: { won: false, barons: 0, dragons: 0, towers: 0, inhibitors: 0, riftHeralds: 0 }, Red: { won: false, barons: 0, dragons: 0, towers: 0, inhibitors: 0, riftHeralds: 0 } };
   for (const t of info.teams || []) {
     const team = lolTeamName(t.teamId);
     if (!objectives[team]) continue;
     objectives[team].won = Boolean(t.win);
-    objectives[team].barons = Number(t.baronKills) || 0;
-    objectives[team].dragons = Number(t.dragonKills) || 0;
-    objectives[team].towers = Number(t.towerKills) || 0;
-    objectives[team].inhibitors = Number(t.inhibitorKills) || 0;
-    objectives[team].riftHeralds = Number(t.riftHeraldKills) || 0;
+    objectives[team].barons = Number(t.objectives?.baron?.kills ?? t.baronKills) || 0;
+    objectives[team].dragons = Number(t.objectives?.dragon?.kills ?? t.dragonKills) || 0;
+    objectives[team].towers = Number(t.objectives?.tower?.kills ?? t.towerKills) || 0;
+    objectives[team].inhibitors = Number(t.objectives?.inhibitor?.kills ?? t.inhibitorKills) || 0;
+    objectives[team].riftHeralds = Number(t.objectives?.riftHerald?.kills ?? t.riftHeraldKills) || 0;
   }
   return objectives;
 }

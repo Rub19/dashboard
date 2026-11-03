@@ -2,7 +2,9 @@ import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useS
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
-import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
+import { firstArray, Json } from "./generic";
+import { dueEvents, notifiedEvents, notifyWindows, readDesktopPrefs, rememberEvents, saveDesktopPrefs, unseenMail } from "./notifications";
+import { Action, apiCall, authSignOut, installModule, itemsList, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t, tr } from "./i18n";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
@@ -165,6 +167,35 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     savePage(next);
     setVisited((seen) => (seen.includes(next) ? seen : [...seen, next]));
   }, [savePage]);
+
+  useEffect(() => {
+    saveDesktopPrefs(readDesktopPrefs());
+    let seen: Set<string> | null = null;
+    const check = async () => {
+      const prefs = readDesktopPrefs();
+      if (prefs.notifyMail) {
+        const mail = await apiCall<Json>("api/mail/inbox?folder=inbox&limit=10").then((answer) => firstArray(answer) as unknown as { id: string; from_address: string; from_name?: string; subject?: string }[]).catch(() => null);
+        if (mail) {
+          const fresh = unseenMail(seen, mail);
+          seen = new Set([...(seen ?? []), ...mail.map((item) => item.id)]);
+          if (fresh.length === 1) void notifyWindows(fresh[0].from_name || fresh[0].from_address, fresh[0].subject || tr("Nouveau mail", "New mail")).catch(() => undefined);
+          else if (fresh.length > 1) void notifyWindows("Ethone", tr(`${fresh.length} nouveaux mails`, `${fresh.length} new emails`)).catch(() => undefined);
+        }
+      }
+      if (prefs.notifyEvents) {
+        const events = await itemsList("events").catch(() => null);
+        if (events) {
+          const notified = notifiedEvents();
+          const due = dueEvents(events, notified, Date.now());
+          for (const event of due) void notifyWindows(event.title, tr("Commence dans moins de 10 minutes", "Starts in less than 10 minutes")).catch(() => undefined);
+          if (due.length > 0) rememberEvents([...notified, ...due.map((event) => event.id)]);
+        }
+      }
+    };
+    void check();
+    const timer = setInterval(() => void check(), 120000);
+    return () => clearInterval(timer);
+  }, []);
 
   const go = useCallback((next: Page) => {
     if (next !== page) history.current = [...history.current.slice(-20), page];

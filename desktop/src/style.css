@@ -1385,6 +1385,10 @@ input[type="checkbox"]:not([role="switch"]) { accent-color: var(--accent-text); 
 .home-side { display: grid; align-content: start; gap: 24px; min-width: 0; }
 .home-eval .league-mark { color: #c89b3c; }
 .home-meta .icon-btn.on { background: var(--control-hover); }
+.files-add { position: relative; cursor: pointer; }
+.files-add input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.files-add:focus-within { outline: 2px solid var(--fg); outline-offset: 2px; }
+.files-sending { margin: 8px 0; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 .home-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .home-picker button { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px 0 8px; border-radius: var(--r-s); background: var(--row); color: var(--muted); font-size: 13px; transition: background-color .1s ease, color .1s ease; }
 .home-picker button:hover { background: var(--row-hover); }

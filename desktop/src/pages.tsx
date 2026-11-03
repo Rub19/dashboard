@@ -1,11 +1,13 @@
 import { PageHead } from "./kit";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { DesktopPrefs, notifyWindows, readDesktopPrefs, saveDesktopPrefs } from "./notifications";
 import { motion } from "framer-motion";
 import { Check, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import { about, JournalEntry, openSite, Profile, readJournal, SitePage } from "./api";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { listItem, listStagger, SPRING_PILL, SPRING_SWAP } from "./motion";
-import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentTheme, DEFAULT_INTERFACE_PREFERENCES, Density, InterfacePreferences, MotionPreference, setLanguage, TextScale, Theme, TransparencyPreference } from "./settings";
+import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentTheme, DEFAULT_INTERFACE_PREFERENCES, Density, exportSettings, InterfacePreferences, MotionPreference, parseSettings, setLanguage, TextScale, Theme, TransparencyPreference, write } from "./settings";
 import { Button } from "./ui";
 import { toast } from "./qol";
 
@@ -38,6 +40,70 @@ export function JournalPage() {
           ))}
         </motion.ul>
       )}
+    </>
+  );
+}
+
+function DesktopSwitch({ title, text, checked, onChange }: { title: string; text: string; checked: boolean; onChange: (next: boolean) => void }) {
+  return (
+    <li>
+      <span className="stack"><b>{title}</b><small className="muted">{text}</small></span>
+      <label className="switch" aria-label={title}>
+        <input type="checkbox" role="switch" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+        <span className="switch-track"><motion.span layout transition={SPRING_PILL} className="switch-thumb" /></span>
+      </label>
+    </li>
+  );
+}
+
+function DesktopSettings() {
+  const [autostart, setAutostart] = useState(false);
+  const [prefs, setPrefs] = useState<DesktopPrefs>(readDesktopPrefs);
+  useEffect(() => {
+    void invoke<boolean>("autostart_get").then(setAutostart).catch(() => undefined);
+  }, []);
+  const change = (next: Partial<DesktopPrefs>) => {
+    const merged = { ...prefs, ...next };
+    setPrefs(merged);
+    saveDesktopPrefs(merged);
+  };
+  const toggleAutostart = (next: boolean) => {
+    invoke("autostart_set", { enabled: next }).then(() => setAutostart(next), () => toast(tr("Réglage Windows non modifié", "Windows setting not changed"), { tone: "bad" }));
+  };
+  const save = () => {
+    invoke<string>("settings_export", { content: exportSettings() }).then((path) => toast(tr(`Réglages enregistrés dans ${path}`, `Settings saved to ${path}`)), () => toast(tr("Export impossible", "Export failed"), { tone: "bad" }));
+  };
+  const load = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    try {
+      for (const [key, value] of parseSettings(await file.text())) write(key, value);
+      window.location.reload();
+    } catch {
+      toast(tr("Ce fichier n'est pas un export d'Ethone", "This file is not an Ethone export"), { tone: "bad" });
+    }
+  };
+  return (
+    <>
+      <h2 className="group-title">Windows</h2>
+      <ul className="settings">
+        <DesktopSwitch title={tr("Lancer avec Windows", "Start with Windows")} text={tr("Ethone démarre réduit dans la zone de notification.", "Ethone starts minimized to the notification area.")} checked={autostart} onChange={toggleAutostart} />
+        <DesktopSwitch title={tr("Réduire à la fermeture", "Minimize on close")} text={tr("La croix garde Ethone actif dans la zone de notification.", "The close button keeps Ethone running in the notification area.")} checked={prefs.closeToTray} onChange={(closeToTray) => change({ closeToTray })} />
+        <DesktopSwitch title={tr("Notifier les nouveaux mails", "Notify new mail")} text={tr("Vérifié toutes les 2 minutes tant qu'Ethone est ouvert.", "Checked every 2 minutes while Ethone is open.")} checked={prefs.notifyMail} onChange={(notifyMail) => change({ notifyMail })} />
+        <DesktopSwitch title={tr("Rappeler les événements", "Remind events")} text={tr("Une notification 10 minutes avant le début.", "A notification 10 minutes before the start.")} checked={prefs.notifyEvents} onChange={(notifyEvents) => change({ notifyEvents })} />
+        <li>
+          <span className="stack"><b>{tr("Tester les notifications", "Test notifications")}</b><small className="muted">{tr("Envoie une notification Windows.", "Sends a Windows notification.")}</small></span>
+          <Button onClick={() => void notifyWindows("Ethone", tr("Les notifications fonctionnent.", "Notifications work.")).catch(() => toast(tr("Notification impossible", "Notification failed"), { tone: "bad" }))}>{tr("Tester", "Test")}</Button>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Sauvegarder les réglages", "Back up settings")}</b><small className="muted">{tr("Exporte tes préférences dans Téléchargements, ou les restaure depuis un fichier.", "Exports your preferences to Downloads, or restores them from a file.")}</small></span>
+          <div className="row">
+            <Button onClick={save}>{tr("Exporter", "Export")}</Button>
+            <label className="btn files-add">{tr("Importer", "Import")}<input type="file" accept=".json" onChange={(event) => void load(event)} /></label>
+          </div>
+        </li>
+      </ul>
     </>
   );
 }
@@ -147,6 +213,7 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
           <Button onClick={reset}>{tr("Réinitialiser", "Reset")}</Button>
         </li>
       </ul>
+      <DesktopSettings />
       <h2 className="group-title">{t("account")}</h2>
       <ul className="settings">
         <li>

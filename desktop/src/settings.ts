@@ -63,6 +63,22 @@ export function readJson<T>(key: string): T | null {
   }
 }
 
+const SETTINGS_KEYS = ["ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+
+export function exportSettings(): string {
+  const values = Object.fromEntries(SETTINGS_KEYS.flatMap((key) => {
+    const value = read(key);
+    return value === null ? [] : [[key, value]];
+  }));
+  return JSON.stringify({ app: "ethone-desktop", values }, null, 2);
+}
+
+export function parseSettings(text: string): [string, string][] {
+  const parsed = JSON.parse(text) as { app?: string; values?: Record<string, unknown> };
+  if (parsed?.app !== "ethone-desktop" || !parsed.values) throw new Error("invalid");
+  return Object.entries(parsed.values).filter((entry): entry is [string, string] => SETTINGS_KEYS.includes(entry[0]) && typeof entry[1] === "string");
+}
+
 export function currentTheme(): Theme {
   const value = read("ethone-theme");
   return value === "dark" || value === "light" ? value : "system";

@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod background;
 mod action;
 mod auth;
 mod bot;
@@ -16,6 +17,7 @@ mod tracker;
 mod windowing;
 
 use action::{decide, Action, Facts};
+use base64::Engine;
 use catalog::Module;
 use futures_util::future::join_all;
 use serde::Serialize;
@@ -229,6 +231,68 @@ async fn rest_call(method: String, path: String, body: Option<serde_json::Value>
         other => other,
     };
     state.auth.rest_call(method, path, body, prefer.as_deref()).await
+}
+
+#[derive(serde::Deserialize)]
+struct ChunkMeta {
+    #[serde(rename = "clientId")]
+    client_id: String,
+    name: String,
+    mime: String,
+    size: u64,
+    start: u64,
+    end: u64,
+    parent: Option<String>,
+    token: Option<String>,
+}
+
+#[tauri::command]
+async fn drive_upload_chunk(request: tauri::ipc::Request<'_>, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("server".into());
+    };
+    let encoded = request.headers().get("x-ethone-meta").and_then(|value| value.to_str().ok()).ok_or("server")?;
+    let decoded = base64::engine::general_purpose::STANDARD.decode(encoded).map_err(|_| "server")?;
+    let meta: ChunkMeta = serde_json::from_slice(&decoded).map_err(|_| "server")?;
+    let mut headers = vec![
+        ("x-ethone-client-id", meta.client_id),
+        ("x-ethone-file-name", meta.name),
+        ("x-ethone-file-mime", meta.mime),
+        ("x-ethone-file-size", meta.size.to_string()),
+        ("content-range", format!("bytes {}-{}/{}", meta.start, meta.end, meta.size)),
+    ];
+    if let Some(parent) = meta.parent {
+        headers.push(("x-ethone-file-parent", parent));
+    }
+    if let Some(token) = meta.token {
+        headers.push(("x-ethone-upload-token", token));
+    }
+    state.auth.drive_chunk(&headers, bytes.clone()).await
+}
+
+#[tauri::command]
+fn autostart_get() -> bool {
+    background::autostart_enabled()
+}
+
+#[tauri::command]
+fn autostart_set(enabled: bool) -> Result<(), String> {
+    background::set_autostart(enabled)
+}
+
+#[tauri::command]
+fn close_to_tray_set(enabled: bool) {
+    background::set_close_to_tray(enabled);
+}
+
+#[tauri::command]
+fn notify_windows(title: String, body: String, app: AppHandle) -> Result<(), String> {
+    background::notify(&app, &title, &body)
+}
+
+#[tauri::command]
+fn settings_export(content: String, app: AppHandle) -> Result<String, String> {
+    background::export_settings(&app, &content)
 }
 
 #[tauri::command]
@@ -525,15 +589,19 @@ fn main() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
+        .on_window_event(background::on_window_event)
         .manage(App { modules, installing: Mutex::new(()), auth: auth::Auth::new(api) })
         .setup(|app| {
+            background::prepare_start();
+            let _ = background::build_tray(app);
             #[cfg(not(debug_assertions))]
             let _ = app.deep_link().register("ethone");
             let fallback = app.handle().clone();
             std::thread::spawn(move || {
                 std::thread::sleep(std::time::Duration::from_secs(3));
                 if let Some(window) = fallback.get_webview_window("main") {
-                    if !window.is_visible().unwrap_or(true) {
+                    if !background::starts_hidden() && !window.is_visible().unwrap_or(true) {
                         let _ = window.show();
                     }
                 }
@@ -570,6 +638,12 @@ fn main() {
             bot_call,
             api_call,
             rest_call,
+            drive_upload_chunk,
+            autostart_get,
+            autostart_set,
+            close_to_tray_set,
+            notify_windows,
+            settings_export,
             catalog_get,
             riot_call,
             lineups_get,

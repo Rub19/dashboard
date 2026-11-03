@@ -101,3 +101,8 @@ L'application démarre en français sauf choix contraire dans les Réglages. Des
 ## 20. Chat Riot en lecture ponctuelle
 
 Les amis sont lus par une connexion XMPP courte, ouverte puis fermée à chaque actualisation, avec la présence hors ligne. Dépendances ajoutées : `tokio-rustls` et `webpki-roots`. Aucune connexion permanente ni messagerie.
+
+## Applications intégrées à Ethone (demande de Rub19, 3 novembre 2026, à faire après avoir fini Kairo et les autres applications)
+
+- Une application peut être installée à part, via Ethone ou via GitHub : Ethone doit détecter les deux cas.
+- Option au choix : télécharger Kairo pour qu'Ethone « devienne » Kairo dans la même fenêtre, avec un bouton pour revenir. Une seule application ouverte au lieu de plusieurs.

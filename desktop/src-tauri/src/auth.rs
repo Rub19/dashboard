@@ -254,6 +254,14 @@ impl Api {
         .await
     }
 
+    async fn drive_chunk(&self, access: &str, headers: &[(&str, String)], bytes: Vec<u8>) -> Result<Value, Failure> {
+        let mut request = self.client.post(format!("{}/api/google-drive/upload/chunk", self.worker_base)).bearer_auth(access).body(bytes);
+        for (name, value) in headers {
+            request = request.header(*name, reqwest::header::HeaderValue::from_bytes(value.as_bytes()).map_err(|_| Failure::Status(400, None))?);
+        }
+        self.send(request).await
+    }
+
     async fn rest_json(&self, method: reqwest::Method, path: &str, access: &str, body: Option<Value>, prefer: Option<&str>) -> Result<Value, Failure> {
         let url = format!("{}/rest/v1/{path}", self.auth_base);
         let mut request = self.client.request(method, url).header("apikey", ANON_KEY).bearer_auth(access);
@@ -491,6 +499,32 @@ impl Auth {
             }
             result => result.map_err(service_error),
         }
+    }
+
+    pub async fn drive_chunk(&self, headers: &[(&str, String)], bytes: Vec<u8>) -> Result<Value, String> {
+        let access = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            inner.access.clone()
+        };
+        let access = match access {
+            Some(access) => access,
+            None => self.renew_access().await?,
+        };
+        let result = match self.api.drive_chunk(&access, headers, bytes.clone()).await {
+            Err(Failure::Status(401, _)) => {
+                let renewed = self.renew_access().await?;
+                self.api.drive_chunk(&renewed, headers, bytes).await
+            }
+            result => result,
+        };
+        result.map_err(|failure| match failure {
+            Failure::Status(401, _) => "driveNotLinked".into(),
+            Failure::Status(413, _) => "fileTooLarge".into(),
+            other => service_error(other),
+        })
     }
 
     pub async fn user_id(&self) -> Result<String, String> {

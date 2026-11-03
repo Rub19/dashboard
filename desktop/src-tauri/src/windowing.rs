@@ -128,7 +128,9 @@ pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, po
         }
     }
     if !visible {
-        let _ = window.show();
+        if login || !crate::background::take_hidden_start() {
+            let _ = window.show();
+        }
         let _ = window.set_focus();
     }
     Ok(())

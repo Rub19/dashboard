@@ -1,15 +1,48 @@
 import { useEffect, useMemo, useState } from "react";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { AnimatePresence, motion } from "framer-motion";
-import Backdrop from "../../src/Backdrop";
-import { lang, t } from "../../src/i18n";
-import { stepEnter } from "../../src/motion";
+import { Check } from "lucide-react";
+import { lang, t, tr } from "../../src/i18n";
+import { SPRING_PILL, stepEnter } from "../../src/motion";
 import { setLanguage } from "../../src/settings";
-import { WindowControls, WindowLight } from "../../src/ui";
-import { DoneScreen, MaintenanceScreen, ModulesScreen, OptionsScreen, ProgressScreen, UninstalledScreen, WelcomeScreen } from "./screens";
+import { BrandMark, WindowControls } from "../../src/ui";
+import { Legal, DoneScreen, MaintenanceScreen, ModulesScreen, OptionsScreen, ProgressScreen, UninstalledScreen, WelcomeScreen } from "./screens";
 import { Item, Row, SetupEvent, SetupState } from "./types";
 
 type Screen = "welcome" | "maintenance" | "modules" | "options" | "progress" | "done" | "uninstalled";
+
+const STEPS: { id: Screen[]; label: () => string }[] = [
+  { id: ["welcome", "maintenance"], label: () => tr("Bienvenue", "Welcome") },
+  { id: ["modules"], label: () => tr("Applications", "Apps") },
+  { id: ["options"], label: () => tr("Options", "Options") },
+  { id: ["progress"], label: () => tr("Installation", "Install") },
+  { id: ["done", "uninstalled"], label: () => tr("Terminé", "Done") },
+];
+
+function Rail({ screen, version }: { screen: Screen; version?: string }) {
+  const current = STEPS.findIndex((step) => step.id.includes(screen));
+  return (
+    <aside className="setup-rail" data-tauri-drag-region>
+      <div className="rail-brand" data-tauri-drag-region>
+        <BrandMark size={34} />
+        <span><b>Ethone</b>{version && <small>{t("versionLine", { version })}</small>}</span>
+      </div>
+      <ol className="rail-steps">
+        {STEPS.map((step, index) => (
+          <li key={step.id[0]} className={index === current ? "now" : index < current ? "done" : ""} aria-current={index === current ? "step" : undefined}>
+            {index === current && <motion.span layoutId="rail-pill" className="rail-pill" transition={SPRING_PILL} />}
+            <span className="rail-dot">{index < current ? <Check size={11} strokeWidth={3.5} /> : index + 1}</span>
+            <span>{step.label()}</span>
+          </li>
+        ))}
+      </ol>
+      <div className="rail-foot">
+        <button type="button" className="lang" onClick={() => setLanguage(lang === "fr" ? "en" : "fr")} aria-label={t("language")}>{lang === "fr" ? "Français" : "English"}</button>
+        <Legal />
+      </div>
+    </aside>
+  );
+}
 
 export default function App() {
   const [state, setState] = useState<SetupState | null>(null);
@@ -87,10 +120,9 @@ export default function App() {
 
   return (
     <motion.div className="setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.14 }}>
-      <Backdrop />
-      <WindowLight success={screen === "done" && items.every((item) => item.stage === "ok")} />
-      <header className="login-bar" data-tauri-drag-region>
-        <button type="button" className="lang" onClick={() => setLanguage(lang === "fr" ? "en" : "fr")} aria-label={t("language")}>{lang === "fr" ? "Français" : "English"}</button>
+      <Rail screen={screen} version={state?.version} />
+      <div className="setup-body">
+      <header className="setup-bar" data-tauri-drag-region>
         <WindowControls canMaximize={false} />
       </header>
       {state && (
@@ -106,6 +138,7 @@ export default function App() {
           </motion.main>
         </AnimatePresence>
       )}
+      </div>
     </motion.div>
   );
 }

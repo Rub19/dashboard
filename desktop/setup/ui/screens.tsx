@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { motion } from "framer-motion";
-import { Check, CircleAlert, FolderOpen, Gamepad2, Loader2, PackagePlus, RotateCcw, Trash2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ChevronRight, Check, CircleAlert, FolderOpen, Gamepad2, Loader2, PackagePlus, RotateCcw, SlidersHorizontal, Trash2, X, Zap } from "lucide-react";
 import { errorText, hasText, Key, lang, t } from "../../src/i18n";
 import { listItem, listStagger, SPRING_GLIDE, SPRING_PILL } from "../../src/motion";
 import { BrandMark, Button } from "../../src/ui";
@@ -32,7 +32,7 @@ function Head({ title, text }: { title: string; text?: string }) {
   );
 }
 
-function Legal() {
+export function Legal() {
   return (
     <span className="setup-legal">
       <button type="button" className="link" onClick={() => invoke("setup_link", { page: "terms" })}>{t("terms")}</button>
@@ -45,22 +45,23 @@ export function WelcomeScreen({ state, onStandard, onCustom }: { state: SetupSta
   return (
     <>
       <div className="setup-hero">
-        <span className="login-mark"><BrandMark size={56} /></span>
+        <span className="hero-mark"><BrandMark size={76} /></span>
         <h1>{t("setupWelcome")}</h1>
         <p className="muted">{t("setupWelcomeText")}</p>
-        <p className="muted small">{t("versionLine", { version: state.version })}</p>
       </div>
       <div className="setup-choices">
-        <button type="button" className="choice" onClick={onStandard}>
-          <b>{t("setupStandard")}</b>
-          <small>{t("setupStandardText")}</small>
-        </button>
+        <motion.button type="button" className="choice primary" whileTap={{ scale: 0.985 }} onClick={onStandard}>
+          <Zap size={20} />
+          <span><b>{t("setupStandard")}</b><small>{t("setupStandardText")}</small></span>
+          <ChevronRight size={18} />
+        </motion.button>
         <button type="button" className="choice" onClick={onCustom}>
-          <b>{t("setupCustom")}</b>
-          <small>{t("setupCustomText")}</small>
+          <SlidersHorizontal size={20} />
+          <span><b>{t("setupCustom")}</b><small>{t("setupCustomText")}</small></span>
+          <ChevronRight size={18} />
         </button>
       </div>
-      <footer className="setup-foot"><span className="muted small">{t("setupNoAdmin")}</span><Legal /></footer>
+      <footer className="setup-foot"><span className="muted small">{t("setupNoAdmin")}</span><span className="muted small">{t("versionLine", { version: state.version })}</span></footer>
     </>
   );
 }
@@ -90,7 +91,6 @@ export function MaintenanceScreen({ state, error, onAdd, onRepair, onUninstall, 
           <span className="row"><Button onClick={() => setConfirm(false)}>{t("cancel")}</Button><Button className="danger-btn" onClick={onUninstall}>{t("setupUninstall")}</Button></span>
         </div>
       )}
-      <footer className="setup-foot"><span /><Legal /></footer>
     </>
   );
 }
@@ -213,10 +213,34 @@ function ItemList({ items }: { items: Item[] }) {
   );
 }
 
+function overall(items: Item[]): number {
+  if (items.length === 0) return 0;
+  const parts = items.map((item) => (item.stage === "ok" || item.stage === "failed" ? 1 : item.stage === "waiting" ? 0 : item.value ?? (item.stage === "downloading" ? 0.1 : 0.85)));
+  return parts.reduce((sum, part) => sum + part, 0) / items.length;
+}
+
+function Ring({ value, state }: { value: number; state: "busy" | "ok" | "bad" }) {
+  const reduced = useReducedMotion();
+  const size = 2 * Math.PI * 54;
+  const pop = reduced ? {} : { initial: { opacity: 0, scale: 0.7 }, animate: { opacity: 1, scale: 1 }, transition: { type: "spring" as const, duration: 0.45, bounce: 0.3 } };
+  return (
+    <div className={`ring ${state}`} role="progressbar" aria-valuenow={Math.round(value * 100)} aria-valuemin={0} aria-valuemax={100} aria-label={t("setupInstalling")}>
+      <svg viewBox="0 0 118 118" aria-hidden="true">
+        <circle className="track" cx="59" cy="59" r="54" />
+        <motion.circle className="fill" cx="59" cy="59" r="54" strokeDasharray={size} initial={false} animate={{ strokeDashoffset: size * (1 - value) }} transition={reduced ? { duration: 0 } : SPRING_GLIDE} />
+      </svg>
+      {state === "busy" ? <b>{Math.round(value * 100)} %</b> : <motion.span {...pop}>{state === "ok" ? <Check size={32} strokeWidth={3} /> : <X size={32} strokeWidth={3} />}</motion.span>}
+    </div>
+  );
+}
+
 export function ProgressScreen({ items }: { items: Item[] }) {
   return (
     <>
-      <Head title={t("setupInstalling")} text={t("setupInstallingText")} />
+      <div className="install-hero">
+        <Ring value={overall(items)} state="busy" />
+        <div><h1>{t("setupInstalling")}</h1><p className="muted">{t("setupInstallingText")}</p></div>
+      </div>
       <ItemList items={items} />
     </>
   );
@@ -231,7 +255,10 @@ export function DoneScreen({ items, error, installed, onRetry }: { items: Item[]
   const failed = !!error || items.some((item) => item.stage === "failed");
   return (
     <>
-      <Head title={t(failed ? "setupDoneFailed" : "setupDone")} text={t(failed ? "setupDoneFailedText" : "setupDoneText")} />
+      <div className="install-hero">
+        <Ring value={1} state={failed ? "bad" : "ok"} />
+        <div><h1>{t(failed ? "setupDoneFailed" : "setupDone")}</h1><p className="muted">{t(failed ? "setupDoneFailedText" : "setupDoneText")}</p></div>
+      </div>
       {error && <p role="alert" className="setup-note bad">{setupError(error)}</p>}
       <ItemList items={items} />
       <footer className="setup-foot">

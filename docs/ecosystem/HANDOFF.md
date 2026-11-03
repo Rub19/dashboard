@@ -134,6 +134,8 @@ Suite du test : le rang affiché suit `CompetitiveTier` de la saison et non le d
 
 Interface refaite façon Apple sur Windows, voir `desktop/DESIGN.md`. Toutes les pages passent par les mêmes jetons et composants. Vérifié par captures sur le vrai compte : accueil, applications, tâches, calendrier, mail, E:VAL, Discord, réglages, en sombre, et quatre pages en clair ; connexion et installateur sur l'aperçu. Vérifié en vrai : raccourcis, suppression avec annulation, menu contextuel, mémoire de la dernière page. Vérifié ensuite : vrai thème clair ; deux écrans réels (100 % et 150 %) avec retour de la position, fenêtre agrandie et écran disparu ; tailles de 900x600 à 3440x1440 et échelles 100 à 200 % en émulation ; navigation au clavier (Tab, flèches, Entrée, Échap, touche Menu, panneau qui garde le focus). La mémoire de position n'utilise plus le plugin window-state : la position est gardée dans `ethone-window` et vérifiée par `screen_at` dans `windowing.rs`. Non vérifié : changer l'échelle Windows réglée pendant que l'app tourne, lecteur d'écran.
 
+Ultimate Edition : audit et contrat de qualité dans `docs/ecosystem/ULTIMATE-AUDIT.md` et `CONSTRAINTS.md`. Les réglages de densité, taille du texte, réduction du mouvement et transparence sont validés, persistants, appliqués immédiatement et réinitialisables. Les 36 tests frontend et TypeScript passent ; cette tranche n'a pas été ouverte dans l'app.
+
 ## E:VAL : matchs, amis et aperçu des skins (3 novembre 2026)
 
 - Matchs : une ligne par match, colonnes alignées, regroupés par jour (`TrackerPage.tsx`).

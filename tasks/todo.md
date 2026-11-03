@@ -58,9 +58,9 @@
 
 - [x] Auditer les fonctions déjà présentes et les écarts du cahier des charges.
   - Preuve : `docs/ecosystem/ULTIMATE-AUDIT.md` et `CONSTRAINTS.md`.
-- [ ] Ajouter les préférences validées de densité, texte, mouvement et transparence.
+- [x] Ajouter les préférences validées de densité, texte, mouvement et transparence.
   - Acceptation : effet immédiat, persistance, anciennes clés conservées, réinitialisation réelle.
-  - Vérification : tests unitaires, contrôle TypeScript, tests frontend.
+  - Vérification : 36 tests frontend et contrôle TypeScript réussis le 3 novembre 2026. Pas de lancement de l'app.
 - [ ] Ajouter l'import et l'export versionnés des préférences sans secret.
   - Acceptation : validation stricte, refus des fichiers incompatibles, restauration atomique.
   - Vérification : tests de données valides, corrompues et incomplètes.

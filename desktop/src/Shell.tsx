@@ -1,5 +1,6 @@
 import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
 import { Action, authSignOut, installModule, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t, tr } from "./i18n";
@@ -19,6 +20,7 @@ import MailPage from "./MailPage";
 import { AccountPage, BrainPage, GamesPage, InsightsPage, TeamPage } from "./MorePages";
 import TrackerPage from "./TrackerPage";
 import { BrandMark, ValorantMark, WindowControls } from "./ui";
+import { anchoredMenuPosition } from "./menu-position";
 
 const ALL_PAGES: Page[] = [...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => id);
 const CHECK_EVERY = 6 * 60 * 60 * 1000;
@@ -75,6 +77,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const [pinned, setPinned] = useState<string[]>(() => readJson<string[]>("ethone-pinned-apps") ?? []);
   const layer = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
 
   const refresh = useCallback(async () => {
@@ -130,24 +133,27 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         event.preventDefault();
         backRef.current();
       }
-      if (event.key === "Escape" && menuRef.current?.querySelector(".menu")) {
+      if (event.key === "Escape" && popupRef.current) {
         setMenu(false);
         menuButton.current?.focus();
       }
     };
     const onDown = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setMenu(false);
+      if (!menuRef.current?.contains(event.target as Node) && !popupRef.current?.contains(event.target as Node)) setMenu(false);
     };
     const onBack = (event: MouseEvent) => {
       if (event.button === 3) backRef.current();
     };
+    const onResize = () => setMenu(false);
     window.addEventListener("mouseup", onBack);
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onDown);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("mouseup", onBack);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -240,6 +246,8 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
 
   const reachable = !offline && navigator.onLine;
+  const anchor = menuButton.current?.getBoundingClientRect();
+  const menuPosition = anchor ? anchoredMenuPosition(anchor, { width: window.innerWidth, height: window.innerHeight }) : { left: 8, bottom: 8 };
 
   return (
     <motion.div className={`shell ${compact ? "compact" : ""}`} data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
@@ -269,17 +277,21 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
               <Avatar profile={profile} />
               <span className="nav-label">{profile.name}</span>
             </button>
-            <AnimatePresence>
-              {menu && (
-                <motion.div role="menu" className="menu" variants={popover} initial="initial" animate="animate" exit="exit" style={{ transformOrigin: "bottom left" }}>
-                  <div className="menu-head"><b>{profile.name}</b><small className="muted">{profile.email}</small></div>
-                  <button type="button" role="menuitem" autoFocus onClick={() => { setMenu(false); go("settings"); }}><CircleUser size={15} />{t("manageAccount")}</button>
-                  <button type="button" role="menuitem" onClick={signOut}><LogOut size={15} />{t("signOut")}</button>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>}
       />
+
+      {createPortal(
+        <AnimatePresence>
+          {menu && (
+            <motion.div ref={popupRef} role="menu" className="menu" variants={popover} initial="initial" animate="animate" exit="exit" style={{ ...menuPosition, transformOrigin: "bottom left" }}>
+              <div className="menu-head"><b>{profile.name}</b><small className="muted">{profile.email}</small></div>
+              <button type="button" role="menuitem" autoFocus onClick={() => { setMenu(false); go("settings"); }}><CircleUser size={15} />{t("manageAccount")}</button>
+              <button type="button" role="menuitem" onClick={signOut}><LogOut size={15} />{t("signOut")}</button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
 
       <main className="layer" ref={layer} tabIndex={-1}>
         {(

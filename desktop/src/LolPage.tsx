@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
@@ -8,15 +8,15 @@ import { readCache, writeCache } from "./cache";
 import { splitRiotId } from "./eval";
 import { Friends } from "./EvalHub";
 import { errorText, lang, t, tr } from "./i18n";
-import { MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
+import { MatchCard, MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
 import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
 import { championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
-import { listItem, listStagger, SPRING_SWAP } from "./motion";
+import { listStagger, SPRING_SWAP } from "./motion";
 import { RotationView } from "./MorePages";
 import { usePersisted } from "./qol";
 import { readJson, write } from "./settings";
 import TftView from "./TftView";
-import { dayLabel, RiotIdForm } from "./TrackerPage";
+import { RiotIdForm } from "./TrackerPage";
 import { Button, LeagueMark } from "./ui";
 
 const ID_KEY = "ethone-lol-id";
@@ -26,7 +26,6 @@ type LolTab = (typeof TABS)[number];
 interface Loaded { profile: LolProfile; matches: LolMatch[] }
 
 const decimal = (value: number) => value.toFixed(1).replace(".", ",");
-const hourFormat = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" });
 const dateFormat = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const riotQuery = (id: string) => {
   const parts = splitRiotId(id);
@@ -123,33 +122,23 @@ function Session({ matches }: { matches: LolMatch[] }) {
 function MatchRow({ match, onOpen }: { match: LolMatch; onOpen: () => void }) {
   const line = lolLine(match);
   const data = match.metadata;
-  const when = data?.timestamp ? hourFormat.format(new Date(data.timestamp)) : "";
   return (
-    <motion.li variants={listItem}>
-      <button type="button" className={`match-row ${line.won ? "win" : "loss"}`} onClick={onOpen}>
-        {data?.agentImageUrl && <img className="match-map" src={championSplash(data.agentImageUrl)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
-        {data?.agentImageUrl ? <img className="match-agent" src={data.agentImageUrl} alt={data.agentName ?? ""} title={data.agentName} onError={(event) => { if (data.agentImageFallback) event.currentTarget.src = data.agentImageFallback; }} /> : <span className="match-agent" />}
-        <span className="match-result">
-          <b><span>{line.won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</span> {line.score[0]} – {line.score[1]}</b>
-          <small>{[data?.agentName, lolMode(data?.modeName, lang), when].filter(Boolean).join(" · ")}</small>
-        </span>
-        <Items items={line.items} className="match-mvp" />
-        <span className="match-stat"><b>{line.kills} / {line.deaths} / {line.assists}</b></span>
-        <span className="match-stat"><b>{decimal(line.kda)}</b></span>
-        <span className="match-stat"><b>{line.cs}</b></span>
-        <span className="match-stat wide"><b>{decimal(line.csPerMin)}</b></span>
-        <span className="match-stat wide"><b>{line.damagePerMin}</b></span>
-        <span className="match-stat"><b>{line.minutes > 0 ? `${line.minutes} min` : ""}</b></span>
-      </button>
-    </motion.li>
-  );
-}
-
-function MatchColumns() {
-  return (
-    <li className="match-columns" aria-hidden="true">
-      <span /><span>{tr("Partie", "Match")}</span><span>{tr("Objets", "Items")}</span><span>K / D / A</span><span>KDA</span><span>CS</span><span className="wide">{tr("CS/min", "CS/min")}</span><span className="wide">{tr("Dég./min", "Dmg/min")}</span><span>{tr("Durée", "Length")}</span>
-    </li>
+    <MatchCard
+      mode={lolMode(data?.modeName, lang)}
+      at={data?.timestamp}
+      headIcon={<LeagueMark size={22} />}
+      banner={data?.agentImageUrl ? championSplash(data.agentImageUrl) : undefined}
+      portrait={data?.agentImageUrl}
+      round
+      onPortraitError={(element) => { if (data?.agentImageFallback && element.src !== data.agentImageFallback) element.src = data.agentImageFallback; }}
+      title={data?.agentName ?? ""}
+      chips={<Items items={line.items} className="match-card-items" />}
+      result={line.won ? "win" : "loss"}
+      kda={`${line.kills} / ${line.deaths} / ${line.assists}`}
+      middle={`${line.cs} CS`}
+      last={line.minutes > 0 ? `${line.score[0]} — ${line.score[1]} · ${line.minutes} min` : `${line.score[0]} — ${line.score[1]}`}
+      onOpen={onOpen}
+    />
   );
 }
 
@@ -382,18 +371,7 @@ export default function LolPage() {
                 <Session matches={matches} />
                 <MatchFilters filter={filter} onChange={setFilter} modes={options(matches.map((match) => lolMode(match.metadata?.modeName, lang)))} picks={options(matches.map((match) => match.metadata?.agentName ?? ""))} pickLabel={tr("Tous les champions", "All champions")} shown={shownMatches.length} total={matches.length} />
                 <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
-                  <MatchColumns />
-                  {shownMatches.map((match, position) => {
-                    const at = match.metadata?.timestamp;
-                    const before = shownMatches[position - 1]?.metadata?.timestamp;
-                    const newDay = at && (!before || new Date(before).toDateString() !== new Date(at).toDateString());
-                    return (
-                      <Fragment key={match.id}>
-                        {newDay && <li className="match-day">{dayLabel(at)}</li>}
-                        <MatchRow match={match} onOpen={() => setOpen(match)} />
-                      </Fragment>
-                    );
-                  })}
+                  {shownMatches.map((match) => <MatchRow key={match.id} match={match} onOpen={() => setOpen(match)} />)}
                 </motion.ul>
               </>
             )}

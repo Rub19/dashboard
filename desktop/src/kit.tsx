@@ -1,11 +1,36 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { RefreshCw, X } from "lucide-react";
-import { errorText, t, tr } from "./i18n";
-import { filterActive, MatchFilter, NO_FILTER, ResultFilter } from "./match-filter";
+import { BarChart3, ChevronRight, Crosshair, Flag, RefreshCw, X } from "lucide-react";
+import { errorText, lang, t, tr } from "./i18n";
+import { filterActive, MatchFilter, NO_FILTER, ResultFilter, timeAgo } from "./match-filter";
 import { listItem, listStagger, SPRING_PILL } from "./motion";
 import { Button } from "./ui";
+
+export function MatchCard({ mode, at, headIcon, banner, portrait, round, title, chips, result, kda, middle, last, onOpen, onPortraitError }: { mode: string; at?: string | null; headIcon?: ReactNode; banner?: string; portrait?: string; round?: boolean; title: string; chips?: ReactNode; result: "win" | "loss" | "draw"; kda: string; middle: ReactNode; last: ReactNode; onOpen: () => void; onPortraitError?: (image: HTMLImageElement) => void }) {
+  return (
+    <motion.li variants={listItem}>
+      <button type="button" className={`match-card ${result}`} onClick={onOpen}>
+        <span className="match-card-head">
+          {headIcon && <span className="match-card-icon">{headIcon}</span>}
+          <span><b>{mode}</b><small>{timeAgo(at, Date.now(), lang === "fr" ? "fr" : "en")}</small></span>
+        </span>
+        <span className="match-card-banner">
+          {banner && <img className="match-card-map" src={banner} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
+          {portrait && <img className={round ? "match-card-portrait round" : "match-card-portrait"} src={portrait} alt="" loading="lazy" onError={(event) => onPortraitError?.(event.currentTarget)} />}
+          <span className="match-card-title"><b>{title}</b>{chips && <span className="match-card-chips">{chips}</span>}</span>
+          <em>{result === "draw" ? tr("Égalité", "Draw") : result === "win" ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</em>
+        </span>
+        <span className="match-card-foot">
+          <span><Crosshair size={15} />{kda}</span>
+          <span><BarChart3 size={15} />{middle}</span>
+          <span><Flag size={15} />{last}</span>
+          <ChevronRight size={16} />
+        </span>
+      </button>
+    </motion.li>
+  );
+}
 
 export function MatchFilters({ filter, onChange, modes, picks, pickLabel, shown, total }: { filter: MatchFilter; onChange: (next: MatchFilter) => void; modes: string[]; picks: string[]; pickLabel: string; shown: number; total: number }) {
   const results: [ResultFilter, string][] = [["all", tr("Toutes", "All")], ["win", tr("Victoires", "Wins")], ["loss", tr("Défaites", "Losses")]];

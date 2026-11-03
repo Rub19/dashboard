@@ -68,6 +68,7 @@ const MODES: Record<string, string> = {
 export const rankName = (tier: number) => RANKS[tier] ?? "Non classé";
 export const tierIcon = (tier: number) => `${MEDIA}/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/largeicon.png`;
 export const agentIcon = (id: string) => `${MEDIA}/agents/${id}/displayicon.png`;
+export const agentBust = (id: string) => `${MEDIA}/agents/${id}/bustportrait.png`;
 export const mapImage = (id: string) => `${MEDIA}/maps/${id}/listviewicon.png`;
 export const bannerImage = (card: string) => `${MEDIA}/playercards/${card}/wideart.png`;
 export const weaponIcon = (id: string) => `${MEDIA}/weapons/${id}/killstreamicon.png`;

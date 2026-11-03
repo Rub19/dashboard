@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { usePersisted } from "./qol";
 import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
@@ -6,14 +6,14 @@ import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
 import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
+import { agentBust, agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
-import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
+import { EASE_SNAP, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import EvalGame from "./EvalGame";
 import EvalHub from "./EvalHub";
 import EvalLive from "./EvalLive";
-import { MatchFilters, Tabs } from "./kit";
+import { MatchCard, MatchFilters, Tabs } from "./kit";
 import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
 import { Button, ValorantMark } from "./ui";
 
@@ -138,7 +138,6 @@ function useMapImages() {
   return images;
 }
 
-const hourFormat = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" });
 const dayFormat = new Intl.DateTimeFormat(lang, { weekday: "long", day: "numeric", month: "long" });
 
 export function dayLabel(iso: string) {
@@ -153,34 +152,23 @@ export function dayLabel(iso: string) {
 function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; image?: string; onOpen: () => void }) {
   const summary = matchSummary(match, puuid);
   if (!summary) return null;
-  const { me, won, draw, score, mvp, kd } = summary;
-  const result = draw ? "draw" : won ? "win" : "loss";
+  const { me, won, draw, score, mvp } = summary;
   return (
-    <motion.li variants={listItem}>
-      <button type="button" className={`match-row ${result}`} onClick={onOpen}>
-        {(image || match.mapId) && <img className="match-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
-        {me.agentId ? <img className="match-agent" src={agentIcon(me.agentId)} alt={me.agent} title={me.agent} /> : <span className="match-agent" />}
-        <span className="match-result">
-          <b><span>{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</span> {score[0]} – {score[1]}</b>
-          <small>{modeName(match.mode)} · {match.map}{match.startedAt ? ` · ${hourFormat.format(new Date(match.startedAt))}` : ""}</small>
-        </span>
-        <span className="match-mvp">{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
-        <span className="match-stat"><b>{me.kills} / {me.deaths} / {me.assists}</b></span>
-        <span className="match-stat"><b>{decimal(kd)}</b></span>
-        <span className="match-stat"><b>{summary.acs}</b></span>
-        <span className="match-stat wide"><b>{summary.hs} %</b></span>
-        <span className="match-stat wide"><b>{summary.adr}</b></span>
-        <span className="match-rr">{history && <><b className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change}</b>{history.tier > 0 && <img src={tierIcon(history.tier)} alt={rankName(history.tier)} title={rankName(history.tier)} />}</>}</span>
-      </button>
-    </motion.li>
-  );
-}
-
-function MatchColumns() {
-  return (
-    <li className="match-columns" aria-hidden="true">
-      <span /><span>{tr("Partie", "Match")}</span><span /><span>K / D / A</span><span>K/D</span><span>ACS</span><span className="wide">{t("evalHeadshots")}</span><span className="wide">{t("evalDamage")}</span><span>RR</span>
-    </li>
+    <MatchCard
+      mode={modeName(match.mode)}
+      at={match.startedAt}
+      headIcon={history && history.tier > 0 ? <img src={tierIcon(history.tier)} alt={rankName(history.tier)} title={rankName(history.tier)} /> : undefined}
+      banner={image || (match.mapId ? mapImage(match.mapId) : undefined)}
+      portrait={me.agentId ? agentBust(me.agentId) : undefined}
+      onPortraitError={(element) => { if (me.agentId && element.src !== agentIcon(me.agentId)) element.src = agentIcon(me.agentId); }}
+      title={me.agent}
+      chips={<><i>{match.map}</i>{mvp && <i className="mvp">{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}{history && <i className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change} RR</i>}</>}
+      result={draw ? "draw" : won ? "win" : "loss"}
+      kda={`${me.kills} / ${me.deaths} / ${me.assists}`}
+      middle={summary.acs}
+      last={`${score[0]} — ${score[1]}`}
+      onOpen={onOpen}
+    />
   );
 }
 
@@ -555,12 +543,8 @@ export default function TrackerPage() {
               <Session matches={matches} puuid={account.puuid} />
               <MatchFilters filter={filter} onChange={setFilter} modes={options(matches.map((match) => modeName(match.mode)))} picks={options(matches.map((match) => matchSummary(match, account.puuid)?.me.agent ?? ""))} pickLabel={tr("Tous les agents", "All agents")} shown={shownMatches.length} total={matches.length} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
-                <MatchColumns />
-                {shownMatches.map((match, position) => (
-                  <Fragment key={match.id}>
-                    {match.startedAt && (position === 0 || !shownMatches[position - 1].startedAt || new Date(shownMatches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}
+                {shownMatches.map((match) => (
                   <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} image={mapImages[match.map.toLowerCase()]} onOpen={() => setOpen(match)} />
-                  </Fragment>
                 ))}
               </motion.ul>
               {matches.length >= limit && <Button disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? t("loading") : tr("Charger plus de matchs", "Load more matches")}</Button>}

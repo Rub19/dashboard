@@ -1736,3 +1736,41 @@ select option { background: var(--row-solid); color: var(--fg); }
 :root[data-look="sunset"] { --window: #170c1a; --sidebar: rgb(255 130 150 / .06); --sidebar-edge: rgb(255 160 170 / .12); --row: rgb(255 170 170 / .07); --row-hover: rgb(255 170 170 / .125); --row-solid: #241528; --control-solid: #301d35; --line: rgb(255 180 180 / .12); --control: rgb(255 170 170 / .09); --control-hover: rgb(255 170 170 / .16); --input-edge: rgb(255 180 180 / .2); --muted: #c0a6b6; --faint: #876d7e; --fg: #fff4f4; --popup: rgb(36 21 40 / .92); --glow-a: #ff5c7a; --glow-b: #ff9f43; }
 :root[data-look="daylight"] { --window: #eef2fb; --sidebar: rgb(255 255 255 / .55); --row-solid: #fff; --popup: rgb(255 255 255 / .92); --glow-a: #6ea8ff; --glow-b: #c8a6ff; --glow-power: 42%; }
 :root.mica[data-look="daylight"] { --window: #eef2fb; }
+
+/* Cartes de parties */
+.eval-matches { grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 12px; container-type: normal; }
+.eval-matches > li { min-width: 0; }
+.match-card { display: grid; width: 100%; overflow: hidden; border-radius: 20px; background: var(--row-solid); text-align: left; transition: background-color .1s ease, transform .12s var(--ease); }
+.match-card:hover { background: var(--control-solid); }
+.match-card:active { transform: scale(.99); }
+.match-card:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.match-card-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.match-card-icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; }
+.match-card-icon img { width: 34px; height: 34px; object-fit: contain; }
+.match-card-head > span:last-child { display: grid; min-width: 0; }
+.match-card-head b { font: 650 16px/20px var(--display); }
+.match-card-head small { color: var(--muted); font-size: 12px; line-height: 16px; }
+.match-card-banner { position: relative; display: flex; align-items: center; height: 104px; overflow: hidden; background: var(--control-solid); }
+.match-card-map { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+.match-card-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(0 0 0 / .1), rgb(0 0 0 / .62)); }
+.match-card-portrait { position: absolute; z-index: 1; left: 0; bottom: -6px; height: 116px; width: 104px; object-fit: cover; object-position: top center; }
+.match-card-portrait.round { left: 16px; bottom: auto; top: 50%; width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px rgb(255 255 255 / .28); transform: translateY(-50%); }
+.match-card-title { position: relative; z-index: 1; display: grid; gap: 4px; min-width: 0; margin-left: 112px; color: #fff; }
+.match-card-portrait.round ~ .match-card-title { margin-left: 92px; }
+.match-card-title > b { font: 650 20px/24px var(--display); text-shadow: 0 1px 6px rgb(0 0 0 / .55); }
+.match-card-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.match-card-chips i { padding: 1px 8px; border-radius: 999px; background: rgb(0 0 0 / .46); color: rgb(255 255 255 / .82); font-size: 12px; font-style: normal; line-height: 18px; backdrop-filter: blur(6px); }
+.match-card-chips i.mvp { color: #ffe066; }
+.match-card-chips i.up { color: #5ee08a; }
+.match-card-chips i.down { color: #ff8a80; }
+.match-card-items img { width: 22px; height: 22px; border-radius: 5px; }
+.match-card-items { display: flex; gap: 2px; }
+.match-card-banner em { position: absolute; z-index: 1; right: 12px; top: 50%; padding: 4px 14px; border-radius: 999px; color: #fff; font: 700 13px/18px var(--display); font-style: normal; letter-spacing: .03em; text-transform: uppercase; transform: translateY(-50%); }
+.match-card.win em { background: #2f9e44; }
+.match-card.loss em { background: #d9363e; }
+.match-card.draw em { background: #6b7280; }
+.match-card-foot { display: grid; grid-template-columns: auto 1fr auto 16px; align-items: center; gap: 12px; padding: 12px 16px; font-variant-numeric: tabular-nums; }
+.match-card-foot > span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+.match-card-foot > span:nth-child(2) { justify-content: center; }
+.match-card-foot svg { flex: none; color: var(--muted); }
+.match-card-map { transform: scale(1.04); }

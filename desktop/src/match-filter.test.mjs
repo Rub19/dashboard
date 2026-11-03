@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { filterActive, keepMatch, NO_FILTER, options } from "./match-filter.ts";
+import { filterActive, keepMatch, NO_FILTER, options, timeAgo } from "./match-filter.ts";
+
+test("a match time reads like a short delay", () => {
+  const now = Date.parse("2026-11-03T12:00:00Z");
+  assert.equal(timeAgo("2026-11-03T11:47:00Z", now, "fr"), "il y a 13min");
+  assert.equal(timeAgo("2026-11-03T10:35:00Z", now, "fr"), "il y a 1h 25min");
+  assert.equal(timeAgo("2026-10-31T10:00:00Z", now, "en"), "3d ago");
+  assert.equal(timeAgo(null, now, "fr"), "");
+});
 
 const line = { won: false, draw: false, mode: "Compétition", pick: "Jett" };
 

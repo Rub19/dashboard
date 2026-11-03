@@ -13,4 +13,3 @@ export function riotReconnectRequired(reason: unknown): boolean {
   const text = reasonText(reason);
   return text.includes("riotExpired") || text.includes("riotRequired");
 }
-

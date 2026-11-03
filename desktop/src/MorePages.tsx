@@ -583,5 +583,3 @@ export function RotationView() {
     </>
   );
 }
-
-

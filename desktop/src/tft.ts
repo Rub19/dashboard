@@ -75,4 +75,3 @@ export function tftRiotId(identity: { name: string; tag: string } | null): strin
   if (!identity?.name || !identity.tag) return "";
   return `${identity.name}#${identity.tag}`;
 }
-

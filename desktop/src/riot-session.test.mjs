@@ -12,4 +12,3 @@ test("network and generic Riot errors keep the retry action", () => {
   assert.equal(riotReconnectRequired(new Error("riotFailed")), false);
   assert.equal(riotReconnectRequired(null), false);
 });
-

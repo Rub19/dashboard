@@ -11,7 +11,7 @@ import { Friends } from "./EvalHub";
 import { errorText, lang, t, tr } from "./i18n";
 import { MatchCard, MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
 import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
-import { lolLiveMode, addLpPoint, LolAssets, LolLiveGame, LpPoint, parseLolAssets, championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
+import { lolLiveMode, addLpPoint, cleanLpPoints, keepKnownMatches, LolAssets, LolLiveGame, LpPoint, parseLolAssets, championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
 import { listStagger, SPRING_SWAP } from "./motion";
 import { RotationView } from "./MorePages";
 import { usePersisted } from "./qol";
@@ -24,7 +24,7 @@ const ID_KEY = "ethone-lol-id";
 const FRESH = 5 * 60 * 1000;
 const TABS = ["profile", "live", "tft", "rotation", "hub"] as const;
 type LolTab = (typeof TABS)[number];
-interface Loaded { profile: LolProfile; matches: LolMatch[] }
+interface Loaded { of?: string; profile: LolProfile; matches: LolMatch[] }
 
 const decimal = (value: number) => value.toFixed(1).replace(".", ",");
 const dateFormat = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -341,7 +341,7 @@ export default function LolPage() {
   const [connecting, setConnecting] = useState(false);
   const firstLoad = useRef(true);
   const assets = useLolAssets();
-  const [lpPoints, setLpPoints] = useState<LpPoint[]>(() => readJson<LpPoint[]>("ethone-lol-lp") ?? []);
+  const [lpPoints, setLpPoints] = useState<LpPoint[]>(() => cleanLpPoints(readJson<LpPoint[]>("ethone-lol-lp") ?? []));
   const [filter, setFilter] = useState<MatchFilter>(NO_FILTER);
 
   const load = useCallback(async (riotId: string, force = false) => {
@@ -354,8 +354,10 @@ export default function LolPage() {
     setBusy(true);
     try {
       const query = riotQuery(riotId);
-      const [profile, matches] = await Promise.all([apiData<LolProfile>(`api/stats/lol-profile?${query}`), apiData<LolMatch[]>(`api/stats/lol-matches?${query}`).catch(() => [] as LolMatch[])]);
-      const next = { profile, matches: Array.isArray(matches) ? matches : [] };
+      const [profile, matches] = await Promise.all([apiData<LolProfile>(`api/stats/lol-profile?${query}`), apiData<LolMatch[]>(`api/stats/lol-matches?${query}`).catch(() => null)]);
+      const list = keepKnownMatches(matches === null || Array.isArray(matches) ? matches : [], cached?.value.matches);
+      const next = { of: riotId.toLowerCase(), profile, matches: list.matches };
+      if (list.stale) setError(tr("Les matchs n'ont pas pu être actualisés. Dernière liste connue affichée.", "Matches could not be refreshed. Showing the last known list."));
       setData(next);
       writeCache(key, next);
     } catch (reason) {
@@ -420,7 +422,7 @@ export default function LolPage() {
   const matches = useMemo(() => data?.matches ?? [], [data]);
   const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, draw: lolLine(match).remake, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
   useEffect(() => {
-    if (!own || id !== own || !data?.profile) return;
+    if (!own || id !== own || !data?.profile || data.of !== own.toLowerCase()) return;
     setLpPoints((current) => {
       const next = addLpPoint(current, data.profile.rankSolo, Date.now());
       if (next !== current) write("ethone-lol-lp", JSON.stringify(next));

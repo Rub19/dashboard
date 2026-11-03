@@ -51,6 +51,23 @@ export function lpScore(text: string | undefined): number | null {
 
 export interface LpPoint { at: number; rank: string; score: number }
 
+const LP_SPIKE = 100;
+
+export function cleanLpPoints(points: LpPoint[]): LpPoint[] {
+  const kept = points.filter((point, index) => {
+    const before = points[index - 1];
+    const after = points[index + 1];
+    return !(before && after && before.score === after.score && Math.abs(point.score - before.score) >= LP_SPIKE);
+  });
+  return kept.filter((point, index) => point.score !== kept[index - 1]?.score);
+}
+
+export function keepKnownMatches<T>(fresh: T[] | null, known: T[] | undefined): { matches: T[]; stale: boolean } {
+  if (fresh && fresh.length > 0) return { matches: fresh, stale: false };
+  if (known && known.length > 0) return { matches: known, stale: true };
+  return { matches: fresh ?? [], stale: fresh === null };
+}
+
 export function addLpPoint(points: LpPoint[], rank: string | undefined, at: number): LpPoint[] {
   const score = lpScore(rank);
   if (score === null || !rank || points.at(-1)?.score === score) return points;

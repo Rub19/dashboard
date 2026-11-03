@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { addLpPoint, lolLiveMode, lpScore, parseLolAssets } from "./lol.ts";
+import { addLpPoint, cleanLpPoints, keepKnownMatches, lolLiveMode, lpScore, parseLolAssets } from "./lol.ts";
 
 test("a live game shows a readable mode", () => {
   assert.equal(lolLiveMode("CLASSIC", 420), "Classée Solo");
@@ -105,4 +105,20 @@ test("a remake counts neither as a win nor a loss", () => {
   assert.equal(lolLine(unknown).remake, false);
   const stats = lolStats([played, short, flagged, unknown]);
   assert.deepEqual([stats.count, stats.wins, stats.losses], [2, 1, 1]);
+});
+
+test("a rank from another player is removed from the LP history", () => {
+  const point = (score) => ({ at: score, rank: String(score), score });
+  assert.deepEqual(cleanLpPoints([point(452), point(713), point(452)]).map((p) => p.score), [452]);
+  assert.deepEqual(cleanLpPoints([point(452), point(470), point(452)]).map((p) => p.score), [452, 470, 452]);
+  assert.deepEqual(cleanLpPoints([point(100), point(400)]).map((p) => p.score), [100, 400]);
+  assert.deepEqual(cleanLpPoints([]), []);
+});
+
+test("an empty or failed list keeps the known matches", () => {
+  assert.deepEqual(keepKnownMatches(["n"], ["k"]), { matches: ["n"], stale: false });
+  assert.deepEqual(keepKnownMatches([], ["k"]), { matches: ["k"], stale: true });
+  assert.deepEqual(keepKnownMatches(null, ["k"]), { matches: ["k"], stale: true });
+  assert.deepEqual(keepKnownMatches([], []), { matches: [], stale: false });
+  assert.deepEqual(keepKnownMatches(null, undefined), { matches: [], stale: true });
 });

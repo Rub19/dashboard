@@ -166,3 +166,5 @@ Cette section remplace ce qui est écrit plus haut sur la connexion Riot par nav
 - Pas d'onglet En direct dans E:LOL : le worker n'a pas de route pour les parties en cours.
 - Steam et Minecraft restent absents de cette page depuis le passage à E:LOL. Le code est dans l'historique git (`203c2f6f`, `desktop/src/MorePages.tsx`).
 - La release `desktop-v0.1.0` ne contient pas ces changements.
+- Photos des amis : E:VAL préfère la carte VALORANT, E:LOL l'icône League. Sans carte, l'icône vient de `api/stats/lol-profile`, une requête toutes les 1,2 s. Mesuré : 130 amis sur 131 ont une image. `Kyor#열여덟` reste sans image, car la route renvoie une erreur serveur.
+- E:LOL n'a que du LoL et du TFT, à la demande de Rub19 : ne pas remettre Steam ni Minecraft. L'audit des pages et la comparaison avec ethone.dev ne sont pas écrits ici.

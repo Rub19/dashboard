@@ -272,6 +272,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .nav-item:active .nav-icon { transform: scale(.9); transition-duration: .06s; }
 .nav-item.on { color: var(--fg); font-weight: 600; }
 .nav-item .valorant-mark { color: #ff4655; }
+.nav-item .league-mark, .eval-connect .league-mark, .nav-brand .league-mark { color: #c89b3c; }
 .nav-hover { position: absolute; inset: 0; border-radius: 8px; background: var(--control); }
 .nav-active { position: absolute; inset: 0; border-radius: 8px; background: var(--control-hover); }
 .nav-pin .app-icon { flex: none; width: 18px; height: 18px; padding: 0; border-radius: 5px; background: none; box-shadow: none; }

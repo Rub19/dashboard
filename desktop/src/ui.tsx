@@ -24,8 +24,7 @@ export function ValorantMark({ size = 20 }: { size?: number }) {
 export function LeagueMark({ size = 20 }: { size?: number }) {
   return (
     <svg className="league-mark" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="currentColor" d="M7.1 3.25h6.15v2.2h-1.3v12.7h5.7l-.9 2.6H7.1v-2.2h1.3V5.45H7.1z" />
-      <path fill="none" stroke="currentColor" strokeWidth="1.35" d="M12 1.75a10.25 10.25 0 1 1-5.9 1.87" opacity=".72" />
+      <path fill="currentColor" d="m1.912 0 1.212 2.474v19.053L1.912 24h14.73l1.337-4.682H8.33V0ZM12 1.516c-.913 0-1.798.112-2.648.312v1.74a9.738 9.738 0 0 1 2.648-.368c5.267 0 9.536 4.184 9.536 9.348a9.203 9.203 0 0 1-2.3 6.086l-.273.954-.602 2.112c2.952-1.993 4.89-5.335 4.89-9.122C23.25 6.468 18.213 1.516 12 1.516Zm0 2.673c-.924 0-1.814.148-2.648.414v13.713h8.817a8.246 8.246 0 0 0 2.36-5.768c0-4.617-3.818-8.359-8.529-8.359zM2.104 7.312A10.858 10.858 0 0 0 .75 12.576c0 1.906.492 3.7 1.355 5.266z" />
     </svg>
   );
 }

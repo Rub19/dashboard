@@ -11,7 +11,7 @@ import { FOOT_PAGES, Page } from "./navigation";
 import { resolvePinned } from "./pinned";
 import { LeagueMark, ValorantMark } from "./ui";
 
-export const PAGE_TINTS: Record<Page, string> = { home: "#5aa9ff", modules: "#a78bfa", productivity: "#2fd08a", files: "#f0a92b", mail: "#35bfe0", tracker: "#ff4655", games: "#f4638b", discord: "#7c86ff", brain: "#c084fc", team: "#2dd4a0", insights: "#fb923c", settings: "#94a3b8" };
+export const PAGE_TINTS: Record<Page, string> = { home: "#5aa9ff", modules: "#a78bfa", productivity: "#2fd08a", files: "#f0a92b", mail: "#35bfe0", tracker: "#ff4655", games: "#c89b3c", discord: "#7c86ff", brain: "#c084fc", team: "#2dd4a0", insights: "#fb923c", settings: "#94a3b8" };
 
 const PAGE_ICONS: Record<Page, ComponentType<{ size?: number }>> = { home: House, modules: LayoutGrid, productivity: ListChecks, files: Folder, mail: Mail, tracker: ValorantMark, games: LeagueMark, discord: MessagesSquare, brain: BrainCircuit, team: Users, insights: Activity, settings: SettingsIcon };
 

@@ -354,7 +354,7 @@ export default function LolPage() {
       </div>
       {tab === "tft" && <TftView />}
       {tab === "rotation" && <RotationView />}
-      {tab === "hub" && <Friends linked={Boolean(own)} account={null} connecting={connecting} onConnect={connect} onOpen={show} />}
+      {tab === "hub" && <Friends game="lol" linked={Boolean(own)} account={null} connecting={connecting} onConnect={connect} onOpen={show} />}
       {tab === "profile" && (
         <div className="eval-grid" inert={Boolean(open)}>
           <div className="eval-side">

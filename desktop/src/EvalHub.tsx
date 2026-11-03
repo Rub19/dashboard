@@ -5,7 +5,7 @@ import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, S
 import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, restCall, riotCall, RiotFriend, riotFriends, trackerMatches, trackerSync } from "./api";
 import { readCache, writeCache } from "./cache";
 import { boardOf, lastSeenShort, lastSeenText, presenceKind } from "./friends";
-import { cardImage, friendPortrait, resolveFriendCard } from "./friend-portraits";
+import { cardImage, FriendGame, friendPortrait, portraitMissing, resolveFriendCard, resolveFriendIcon } from "./friend-portraits";
 import { riotReconnectRequired } from "./riot-session";
 import { SkinDrawer } from "./EvalSkins";
 import { flattenEntries, Json } from "./generic";
@@ -465,16 +465,22 @@ const ICON_KEY = "ethone-friend-icons";
 const TRIED_KEY = "ethone-friend-cards-tried";
 const RETRY_DELAY = 30 * 60 * 1000;
 
-function useFriendPortraits(friends: RiotFriend[]) {
+function useFriendPortraits(friends: RiotFriend[], game: FriendGame) {
   const [cards, setCards] = useState<Record<string, string>>(() => readJson<Record<string, string>>(CARD_KEY) ?? {});
   const [icons, setIcons] = useState<Record<string, string>>(() => readJson<Record<string, string>>(ICON_KEY) ?? {});
-  const queue = useRef<string[]>([]);
+  const queue = useRef<RiotFriend[]>([]);
   const running = useRef(false);
-  const remember = (id: string, card: string) => setCards((current) => {
-    const next = { ...current, [id]: card };
+  const triedKey = `${TRIED_KEY}-${game}`;
+  const remember = (id: string, card: string) => {
+    const next = { ...readJson<Record<string, string>>(CARD_KEY), [id]: card };
     write(CARD_KEY, JSON.stringify(next));
-    return next;
-  });
+    setCards(next);
+  };
+  const rememberIcon = (id: string, icon: string) => {
+    const next = { ...readJson<Record<string, string>>(ICON_KEY), [id]: icon };
+    write(ICON_KEY, JSON.stringify(next));
+    setIcons(next);
+  };
   useEffect(() => {
     for (const friend of friends) if (friend.card && cards[friend.id] !== friend.card) remember(friend.id, friend.card);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -493,39 +499,44 @@ function useFriendPortraits(friends: RiotFriend[]) {
     if (running.current) return;
     running.current = true;
     while (queue.current.length > 0) {
-      const id = queue.current.shift() as string;
-      const card = await resolveFriendCard(id, (path, options) => riotCall<unknown>(path, options));
-      if (card) remember(id, card);
-      await new Promise((resolve) => setTimeout(resolve, 400));
+      const friend = queue.current.shift() as RiotFriend;
+      write(triedKey, JSON.stringify({ ...readJson<Record<string, number>>(triedKey), [friend.id]: Date.now() }));
+      const card = game === "val" ? await resolveFriendCard(friend.id, (path, options) => riotCall<unknown>(path, options)) : "";
+      if (card) remember(friend.id, card);
+      else {
+        const icon = await resolveFriendIcon(friend, (path) => apiData<unknown>(path));
+        if (icon) rememberIcon(friend.id, icon);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1200));
     }
     running.current = false;
   };
-  const request = (id: string) => {
-    if (cards[id] || queue.current.includes(id)) return;
-    const tried = readJson<Record<string, number>>(TRIED_KEY) ?? {};
-    if (Date.now() - (tried[id] ?? 0) < RETRY_DELAY) return;
-    write(TRIED_KEY, JSON.stringify({ ...tried, [id]: Date.now() }));
-    queue.current.push(id);
+  const request = (friend: RiotFriend) => {
+    if (queue.current.some((other) => other.id === friend.id)) return;
+    const tried = readJson<Record<string, number>>(triedKey) ?? {};
+    if (Date.now() - (tried[friend.id] ?? 0) < RETRY_DELAY) return;
+    queue.current.push(friend);
     void work();
   };
   return { cards, icons, request };
 }
 
-function FriendAvatar({ friend, image, onVisible }: { friend: RiotFriend; image: string; onVisible: () => void }) {
+function FriendAvatar({ friend, image, missing, onVisible }: { friend: RiotFriend; image: string; missing: boolean; onVisible: () => void }) {
   const box = useRef<HTMLSpanElement>(null);
+  const [broken, setBroken] = useState("");
   useEffect(() => {
-    if (image || !box.current) return;
+    if (!missing || !box.current) return;
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((entry) => entry.isIntersecting)) onVisible();
     });
     observer.observe(box.current);
     return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [image]);
+  }, [missing]);
   const kind = presenceKind(friend);
   return (
     <span ref={box} className="friend-avatar">
-      {image ? <img src={image} alt="" loading="lazy" /> : <i>{friend.name.charAt(0).toUpperCase()}</i>}
+      {image && image !== broken ? <img src={image} alt="" loading="lazy" onError={() => setBroken(image)} /> : <i>{friend.name.charAt(0).toUpperCase()}</i>}
       <span className={`friend-status ${kind}`} title={{ online: tr("En ligne", "Online"), away: tr("Inactif", "Away"), busy: tr("Occupé", "Busy"), offline: tr("Hors ligne", "Offline") }[kind]}>{kind === "busy" ? <Minus size={10} strokeWidth={4} /> : kind === "away" ? <Moon size={10} strokeWidth={3} /> : null}</span>
     </span>
   );
@@ -547,7 +558,7 @@ function friendLines(friend: RiotFriend, maps: Record<string, string>): [string,
   return [tr("Dans les menus", "In menus"), ""];
 }
 
-function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend: RiotFriend; image: string; title: string; maps: Record<string, string>; onVisible: () => void; onOpen: () => void }) {
+function FriendItem({ friend, image, missing, title, maps, onVisible, onOpen }: { friend: RiotFriend; image: string; missing: boolean; title: string; maps: Record<string, string>; onVisible: () => void; onOpen: () => void }) {
   const [status, place] = friendLines(friend, maps);
   if (!friend.online) {
     return (
@@ -556,7 +567,7 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
           { label: tr("Voir le profil", "View profile"), run: onOpen },
           { label: tr("Copier l'identifiant Riot", "Copy Riot ID"), run: () => void copyText(`${friend.name}#${friend.tag}`, tr("Identifiant copié", "Riot ID copied")) },
         ])}>
-          <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
+          <FriendAvatar friend={friend} image={image} missing={missing} onVisible={onVisible} />
           <span className="friend-text"><b>{friend.name}<small>#{friend.tag}</small></b></span>
           <time>{lastSeenShort(friend.lastOnline)}</time>
         </button>
@@ -569,7 +580,7 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
         { label: tr("Voir le profil", "View profile"), run: onOpen },
         { label: tr("Copier l'identifiant Riot", "Copy Riot ID"), run: () => void copyText(`${friend.name}#${friend.tag}`, tr("Identifiant copié", "Riot ID copied")) },
       ])}>
-        <FriendAvatar friend={friend} image={image} onVisible={onVisible} />
+        <FriendAvatar friend={friend} image={image} missing={missing} onVisible={onVisible} />
         <span className="friend-text">
           <b>{friend.name}<small>#{friend.tag}</small>{title && <em>{title}</em>}</b>
           <small className="friend-state"><strong>{status}</strong>{place && ` · ${place}`}</small>
@@ -580,14 +591,14 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
   );
 }
 
-export function Friends({ linked, account, onOpen, onConnect, connecting }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void; onConnect: () => void; connecting: boolean }) {
+export function Friends({ linked, account, onOpen, onConnect, connecting, game = "val" }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void; onConnect: () => void; connecting: boolean; game?: FriendGame }) {
   const [friends, setFriends] = useState<RiotFriend[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reconnect, setReconnect] = useState(false);
   const [query, setQuery] = useState("");
   const root = useRef<HTMLDivElement>(null);
-  const { cards, icons, request } = useFriendPortraits(friends ?? []);
+  const { cards, icons, request } = useFriendPortraits(friends ?? [], game);
   const reload = useCallback(async () => {
     setBusy(true);
     setReconnect(false);
@@ -635,7 +646,7 @@ export function Friends({ linked, account, onOpen, onConnect, connecting }: { li
   const maps = extras.data?.maps ?? {};
   const titles = extras.data?.titles ?? {};
   const item = (friend: RiotFriend) => (
-    <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friendPortrait(friend, cards, icons)} onVisible={() => request(friend.id)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
+    <FriendItem key={friend.id} friend={friend} maps={maps} title={titles[friend.title.toLowerCase()] ?? ""} image={friendPortrait(friend, cards, icons, game)} missing={portraitMissing(friend, cards, icons, game)} onVisible={() => request(friend)} onOpen={() => onOpen(`${friend.name}#${friend.tag}`)} />
   );
   const section = (heading: string, rows: RiotFriend[]) => rows.length > 0 && (
     <section key={heading} className="friend-section"><h3>{heading}</h3><ul className="friend-card">{rows.map(item)}</ul></section>
@@ -653,7 +664,7 @@ export function Friends({ linked, account, onOpen, onConnect, connecting }: { li
           {account && !query && (
             <section className="friend-section"><h3>{tr(`Votre groupe — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`, `Your party — ${extras.data?.size ?? 1}/${extras.data?.max ?? 5}`)}</h3>
               <ul className="friend-card"><li><div className="friend-row self">
-                <span className="friend-avatar">{extras.data?.card ? <img src={cardImage(extras.data.card)} alt="" /> : <i>{account.name.charAt(0).toUpperCase()}</i>}<span className={`friend-status ${extras.data?.inGame ? "online" : "offline"}`} /></span>
+                <span className="friend-avatar">{extras.data?.card || account.card ? <img src={cardImage(extras.data?.card || account.card || "")} alt="" /> : <i>{account.name.charAt(0).toUpperCase()}</i>}<span className={`friend-status ${extras.data?.inGame ? "online" : "offline"}`} /></span>
                 <span className="friend-text"><b>{account.name}<small>#{account.tag}</small></b>{titles[(extras.data?.title ?? "").toLowerCase()] && <small className="friend-title">{titles[(extras.data?.title ?? "").toLowerCase()]}</small>}<small className="friend-state">{extras.data?.inGame ? tr("Dans VALORANT", "In VALORANT") : tr("VALORANT fermé", "VALORANT closed")}</small></span>
               </div></li></ul>
             </section>

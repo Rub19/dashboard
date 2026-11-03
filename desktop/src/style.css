@@ -1843,3 +1843,9 @@ select option { background: var(--row-solid); color: var(--fg); }
 }
 @media (prefers-reduced-motion: reduce) { .winbtns .close:hover svg { transform: none; } }
 :root[data-motion="reduced"] .winbtns svg { transition: none; transform: none !important; }
+.embed-view { display: flex; flex-direction: column; min-width: 0; min-height: 0; grid-column: 2; grid-row: 2; }
+.embed-bar { display: flex; align-items: center; gap: 10px; flex: none; height: 44px; padding: 0 12px; }
+.embed-bar b { flex: 1; font: 650 14px/20px var(--display); }
+.embed-body { flex: 1; min-height: 0; display: grid; place-items: center; background: var(--row-solid); }
+.layer[hidden] { display: none; }
+.app-action { display: flex; align-items: center; gap: 6px; }

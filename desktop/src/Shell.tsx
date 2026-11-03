@@ -7,6 +7,7 @@ import { dueEvents, unseenMail } from "./home";
 import { hdvBackground, notifiedEvents, notifyWindows, readDesktopPrefs, rememberEvents, saveDesktopPrefs } from "./notifications";
 import { Action, apiCall, authSignOut, installModule, itemsList, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t, tr } from "./i18n";
+import EmbeddedApp, { EMBED_EVENT, EmbedTarget } from "./EmbeddedApp";
 import HomePage from "./HomePage";
 import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, popover } from "./motion";
@@ -206,6 +207,13 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   const goRef = useRef(go);
   goRef.current = go;
+  const [embedded, setEmbedded] = useState<EmbedTarget | null>(null);
+  useEffect(() => {
+    const onEmbed = (event: Event) => setEmbedded((event as CustomEvent<EmbedTarget>).detail);
+    window.addEventListener(EMBED_EVENT, onEmbed);
+    return () => window.removeEventListener(EMBED_EVENT, onEmbed);
+  }, []);
+  useEffect(() => setEmbedded(null), [page]);
   useEffect(() => {
     const onGo = (event: Event) => goRef.current((event as CustomEvent<Page>).detail);
     window.addEventListener(GO_EVENT, onGo);
@@ -332,7 +340,8 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         document.body,
       )}
 
-      <main className="layer" ref={layer} tabIndex={-1}>
+      {embedded && <EmbeddedApp target={embedded} onBack={() => setEmbedded(null)} />}
+      <main className="layer" ref={layer} tabIndex={-1} hidden={Boolean(embedded)}>
         {(
           [
             ["home", <HomePage active={page === "home"} profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenLol={() => go("games")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],

@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod embed;
 mod background;
 mod action;
 mod auth;
@@ -489,6 +490,50 @@ async fn hdv_background(enabled: bool, state: State<'_, App>) -> Result<String, 
 }
 
 #[tauri::command]
+async fn embed_open(id: String, x: i32, y: i32, width: i32, height: i32, window: WebviewWindow, state: State<'_, App>) -> Result<(), String> {
+    require_session(&state).await?;
+    let detect = find(&state, &id)?.detect.as_ref().ok_or("Cette application ne s'ouvre pas dans Ethone")?;
+    if embed::reopen(&id, x, y, width, height) {
+        return Ok(());
+    }
+    let mut found = embed::find_window(&detect.exe);
+    if found.is_none() {
+        system::launch(detect)?;
+        for _ in 0..80 {
+            tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+            found = embed::find_window(&detect.exe);
+            if found.is_some() {
+                break;
+            }
+        }
+    }
+    let child = found.ok_or("La fenêtre de l'application n'est pas apparue")?;
+    let parent = window.hwnd().map_err(|e| e.to_string())?.0 as usize;
+    embed::attach(&id, child, parent, x, y, width, height);
+    Ok(())
+}
+
+#[tauri::command]
+fn embed_resize(id: String, x: i32, y: i32, width: i32, height: i32) {
+    embed::resize(&id, x, y, width, height);
+}
+
+#[tauri::command]
+fn embed_hide(id: String) {
+    embed::hide(&id);
+}
+
+#[tauri::command]
+fn embed_alive(id: String) -> bool {
+    embed::alive(&id)
+}
+
+#[tauri::command]
+fn embed_detach(id: String) {
+    embed::detach(&id);
+}
+
+#[tauri::command]
 async fn open_releases(id: String, app: AppHandle, state: State<'_, App>) -> Result<(), String> {
     require_session(&state).await?;
     let url = find(&state, &id)?.releases_url.as_ref().ok_or("Pas de page de versions")?;
@@ -677,6 +722,11 @@ fn main() {
             rest_call,
             drive_upload_chunk,
             hdv_background,
+            embed_open,
+            embed_resize,
+            embed_hide,
+            embed_alive,
+            embed_detach,
             autostart_get,
             autostart_set,
             close_to_tray_set,

@@ -26,6 +26,7 @@ minisign-verify = "0.2"
 base64 = "0.22"
 semver = "1"
 winreg = "0.55"
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_Diagnostics_ToolHelp", "Win32_UI_WindowsAndMessaging"] }
 keyring = { version = "3", features = ["windows-native"] }
 sha2 = "0.10"
 getrandom = "0.3"

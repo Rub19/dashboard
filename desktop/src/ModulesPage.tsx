@@ -2,7 +2,8 @@ import { PageHead } from "./kit";
 import { contextMenu } from "./qol";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Download, Gamepad2, Pin, PinOff } from "lucide-react";
+import { AppWindow, ChevronDown, Download, Gamepad2, Pin, PinOff } from "lucide-react";
+import { EMBED_EVENT } from "./EmbeddedApp";
 import { ethoneUpdateCheck, ethoneUpdateInstall, ModuleStatus } from "./api";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_GLIDE } from "./motion";
@@ -83,6 +84,7 @@ function Row({ status, working, error, onRun, onDismiss, pinned, onPin }: { stat
           </span>
         </button>
         <div className="app-action">
+          {!working && status.installed && <Button onClick={() => window.dispatchEvent(new CustomEvent(EMBED_EVENT, { detail: { id: module.id, name: module.name } }))}><AppWindow size={14} />{tr("Dans Ethone", "In Ethone")}</Button>}
           {working ? (
             <span className="working" role="status">{working.label}</span>
           ) : ACTIONABLE.includes(action) ? (

@@ -2,10 +2,11 @@ use crate::catalog::Detect;
 use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use winreg::enums::HKEY_CURRENT_USER;
+use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
 use winreg::RegKey;
 
 const UNINSTALL_ROOT: &str = r"Software\Microsoft\Windows\CurrentVersion\Uninstall";
+const UNINSTALL_ROOT_32: &str = r"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,7 +21,12 @@ fn unquote(text: &str) -> &str {
 
 pub fn read_installed(detect: &Detect) -> Option<Installed> {
     let path = format!(r"{UNINSTALL_ROOT}\{}", detect.uninstall_key);
-    let key = RegKey::predef(HKEY_CURRENT_USER).open_subkey(path).ok()?;
+    let path_32 = format!(r"{UNINSTALL_ROOT_32}\{}", detect.uninstall_key);
+    let key = RegKey::predef(HKEY_CURRENT_USER)
+        .open_subkey(&path)
+        .or_else(|_| RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey(&path))
+        .or_else(|_| RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey(&path_32))
+        .ok()?;
     let version: String = key.get_value("DisplayVersion").ok()?;
     let location = key
         .get_value::<String, _>("InstallLocation")

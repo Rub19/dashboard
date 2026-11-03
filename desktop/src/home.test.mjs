@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { connectionStatus, summarizeModules } from "./home.ts";
+import { connectionStatus, groupMail, summarizeModules } from "./home.ts";
+
+test("the same mail repeated becomes one row with a count", () => {
+  const mail = (id, from_address, subject) => ({ id, from_address, subject });
+  const groups = groupMail([mail("1", "a@x", "Code"), mail("2", "b@x", "Salut"), mail("3", "a@x", "Code"), mail("4", "a@x", "Autre")]);
+  assert.deepEqual(groups.map(({ id, count }) => [id, count]), [["1", 2], ["2", 1], ["4", 1]]);
+  const dated = groupMail([mail("1", "a@x", "Votre lien | 2026-11-02 17:14:06"), mail("2", "a@x", "Votre lien | 2026-10-31 01:18:26")]);
+  assert.deepEqual(dated.map(({ subject, count }) => [subject, count]), [["Votre lien", 2]]);
+  assert.equal(groupMail([mail("1", "a", "1"), mail("2", "b", "2"), mail("3", "c", "3")], 2).length, 2);
+});
 
 function moduleStatus(values) {
   return {

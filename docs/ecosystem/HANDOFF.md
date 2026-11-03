@@ -168,3 +168,4 @@ Cette section remplace ce qui est écrit plus haut sur la connexion Riot par nav
 - La release `desktop-v0.1.0` ne contient pas ces changements.
 - Photos des amis : E:VAL préfère la carte VALORANT, E:LOL l'icône League. Sans carte, l'icône vient de `api/stats/lol-profile`, une requête toutes les 1,2 s. Mesuré : 130 amis sur 131 ont une image. `Kyor#열여덟` reste sans image, car la route renvoie une erreur serveur.
 - E:LOL n'a que du LoL et du TFT, à la demande de Rub19 : ne pas remettre Steam ni Minecraft. L'audit des pages et la comparaison avec ethone.dev ne sont pas écrits ici.
+- Largeur : `.page` n'a plus de limite, seuls les champs d'ajout et la recherche Discord restent à 560 px. Accueil : tuile League, habitudes du jour cochables, mails identiques regroupés (date de fin du sujet ignorée), blocs à masquer stockés dans `ethone-home-hidden`. Vérifié dans la vraie app de 1280 à 3440 px, sans débordement horizontal.

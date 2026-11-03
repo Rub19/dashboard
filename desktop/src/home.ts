@@ -33,6 +33,18 @@ export function todayEvents<T extends { startAt: string | null }>(events: T[], n
     .sort((left, right) => Date.parse(left.startAt as string) - Date.parse(right.startAt as string));
 }
 
+export function groupMail<T extends { from_address: string; from_name?: string; subject: string }>(mail: T[], limit = 5): (T & { count: number })[] {
+  const groups = new Map<string, T & { count: number }>();
+  for (const item of mail) {
+    const subject = (item.subject ?? "").replace(/[\s|–-]*\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?\s*$/, "");
+    const key = `${item.from_address}\n${subject}`;
+    const found = groups.get(key);
+    if (found) found.count++;
+    else groups.set(key, { ...item, subject, count: 1 });
+  }
+  return [...groups.values()].slice(0, limit);
+}
+
 export function connectionStatus(offline: boolean, error: string | null): "online" | "offline" | "degraded" {
   if (error) return "degraded";
   return offline ? "offline" : "online";

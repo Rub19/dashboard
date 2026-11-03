@@ -589,7 +589,7 @@ kbd { font: 11px var(--sans); color: var(--muted); }
 .generic-actions { margin-top: 6px; }
 .daily-add { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .daily-add input, .daily-add select, .files-search input, .brain-input input { min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--control); color: var(--fg); font: inherit; user-select: text; }
-.daily-add input:first-child { flex: 1 1 200px; }
+.daily-add input:first-child { flex: 1 1 200px; max-width: 560px; }
 .daily-add input:focus, .brain-input input:focus { border-color: var(--accent); }
 .daily-target { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
 .habit-list, .bill-list, .connections, .rss-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
@@ -1338,7 +1338,7 @@ input[type="checkbox"]:not([role="switch"]) { accent-color: var(--accent-text); 
 .shell.compact .nav-scroll .nav-group + .nav-group { padding-top: 8px; }
 .nav-item.user { height: 36px; padding: 0 4px; }
 .layer { background: var(--layer); border-radius: 0; scrollbar-gutter: auto; }
-.page { max-width: 1680px; padding: 8px 24px 24px; animation: page-in .18s var(--ease); }
+.page { max-width: none; padding: 8px 24px 24px; animation: page-in .18s var(--ease); }
 @keyframes page-in { from { opacity: 0; transform: translateY(4px); } }
 .shell[data-world="eval"] { --accent: #e5303a; --accent-text: var(--eval-accent); --on-accent: #fff; }
 
@@ -1380,6 +1380,27 @@ input[type="checkbox"]:not([role="switch"]) { accent-color: var(--accent-text); 
 .home-eval { padding: 9px 12px; background: var(--row); color: var(--fg); border-radius: var(--r-m); }
 .home-eval small { color: var(--muted); }
 .home-columns { grid-template-columns: minmax(0, 1fr) minmax(320px, 420px); gap: 28px; }
+.home-columns:not(:has(.home-left)), .home-columns:not(:has(.home-apps)) { grid-template-columns: minmax(0, 1fr); }
+.home-left { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 28px; }
+.home-side { display: grid; align-content: start; gap: 24px; min-width: 0; }
+.home-eval .league-mark { color: #c89b3c; }
+.home-meta .icon-btn.on { background: var(--control-hover); }
+.home-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.home-picker button { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px 0 8px; border-radius: var(--r-s); background: var(--row); color: var(--muted); font-size: 13px; transition: background-color .1s ease, color .1s ease; }
+.home-picker button:hover { background: var(--row-hover); }
+.home-picker button.on { color: var(--fg); }
+.discord-search { max-width: 560px; }
+.home-picker i, .home-habits i { display: grid; place-items: center; flex: none; width: 18px; height: 18px; border: 1px solid var(--muted); border-radius: 5px; color: var(--on-accent); }
+.home-picker .on i, .home-habits .on i { border-color: var(--accent); background: var(--accent); }
+.home-habits h2 { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; font: 650 15px/22px var(--display); }
+.home-habits h2 small { color: var(--muted); font: 400 13px/20px var(--sans); font-variant-numeric: tabular-nums; }
+.home-habits ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.home-habits li button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border-radius: 9px; text-align: left; font-size: 13px; }
+.home-habits li button:hover { background: var(--row); }
+.home-habits li b { flex: 1; min-width: 0; overflow: hidden; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.home-habits li small { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.home-mail button { grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto; }
+.home-mail small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 
 /* Applications */
 .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr)); gap: 8px; align-items: start; }

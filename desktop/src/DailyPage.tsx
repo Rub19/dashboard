@@ -11,20 +11,20 @@ import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
 type Section = "capture" | "notes" | "tasks" | "events" | "habits" | "focus" | "bills" | "scratchpad" | "ambience";
-interface Habit { id: string; name: string; description: string | null; emoji: string | null; color: string | null; target_per_week: number; archived: boolean }
-interface Completion { id: string; habit_id: string; completed_on: string }
+export interface Habit { id: string; name: string; description: string | null; emoji: string | null; color: string | null; target_per_week: number; archived: boolean }
+export interface Completion { id: string; habit_id: string; completed_on: string }
 interface FocusEntry { completedAt: string; seconds: number }
 interface BillData { amount?: number; currency?: string; dueDate?: string; paid?: boolean; category?: string; recurrence?: string }
 interface Bill { id: string; label: string; data: BillData }
 
-const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+export const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const lastDays = (count: number) => Array.from({ length: count }, (_, index) => {
   const date = new Date();
   date.setDate(date.getDate() - (count - 1 - index));
   return date;
 });
 
-function habitStreak(days: Set<string>, today = new Date()): number {
+export function habitStreak(days: Set<string>, today = new Date()): number {
   let streak = 0;
   const cursor = new Date(today);
   if (!days.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);

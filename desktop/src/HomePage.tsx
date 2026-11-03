@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, CalendarDays, CircleCheck, RefreshCw, WifiOff } from "lucide-react";
-import { apiCall, apiData, EthoneItem, itemsList, ModuleStatus, Profile, riotRank, riotStatus } from "./api";
+import { AlertTriangle, ArrowRight, CalendarDays, Check, CircleCheck, Flame, RefreshCw, SlidersHorizontal, WifiOff } from "lucide-react";
+import { apiCall, apiData, EthoneItem, itemsList, ModuleStatus, Profile, restCall, riotRank, riotStatus } from "./api";
+import { Completion, dayKey, Habit, habitStreak } from "./DailyPage";
 import { rankName, tierIcon } from "./eval";
 import { firstArray, Json } from "./generic";
-import { dayProgress, connectionStatus, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
+import { dayProgress, connectionStatus, groupMail, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
 import { errorText, Key, lang, t, tr } from "./i18n";
+import { lolRank, LolProfile } from "./lol";
+import { usePersisted } from "./qol";
 import { readJson } from "./settings";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
-import { Button, ValorantMark } from "./ui";
+import { Button, LeagueMark, ValorantMark } from "./ui";
 
 interface Props {
   profile: Profile;
@@ -23,6 +26,7 @@ interface Props {
   onOpenApplications: () => void;
   onOpenProductivity: () => void;
   onOpenTracker: () => void;
+  onOpenLol: () => void;
   onOpenMail: () => void;
   onOpenInsights: () => void;
   onOpenDaily: () => void;
@@ -60,9 +64,34 @@ function useQuiet<T>(load: () => Promise<T>) {
   return value;
 }
 
-function HomeTiles({ onMail, onTracker, onWeather, onDaily }: { onMail: () => void; onTracker: () => void; onWeather: () => void; onDaily: () => void }) {
+const BLOCKS = [
+  ["mail", () => tr("Mails non lus", "Unread mail")],
+  ["valorant", () => "VALORANT"],
+  ["league", () => "League of Legends"],
+  ["weather", () => tr("Météo", "Weather")],
+  ["focus", () => tr("Concentration", "Focus")],
+  ["agenda", () => tr("Agenda et tâches", "Agenda and tasks")],
+  ["habits", () => tr("Habitudes", "Habits")],
+  ["recent", () => tr("Derniers mails", "Latest mail")],
+  ["apps", () => t("modules")],
+] as const;
+type Block = (typeof BLOCKS)[number][0];
+
+function HomeTiles({ shown, onMail, onTracker, onLol, onWeather, onDaily }: { shown: (block: Block) => boolean; onMail: () => void; onTracker: () => void; onLol: () => void; onWeather: () => void; onDaily: () => void }) {
   const unread = useQuiet(async () => (await apiCall<{ meta?: { unread?: number } }>("api/mail/inbox?folder=inbox&limit=1")).meta?.unread ?? 0);
+  const identity = useQuiet(() => riotStatus());
   const rank = useQuiet(async () => ((await riotStatus()) ? riotRank<{ tier?: number; rr?: number }>() : null));
+  const [league, setLeague] = useState<ReturnType<typeof lolRank> | null>(null);
+  useEffect(() => {
+    if (!identity?.name || !identity.tag) return;
+    let active = true;
+    apiData<LolProfile>(`api/stats/lol-profile?name=${encodeURIComponent(identity.name)}&tag=${encodeURIComponent(identity.tag)}`).then((profile) => {
+      if (active) setLeague(lolRank(profile.rankSolo || profile.rankFlex, lang === "fr" ? "fr" : "en"));
+    }, () => null);
+    return () => {
+      active = false;
+    };
+  }, [identity?.name, identity?.tag]);
   const weather = useQuiet(async () => {
     const city = readJson<string>("ethone-weather-city") ?? "Paris";
     const data = await apiData<{ temperature?: number }>(`api/weather?city=${encodeURIComponent(city)}`);
@@ -73,23 +102,82 @@ function HomeTiles({ onMail, onTracker, onWeather, onDaily }: { onMail: () => vo
   const focusMinutes = Math.round(focus.filter((entry) => new Date(entry.completedAt).toDateString() === today).reduce((total, entry) => total + entry.seconds, 0) / 60);
   return (
     <div className="home-tiles">
-      {unread !== null && <button type="button" className="home-tile" onClick={onMail}><small>{tr("Mails non lus", "Unread mail")}</small><b>{unread}</b></button>}
-      {rank && (rank.tier ?? 0) > 0 && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b><img src={tierIcon(rank.tier ?? 0)} alt="" />{rank.rr} RR</b><small>{rankName(rank.tier ?? 0)}</small></button>}
-      {weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={onWeather}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
-      <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>
+      {shown("mail") && unread !== null && <button type="button" className="home-tile" onClick={onMail}><small>{tr("Mails non lus", "Unread mail")}</small><b>{unread}</b></button>}
+      {shown("valorant") && rank && (rank.tier ?? 0) > 0 && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b><img src={tierIcon(rank.tier ?? 0)} alt="" />{rank.rr} RR</b><small>{rankName(rank.tier ?? 0)}</small></button>}
+      {shown("league") && league?.emblem && <button type="button" className="home-tile eval" onClick={onLol}><small>League of Legends</small><b><img src={league.emblem} alt="" />{league.lp} LP</b><small>{league.name}</small></button>}
+      {shown("weather") && weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={onWeather}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
+      {shown("focus") && <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>}
     </div>
+  );
+}
+
+function TodayHabits({ onOpen }: { onOpen: () => void }) {
+  const [habits, setHabits] = useState<Habit[] | null>(null);
+  const [done, setDone] = useState<Completion[]>([]);
+  const [failed, setFailed] = useState(false);
+  const today = dayKey(new Date());
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      restCall<Habit[]>("ethone_habits?select=*&archived=eq.false&order=created_at.desc"),
+      restCall<Completion[]>("ethone_habit_completions?select=id,habit_id,completed_on&order=completed_on.desc&limit=10000"),
+    ]).then(([list, completions]) => {
+      if (!active) return;
+      setHabits(list);
+      setDone(completions);
+    }, () => null);
+    return () => {
+      active = false;
+    };
+  }, []);
+  const toggle = async (habit: Habit) => {
+    setFailed(false);
+    const found = done.find((item) => item.habit_id === habit.id && item.completed_on === today);
+    try {
+      if (found) await restCall(`ethone_habit_completions?id=eq.${found.id}`, "DELETE", undefined, "return=minimal");
+      else await restCall("ethone_habit_completions", "POST", { habit_id: habit.id, completed_on: today }, "return=minimal");
+      setDone(await restCall<Completion[]>("ethone_habit_completions?select=id,habit_id,completed_on&order=completed_on.desc&limit=10000"));
+    } catch {
+      setFailed(true);
+    }
+  };
+  if (!habits) return null;
+  const count = habits.filter((habit) => done.some((item) => item.habit_id === habit.id && item.completed_on === today)).length;
+  return (
+    <section className="home-habits">
+      <h2>{tr("Habitudes du jour", "Today's habits")}{habits.length > 0 && <small>{count}/{habits.length}</small>}</h2>
+      {habits.length === 0 ? <p className="muted">{tr("Aucune habitude pour l'instant.", "No habits yet.")} <button type="button" className="link" onClick={onOpen}>{tr("En ajouter une", "Add one")}</button></p> : (
+        <ul>
+          {habits.map((habit) => {
+            const days = new Set(done.filter((item) => item.habit_id === habit.id).map((item) => item.completed_on));
+            const on = days.has(today);
+            const streak = habitStreak(days);
+            return (
+              <li key={habit.id}>
+                <button type="button" className={on ? "on" : ""} aria-pressed={on} onClick={() => void toggle(habit)}>
+                  <i>{on && <Check size={13} />}</i>
+                  <b>{habit.emoji ? `${habit.emoji} ` : ""}{habit.name}</b>
+                  {streak > 0 && <small><Flame size={12} />{streak}</small>}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {failed && <p className="today-note" role="alert">{tr("Modification non enregistrée.", "Change not saved.")}</p>}
+    </section>
   );
 }
 
 function RecentMail({ onOpen }: { onOpen: () => void }) {
   const mail = useQuiet(async () => {
-    return firstArray(await apiCall<Json>("api/mail/inbox?folder=inbox&limit=5")) as unknown as { id: string; from_address: string; from_name?: string; subject: string }[];
+    return groupMail(firstArray(await apiCall<Json>("api/mail/inbox?folder=inbox&limit=30")) as unknown as { id: string; from_address: string; from_name?: string; subject: string }[]);
   });
   if (!mail || mail.length === 0) return null;
   return (
     <section className="home-mail">
       <h2>{tr("Derniers mails", "Latest mail")}</h2>
-      <ul>{mail.map((item) => <li key={item.id}><button type="button" onClick={onOpen}><b>{item.from_name || item.from_address}</b><span>{item.subject || tr("(sans objet)", "(no subject)")}</span></button></li>)}</ul>
+      <ul>{mail.map((item) => <li key={item.id}><button type="button" onClick={onOpen}><b>{item.from_name || item.from_address}</b><span>{item.subject || tr("(sans objet)", "(no subject)")}</span>{item.count > 1 && <small>×{item.count}</small>}</button></li>)}</ul>
     </section>
   );
 }
@@ -150,7 +238,12 @@ function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
   );
 }
 
-export default function HomePage({ profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker, onOpenMail, onOpenInsights, onOpenDaily }: Props) {
+export default function HomePage({ profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker, onOpenLol, onOpenMail, onOpenInsights, onOpenDaily }: Props) {
+  const [hiddenList, setHiddenList] = usePersisted<string>("ethone-home-hidden", "");
+  const [editing, setEditing] = useState(false);
+  const hidden = hiddenList.split(",").filter(Boolean);
+  const shown = (block: Block) => !hidden.includes(block);
+  const toggleBlock = (block: Block) => setHiddenList((shown(block) ? [...hidden, block] : hidden.filter((item) => item !== block)).join(","));
   const now = useNow();
   const summary = summarizeModules(modules);
   const status = connectionStatus(offline, error);
@@ -165,6 +258,7 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
         </div>
         <div className="home-meta">
           <span className={`home-link ${status}`}><StatusIcon size={15} />{t(status === "degraded" ? "degraded" : status === "offline" ? "offline" : "operational")}</span>
+          <button type="button" className={`icon-btn ${editing ? "on" : ""}`} aria-label={tr("Choisir les blocs", "Choose blocks")} title={tr("Choisir les blocs", "Choose blocks")} aria-expanded={editing} onClick={() => setEditing(!editing)}><SlidersHorizontal size={15} /></button>
           <button type="button" className="icon-btn" aria-label={t("refresh")} title={t("refresh")} disabled={checking} onClick={onRefresh}><RefreshCw size={15} className={checking ? "spin" : ""} /></button>
         </div>
       </header>
@@ -176,14 +270,23 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
         </div>
       )}
 
-      <HomeTiles onMail={onOpenMail} onTracker={onOpenTracker} onWeather={onOpenInsights} onDaily={onOpenDaily} />
+      {editing && (
+        <div className="home-picker">
+          {BLOCKS.map(([block, label]) => <button type="button" key={block} className={shown(block) ? "on" : ""} aria-pressed={shown(block)} onClick={() => toggleBlock(block)}><i>{shown(block) && <Check size={13} />}</i>{label()}</button>)}
+        </div>
+      )}
+
+      <HomeTiles shown={shown} onMail={onOpenMail} onTracker={onOpenTracker} onLol={onOpenLol} onWeather={onOpenInsights} onDaily={onOpenDaily} />
 
       <div className="home-columns">
-        <div className="home-left">
-          <Agenda onOpen={onOpenProductivity} offline={offline} />
-          <RecentMail onOpen={onOpenMail} />
-        </div>
-        <div className="home-apps">
+        {(shown("agenda") || shown("habits") || shown("recent")) && <div className="home-left">
+          {shown("agenda") && <Agenda onOpen={onOpenProductivity} offline={offline} />}
+          {(shown("habits") || shown("recent")) && <div className="home-side">
+            {shown("habits") && <TodayHabits onOpen={onOpenDaily} />}
+            {shown("recent") && <RecentMail onOpen={onOpenMail} />}
+          </div>}
+        </div>}
+        {shown("apps") && <div className="home-apps">
           <div className="section-head">
             <div>
               <h2>{t("modules")}</h2>
@@ -194,6 +297,11 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
           <button type="button" className="home-eval" onClick={onOpenTracker}>
             <ValorantMark size={22} />
             <span><b>E:VAL</b><small>{t("evalTagline")}</small></span>
+            <ArrowRight size={16} />
+          </button>
+          <button type="button" className="home-eval" onClick={onOpenLol}>
+            <LeagueMark size={22} />
+            <span><b>E:LOL</b><small>{tr("Rang, parties et amis League of Legends", "League of Legends rank, games and friends")}</small></span>
             <ArrowRight size={16} />
           </button>
           {modules.length === 0 && !checking && <p className="muted empty">{t("noApplications")}</p>}
@@ -213,7 +321,7 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
               );
             })}
           </ul>
-        </div>
+        </div>}
       </div>
     </div>
   );

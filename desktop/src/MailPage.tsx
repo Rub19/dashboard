@@ -1,12 +1,13 @@
-import { FormEvent, useEffect, useState } from "react";
+import { CSSProperties, FormEvent, useEffect, useState } from "react";
 import { contextMenu, copyText, toast } from "./qol";
 import { usePersisted } from "./qol";
-import { Archive, Clock, Inbox, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X, Copy } from "lucide-react";
+import { Archive, Clock, Copy, Inbox, MailOpen, Paperclip, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
+import { mailInitials, mailSenderHue } from "./mail";
 
 interface Message { id: string; thread_id: string; folder: string; direction: string; from_address: string; from_name?: string; to_addresses: string[]; subject: string; body_text?: string; body_html?: string; snippet?: string; is_read: boolean; is_starred: boolean; received_at: string; sent_at?: string; attachments?: { filename: string; size: number }[] }
 type Folder = "inbox" | "sent" | "drafts" | "archive" | "spam" | "trash";
@@ -106,6 +107,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
     void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder: target })).then(() => toast(done, { action: { label: tr("Annuler", "Undo"), run: () => void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder })) } }));
   };
   const content = open ? (open.body_text?.trim() || (open.body_html ? htmlToText(open.body_html) : open.snippet ?? "")) : "";
+  const sender = (message: Message) => message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address;
   return (
     <>
       <PageHead title={FOLDERS.find((item) => item.id === folder)?.label() ?? ""} onRefresh={state.reload} refreshing={state.loading}>
@@ -126,9 +128,13 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
                 ...(folder !== "archive" ? [{ label: tr("Archiver", "Archive"), run: () => move(message, "archive", tr("Message archivé", "Message archived")) }] : []),
                 ...(folder !== "trash" ? [{ label: tr("Corbeille", "Trash"), danger: true, run: () => move(message, "trash", tr("Message mis à la corbeille", "Message moved to trash")) }] : []),
               ])}>
-                <span><b>{message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang)}</time></span>
-                <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
-                {message.snippet && <small>{message.snippet}</small>}
+                <span className="mail-avatar" style={{ "--mail-hue": mailSenderHue(message.from_address || message.to_addresses?.[0] || "") } as CSSProperties}>{mailInitials(message.from_name, message.from_address || message.to_addresses?.[0] || "")}</span>
+                <span className="mail-card-copy">
+                  <span><b>{sender(message)}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang, { day: "numeric", month: "short" })}</time></span>
+                  <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
+                  {message.snippet && <small>{message.snippet}</small>}
+                </span>
+                <span className="mail-card-flags">{message.is_starred && <Star size={13} fill="currentColor" />}{(message.attachments?.length ?? 0) > 0 && <Paperclip size={13} />}</span>
               </button>
             </StaggerItem>
           ))}
@@ -137,9 +143,9 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       </div>
         {open ? (
           <article className="mail-reader">
-            <header className="mail-reader-head"><h2>{open.subject || tr("(sans objet)", "(no subject)")}</h2><Button aria-label={tr("Fermer le message", "Close message")} onClick={() => setOpen(null)}><X size={15} /></Button></header>
-            <p className="muted small">{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}, {new Date(open.received_at ?? open.sent_at ?? "").toLocaleString(lang)}</p>
-            <div className="row">
+            <header className="mail-reader-head"><div><span className="mail-avatar large" style={{ "--mail-hue": mailSenderHue(open.from_address) } as CSSProperties}>{mailInitials(open.from_name, open.from_address)}</span><span><h2>{open.subject || tr("(sans objet)", "(no subject)")}</h2><p>{open.from_name || open.from_address}</p></span></div><Button aria-label={tr("Fermer le message", "Close message")} onClick={() => setOpen(null)}><X size={15} /></Button></header>
+            <div className="mail-reader-meta"><span>{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}</span><time>{new Date(open.received_at ?? open.sent_at ?? "").toLocaleString(lang, { dateStyle: "long", timeStyle: "short" })}</time></div>
+            <div className="row mail-reader-actions">
               <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
               <Button onClick={() => void act(() => apiData("api/mail/read", "POST", { id: open.id, is_starred: !open.is_starred }))}><Star size={15} />{open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Étoile", "Star")}</Button>
               <Button onClick={() => { const date = new Date(); date.setDate(date.getDate() + 1); date.setHours(9, 0, 0, 0); void act(() => apiData("api/mail/snooze", "POST", { id: open.id, snoozed_until: date.toISOString() })); }}><Clock size={15} />{tr("Reporter à demain", "Snooze to tomorrow")}</Button>
@@ -147,10 +153,10 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
               {folder !== "archive" && <Button onClick={() => move(open, "archive", tr("Message archivé", "Message archived"))}><Archive size={15} />{tr("Archiver", "Archive")}</Button>}
               {folder !== "trash" && <Button className="danger" onClick={() => move(open, "trash", tr("Message mis à la corbeille", "Message moved to trash"))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
             </div>
-            {(open.attachments?.length ?? 0) > 0 && <ul className="eval-tags">{open.attachments?.map((item) => <li key={item.filename}>{item.filename}</li>)}</ul>}
+            {(open.attachments?.length ?? 0) > 0 && <ul className="mail-attachments">{open.attachments?.map((item) => <li key={item.filename}><Paperclip size={14} /><span><b>{item.filename}</b><small>{Math.max(1, Math.round(item.size / 1024))} Ko</small></span></li>)}</ul>}
             {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
           </article>
-        ) : <p className="mail-idle">{tr("Choisis un message pour le lire.", "Pick a message to read it.")}</p>}
+        ) : <div className="mail-idle"><span><MailOpen size={28} /></span><b>{tr("Lis tes messages ici", "Read your messages here")}</b><p>{tr("Sélectionne un mail dans la liste pour afficher son contenu.", "Select an email from the list to display its content.")}</p></div>}
       </div>
     </>
   );

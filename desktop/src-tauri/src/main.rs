@@ -569,7 +569,9 @@ fn window_setup(window: WebviewWindow) -> bool {
 
 #[tauri::command]
 async fn window_mode(mode: String, width: f64, height: f64, x: Option<i32>, y: Option<i32>, maximized: bool, animate: bool, window: WebviewWindow) -> Result<(), String> {
-    windowing::set_mode(&window, mode == "login", width, height, x.zip(y), maximized, animate)
+    let login = mode == "login";
+    let show = login || !background::take_hidden_start();
+    windowing::set_mode(&window, login, width, height, x.zip(y), maximized, animate, show)
 }
 
 #[tauri::command]

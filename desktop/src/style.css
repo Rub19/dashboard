@@ -1799,7 +1799,7 @@ select option { background: var(--row-solid); color: var(--fg); }
 .flow-run .ok { padding: 8px 10px; color: var(--success); font-weight: 600; }
 .discord-modules input[role="switch"] { flex: none; width: 18px; height: 18px; accent-color: var(--accent-text); }
 .discord-module-open:disabled { opacity: 1; cursor: default; }
-kbd { padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--r-xs); background: var(--control); font: 12px/18px var(--sans); }
+.settings kbd { padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--r-xs); background: var(--control); font: 12px/18px var(--sans); }
 .discord-chart { display: flex; align-items: flex-end; gap: 4px; height: 96px; padding: 8px; border-radius: var(--r-m); background: var(--row); }
 .discord-chart span { flex: 1; display: flex; align-items: flex-end; height: 100%; }
 .discord-chart i { display: block; width: 100%; border-radius: 3px 3px 0 0; background: var(--accent-text); }
@@ -1827,3 +1827,19 @@ kbd { padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--r-xs
 .lol-lp li { display: flex; align-items: center; gap: 8px; }
 .lol-lp li span { flex: 1; }
 .lol-objectives { margin-left: 10px; color: var(--muted); font-size: 12px; font-weight: 400; }
+
+/* Barre de titre */
+.winbtns { align-self: center; gap: 2px; margin: 0 8px 0 0; padding: 3px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--row-solid) 72%, transparent); backdrop-filter: var(--glass); box-shadow: var(--shadow-control); }
+.winbtns button { width: 30px; height: 26px; border-radius: 9px; }
+.winbtns svg { width: 15px; height: 15px; stroke-width: 1.5; }
+.searchbox { height: 30px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--row-solid) 72%, transparent); backdrop-filter: var(--glass); }
+.searchbox:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 1px; }
+@media (hover: hover) and (pointer: fine) {
+  .winbtns .win-min:hover svg { transform: translateY(1px); }
+  .winbtns .win-max:hover svg { transform: scale(1.08); }
+  .winbtns .close:hover { background: #e5484d; color: #fff; }
+  .winbtns .close:hover svg { transform: rotate(90deg); }
+  .searchbox:hover { border-color: color-mix(in srgb, var(--accent-text) 45%, var(--line)); }
+}
+@media (prefers-reduced-motion: reduce) { .winbtns .close:hover svg { transform: none; } }
+:root[data-motion="reduced"] .winbtns svg { transition: none; transform: none !important; }

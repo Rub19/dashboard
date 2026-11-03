@@ -83,7 +83,7 @@ fn work_area(window: &WebviewWindow) -> Option<Rect> {
     })
 }
 
-pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, position: Option<(i32, i32)>, maximized: bool, animate: bool) -> Result<(), String> {
+pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, position: Option<(i32, i32)>, maximized: bool, animate: bool, show: bool) -> Result<(), String> {
     let (logical_width, logical_height) = if login { LOGIN_SIZE } else { (width.max(APP_MIN.0), height.max(APP_MIN.1)) };
     if window.is_maximized().unwrap_or(false) {
         let _ = window.unmaximize();
@@ -128,7 +128,7 @@ pub fn set_mode(window: &WebviewWindow, login: bool, width: f64, height: f64, po
         }
     }
     if !visible {
-        if login || !crate::background::take_hidden_start() {
+        if show {
             let _ = window.show();
         }
         let _ = window.set_focus();

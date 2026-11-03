@@ -460,6 +460,7 @@ export default function TrackerPage() {
   };
 
   const connect = () => {
+    if (connecting) return;
     setConnecting(true);
     setError(null);
     riotLogin().catch((reason) => {
@@ -530,7 +531,7 @@ export default function TrackerPage() {
       </div>
       {tab === "live" && <EvalLive linked={isLinked} onConnect={connect} />}
       {visited.includes("game") && <div style={{ display: tab === "game" ? "contents" : "none" }}><EvalGame linked={isLinked} onConnect={connect} /></div>}
-      {visited.includes("hub") && <div style={{ display: tab === "hub" ? "contents" : "none" }}><EvalHub account={account} linked={isLinked} matches={matches} /></div>}
+      {visited.includes("hub") && <div style={{ display: tab === "hub" ? "contents" : "none" }}><EvalHub account={account} linked={isLinked} matches={matches} onConnect={connect} connecting={connecting} /></div>}
       {tab === "profile" && <div className="eval-grid" inert={Boolean(open)}>
         <div className="eval-side">
           <ProfileCard account={account} linked={isLinked} onDisconnect={disconnect} />

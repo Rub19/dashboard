@@ -51,11 +51,11 @@ export function Skeletons({ count = 3, height = 64 }: { count?: number; height?:
   );
 }
 
-export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function ErrorBox({ message, onRetry, action }: { message: string; onRetry?: () => void; action?: ReactNode }) {
   return (
     <div className="kit-error" role="alert">
       <span>{message}</span>
-      {onRetry && <Button onClick={onRetry}>{t("retry")}</Button>}
+      {(onRetry || action) && <div className="row">{onRetry && <Button onClick={onRetry}>{t("retry")}</Button>}{action}</div>}
     </div>
   );
 }

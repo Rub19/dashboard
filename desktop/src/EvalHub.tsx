@@ -6,6 +6,7 @@ import { apiData, botCall, botStatus, catalogGet, lineupsGet, openExternal, rest
 import { readCache, writeCache } from "./cache";
 import { boardOf, lastSeenShort, lastSeenText, presenceKind } from "./friends";
 import { cardImage, friendPortrait, resolveFriendCard } from "./friend-portraits";
+import { riotReconnectRequired } from "./riot-session";
 import { SkinDrawer } from "./EvalSkins";
 import { flattenEntries, Json } from "./generic";
 import { bannerImage, EvalAccount, EvalMatch, matchSummary, modeName, rankColor, rankName, splitRiotId, statsFor, tierIcon } from "./eval";
@@ -579,21 +580,24 @@ function FriendItem({ friend, image, title, maps, onVisible, onOpen }: { friend:
   );
 }
 
-function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void }) {
+function Friends({ linked, account, onOpen, onConnect, connecting }: { linked: boolean; account: EvalAccount | null; onOpen: (handle: string) => void; onConnect: () => void; connecting: boolean }) {
   const [friends, setFriends] = useState<RiotFriend[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reconnect, setReconnect] = useState(false);
   const [query, setQuery] = useState("");
   const root = useRef<HTMLDivElement>(null);
   const { cards, icons, request } = useFriendPortraits(friends ?? []);
   const reload = useCallback(async () => {
     setBusy(true);
+    setReconnect(false);
     try {
       const list = await riotFriends();
       setFriends(list);
       writeCache("riot:friends", list);
       setError(null);
     } catch (reason) {
+      setReconnect(riotReconnectRequired(reason));
       setError(errorText(reason));
     } finally {
       setBusy(false);
@@ -642,7 +646,7 @@ function Friends({ linked, account, onOpen }: { linked: boolean; account: EvalAc
     <div ref={root} className="friends">
       <div className="eval-section-head"><h2>{tr("Amis", "Friends")}{friends ? <small className="friend-count">{tr(`${online} en ligne sur ${total}`, `${online} online of ${total}`)}</small> : null}</h2><Button disabled={busy} onClick={() => void reload()}><RefreshCw size={14} className={busy ? "spin" : ""} />{tr("Actualiser", "Refresh")}</Button></div>
       <label className="friend-search"><Search size={16} /><input value={query} placeholder={tr("Rechercher des amis", "Search friends")} aria-label={tr("Rechercher des amis", "Search friends")} onChange={(event) => setQuery(event.target.value)} /></label>
-      {error && <ErrorBox message={error} onRetry={() => void reload()} />}
+      {error && <ErrorBox message={error} onRetry={() => void reload()} action={reconnect ? <Button variant="primary" disabled={connecting} onClick={onConnect}>{connecting ? tr("Connexion en cours…", "Signing in…") : tr("Se reconnecter à Riot", "Sign in to Riot again")}</Button> : undefined} />}
       {!friends && !error ? <Skeletons count={6} height={64} /> : (
         <div className="friend-layout">
         <div className="friend-sections">
@@ -684,7 +688,7 @@ function Seasons({ account }: { account: EvalAccount | null }) {
   );
 }
 
-export default function EvalHub({ account, linked, matches }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[] }) {
+export default function EvalHub({ account, linked, matches, onConnect, connecting }: { account: EvalAccount | null; linked: boolean; matches: EvalMatch[]; onConnect: () => void; connecting: boolean }) {
   const [section, setSection] = usePersisted<Section>("ethone-section-hub", "friends");
   const [target, setTarget] = useState<string>();
   const items = [
@@ -707,7 +711,7 @@ export default function EvalHub({ account, linked, matches }: { account: EvalAcc
     <div className="kit-split">
       <SideNav items={items} value={section} onChange={setSection} id="eval-hub" label={tr("Sections du Hub", "Hub sections")} />
       <div className="kit-split-body">
-        {section === "friends" && <Friends linked={linked} account={account} onOpen={(handle) => { setTarget(handle); setSection("players"); }} />}
+        {section === "friends" && <Friends linked={linked} account={account} onConnect={onConnect} connecting={connecting} onOpen={(handle) => { setTarget(handle); setSection("players"); }} />}
         {section === "leaderboard" && <Leaderboard />}
         {section === "players" && <Players key={target} target={target} />}
         {section === "maps" && <Maps />}

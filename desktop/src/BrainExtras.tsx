@@ -4,7 +4,7 @@ import { Check, ListChecks, Play, Plus, Sparkles, Trash2 } from "lucide-react";
 import { apiCall, apiData, itemsList, restCall } from "./api";
 import { activityWeeks, dayKey } from "./productivity";
 import { interactionStats, Rule, RuleAction, RuleTrigger } from "./automations";
-import { humanize } from "./generic";
+import { activityLabel } from "./generic";
 import { toast } from "./qol";
 import { applyInterfacePreferences, applyLook, currentInterfacePreferences, LookId, LOOKS, readJson, write } from "./settings";
 import { firstArray, Json } from "./generic";
@@ -311,11 +311,11 @@ export function InteractionsPage() {
               <div className="interaction-grid">
                 <section className="briefing-block">
                   <h2>{tr("Répartition", "Breakdown")}</h2>
-                  <ul className="interaction-bars">{stats.map(([kind, count]) => <li key={kind}><span>{humanize(kind)}</span><i style={{ width: `${(count / stats[0][1]) * 100}%` }} /><b>{count}</b></li>)}</ul>
+                  <ul className="interaction-bars">{stats.map(([kind, count]) => <li key={kind}><span>{activityLabel(kind)}</span><i style={{ width: `${(count / stats[0][1]) * 100}%` }} /><b>{count}</b></li>)}</ul>
                 </section>
                 <section className="briefing-block">
                   <h2>{tr("Récemment", "Recent")}</h2>
-                  <ul className="interaction-log">{events.slice(0, 8).map((event, index) => <li key={event.id ?? index}><span>{event.details?.title ?? humanize(event.eventType ?? "")}</span>{event.createdAt && <time className="muted small">{new Date(event.createdAt).toLocaleString(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</time>}</li>)}</ul>
+                  <ul className="interaction-log">{events.slice(0, 8).map((event, index) => <li key={event.id ?? index}><span>{event.details?.title ?? activityLabel(event.eventType ?? "")}</span>{event.createdAt && <time className="muted small">{new Date(event.createdAt).toLocaleString(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</time>}</li>)}</ul>
                 </section>
               </div>
             </>

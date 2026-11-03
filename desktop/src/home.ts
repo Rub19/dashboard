@@ -63,3 +63,7 @@ export function dueEvents<T extends { id: string; startAt: string | null }>(even
     return left > 0 && left <= EVENT_LEAD;
   });
 }
+
+export function firstNote(notes: string | null | undefined): string {
+  return notes?.split("\n").filter((line) => !/^\s*#/.test(line)).map((line) => line.replace(/^[*\->\s]+/, "").trim()).find(Boolean) ?? "";
+}

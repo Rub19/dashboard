@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { connectionStatus, groupMail, summarizeModules } from "./home.ts";
+import { connectionStatus, firstNote, groupMail, summarizeModules } from "./home.ts";
 
 test("the same mail repeated becomes one row with a count", () => {
   const mail = (id, from_address, subject) => ({ id, from_address, subject });
@@ -53,4 +53,12 @@ test("une erreur distante empêche d'annoncer un service opérationnel", () => {
   assert.equal(connectionStatus(false, "indisponible"), "degraded");
   assert.equal(connectionStatus(true, null), "offline");
   assert.equal(connectionStatus(false, null), "online");
+});
+
+test("firstNote keeps the first real line of the release notes", () => {
+  assert.equal(firstNote("## Nouveautés\n\n- Bandeau"), "Bandeau");
+  assert.equal(firstNote("## Titre"), "");
+  assert.equal(firstNote("\n\n- Bandeau"), "Bandeau");
+  assert.equal(firstNote(null), "");
+  assert.equal(firstNote("  \n"), "");
 });

@@ -2,7 +2,7 @@ import { CSSProperties, FormEvent, useEffect, useState } from "react";
 import { contextMenu, copyText, toast } from "./qol";
 import { usePersisted } from "./qol";
 import { ArrowLeft, Check, Archive, Clock, Copy, Inbox, MailOpen, Minus, Paperclip, PenLine, RefreshCw, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
-import { apiCall, apiData } from "./api";
+import { openExternal, apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Status, useLoad } from "./kit";
@@ -22,6 +22,34 @@ const FOLDERS: { id: Folder; label: () => string; icon: React.ReactNode }[] = [
   { id: "spam", label: () => tr("Indésirables", "Spam"), icon: <ShieldAlert size={16} /> },
   { id: "trash", label: () => tr("Corbeille", "Trash"), icon: <Trash2 size={16} /> },
 ];
+
+export function MailHtml({ html }: { html: string }) {
+  const [images, setImages] = useState(false);
+  const [height, setHeight] = useState(120);
+  const hasImages = /<img\b|background(-image)?\s*[=:]/i.test(html);
+  const policy = `default-src 'none'; style-src 'unsafe-inline'; img-src data:${images ? " https:" : ""}`;
+  const page = `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${policy}"><style>body{margin:0;padding:16px;background:#fff;color:#202124;font:14px/1.5 system-ui,sans-serif;overflow-wrap:anywhere}img{max-width:100%;height:auto}table{max-width:100%}a{color:#0b57d0}</style></head><body>${html}</body></html>`;
+  const ready = (frame: HTMLIFrameElement) => {
+    const inner = frame.contentDocument;
+    if (!inner?.documentElement) return;
+    const fit = () => setHeight(inner.documentElement.scrollHeight);
+    fit();
+    new ResizeObserver(fit).observe(inner.body);
+    inner.addEventListener("click", (event) => {
+      const link = (event.target as Element).closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link) return;
+      event.preventDefault();
+      if (link.protocol === "https:") void openExternal(link.href);
+      else toast(tr("Ce lien n'est pas sécurisé, il n'a pas été ouvert.", "This link is not secure, it was not opened."));
+    });
+  };
+  return (
+    <>
+      {hasImages && !images && <p className="mail-images"><span>{tr("Images masquées : elles préviennent l'expéditeur que tu as ouvert le mail.", "Images hidden: they tell the sender you opened the mail.")}</span><Button onClick={() => setImages(true)}>{tr("Afficher les images", "Show images")}</Button></p>}
+      <iframe className="mail-html" title={tr("Contenu du message", "Message content")} sandbox="allow-same-origin" srcDoc={page} style={{ height }} onLoad={(event) => ready(event.currentTarget)} />
+    </>
+  );
+}
 
 function htmlToText(html: string): string {
   const parsed = new DOMParser().parseFromString(html, "text/html");
@@ -148,7 +176,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
             {iconButton(open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Ajouter une étoile", "Star"), <Star size={16} fill={open.is_starred ? "currentColor" : "none"} />, () => { star(open); setOpen({ ...open, is_starred: !open.is_starred }); })}
           </header>
           {(open.attachments?.length ?? 0) > 0 && <ul className="mail-attachments">{open.attachments?.map((item) => <li key={item.filename}><Paperclip size={14} /><span><b>{item.filename}</b><small>{Math.max(1, Math.round(item.size / 1024))} Ko</small></span></li>)}</ul>}
-          {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
+          {open.body_html ? <MailHtml key={open.id} html={open.body_html} /> : content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
           <footer><Button onClick={() => reply(open, `\n\n> ${content.split("\n").join("\n> ")}`)}><Reply size={15} />{tr("Répondre", "Reply")}</Button></footer>
         </article>
       </div>

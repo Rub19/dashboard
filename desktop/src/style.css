@@ -1090,7 +1090,6 @@ button.friend-row:focus-visible { outline: 2px solid var(--accent); outline-offs
 .item-skeletons { display: grid; gap: 4px; }
 .item-skeletons span { height: 60px; border-radius: var(--r-m); background: var(--row); animation: pulse 1.2s ease-in-out infinite alternate; }
 
-.ethone-update { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: var(--r-m); background: color-mix(in srgb, var(--accent) 9%, var(--row)); }
 .apps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .app { position: relative; background: var(--row); border-radius: var(--r-m); overflow: hidden; }
 .app.skeleton { height: 66px; animation: pulse 1.2s ease-in-out infinite alternate; }
@@ -1994,3 +1993,23 @@ li:hover > .team-remove, .team-remove:focus-visible { opacity: 1; }
 .interaction-bars b { font-variant-numeric: tabular-nums; }
 .interaction-log li { display: flex; justify-content: space-between; gap: 10px; }
 .interaction-log span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.update-banner { position: sticky; top: 8px; z-index: 25; display: flex; align-items: center; gap: 12px; margin: 8px 24px 0; padding: 8px 10px 8px 12px; border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--popup) 82%, transparent); backdrop-filter: var(--glass); box-shadow: 0 8px 24px rgb(0 0 0 / .22); animation: update-in .24s var(--ease); }
+@keyframes update-in { from { opacity: 0; transform: translateY(-6px); } }
+.update-icon { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: color-mix(in srgb, var(--accent-text) 18%, transparent); color: var(--accent-text); }
+.update-text { display: grid; flex: 1; min-width: 0; line-height: 16px; }
+.update-text b { font-size: 13px; font-weight: 600; }
+.update-text small { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.update-text small.update-error { color: var(--danger, #ff6b6b); white-space: normal; }
+.update-later { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: var(--muted); transition: background-color .16s ease, transform .16s var(--ease); }
+.update-later:hover { background: var(--control-hover); color: var(--fg); }
+.update-later:active { transform: scale(.92); }
+.update-progress { display: grid; flex: none; gap: 5px; width: 170px; }
+.update-progress small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.update-progress i { display: block; height: 4px; overflow: hidden; border-radius: 2px; background: color-mix(in srgb, var(--fg) 12%, transparent); }
+.update-progress em { display: block; height: 100%; border-radius: 2px; background: var(--accent-text); transform-origin: left; transition: transform .2s linear; }
+@media (prefers-reduced-motion: reduce) { .update-banner { animation: none; } }
+@media (prefers-reduced-transparency: reduce) { .update-banner { background: var(--row-solid); backdrop-filter: none; } }
+:root[data-transparency="reduced"] .update-banner { background: var(--row-solid); backdrop-filter: none; }
+.mail-html { display: block; width: 100%; border: 0; border-radius: 10px; background: #fff; }
+.mail-images { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; color: var(--muted); font-size: 12px; }

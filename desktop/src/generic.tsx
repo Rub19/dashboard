@@ -378,3 +378,7 @@ export function JsonList({ rows, actions = [], onChanged, emptyTitle, emptyText,
     </>
   );
 }
+
+const ACTIVITY_LABELS: Record<string, string> = { shared: "Partage", uploaded: "Envoi", downloaded: "Téléchargement", deleted: "Suppression", renamed: "Renommage", moved: "Déplacement", restored: "Restauration", viewed: "Consultation", revoked: "Révocation" };
+
+export const activityLabel = (kind: string) => (lang === "fr" ? ACTIVITY_LABELS[kind] : undefined) ?? humanize(kind);

@@ -7,7 +7,7 @@ import BrainChat from "./BrainChat";
 import Connections from "./Connections";
 import { BriefingPage, FlowsPage, InteractionsPage, MacrosPage, PersonasPage, RulesPage } from "./BrainExtras";
 import { AccessibilityPage, AdvancedPage, WorkspacePage, AdminPage, loadAdminStats, PerformancePage, PrivacyPage, ShortcutsPage, StoragePage, SyncPage } from "./SettingsExtra";
-import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
+import { activityLabel, ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
 import { activityWeeks } from "./productivity";
@@ -333,7 +333,6 @@ function RssReader() {
   );
 }
 
-const ACTIVITY_LABELS: Record<string, string> = { shared: "Partage", uploaded: "Envoi", downloaded: "Téléchargement", deleted: "Suppression", renamed: "Renommage", moved: "Déplacement", restored: "Restauration", viewed: "Consultation", revoked: "Révocation" };
 
 export function ActivityView() {
   const state = useLoad(() => apiData<{ events?: { id?: string; createdAt?: string; eventType?: string; details?: { title?: string } | null }[] }>("api/cloud/activity?limit=1000"));
@@ -354,7 +353,7 @@ export function ActivityView() {
           );
           const rows: { key: string; title: string; at: string; count: number }[] = [];
           for (const [index, event] of (data.events ?? []).entries()) {
-            const title = event.details?.title ?? (lang === "fr" ? ACTIVITY_LABELS[event.eventType ?? ""] : undefined) ?? humanize(event.eventType ?? "");
+            const title = event.details?.title ?? activityLabel(event.eventType ?? "");
             const last = rows[rows.length - 1];
             if (last?.title === title) last.count += 1;
             else rows.push({ key: event.id ?? String(index), title, at: event.createdAt ?? "", count: 1 });

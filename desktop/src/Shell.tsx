@@ -12,6 +12,7 @@ import { clockKey, inQuietHours, Rule, rulesForPage, rulesForTime } from "./auto
 import { runRule } from "./BrainExtras";
 import HomePage from "./HomePage";
 import { MusicCapsule } from "./NowPlaying";
+import UpdateBanner from "./UpdateBanner";
 import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, popover } from "./motion";
 import { togglePinned } from "./pinned";
@@ -364,6 +365,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
       {embedded && <EmbeddedApp target={embedded} onBack={() => setEmbedded(null)} />}
       <main className="layer" ref={layer} tabIndex={-1} hidden={Boolean(embedded)}>
+        <UpdateBanner />
         {(
           [
             ["home", <HomePage active={page === "home"} profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenLol={() => go("games")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],

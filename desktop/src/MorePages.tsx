@@ -1,9 +1,10 @@
 import { FormEvent, useMemo, useState } from "react";
 import { usePersisted } from "./qol";
 import { Activity, Bell, Crown, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
-import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
+import { apiCall, apiData, openExternal, Profile } from "./api";
 import { AboutPage, AccountCard, DesktopSettings, JournalPage, SettingsPage } from "./pages";
 import BrainChat from "./BrainChat";
+import Connections from "./Connections";
 import { BriefingPage, FlowsPage, MacrosPage } from "./BrainExtras";
 import { AdminPage, loadAdminStats, PerformancePage, PrivacyPage, ShortcutsPage, StoragePage, SyncPage } from "./SettingsExtra";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
@@ -103,38 +104,6 @@ function TwoFactor() {
         <Button type="submit" className={setup ? "" : "danger"} disabled={busy || code.trim().length < 6}>{setup ? tr("Confirmer", "Confirm") : tr("Désactiver", "Disable")}</Button>
       </form>
       {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
-    </>
-  );
-}
-
-function Connections() {
-  const state = useLoad(() => apiCall<Json>("api/connections"));
-  return (
-    <>
-      <PageHead title={tr("Connexions", "Connections")} text={tr("Les services reliés à ton compte. Pour en ajouter un, passe par ethone.dev.", "Services linked to your account. To add one, use ethone.dev.")} onRefresh={state.reload} refreshing={state.loading}>
-        <Button onClick={() => void openSite("account")}><ExternalLink size={15} />ethone.dev</Button>
-      </PageHead>
-      <Status state={state}>
-        {(data) => {
-          const rows = firstArray(data);
-          if (rows.length === 0) return <Empty title={tr("Aucune connexion", "No connections")} />;
-          return (
-            <ul className="connections">
-              {rows.map((row, index) => {
-                const record = asRecord(row);
-                const provider = String(record.provider ?? "");
-                const connected = record.connected !== false;
-                return (
-                  <li key={index}>
-                    <span><b>{provider.charAt(0).toUpperCase() + provider.slice(1)}</b><small className={connected ? "ok" : "muted"}>{connected ? tr("Connecté", "Connected") : tr("Non connecté", "Not connected")}{record.username ? `, ${String(record.username)}` : ""}</small></span>
-                    {connected && <Button className="danger" onClick={() => void apiData("api/connections/disconnect", "POST", { provider }).then(state.reload).catch(() => state.reload())}>{tr("Déconnecter", "Disconnect")}</Button>}
-                  </li>
-                );
-              })}
-            </ul>
-          );
-        }}
-      </Status>
     </>
   );
 }

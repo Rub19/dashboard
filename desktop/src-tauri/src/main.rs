@@ -677,6 +677,11 @@ fn main() {
         .setup(|app| {
             background::prepare_start();
             let _ = background::build_tray(app);
+            if let Some(window) = app.get_webview_window("main") {
+                if let Ok(handle) = window.hwnd() {
+                    embed::apply_exe_icon(handle.0 as usize);
+                }
+            }
             #[cfg(not(debug_assertions))]
             let _ = app.deep_link().register("ethone");
             let fallback = app.handle().clone();

@@ -1,4 +1,5 @@
 import { ComponentType, CSSProperties, memo, ReactNode, useState } from "react";
+import { MiniPlayer } from "./NowPlaying";
 import { contextMenu } from "./qol";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -106,6 +107,7 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         </AnimatePresence>
       </div>
       <div className="nav-group nav-foot">
+        <MiniPlayer />
         {note}
         {FOOT_PAGES.map(item)}
         {account}

@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 use std::ffi::c_void;
+use std::os::windows::ffi::OsStrExt;
 use std::sync::Mutex;
 use windows_sys::Win32::Foundation::{CloseHandle, BOOL, HWND, INVALID_HANDLE_VALUE, LPARAM, RECT};
 use windows_sys::Win32::System::Diagnostics::ToolHelp::{CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W, TH32CS_SNAPPROCESS};
+use windows_sys::Win32::UI::Shell::ExtractIconExW;
 use windows_sys::Win32::UI::WindowsAndMessaging::*;
 
 struct Embedded {
@@ -11,6 +13,23 @@ struct Embedded {
 }
 
 static EMBEDDED: Mutex<Option<HashMap<String, Embedded>>> = Mutex::new(None);
+
+pub fn apply_exe_icon(window: usize) {
+    let Ok(exe) = std::env::current_exe() else { return };
+    let path: Vec<u16> = exe.as_os_str().encode_wide().chain(Some(0)).collect();
+    let (mut large, mut small) = (std::ptr::null_mut(), std::ptr::null_mut());
+    unsafe {
+        if ExtractIconExW(path.as_ptr(), 0, &mut large, &mut small, 1) == 0 {
+            return;
+        }
+        if !large.is_null() {
+            SendMessageW(window as HWND, WM_SETICON, ICON_BIG as usize, large as isize);
+        }
+        if !small.is_null() {
+            SendMessageW(window as HWND, WM_SETICON, ICON_SMALL as usize, small as isize);
+        }
+    }
+}
 
 pub fn same_exe(found: &str, wanted: &str) -> bool {
     found.eq_ignore_ascii_case(wanted)

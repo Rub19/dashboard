@@ -12,6 +12,7 @@ import { usePersisted } from "./qol";
 import { readJson } from "./settings";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
+import { NowPlayingCard } from "./NowPlaying";
 import { tasksList } from "./tasks";
 import { Button, LeagueMark, ValorantMark } from "./ui";
 
@@ -68,6 +69,7 @@ function useQuiet<T>(load: () => Promise<T>, visible = true) {
 }
 
 const BLOCKS = [
+  ["music", () => tr("Musique", "Music")],
   ["mail", () => tr("Mails non lus", "Unread mail")],
   ["valorant", () => "VALORANT"],
   ["league", () => "League of Legends"],
@@ -280,6 +282,8 @@ export default function HomePage({ active, profile, modules, busy, checking, off
           {BLOCKS.map(([block, label]) => <button type="button" key={block} className={shown(block) ? "on" : ""} aria-pressed={shown(block)} onClick={() => toggleBlock(block)}><i>{shown(block) && <Check size={13} />}</i>{label()}</button>)}
         </div>
       )}
+
+      {shown("music") && <NowPlayingCard />}
 
       <HomeTiles visible={active} shown={shown} onMail={onOpenMail} onTracker={onOpenTracker} onLol={onOpenLol} onWeather={onOpenInsights} onDaily={onOpenDaily} />
 

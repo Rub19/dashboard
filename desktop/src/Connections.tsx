@@ -1,6 +1,8 @@
 import { FormEvent, useState } from "react";
 import { ExternalLink, Plug } from "lucide-react";
 import { apiCall, apiData, openExternal } from "./api";
+import { DRIVE_CLIENT } from "./FilesPage";
+import { GoogleEvent } from "./home";
 import { firstArray, Json } from "./generic";
 import { errorText, lang, tr } from "./i18n";
 import { ErrorBox, PageHead, Status, useLoad } from "./kit";
@@ -42,6 +44,41 @@ function GithubDetail() {
       {data.avatarUrl && <img src={data.avatarUrl} alt="" />}
       <span><b>{data.login}</b><small>{tr(`${data.publicRepos ?? 0} dépôts, ${data.followers ?? 0} abonné(s)`, `${data.publicRepos ?? 0} repos, ${data.followers ?? 0} follower(s)`)}</small>{data.recentEvent?.repo && <small>{tr("Dernière activité", "Last activity")} : {data.recentEvent.repo}{data.recentEvent.at ? `, ${new Date(data.recentEvent.at).toLocaleDateString(lang, { day: "numeric", month: "short" })}` : ""}</small>}</span>
     </button>
+  );
+}
+
+const googleEvents = () => apiData<{ events?: GoogleEvent[] }>(`api/google-calendar/events?clientId=${encodeURIComponent(DRIVE_CLIENT)}`).then((data) => data.events ?? []);
+
+export async function linkedGoogleEvents(): Promise<GoogleEvent[]> {
+  try {
+    const rows = firstArray(await apiCall<Json>("api/connections")) as unknown as { provider: string; connected?: boolean }[];
+    return rows.some((row) => row.provider === "google-calendar" && row.connected) ? await googleEvents() : [];
+  } catch {
+    return [];
+  }
+}
+
+function AgendaDetail() {
+  const state = useLoad(googleEvents);
+  if (state.error) {
+    return (
+      <p className="conn-twitch-error">
+        <small role="alert">{state.error}</small>
+        <button type="button" className="conn-change" onClick={() => void openExternal("https://ethone.dev/connections")}>{tr("Reconnecter", "Link again")}</button>
+      </p>
+    );
+  }
+  if (!state.data) return null;
+  if (state.data.length === 0) return <small className="muted">{tr("Aucun événement à venir.", "No upcoming events.")}</small>;
+  return (
+    <ul className="conn-events">
+      {state.data.map((event) => (
+        <li key={event.id}>
+          <time>{event.start ? new Date(event.start).toLocaleString(lang, event.allDay ? { weekday: "short", day: "numeric", month: "short" } : { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}</time>
+          <b>{event.title}</b>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -95,6 +132,7 @@ function Card({ provider, onChanged }: { provider: string; onChanged: () => void
       </div>
       {provider === "github" && <GithubDetail />}
       {provider === "twitch" && <TwitchDetail />}
+      {provider === "google-calendar" && <AgendaDetail />}
       {error && <ErrorBox message={error} />}
     </li>
   );

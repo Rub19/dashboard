@@ -5,7 +5,8 @@ import { apiCall, apiData, EthoneItem, itemsList, ModuleStatus, Profile, restCal
 import { Completion, dayKey, Habit, habitStreak } from "./DailyPage";
 import { rankName, tierIcon } from "./eval";
 import { firstArray, Json } from "./generic";
-import { dayProgress, connectionStatus, groupMail, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
+import { linkedGoogleEvents } from "./Connections";
+import { dayProgress, connectionStatus, googleItems, groupMail, hasModuleUpdate, openTasks, summarizeModules, todayEvents } from "./home";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { lolRank, LolProfile } from "./lol";
 import { setPersisted, usePersisted } from "./qol";
@@ -197,11 +198,11 @@ function Agenda({ visible, onOpen, offline }: { visible: boolean; onOpen: () => 
   useEffect(() => {
     if (!visible) return;
     let active = true;
-    Promise.all([tasksList(), itemsList("events")]).then(
-      ([taskList, eventList]) => {
+    Promise.all([tasksList(), itemsList("events"), linkedGoogleEvents()]).then(
+      ([taskList, eventList, google]) => {
         if (!active) return;
         setTasks(taskList);
-        setEvents(eventList);
+        setEvents([...eventList, ...googleItems<EthoneItem>(google, { body: "", done: false } as Omit<EthoneItem, "id" | "title" | "startAt">)]);
       },
       (reason) => active && setError(errorText(reason)),
     );

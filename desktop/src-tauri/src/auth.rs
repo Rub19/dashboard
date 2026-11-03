@@ -141,6 +141,8 @@ fn user_error(failure: Failure, invalid: &str) -> String {
 fn service_error(failure: Failure) -> String {
     match failure {
         Failure::Network => "network".into(),
+        Failure::Status(_, Some(code)) if code == "AUTH_EXPIRED" || code == "PROVIDER_REQUEST_REJECTED" => "providerExpired".into(),
+        Failure::Status(_, Some(code)) if code.starts_with("PROVIDER_") => "providerDown".into(),
         Failure::Status(401 | 403, _) => "sessionExpired".into(),
         Failure::Status(429, _) => "rateLimited".into(),
         Failure::Status(..) => "server".into(),

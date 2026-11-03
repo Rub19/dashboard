@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { connectionStatus, firstNote, groupMail, summarizeModules } from "./home.ts";
+import { connectionStatus, firstNote, googleItems, groupMail, summarizeModules } from "./home.ts";
 
 test("the same mail repeated becomes one row with a count", () => {
   const mail = (id, from_address, subject) => ({ id, from_address, subject });
@@ -61,4 +61,9 @@ test("firstNote keeps the first real line of the release notes", () => {
   assert.equal(firstNote("\n\n- Bandeau"), "Bandeau");
   assert.equal(firstNote(null), "");
   assert.equal(firstNote("  \n"), "");
+});
+
+test("googleItems keeps timed Google events for the day list", () => {
+  const items = googleItems([{ id: "a", title: "RDV", start: "2026-11-03T10:00:00+01:00" }, { id: "b", title: "Férié", start: "2026-11-03", allDay: true }, { id: "c", title: "Sans date" }], {});
+  assert.deepEqual(items, [{ id: "google-a", title: "RDV", startAt: "2026-11-03T10:00:00+01:00" }]);
 });

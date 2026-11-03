@@ -2086,3 +2086,7 @@ li:hover > .team-remove, .team-remove:focus-visible { opacity: 1; }
 .capsule-time i { flex: 1; height: 3px; overflow: hidden; border-radius: 2px; background: color-mix(in srgb, var(--fg) 14%, transparent); }
 .capsule-time em { display: block; height: 100%; background: #1db954; transform-origin: left; }
 .music-capsule.open .capsule-controls { flex: 1 1 100%; justify-content: center; gap: 10px; }
+.conn-events { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.conn-events li { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.conn-events time { flex: none; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.conn-events b { overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }

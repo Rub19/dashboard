@@ -8,7 +8,7 @@ import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, formatBytes, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
 
-const DRIVE_CLIENT = "259857269450-m5kiejkhb1k0lt4h673mi0jsrklmtas3.apps.googleusercontent.com";
+export const DRIVE_CLIENT = "259857269450-m5kiejkhb1k0lt4h673mi0jsrklmtas3.apps.googleusercontent.com";
 const CHUNK = 8 * 1024 * 1024;
 
 const encodeMeta = (meta: unknown) => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(meta))));

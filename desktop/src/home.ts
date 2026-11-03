@@ -67,3 +67,9 @@ export function dueEvents<T extends { id: string; startAt: string | null }>(even
 export function firstNote(notes: string | null | undefined): string {
   return notes?.split("\n").filter((line) => !/^\s*#/.test(line)).map((line) => line.replace(/^[*\->\s]+/, "").trim()).find(Boolean) ?? "";
 }
+
+export interface GoogleEvent { id?: string; title?: string; start?: string; allDay?: boolean; location?: string }
+
+export function googleItems<T extends { id: string; title: string; startAt: string | null }>(events: GoogleEvent[], fill: Omit<T, "id" | "title" | "startAt">): T[] {
+  return events.filter((event) => event.start && !event.allDay).map((event) => ({ ...fill, id: `google-${event.id}`, title: event.title ?? "", startAt: event.start ?? null }) as T);
+}

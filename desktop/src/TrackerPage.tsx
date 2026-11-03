@@ -3,10 +3,10 @@ import { usePersisted } from "./qol";
 import { createPortal } from "react-dom";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
-import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
+import { BarChart3, ChevronRight, ExternalLink, Flag, LogOut, Monitor, RefreshCw, Search, Star, Target, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
 import { apiData, catalogGet, riotLinkUrl, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
+import { agentIcon, agentPortrait, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listItem, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
@@ -153,34 +153,30 @@ function dayLabel(iso: string) {
 function MatchRow({ match, puuid, history, image, onOpen }: { match: EvalMatch; puuid: string; history?: EvalHistoryPoint; image?: string; onOpen: () => void }) {
   const summary = matchSummary(match, puuid);
   if (!summary) return null;
-  const { me, won, draw, score, mvp, kd } = summary;
+  const { me, won, draw, score, mvp } = summary;
   const result = draw ? "draw" : won ? "win" : "loss";
   return (
     <motion.li variants={listItem}>
-      <button type="button" className={`match-row ${result}`} onClick={onOpen}>
-        {(image || match.mapId) && <img className="match-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
-        {me.agentId ? <img className="match-agent" src={agentIcon(me.agentId)} alt={me.agent} title={me.agent} /> : <span className="match-agent" />}
-        <span className="match-result">
-          <b><span>{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</span> {score[0]} – {score[1]}</b>
-          <small>{modeName(match.mode)} · {match.map}{match.startedAt ? ` · ${hourFormat.format(new Date(match.startedAt))}` : ""}</small>
+      <button type="button" className={`match-card ${result}`} onClick={onOpen}>
+        <span className="match-card-head">
+          <span className="match-mode"><Monitor size={16} /><b>{modeName(match.mode)}</b></span>
+          <small>{match.startedAt ? hourFormat.format(new Date(match.startedAt)) : ""}{match.lengthSec > 0 ? ` · ${Math.round(match.lengthSec / 60)} min` : ""}</small>
         </span>
-        <span className="match-mvp">{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
-        <span className="match-stat"><b>{me.kills} / {me.deaths} / {me.assists}</b></span>
-        <span className="match-stat"><b>{decimal(kd)}</b></span>
-        <span className="match-stat"><b>{summary.acs}</b></span>
-        <span className="match-stat wide"><b>{summary.hs} %</b></span>
-        <span className="match-stat wide"><b>{summary.adr}</b></span>
-        <span className="match-rr">{history && <><b className={history.change >= 0 ? "up" : "down"}>{history.change >= 0 ? "+" : ""}{history.change}</b>{history.tier > 0 && <img src={tierIcon(history.tier)} alt={rankName(history.tier)} title={rankName(history.tier)} />}</>}</span>
+        <span className="match-card-hero">
+          {(image || match.mapId) && <img className="match-card-map" src={image || mapImage(match.mapId)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
+          <span className="match-card-shade" />
+          {me.agentId && <img className="match-card-agent" src={agentPortrait(me.agentId)} alt={me.agent} title={me.agent} loading="lazy" onError={(event) => { event.currentTarget.src = agentIcon(me.agentId); }} />}
+          <span className="match-card-copy"><b>{me.agent}</b><small>{match.map}</small>{mvp && <i>{t(mvp === "match" ? "evalMvpMatch" : "evalMvpTeam")}</i>}</span>
+          <strong className="match-card-result">{draw ? tr("Égalité", "Draw") : won ? tr("Victoire", "Win") : tr("Défaite", "Loss")}</strong>
+        </span>
+        <span className="match-card-foot">
+          <span><Target size={15} /><b>{me.kills} / {me.deaths} / {me.assists}</b><small>K / D / A</small></span>
+          <span><BarChart3 size={15} /><b>{summary.acs}</b><small>ACS</small></span>
+          <span><Flag size={15} /><b>{score[0]} – {score[1]}</b><small>{history ? `${history.change >= 0 ? "+" : ""}${history.change} RR` : `${summary.hs} % HS`}</small></span>
+          <ChevronRight size={17} />
+        </span>
       </button>
     </motion.li>
-  );
-}
-
-function MatchColumns() {
-  return (
-    <li className="match-columns" aria-hidden="true">
-      <span /><span>{tr("Partie", "Match")}</span><span /><span>K / D / A</span><span>K/D</span><span>ACS</span><span className="wide">{t("evalHeadshots")}</span><span className="wide">{t("evalDamage")}</span><span>RR</span>
-    </li>
   );
 }
 
@@ -544,7 +540,6 @@ export default function TrackerPage() {
             <>
               <Session matches={matches} puuid={account.puuid} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
-                <MatchColumns />
                 {matches.map((match, position) => (
                   <Fragment key={match.id}>
                     {match.startedAt && (position === 0 || !matches[position - 1].startedAt || new Date(matches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}

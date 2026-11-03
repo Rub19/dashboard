@@ -68,6 +68,7 @@ import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRou
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
+import { appsRoute } from "./routes/apps.js";
 import { trackerLolLiveRoute, trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerValorantMmrRoute, trackerValorantLeaderboardRoute, trackerLolMatchesRoute, trackerValorantStoreRoute, trackerLolRotationRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
 import { valorantAuthRoute, valorantStorefrontRoute, valorantInventoryRoute } from "./routes/valorant-player.js";
 import { valorantEvalHistoryRoute, valorantEvalSyncRoute } from "./routes/valorant-eval.js";
@@ -187,6 +188,7 @@ export const ROUTES = Object.freeze([
   route("valorant.eval-history", "/api/valorant/eval/history", valorantEvalHistoryRoute, { service: "tracker", rateLimit: "strict" }),
   route("tracker.valorant-mmr", "/api/stats/valorant-mmr", trackerValorantMmrRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-leaderboard", "/api/stats/valorant-leaderboard", trackerValorantLeaderboardRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("apps", "/api/apps", appsRoute, { public: true, service: "apps", rateLimit: "edge" }),
   route("tracker.lol-live", "/api/stats/lol-live", trackerLolLiveRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-store", "/api/stats/valorant-store", trackerValorantStoreRoute, { public: true, service: "tracker", rateLimit: "edge" }),

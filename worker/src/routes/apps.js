@@ -26,14 +26,14 @@ export function appFromFeed(app, data) {
   });
 }
 
-export function appFromRelease(app, release) {
-  const asset = (release?.assets || []).find((item) => /\.(exe|msi)$/i.test(String(item?.name || "")));
-  return appFromFeed(app, {
-    version: release?.tag_name,
-    notes: release?.body,
-    pub_date: release?.published_at,
-    platforms: { "windows-x86_64": { url: asset?.browser_download_url } }
-  });
+const unescapeXml = (value) => value.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+
+export function appFromAtom(app, xml) {
+  const entry = /<entry>([\s\S]*?)<\/entry>/.exec(String(xml || ""))?.[1] ?? "";
+  const tag = /releases\/tag\/([^"<]+)/.exec(entry)?.[1];
+  const notes = /<content[^>]*>([\s\S]*?)<\/content>/.exec(entry)?.[1] ?? "";
+  const text = unescapeXml(unescapeXml(notes).replace(/<[^>]+>/g, " ")).replace(/s+/g, " ").trim();
+  return appFromFeed(app, { version: tag ? decodeURIComponent(tag) : null, notes: text, pub_date: /<updated>([^<]+)<\/updated>/.exec(entry)?.[1] });
 }
 
 async function loadApp(env, app) {
@@ -43,9 +43,8 @@ async function loadApp(env, app) {
       const response = await requestExternal(new URL(app.feed), { env, expectedOrigin: origin, service: "apps", dedupeKey: `apps:${app.id}`, retries: 1, timeoutMs: 8000 });
       return appFromFeed(app, response.data);
     }
-    const origin = "https://api.github.com";
-    const response = await requestExternal(new URL(`/repos/${app.repo}/releases/latest`, origin), { env, expectedOrigin: origin, service: "apps", dedupeKey: `apps:${app.id}`, headers: { "user-agent": "Ethone-Worker", accept: "application/vnd.github+json" }, retries: 1, timeoutMs: 8000 });
-    return appFromRelease(app, response.data);
+    const response = await fetch(`https://github.com/${app.repo}/releases.atom`, { headers: { "user-agent": "Ethone-Worker" }, signal: AbortSignal.timeout(8000) });
+    return response.ok ? appFromAtom(app, await response.text()) : appFromFeed(app, null);
   } catch {
     return appFromFeed(app, null);
   }

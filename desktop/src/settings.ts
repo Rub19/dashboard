@@ -13,6 +13,31 @@ export const ACCENTS = [
 ] as const;
 
 export type AccentId = (typeof ACCENTS)[number]["id"];
+export type Density = "comfortable" | "compact";
+export type MotionPreference = "system" | "reduced";
+export type TransparencyPreference = "system" | "reduced";
+export type TextScale = 90 | 100 | 110 | 125;
+
+export interface InterfacePreferences {
+  density: Density;
+  motion: MotionPreference;
+  transparency: TransparencyPreference;
+  textScale: TextScale;
+}
+
+export const DEFAULT_INTERFACE_PREFERENCES: InterfacePreferences = {
+  density: "comfortable",
+  motion: "system",
+  transparency: "system",
+  textScale: 100,
+};
+
+const INTERFACE_KEY = "ethone-interface-preferences";
+export const INTERFACE_EVENT = "ethone-interface-preferences";
+const DENSITIES: Density[] = ["comfortable", "compact"];
+const MOTIONS: MotionPreference[] = ["system", "reduced"];
+const TRANSPARENCIES: TransparencyPreference[] = ["system", "reduced"];
+const TEXT_SCALES: TextScale[] = [90, 100, 110, 125];
 
 function read(key: string): string | null {
   try {
@@ -45,6 +70,35 @@ export function currentTheme(): Theme {
 
 export function currentAccent(): AccentId {
   return ACCENTS.find((accent) => accent.id === read("ethone-accent-choice"))?.id ?? "ocean";
+}
+
+export function normalizeInterfacePreferences(value: unknown): InterfacePreferences {
+  const source = value && typeof value === "object" ? value as Partial<InterfacePreferences> : {};
+  return {
+    density: DENSITIES.includes(source.density as Density) ? source.density as Density : DEFAULT_INTERFACE_PREFERENCES.density,
+    motion: MOTIONS.includes(source.motion as MotionPreference) ? source.motion as MotionPreference : DEFAULT_INTERFACE_PREFERENCES.motion,
+    transparency: TRANSPARENCIES.includes(source.transparency as TransparencyPreference) ? source.transparency as TransparencyPreference : DEFAULT_INTERFACE_PREFERENCES.transparency,
+    textScale: TEXT_SCALES.includes(source.textScale as TextScale) ? source.textScale as TextScale : DEFAULT_INTERFACE_PREFERENCES.textScale,
+  };
+}
+
+export function currentInterfacePreferences(): InterfacePreferences {
+  return normalizeInterfacePreferences(readJson<unknown>(INTERFACE_KEY));
+}
+
+export function applyInterfacePreferences(preferences = currentInterfacePreferences()): InterfacePreferences {
+  const next = normalizeInterfacePreferences(preferences);
+  const root = document.documentElement;
+  root.dataset.density = next.density;
+  root.dataset.motion = next.motion;
+  root.dataset.transparency = next.transparency;
+  root.style.setProperty("--text-scale", String(next.textScale / 100));
+  const opaque = next.transparency === "reduced" || window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
+  if (opaque) root.classList.remove("mica");
+  else void invoke<boolean>("window_setup").then((mica) => root.classList.toggle("mica", mica)).catch(() => undefined);
+  write(INTERFACE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent<InterfacePreferences>(INTERFACE_EVENT, { detail: next }));
+  return next;
 }
 
 export function applyAppearance(theme = currentTheme(), accentId = currentAccent()) {

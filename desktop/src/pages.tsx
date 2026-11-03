@@ -5,8 +5,9 @@ import { Check, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import { about, JournalEntry, openSite, Profile, readJournal, SitePage } from "./api";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { listItem, listStagger, SPRING_PILL, SPRING_SWAP } from "./motion";
-import { AccentId, ACCENTS, applyAppearance, currentAccent, currentTheme, setLanguage, Theme } from "./settings";
+import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentTheme, DEFAULT_INTERFACE_PREFERENCES, Density, InterfacePreferences, MotionPreference, setLanguage, TextScale, Theme, TransparencyPreference } from "./settings";
 import { Button } from "./ui";
+import { toast } from "./qol";
 
 const LEGAL: [SitePage, Key][] = [["terms", "terms"], ["privacy", "privacy"], ["cookies", "cookies"], ["legal", "legal"]];
 
@@ -44,6 +45,7 @@ export function JournalPage() {
 export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
   const [theme, setTheme] = useState<Theme>(currentTheme);
   const [accent, setAccent] = useState<AccentId>(currentAccent);
+  const [preferences, setPreferences] = useState<InterfacePreferences>(currentInterfacePreferences);
 
   const chooseTheme = (next: Theme) => {
     setTheme(next);
@@ -52,6 +54,16 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
   const chooseAccent = (next: AccentId) => {
     setAccent(next);
     applyAppearance(theme, next);
+  };
+  const choosePreference = <K extends keyof InterfacePreferences>(key: K, value: InterfacePreferences[K]) => {
+    setPreferences(applyInterfacePreferences({ ...preferences, [key]: value }));
+  };
+  const reset = () => {
+    setTheme("system");
+    setAccent("ocean");
+    setPreferences(applyInterfacePreferences(DEFAULT_INTERFACE_PREFERENCES));
+    applyAppearance("system", "ocean");
+    toast(tr("Apparence réinitialisée", "Appearance reset"));
   };
 
   return (
@@ -90,6 +102,49 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
               </button>
             ))}
           </div>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Densité", "Density")}</b><small className="muted">{tr("Adapte les espacements et la hauteur des contrôles.", "Adjusts spacing and control height.")}</small></span>
+          <div className="segmented" role="group" aria-label={tr("Densité", "Density")}>
+            {(["comfortable", "compact"] as Density[]).map((item) => (
+              <button key={item} type="button" className={preferences.density === item ? "on" : ""} aria-pressed={preferences.density === item} onClick={() => choosePreference("density", item)}>
+                {preferences.density === item && <span className="segmented-pill" />}
+                <span>{item === "comfortable" ? tr("Confortable", "Comfortable") : tr("Compact", "Compact")}</span>
+              </button>
+            ))}
+          </div>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Taille du texte", "Text size")}</b><small className="muted">{tr("Agrandit les textes sans changer le scaling Windows.", "Enlarges text without changing Windows scaling.")}</small></span>
+          <select className="settings-select" value={preferences.textScale} aria-label={tr("Taille du texte", "Text size")} onChange={(event) => choosePreference("textScale", Number(event.target.value) as TextScale)}>
+            {([90, 100, 110, 125] as TextScale[]).map((value) => <option key={value} value={value}>{value} %</option>)}
+          </select>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Animations", "Animations")}</b><small className="muted">{tr("Suit Windows ou réduit les mouvements dans toute l'application.", "Follows Windows or reduces motion throughout the app.")}</small></span>
+          <div className="segmented" role="group" aria-label={tr("Animations", "Animations")}>
+            {(["system", "reduced"] as MotionPreference[]).map((item) => (
+              <button key={item} type="button" className={preferences.motion === item ? "on" : ""} aria-pressed={preferences.motion === item} onClick={() => choosePreference("motion", item)}>
+                {preferences.motion === item && <span className="segmented-pill" />}
+                <span>{item === "system" ? "Windows" : tr("Réduites", "Reduced")}</span>
+              </button>
+            ))}
+          </div>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Transparence", "Transparency")}</b><small className="muted">{tr("Suit Windows ou utilise des surfaces opaques.", "Follows Windows or uses opaque surfaces.")}</small></span>
+          <div className="segmented" role="group" aria-label={tr("Transparence", "Transparency")}>
+            {(["system", "reduced"] as TransparencyPreference[]).map((item) => (
+              <button key={item} type="button" className={preferences.transparency === item ? "on" : ""} aria-pressed={preferences.transparency === item} onClick={() => choosePreference("transparency", item)}>
+                {preferences.transparency === item && <span className="segmented-pill" />}
+                <span>{item === "system" ? "Windows" : tr("Opaque", "Opaque")}</span>
+              </button>
+            ))}
+          </div>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Réinitialiser l'apparence", "Reset appearance")}</b><small className="muted">{tr("Restaure le thème automatique et les réglages par défaut.", "Restores the automatic theme and default settings.")}</small></span>
+          <Button onClick={reset}>{tr("Réinitialiser", "Reset")}</Button>
         </li>
       </ul>
       <h2 className="group-title">{t("account")}</h2>

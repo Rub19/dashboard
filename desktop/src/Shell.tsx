@@ -297,7 +297,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       <main className="layer" ref={layer} tabIndex={-1}>
         {(
           [
-            ["home", <HomePage profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenLol={() => go("games")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],
+            ["home", <HomePage active={page === "home"} profile={profile} modules={modules} busy={busy} checking={checking} offline={offline} error={moduleError} onRefresh={refresh} onRun={run} onOpenApplications={() => go("modules")} onOpenProductivity={() => go("productivity")} onOpenTracker={() => go("tracker")} onOpenLol={() => go("games")} onOpenMail={() => go("mail")} onOpenInsights={() => go("insights")} onOpenDaily={() => go("productivity")} />],
             ["modules", <ModulesPage name={profile.name} modules={modules} checking={checking} busy={busy} errors={errors} loadError={moduleError} onRun={run} onRefresh={refresh} onDismiss={clearError} pinned={pinned} onPin={pin} />],
             ["productivity", <WorkPage />],
             ["tracker", <TrackerPage />],

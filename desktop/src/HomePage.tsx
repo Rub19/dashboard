@@ -15,6 +15,7 @@ import { EASE_SNAP, listItem, listStagger } from "./motion";
 import { Button, LeagueMark, ValorantMark } from "./ui";
 
 interface Props {
+  active: boolean;
   profile: Profile;
   modules: ModuleStatus[];
   busy: Record<string, Busy>;
@@ -51,16 +52,17 @@ function useNow() {
   return now;
 }
 
-function useQuiet<T>(load: () => Promise<T>) {
+function useQuiet<T>(load: () => Promise<T>, visible = true) {
   const [value, setValue] = useState<T | null>(null);
   useEffect(() => {
+    if (!visible) return;
     let active = true;
     load().then((result) => active && setValue(result), () => null);
     return () => {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible]);
   return value;
 }
 
@@ -77,8 +79,8 @@ const BLOCKS = [
 ] as const;
 type Block = (typeof BLOCKS)[number][0];
 
-function HomeTiles({ shown, onMail, onTracker, onLol, onWeather, onDaily }: { shown: (block: Block) => boolean; onMail: () => void; onTracker: () => void; onLol: () => void; onWeather: () => void; onDaily: () => void }) {
-  const unread = useQuiet(async () => (await apiCall<{ meta?: { unread?: number } }>("api/mail/inbox?folder=inbox&limit=1")).meta?.unread ?? 0);
+function HomeTiles({ visible, shown, onMail, onTracker, onLol, onWeather, onDaily }: { visible: boolean; shown: (block: Block) => boolean; onMail: () => void; onTracker: () => void; onLol: () => void; onWeather: () => void; onDaily: () => void }) {
+  const unread = useQuiet(async () => (await apiCall<{ meta?: { unread?: number } }>("api/mail/inbox?folder=inbox&limit=1")).meta?.unread ?? 0, visible);
   const identity = useQuiet(() => riotStatus());
   const rank = useQuiet(async () => ((await riotStatus()) ? riotRank<{ tier?: number; rr?: number }>() : null));
   const [league, setLeague] = useState<ReturnType<typeof lolRank> | null>(null);
@@ -111,12 +113,13 @@ function HomeTiles({ shown, onMail, onTracker, onLol, onWeather, onDaily }: { sh
   );
 }
 
-function TodayHabits({ onOpen }: { onOpen: () => void }) {
+function TodayHabits({ visible, onOpen }: { visible: boolean; onOpen: () => void }) {
   const [habits, setHabits] = useState<Habit[] | null>(null);
   const [done, setDone] = useState<Completion[]>([]);
   const [failed, setFailed] = useState(false);
   const today = dayKey(new Date());
   useEffect(() => {
+    if (!visible) return;
     let active = true;
     Promise.all([
       restCall<Habit[]>("ethone_habits?select=*&archived=eq.false&order=created_at.desc"),
@@ -129,7 +132,7 @@ function TodayHabits({ onOpen }: { onOpen: () => void }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [visible]);
   const toggle = async (habit: Habit) => {
     setFailed(false);
     const found = done.find((item) => item.habit_id === habit.id && item.completed_on === today);
@@ -169,10 +172,10 @@ function TodayHabits({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-function RecentMail({ onOpen }: { onOpen: () => void }) {
+function RecentMail({ visible, onOpen }: { visible: boolean; onOpen: () => void }) {
   const mail = useQuiet(async () => {
     return groupMail(firstArray(await apiCall<Json>("api/mail/inbox?folder=inbox&limit=30")) as unknown as { id: string; from_address: string; from_name?: string; subject: string }[]);
-  });
+  }, visible);
   if (!mail || mail.length === 0) return null;
   return (
     <section className="home-mail">
@@ -182,13 +185,14 @@ function RecentMail({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
+function Agenda({ visible, onOpen, offline }: { visible: boolean; onOpen: () => void; offline: boolean }) {
   const now = useNow();
   const [tasks, setTasks] = useState<EthoneItem[] | null>(null);
   const [events, setEvents] = useState<EthoneItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!visible) return;
     let active = true;
     Promise.all([itemsList("tasks"), itemsList("events")]).then(
       ([taskList, eventList]) => {
@@ -201,7 +205,7 @@ function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [visible]);
 
   if (error) return <p className="today-note">{offline ? t("offlineSession") : error}</p>;
   if (!tasks || !events) return <div className="today-loading" aria-busy="true" aria-label={t("loading")}><span /><span /><span /></div>;
@@ -238,7 +242,7 @@ function Agenda({ onOpen, offline }: { onOpen: () => void; offline: boolean }) {
   );
 }
 
-export default function HomePage({ profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker, onOpenLol, onOpenMail, onOpenInsights, onOpenDaily }: Props) {
+export default function HomePage({ active, profile, modules, busy, checking, offline, error, onRefresh, onRun, onOpenApplications, onOpenProductivity, onOpenTracker, onOpenLol, onOpenMail, onOpenInsights, onOpenDaily }: Props) {
   const [hiddenList, setHiddenList] = usePersisted<string>("ethone-home-hidden", "");
   const [editing, setEditing] = useState(false);
   const hidden = hiddenList.split(",").filter(Boolean);
@@ -276,14 +280,14 @@ export default function HomePage({ profile, modules, busy, checking, offline, er
         </div>
       )}
 
-      <HomeTiles shown={shown} onMail={onOpenMail} onTracker={onOpenTracker} onLol={onOpenLol} onWeather={onOpenInsights} onDaily={onOpenDaily} />
+      <HomeTiles visible={active} shown={shown} onMail={onOpenMail} onTracker={onOpenTracker} onLol={onOpenLol} onWeather={onOpenInsights} onDaily={onOpenDaily} />
 
       <div className="home-columns">
         {(shown("agenda") || shown("habits") || shown("recent")) && <div className="home-left">
-          {shown("agenda") && <Agenda onOpen={onOpenProductivity} offline={offline} />}
+          {shown("agenda") && <Agenda visible={active} onOpen={onOpenProductivity} offline={offline} />}
           {(shown("habits") || shown("recent")) && <div className="home-side">
-            {shown("habits") && <TodayHabits onOpen={onOpenDaily} />}
-            {shown("recent") && <RecentMail onOpen={onOpenMail} />}
+            {shown("habits") && <TodayHabits visible={active} onOpen={onOpenDaily} />}
+            {shown("recent") && <RecentMail visible={active} onOpen={onOpenMail} />}
           </div>}
         </div>}
         {shown("apps") && <div className="home-apps">

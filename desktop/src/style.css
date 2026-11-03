@@ -1487,12 +1487,13 @@ select option { background: var(--row-solid); color: var(--fg); }
 .match-card-hero { position: relative; display: block; height: 138px; overflow: hidden; background: var(--eval-card2); }
 .match-card-map { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); }
 .match-card-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(8 9 12 / .84), rgb(8 9 12 / .24) 58%, rgb(8 9 12 / .58)); }
-.match-card-agent { position: absolute; left: -12px; bottom: -34px; width: 162px; height: 196px; object-fit: contain; object-position: center bottom; filter: drop-shadow(10px 6px 16px rgb(0 0 0 / .34)); }
-.match-card-copy { position: absolute; left: 128px; top: 50%; display: grid; gap: 2px; max-width: 46%; transform: translateY(-50%); color: #fff; }
-.match-card-copy b { font: 680 22px/26px var(--display); }
+.match-card-agent { position: absolute; left: 0; bottom: -18px; width: 142px; height: 170px; object-fit: contain; object-position: left bottom; filter: drop-shadow(10px 6px 16px rgb(0 0 0 / .34)); }
+.match-card-copy { position: absolute; left: 150px; right: 12px; top: 56%; display: grid; gap: 2px; min-width: 0; transform: translateY(-50%); color: #fff; }
+.match-card-copy b, .match-card-copy small, .match-card-copy i { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.match-card-copy b { font: 680 20px/24px var(--display); }
 .match-card-copy small { color: rgb(255 255 255 / .72); font-size: 12px; }
-.match-card-copy i { margin-top: 3px; color: #ffd45e; font-size: 11px; font-style: normal; font-weight: 650; }
-.match-card-result { position: absolute; right: 13px; top: 50%; padding: 5px 10px; border-radius: 99px; color: #fff; font-size: 11px; letter-spacing: .02em; text-transform: uppercase; transform: translateY(-50%); box-shadow: 0 4px 14px rgb(0 0 0 / .22); }
+.match-card-copy i { margin-top: 3px; padding-right: 82px; color: #ffd45e; font-size: 11px; font-style: normal; font-weight: 650; }
+.match-card-result { position: absolute; right: 10px; top: 10px; max-width: 104px; overflow: hidden; padding: 5px 9px; border-radius: 99px; color: #fff; font-size: 10px; letter-spacing: .02em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; box-shadow: 0 4px 14px rgb(0 0 0 / .22); }
 .match-card.win .match-card-result { background: #2f9d54; }
 .match-card.loss .match-card-result { background: #c84949; }
 .match-card.draw .match-card-result { background: #68707e; }
@@ -1503,9 +1504,8 @@ select option { background: var(--row-solid); color: var(--fg); }
 .match-card-foot small { color: var(--muted); font-size: 9px; text-transform: uppercase; }
 .match-card-foot > svg { color: var(--muted); }
 @container (max-width: 430px) {
-  .match-card-copy { left: 112px; }
-  .match-card-agent { left: -22px; }
-  .match-card-result { top: 18px; transform: none; }
+  .match-card-copy { left: 132px; }
+  .match-card-agent { left: -8px; width: 132px; }
 }
 
 .friend-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr); gap: 16px; align-items: start; }

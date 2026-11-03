@@ -2,9 +2,31 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RefreshCw, X } from "lucide-react";
-import { errorText, t } from "./i18n";
+import { errorText, t, tr } from "./i18n";
+import { filterActive, MatchFilter, NO_FILTER, ResultFilter } from "./match-filter";
 import { listItem, listStagger, SPRING_PILL } from "./motion";
 import { Button } from "./ui";
+
+export function MatchFilters({ filter, onChange, modes, picks, pickLabel, shown, total }: { filter: MatchFilter; onChange: (next: MatchFilter) => void; modes: string[]; picks: string[]; pickLabel: string; shown: number; total: number }) {
+  const results: [ResultFilter, string][] = [["all", tr("Toutes", "All")], ["win", tr("Victoires", "Wins")], ["loss", tr("Défaites", "Losses")]];
+  return (
+    <div className="match-filters" role="group" aria-label={tr("Filtrer les parties", "Filter games")}>
+      <div className="segmented">
+        {results.map(([id, label]) => <button key={id} type="button" className={filter.result === id ? "on" : ""} aria-pressed={filter.result === id} onClick={() => onChange({ ...filter, result: id })}>{filter.result === id && <span className="segmented-pill" />}<span>{label}</span></button>)}
+      </div>
+      <select className="settings-select" value={filter.mode} aria-label={tr("Mode de jeu", "Game mode")} onChange={(event) => onChange({ ...filter, mode: event.target.value })}>
+        <option value="">{tr("Tous les modes", "All modes")}</option>
+        {modes.map((mode) => <option key={mode} value={mode}>{mode}</option>)}
+      </select>
+      <select className="settings-select" value={filter.pick} aria-label={pickLabel} onChange={(event) => onChange({ ...filter, pick: event.target.value })}>
+        <option value="">{pickLabel}</option>
+        {picks.map((pick) => <option key={pick} value={pick}>{pick}</option>)}
+      </select>
+      {filterActive(filter) && <button type="button" className="link" onClick={() => onChange(NO_FILTER)}>{tr("Tout afficher", "Show all")}</button>}
+      <small className="muted">{tr(`${shown} sur ${total}`, `${shown} of ${total}`)}</small>
+    </div>
+  );
+}
 
 export interface Loaded<T> {
   data: T | null;

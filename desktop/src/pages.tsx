@@ -7,7 +7,7 @@ import { Check, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import { about, JournalEntry, openSite, Profile, readJournal, SitePage } from "./api";
 import { errorText, Key, lang, t, tr } from "./i18n";
 import { listItem, listStagger, SPRING_PILL, SPRING_SWAP } from "./motion";
-import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentTheme, DEFAULT_INTERFACE_PREFERENCES, Density, exportSettings, InterfacePreferences, MotionPreference, parseSettings, setLanguage, TextScale, Theme, TransparencyPreference, write } from "./settings";
+import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentLook, currentTheme, applyLook, LookId, LOOKS, DEFAULT_INTERFACE_PREFERENCES, Density, exportSettings, InterfacePreferences, MotionPreference, parseSettings, setLanguage, TextScale, Theme, TransparencyPreference, write } from "./settings";
 import { Button } from "./ui";
 import { toast } from "./qol";
 
@@ -56,7 +56,7 @@ function DesktopSwitch({ title, text, checked, onChange }: { title: string; text
   );
 }
 
-function DesktopSettings() {
+export function DesktopSettings() {
   const [autostart, setAutostart] = useState(false);
   const [prefs, setPrefs] = useState<DesktopPrefs>(readDesktopPrefs);
   useEffect(() => {
@@ -86,8 +86,8 @@ function DesktopSettings() {
   };
   return (
     <>
-      <h2 className="group-title">Windows</h2>
-      <ul className="settings">
+      <PageHead title={tr("Windows et notifications", "Windows and notifications")} text={tr("Comment Ethone se comporte sur ce PC.", "How Ethone behaves on this PC.")} />
+      <ul className="settings settings-grid">
         <DesktopSwitch title={tr("Lancer avec Windows", "Start with Windows")} text={tr("Ethone démarre réduit dans la zone de notification.", "Ethone starts minimized to the notification area.")} checked={autostart} onChange={toggleAutostart} />
         <DesktopSwitch title={tr("Réduire à la fermeture", "Minimize on close")} text={tr("La croix garde Ethone actif dans la zone de notification.", "The close button keeps Ethone running in the notification area.")} checked={prefs.closeToTray} onChange={(closeToTray) => change({ closeToTray })} />
         <DesktopSwitch title={tr("Notifier les nouveaux mails", "Notify new mail")} text={tr("Vérifié toutes les 2 minutes tant qu'Ethone est ouvert.", "Checked every 2 minutes while Ethone is open.")} checked={prefs.notifyMail} onChange={(notifyMail) => change({ notifyMail })} />
@@ -108,14 +108,17 @@ function DesktopSettings() {
   );
 }
 
-export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
+export function SettingsPage() {
+  const [look, setLook] = useState<LookId>(currentLook);
   const [theme, setTheme] = useState<Theme>(currentTheme);
   const [accent, setAccent] = useState<AccentId>(currentAccent);
   const [preferences, setPreferences] = useState<InterfacePreferences>(currentInterfacePreferences);
 
-  const chooseTheme = (next: Theme) => {
-    setTheme(next);
-    applyAppearance(next, accent);
+  const chooseLook = (next: LookId) => {
+    applyLook(next);
+    setLook(next);
+    setTheme(currentTheme());
+    setAccent(currentAccent());
   };
   const chooseAccent = (next: AccentId) => {
     setAccent(next);
@@ -125,29 +128,26 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
     setPreferences(applyInterfacePreferences({ ...preferences, [key]: value }));
   };
   const reset = () => {
-    setTheme("system");
-    setAccent("ocean");
     setPreferences(applyInterfacePreferences(DEFAULT_INTERFACE_PREFERENCES));
-    applyAppearance("system", "ocean");
+    chooseLook("ethone");
     toast(tr("Apparence réinitialisée", "Appearance reset"));
   };
 
   return (
     <>
-      <PageHead title={tr("Apparence et compte", "Appearance and account")} />
-      <h2 className="group-title">{t("appearance")}</h2>
-      <ul className="settings">
-        <li>
-          <span>{t("theme")}</span>
-          <div className="segmented" role="group" aria-label={t("theme")}>
-            {(["system", "dark", "light"] as Theme[]).map((item) => (
-              <button key={item} type="button" aria-pressed={theme === item} className={theme === item ? "on" : ""} onClick={() => chooseTheme(item)}>
-                {theme === item && <motion.span layoutId="theme-pill" className="segmented-pill" transition={SPRING_PILL} />}
-                <span>{t(`theme.${item}` as Key)}</span>
-              </button>
-            ))}
-          </div>
-        </li>
+      <PageHead title={tr("Apparence", "Appearance")} text={tr("Choisis l'ambiance de toute l'application.", "Choose the mood of the whole app.")} />
+      <div className="theme-gallery" role="group" aria-label={t("theme")}>
+        {LOOKS.map((item) => (
+          <motion.button key={item.id} type="button" className={look === item.id ? "theme-card on" : "theme-card"} aria-pressed={look === item.id} whileTap={{ scale: 0.98 }} transition={SPRING_SWAP} onClick={() => chooseLook(item.id)}>
+            <span className="theme-preview" style={{ backgroundColor: item.colors[0], backgroundImage: `radial-gradient(70% 90% at 90% 0%, ${item.colors[1]}, transparent 70%), radial-gradient(70% 90% at 0% 100%, ${item.colors[2]}, transparent 70%)` }}>
+              <i className={item.id === "daylight" ? "light" : ""} /><i className={item.id === "daylight" ? "light" : ""} /><em style={{ background: item.colors[1] }} />
+              {look === item.id && <motion.b initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING_SWAP}><Check size={13} /></motion.b>}
+            </span>
+            <span className="theme-name"><b>{lang === "fr" ? item.fr : item.en}</b><small>{lang === "fr" ? item.textFr : item.textEn}</small></span>
+          </motion.button>
+        ))}
+      </div>
+      <ul className="settings settings-grid">
         <li>
           <span>{t("accent")}</span>
           <div className="swatches" role="group" aria-label={t("accent")}>
@@ -213,18 +213,21 @@ export function SettingsPage({ profile, onSignOut }: { profile: Profile; onSignO
           <Button onClick={reset}>{tr("Réinitialiser", "Reset")}</Button>
         </li>
       </ul>
-      <DesktopSettings />
-      <h2 className="group-title">{t("account")}</h2>
-      <ul className="settings">
-        <li>
-          <span className="stack"><b>{profile.name}</b><small className="muted">{profile.email}</small></span>
-          <div className="row">
-            <Button onClick={() => openSite("account")}>{t("manageAccount")}</Button>
-            <Button onClick={onSignOut}><LogOut size={14} />{t("signOut")}</Button>
-          </div>
-        </li>
-      </ul>
     </>
+  );
+}
+
+export function AccountCard({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
+  return (
+    <ul className="settings">
+      <li>
+        <span className="stack"><b>{profile.name}</b><small className="muted">{profile.email}</small></span>
+        <div className="row">
+          <Button onClick={() => openSite("account")}>{t("manageAccount")}</Button>
+          <Button onClick={onSignOut}><LogOut size={14} />{t("signOut")}</Button>
+        </div>
+      </li>
+    </ul>
   );
 }
 

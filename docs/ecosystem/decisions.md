@@ -106,3 +106,8 @@ Les amis sont lus par une connexion XMPP courte, ouverte puis fermée à chaque 
 
 - Une application peut être installée à part, via Ethone ou via GitHub : Ethone doit détecter les deux cas.
 - Option au choix : télécharger Kairo pour qu'Ethone « devienne » Kairo dans la même fenêtre, avec un bouton pour revenir. Une seule application ouverte au lieu de plusieurs.
+
+## API par application et HDV Tracker en arrière-plan (demande de Rub19, 3 novembre 2026, pas encore fait)
+
+- Une API pour chaque application, pour qu'Ethone puisse lire leurs données.
+- HDV Tracker doit suivre les prix en arrière-plan quand Ethone tourne. Il suit déjà les journaux de jeu de Lunar et de Minecraft dans sa propre application. Le flux direct /ah et l'achat automatique restent refusés à cause des règles de Rinaorc.

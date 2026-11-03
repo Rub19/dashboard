@@ -13,7 +13,8 @@ import { readJson, write } from "./settings";
 import EvalGame from "./EvalGame";
 import EvalHub from "./EvalHub";
 import EvalLive from "./EvalLive";
-import { Tabs } from "./kit";
+import { MatchFilters, Tabs } from "./kit";
+import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
 import { Button, ValorantMark } from "./ui";
 
 const LOCAL_ID = "ethone-eval-riot-id";
@@ -371,6 +372,7 @@ export default function TrackerPage() {
   useEffect(() => setVisited((seen) => (seen.includes(tab) ? seen : [...seen, tab])), [tab]);
   const [loadingMore, setLoadingMore] = useState(false);
   const firstLoad = useRef(!memory);
+  const [filter, setFilter] = useState<MatchFilter>(NO_FILTER);
   const mapImages = useMapImages();
 
   const load = useCallback(async (name: string, tag: string, linkedId: string | null) => {
@@ -523,6 +525,10 @@ export default function TrackerPage() {
 
   const { account, matches, linked: isLinked } = data;
   const history = account.mmr?.history ?? [];
+  const shownMatches = matches.filter((match) => {
+    const summary = matchSummary(match, account.puuid);
+    return keepMatch(filter, { won: Boolean(summary?.won), draw: summary?.draw, mode: modeName(match.mode), pick: summary?.me.agent ?? "" });
+  });
   return (
     <>
       <div className="eval-tabs-row">
@@ -547,11 +553,12 @@ export default function TrackerPage() {
           ) : (
             <>
               <Session matches={matches} puuid={account.puuid} />
+              <MatchFilters filter={filter} onChange={setFilter} modes={options(matches.map((match) => modeName(match.mode)))} picks={options(matches.map((match) => matchSummary(match, account.puuid)?.me.agent ?? ""))} pickLabel={tr("Tous les agents", "All agents")} shown={shownMatches.length} total={matches.length} />
               <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
                 <MatchColumns />
-                {matches.map((match, position) => (
+                {shownMatches.map((match, position) => (
                   <Fragment key={match.id}>
-                    {match.startedAt && (position === 0 || !matches[position - 1].startedAt || new Date(matches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}
+                    {match.startedAt && (position === 0 || !shownMatches[position - 1].startedAt || new Date(shownMatches[position - 1].startedAt as string).toDateString() !== new Date(match.startedAt).toDateString()) && <li className="match-day">{dayLabel(match.startedAt)}</li>}
                   <MatchRow key={match.id} match={match} puuid={account.puuid} history={history.find((point) => point.match?.toLowerCase() === match.id.toLowerCase())} image={mapImages[match.map.toLowerCase()]} onOpen={() => setOpen(match)} />
                   </Fragment>
                 ))}

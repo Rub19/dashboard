@@ -1,13 +1,12 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { usePersisted } from "./qol";
-import { AnimatePresence, motion } from "framer-motion";
-import { Activity, Bot, CloudSun, ExternalLink, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Send, Shield, Sparkles, Trash2, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Bell, Bot, CloudSun, ExternalLink, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
-import { AboutPage, JournalPage, SettingsPage } from "./pages";
+import { AboutPage, AccountCard, DesktopSettings, JournalPage, SettingsPage } from "./pages";
+import BrainChat from "./BrainChat";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
-import { stepEnter } from "./motion";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
@@ -138,9 +137,10 @@ function Connections() {
 }
 
 export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
-  const [section, setSection] = usePersisted<"appearance" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
+  const [section, setSection] = usePersisted<"appearance" | "windows" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
   const items = [
-    { id: "appearance", label: tr("Apparence et compte", "Appearance and account"), icon: <Palette size={16} />, group: tr("Application", "App") },
+    { id: "appearance", label: tr("Apparence", "Appearance"), icon: <Palette size={16} />, group: tr("Application", "App") },
+    { id: "windows", label: tr("Windows et notifications", "Windows and notifications"), icon: <Bell size={16} />, group: tr("Application", "App") },
     { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
     { id: "about", label: tr("À propos", "About"), icon: <Info size={16} />, group: tr("Application", "App") },
     { id: "profile", label: tr("Profil", "Profile"), icon: <User size={16} />, group: tr("Compte", "Account") },
@@ -154,10 +154,11 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
   ] as const;
   return (
     <Split id="account" label={tr("Réglages", "Settings")} items={items} value={section} onChange={setSection}>
-      {section === "appearance" && <SettingsPage profile={profile} onSignOut={onSignOut} />}
+      {section === "appearance" && <SettingsPage />}
+      {section === "windows" && <DesktopSettings />}
       {section === "journal" && <JournalPage />}
       {section === "about" && <AboutPage />}
-      {section === "profile" && <ProfileEditor />}
+      {section === "profile" && <><AccountCard profile={profile} onSignOut={onSignOut} /><ProfileEditor /></>}
       {section === "profiles" && <Remote title={tr("Espaces de profil", "Profile spaces")} path="api/profiles" actions={[{ title: tr("Activer", "Activate"), run: (row) => apiData("api/profiles/activate", "POST", { id: asRecord(row).id }) }]} />}
       {section === "connections" && <Connections />}
       {section === "devices" && <Devices />}
@@ -359,63 +360,6 @@ function Collection({ kind, title, text, placeholder, defaults, choice }: { kind
       {error && <ErrorBox message={error} />}
       <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Renommer", "Rename"), prompt: tr("Nouveau nom", "New name"), run: (row, text) => apiData(path, "PATCH", { id: asRecord(row).id, label: text }) }, { title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
     </>
-  );
-}
-
-interface ChatMessage { role: "user" | "assistant"; content: string }
-const CHAT_KEY = "ethone-brain-chat";
-
-function BrainChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => readJson<ChatMessage[]>(CHAT_KEY) ?? []);
-  const [input, setInput] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const end = useRef<HTMLDivElement>(null);
-  const send = async (event: FormEvent) => {
-    event.preventDefault();
-    const text = input.trim();
-    if (!text || busy) return;
-    const next = [...messages, { role: "user" as const, content: text }];
-    setMessages(next);
-    setInput("");
-    setBusy(true);
-    setError(null);
-    try {
-      const result = await apiData<{ content?: string; text?: string; message?: string; output?: string }>("api/brain/complete", "POST", { messages: next.slice(-20) });
-      const answer = result.content ?? result.text ?? result.message ?? result.output ?? "";
-      const stored = [...next, { role: "assistant" as const, content: answer }];
-      setMessages(stored);
-      write(CHAT_KEY, JSON.stringify(stored.slice(-100)));
-    } catch (reason) {
-      setError(errorText(reason));
-    } finally {
-      setBusy(false);
-      requestAnimationFrame(() => end.current?.scrollIntoView({ behavior: "smooth" }));
-    }
-  };
-  const clear = () => {
-    setMessages([]);
-    write(CHAT_KEY, "[]");
-  };
-  return (
-    <div className="brain">
-      <PageHead title="Brain" text={tr("La conversation reste sur ce PC.", "The conversation stays on this PC.")}>
-        {messages.length > 0 && <Button onClick={clear}><Trash2 size={15} />{tr("Effacer", "Clear")}</Button>}
-      </PageHead>
-      <div className="brain-thread" aria-live="polite">
-        {messages.length === 0 && <Empty title={tr("Pose ta question", "Ask your question")} text={tr("Brain répond avec les services d'IA de ton compte.", "Brain answers using your account's AI services.")} />}
-        <AnimatePresence initial={false}>
-          {messages.map((message, index) => <motion.div key={index} className={`brain-bubble ${message.role}`} variants={stepEnter} initial="initial" animate="animate">{message.content}</motion.div>)}
-        </AnimatePresence>
-        {busy && <div className="brain-bubble assistant brain-typing"><span /><span /><span /></div>}
-        <div ref={end} />
-      </div>
-      {error && <ErrorBox message={error} />}
-      <form className="brain-input" onSubmit={(event) => void send(event)}>
-        <input value={input} placeholder={tr("Écris à Brain", "Message Brain")} aria-label={tr("Message pour Brain", "Message for Brain")} onChange={(event) => setInput(event.target.value)} />
-        <Button type="submit" variant="primary" disabled={busy || !input.trim()}><Send size={15} /></Button>
-      </form>
-    </div>
   );
 }
 

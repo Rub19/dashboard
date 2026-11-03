@@ -13,6 +13,17 @@ export const ACCENTS = [
 ] as const;
 
 export type AccentId = (typeof ACCENTS)[number]["id"];
+
+export const LOOKS = [
+  { id: "ethone", theme: "dark", accent: "ocean", fr: "Ethone", en: "Ethone", textFr: "Bleu nuit lumineux", textEn: "Bright midnight blue", colors: ["#0b1020", "#2f6bff", "#7c4dff"] },
+  { id: "obsidian", theme: "dark", accent: "violet", fr: "Obsidienne", en: "Obsidian", textFr: "Noir violet profond", textEn: "Deep violet black", colors: ["#0e0b16", "#7c4dff", "#ff4fd8"] },
+  { id: "neon", theme: "dark", accent: "cyan", fr: "Cyber Neon", en: "Cyber Neon", textFr: "Cyan et magenta électriques", textEn: "Electric cyan and magenta", colors: ["#070b14", "#00e5ff", "#ff2bd6"] },
+  { id: "aurora", theme: "dark", accent: "emerald", fr: "Aurore", en: "Aurora", textFr: "Vert et violet boréal", textEn: "Northern green and violet", colors: ["#07141a", "#17e6a1", "#7a5cff"] },
+  { id: "sunset", theme: "dark", accent: "rose", fr: "Crépuscule", en: "Sunset", textFr: "Prune, rose et orange", textEn: "Plum, pink and orange", colors: ["#170c1a", "#ff5c7a", "#ff9f43"] },
+  { id: "daylight", theme: "light", accent: "ocean", fr: "Jour", en: "Daylight", textFr: "Clair et lumineux", textEn: "Light and bright", colors: ["#eef2fb", "#6ea8ff", "#c8a6ff"] },
+  { id: "windows", theme: "system", accent: "ocean", fr: "Windows", en: "Windows", textFr: "Suit Windows, avec transparence", textEn: "Follows Windows, with transparency", colors: ["#2a2a2e", "#55555c", "#3a3a40"] },
+] as const;
+export type LookId = (typeof LOOKS)[number]["id"];
 export type Density = "comfortable" | "compact";
 export type MotionPreference = "system" | "reduced";
 export type TransparencyPreference = "system" | "reduced";
@@ -63,7 +74,7 @@ export function readJson<T>(key: string): T | null {
   }
 }
 
-const SETTINGS_KEYS = ["ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+const SETTINGS_KEYS = ["ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 export function exportSettings(): string {
   const values = Object.fromEntries(SETTINGS_KEYS.flatMap((key) => {
@@ -77,6 +88,16 @@ export function parseSettings(text: string): [string, string][] {
   const parsed = JSON.parse(text) as { app?: string; values?: Record<string, unknown> };
   if (parsed?.app !== "ethone-desktop" || !parsed.values) throw new Error("invalid");
   return Object.entries(parsed.values).filter((entry): entry is [string, string] => SETTINGS_KEYS.includes(entry[0]) && typeof entry[1] === "string");
+}
+
+export function currentLook(): LookId {
+  return LOOKS.find((look) => look.id === read("ethone-look"))?.id ?? "ethone";
+}
+
+export function applyLook(id: LookId) {
+  const look = LOOKS.find((item) => item.id === id) ?? LOOKS[0];
+  write("ethone-look", look.id);
+  applyAppearance(look.theme, look.accent);
 }
 
 export function currentTheme(): Theme {
@@ -117,8 +138,9 @@ export function applyInterfacePreferences(preferences = currentInterfacePreferen
   return next;
 }
 
-export function applyAppearance(theme = currentTheme(), accentId = currentAccent()) {
+export function applyAppearance(theme: Theme = LOOKS.find((look) => look.id === currentLook())?.theme ?? currentTheme(), accentId: AccentId = read("ethone-look") ? currentAccent() : LOOKS[0].accent) {
   const root = document.documentElement;
+  root.dataset.look = currentLook();
   const accent = ACCENTS.find((item) => item.id === accentId) ?? ACCENTS[0];
   if (theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", theme);

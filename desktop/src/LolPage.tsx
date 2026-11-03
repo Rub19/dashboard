@@ -8,7 +8,8 @@ import { readCache, writeCache } from "./cache";
 import { splitRiotId } from "./eval";
 import { Friends } from "./EvalHub";
 import { errorText, lang, t, tr } from "./i18n";
-import { ErrorBox, Skeletons, Tabs } from "./kit";
+import { MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
+import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
 import { championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
 import { listItem, listStagger, SPRING_SWAP } from "./motion";
 import { RotationView } from "./MorePages";
@@ -253,6 +254,7 @@ export default function LolPage() {
   const [open, setOpen] = useState<LolMatch | null>(null);
   const [connecting, setConnecting] = useState(false);
   const firstLoad = useRef(true);
+  const [filter, setFilter] = useState<MatchFilter>(NO_FILTER);
 
   const load = useCallback(async (riotId: string, force = false) => {
     setError(null);
@@ -328,6 +330,7 @@ export default function LolPage() {
   };
 
   const matches = useMemo(() => data?.matches ?? [], [data]);
+  const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
   useEffect(() => {
     if (matches.length > 0) firstLoad.current = false;
   }, [matches]);
@@ -377,11 +380,12 @@ export default function LolPage() {
             {matches.length > 0 && (
               <>
                 <Session matches={matches} />
+                <MatchFilters filter={filter} onChange={setFilter} modes={options(matches.map((match) => lolMode(match.metadata?.modeName, lang)))} picks={options(matches.map((match) => match.metadata?.agentName ?? ""))} pickLabel={tr("Tous les champions", "All champions")} shown={shownMatches.length} total={matches.length} />
                 <motion.ul className="eval-matches" variants={listStagger} initial={firstLoad.current ? "initial" : false} animate="animate" transition={SPRING_SWAP}>
                   <MatchColumns />
-                  {matches.map((match, position) => {
+                  {shownMatches.map((match, position) => {
                     const at = match.metadata?.timestamp;
-                    const before = matches[position - 1]?.metadata?.timestamp;
+                    const before = shownMatches[position - 1]?.metadata?.timestamp;
                     const newDay = at && (!before || new Date(before).toDateString() !== new Date(at).toDateString());
                     return (
                       <Fragment key={match.id}>

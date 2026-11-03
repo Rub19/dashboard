@@ -146,3 +146,12 @@ Menu du profil : déplacé dans un portail hors de la sidebar pour éviter l'ét
 - Skins : `EvalSkins.tsx` regroupe l'aperçu d'une arme (vidéo, améliorations, variantes) et le détail d'un bundle (armes, prix, remise). Ouvert depuis la boutique, la collection, les armes et le choix de skin. Les vidéos sont sur `valorant.dyn.riotcdn.net`, autorisé dans `media-src` de la CSP. Vérifié : lecture réelle au niveau 1, au niveau 3 et sur une variante. Les skins Select n'ont pas de vidéo : image affichée.
 - Session Riot : le silent login passe un seul à la fois (`refreshing` dans `riot.rs`), et un 403 n'efface plus la session, seul un 401 le fait. Un 403 arrive par exemple sur l'historique d'un ami.
 - Bouton Équiper du choix de skin : affiché, jamais cliqué pendant les tests.
+
+## E:LOL, Mail et cartes E:VAL (3 novembre 2026)
+
+- E:LOL remplace la page Jeux : seules les sections League, TFT et Rotation LoL restent. Steam et Minecraft ont été retirés de ce domaine. Une icône E:LOL dédiée est utilisée dans la barre latérale.
+- TFT réutilise automatiquement l'identité Riot reliée quand elle existe. La page affiche uniquement les vraies données Riot : résumé, placements, compositions, traits, unités, objets et classement du lobby. Sur le vrai compte contrôlé, l'API renvoie actuellement un historique vide ; l'état vide a été vérifié dans la WebView.
+- E:VAL affiche maintenant les matchs sous forme de grandes cartes inspirées de l'app iOS : mode et heure, décor de carte, agent, résultat, MVP, K/D/A, ACS et score. Les 25 cartes réelles et leurs regroupements par jour ont été vérifiés. Le portrait, le texte et le badge résultat ne se chevauchent plus.
+- Mail utilise une liste visuelle avec avatars calculés localement, état non lu, étoile et pièces jointes, puis un panneau de lecture détaillé. Vérifié dans la vraie WebView avec 27 messages réels, ouverture d'un message, corps et six actions disponibles, sans mutation.
+- La connexion Riot ouvre désormais uniquement le navigateur par défaut. L'utilisateur colle ensuite l'adresse finale de playvalorant.com dans le panneau sécurisé d'Ethone. Aucun navigateur intégré n'est proposé.
+- Vérifications : 49 tests frontend, TypeScript, build Vite et build Tauri release `--no-bundle` réussis. Le build release a été contrôlé par le port DevTools local, sans contrôle du bureau ni capture de l'écran.

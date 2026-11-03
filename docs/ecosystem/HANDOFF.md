@@ -136,6 +136,8 @@ Interface refaite façon Apple sur Windows, voir `desktop/DESIGN.md`. Toutes les
 
 Ultimate Edition : audit et contrat de qualité dans `docs/ecosystem/ULTIMATE-AUDIT.md` et `CONSTRAINTS.md`. Les réglages de densité, taille du texte, réduction du mouvement et transparence sont validés, persistants, appliqués immédiatement et réinitialisables. Les 36 tests frontend et TypeScript passent ; cette tranche n'a pas été ouverte dans l'app.
 
+Menu du profil : déplacé dans un portail hors de la sidebar pour éviter l'étirement et le découpage. Vérifié le 3 novembre 2026 dans la vraie WebView par le port DevTools local : dimensions normales, entièrement visible en sidebar normale et compacte, deux actions visibles, fermeture avec Échap et retour du focus sur l'avatar. Le port `9333` a ensuite été fermé et l'app relancée normalement.
+
 ## E:VAL : matchs, amis et aperçu des skins (3 novembre 2026)
 
 - Matchs : une ligne par match, colonnes alignées, regroupés par jour (`TrackerPage.tsx`).

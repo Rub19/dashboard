@@ -1,8 +1,8 @@
-# Plan d'implémentation : dashboard Ethone Windows
+# Plan d'implémentation : Ethone Desktop Ultimate Edition
 
 ## Vue d'ensemble
 
-Remplacer le petit tableau des modules par une application Windows complète, construite par tranches verticales. Chaque fonction utilise la session Rust et les services Ethone existants, sans WebView distante ni donnée factice.
+Faire évoluer l'application Windows déjà complète vers une édition premium, sans reconstruire ce qui existe. Chaque amélioration part de l'audit `docs/ecosystem/ULTIMATE-AUDIT.md`, utilise les vraies données et reste livrée par tranche verticale vérifiable.
 
 ## Décisions d'architecture
 
@@ -13,21 +13,18 @@ Remplacer le petit tableau des modules par une application Windows complète, co
 
 ## Ordre
 
-1. Fondation sécurisée et navigation.
-2. Accueil et Applications.
-3. Productivité.
-4. Fichiers.
-5. Identité et connexions.
-6. Jeux.
-7. Discord.
-8. Collaboration.
-9. Brain et automatisations.
-10. Analyses.
-11. Administration et support.
+1. Contrat de qualité et audit intégral.
+2. Centre de préférences et sauvegarde versionnée.
+3. Comportement Windows contrôlable.
+4. Navigation, recherche et récents.
+5. Retours, erreurs et tâches longues.
+6. Mesures et optimisations de performance.
+7. Revue de chaque domaine fonctionnel.
+8. Vérification réelle multi-écran, clavier et scaling avec Rub19.
 
 ## Points de contrôle
 
-- Après la fondation : tests Rust, contrôle TypeScript et build local.
+- Après la fondation : tests frontend et contrôle TypeScript. Le build local attend l'accord de Rub19.
 - Après chaque domaine : tests ciblés, états vide/erreur et navigation clavier.
 - Avant toute fenêtre de test, Windows Sandbox, publication, release ou modification de `main` : accord explicite de Rub19.
 

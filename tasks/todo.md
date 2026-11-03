@@ -53,3 +53,26 @@
 - [ ] Aucun secret, donnée factice, bouton inactif ou page distante n'est présent.
 - [ ] Le contrôle pré-commit réussit avant tout commit.
 - [ ] Aucun push, aucune release et aucune modification de `main` sans accord explicite.
+
+## Ultimate Edition
+
+- [x] Auditer les fonctions déjà présentes et les écarts du cahier des charges.
+  - Preuve : `docs/ecosystem/ULTIMATE-AUDIT.md` et `CONSTRAINTS.md`.
+- [ ] Ajouter les préférences validées de densité, texte, mouvement et transparence.
+  - Acceptation : effet immédiat, persistance, anciennes clés conservées, réinitialisation réelle.
+  - Vérification : tests unitaires, contrôle TypeScript, tests frontend.
+- [ ] Ajouter l'import et l'export versionnés des préférences sans secret.
+  - Acceptation : validation stricte, refus des fichiers incompatibles, restauration atomique.
+  - Vérification : tests de données valides, corrompues et incomplètes.
+- [ ] Concevoir les comportements Windows optionnels.
+  - Acceptation : aucune tâche permanente activée par défaut, chaque choix est réversible.
+  - Vérification : tests Rust puis test réel avec accord.
+- [ ] Compléter les récents et la pertinence de Ctrl+K.
+  - Acceptation : aucune nouvelle navigation inutile, clavier complet, état persistant.
+- [ ] Uniformiser les erreurs, confirmations et opérations longues.
+  - Acceptation : message humain, réessayer si possible, aucune erreur technique ou donnée sensible affichée.
+- [ ] Mesurer le démarrage, le bundle, les listes longues et la mémoire.
+  - Acceptation : aucune optimisation sans mesure avant/après.
+- [ ] Revoir chaque domaine dans l'ordre défini par `ULTIMATE-AUDIT.md`.
+- [ ] Exécuter la matrice visuelle et d'accessibilité avec Rub19.
+  - Dépendance : accord pour lancer l'app et utiliser uniquement la WebView de l'app.

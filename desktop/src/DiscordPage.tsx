@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import Select from "./Select";
 import { usePersisted } from "./qol";
 import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
@@ -343,9 +344,9 @@ export default function DiscordPage() {
     <div className="discord">
       <header className="discord-bar">
         {guilds.loading && !guilds.data ? <Skeletons count={1} height={34} /> : (
-          <select className="discord-guild" aria-label={tr("Serveur", "Server")} value={guild ?? ""} onChange={(event) => { setGuild(event.target.value); }}>
+          <Select className="discord-guild" aria-label={tr("Serveur", "Server")} value={guild ?? ""} onChange={(event) => { setGuild(event.target.value); }}>
             {usable.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-          </select>
+          </Select>
         )}
         <label className="discord-search"><Search size={14} /><input value={query} placeholder={tr("Chercher un module", "Find a module")} aria-label={tr("Chercher un module", "Find a module")} onChange={(event) => setQuery(event.target.value)} /></label>
         <button type="button" className="link discord-logout" onClick={() => void botLogout().then(() => setLinked(false))}><LogOut size={13} />{tr("Déconnecter", "Disconnect")}</button>

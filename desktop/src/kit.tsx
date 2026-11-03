@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import Select from "./Select";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BarChart3, ChevronRight, Crosshair, Flag, RefreshCw, X } from "lucide-react";
@@ -39,14 +40,14 @@ export function MatchFilters({ filter, onChange, modes, picks, pickLabel, shown,
       <div className="segmented">
         {results.map(([id, label]) => <button key={id} type="button" className={filter.result === id ? "on" : ""} aria-pressed={filter.result === id} onClick={() => onChange({ ...filter, result: id })}>{filter.result === id && <span className="segmented-pill" />}<span>{label}</span></button>)}
       </div>
-      <select className="settings-select" value={filter.mode} aria-label={tr("Mode de jeu", "Game mode")} onChange={(event) => onChange({ ...filter, mode: event.target.value })}>
+      <Select className="settings-select" value={filter.mode} aria-label={tr("Mode de jeu", "Game mode")} onChange={(event) => onChange({ ...filter, mode: event.target.value })}>
         <option value="">{tr("Tous les modes", "All modes")}</option>
         {modes.map((mode) => <option key={mode} value={mode}>{mode}</option>)}
-      </select>
-      <select className="settings-select" value={filter.pick} aria-label={pickLabel} onChange={(event) => onChange({ ...filter, pick: event.target.value })}>
+      </Select>
+      <Select className="settings-select" value={filter.pick} aria-label={pickLabel} onChange={(event) => onChange({ ...filter, pick: event.target.value })}>
         <option value="">{pickLabel}</option>
         {picks.map((pick) => <option key={pick} value={pick}>{pick}</option>)}
-      </select>
+      </Select>
       {filterActive(filter) && <button type="button" className="link" onClick={() => onChange(NO_FILTER)}>{tr("Tout afficher", "Show all")}</button>}
       <small className="muted">{tr(`${shown} sur ${total}`, `${shown} of ${total}`)}</small>
     </div>

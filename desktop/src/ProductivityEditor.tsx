@@ -1,4 +1,5 @@
 import { FormEvent } from "react";
+import Select from "./Select";
 import { ItemKind } from "./api";
 import { t, tr } from "./i18n";
 import { Button } from "./ui";
@@ -36,7 +37,7 @@ export default function ProductivityEditor({ kind, draft, saving, onChange, onCa
       {kind === "tasks" && (
         <div className="event-dates">
           <label><span>{tr("Échéance", "Due date")}</span><input type="date" value={draft.due} onChange={(event) => update("due", event.target.value)} /></label>
-          <label><span>{tr("Priorité", "Priority")}</span><select value={draft.priority} onChange={(event) => update("priority", event.target.value)}><option value="low">{tr("Basse", "Low")}</option><option value="medium">{tr("Normale", "Normal")}</option><option value="high">{tr("Haute", "High")}</option></select></label>
+          <label><span>{tr("Priorité", "Priority")}</span><Select value={draft.priority} onChange={(event) => update("priority", event.target.value)}><option value="low">{tr("Basse", "Low")}</option><option value="medium">{tr("Normale", "Normal")}</option><option value="high">{tr("Haute", "High")}</option></Select></label>
         </div>
       )}
       <label><span>{kind === "notes" ? t("content") : t("description")}</span><textarea maxLength={10000} rows={kind === "notes" ? 6 : 3} value={draft.body} onChange={(event) => update("body", event.target.value)} /></label>

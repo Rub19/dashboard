@@ -1,4 +1,5 @@
 import { FormEvent, useMemo, useState, useCallback, useEffect, useRef } from "react";
+import Select from "./Select";
 import { contextMenu, copyText } from "./qol";
 import { usePersisted } from "./qol";
 import { BookOpen, Crosshair, FileText, History, Map as MapIcon, Save, Search, Send, Sparkles, Target, Trophy, UserPlus, Users, Minus, Moon, RefreshCw } from "lucide-react";
@@ -29,7 +30,7 @@ function Leaderboard() {
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Classement", "Leaderboard")}</h2>
-        <select className="eval-select" value={region} aria-label={tr("Région", "Region")} onChange={(event) => setRegion(event.target.value)}>{REGIONS.map((item) => <option key={item} value={item}>{item.toUpperCase()}</option>)}</select>
+        <Select className="eval-select" value={region} aria-label={tr("Région", "Region")} onChange={(event) => setRegion(event.target.value)}>{REGIONS.map((item) => <option key={item} value={item}>{item.toUpperCase()}</option>)}</Select>
       </div>
       <Status state={state}>
         {(data) => (data.players ?? []).length === 0 ? <Empty title={tr("Classement vide", "Empty leaderboard")} /> : (
@@ -255,7 +256,7 @@ function Collection({ linked }: { linked: boolean }) {
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Mes skins", "My skins")}{state.data ? ` (${state.data.length})` : ""}</h2></div>
-      <form className="eval-search" onSubmit={(event) => event.preventDefault()}><select className="settings-select" value={weapon} aria-label={tr("Filtrer par arme", "Filter by weapon")} onChange={(event) => setWeapon(event.target.value)}><option value="">{tr("Toutes les armes", "All weapons")}</option>{[...new Set((state.data ?? []).map((row) => row.weapon))].sort().map((name) => <option key={name} value={name}>{name} ({(state.data ?? []).filter((row) => row.weapon === name).length})</option>)}</select><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
+      <form className="eval-search" onSubmit={(event) => event.preventDefault()}><Select className="settings-select" value={weapon} aria-label={tr("Filtrer par arme", "Filter by weapon")} onChange={(event) => setWeapon(event.target.value)}><option value="">{tr("Toutes les armes", "All weapons")}</option>{[...new Set((state.data ?? []).map((row) => row.weapon))].sort().map((name) => <option key={name} value={name}>{name} ({(state.data ?? []).filter((row) => row.weapon === name).length})</option>)}</Select><input value={query} placeholder={tr("Chercher un skin", "Find a skin")} aria-label={tr("Chercher un skin", "Find a skin")} onChange={(event) => setQuery(event.target.value)} /></form>
       <Status state={state} height={80}>{(rows) => <ul className="eval-skins">{rows.filter((row) => (!weapon || row.weapon === weapon) && (!text || row.name.toLowerCase().includes(text))).map((row) => <li key={row.id}><button type="button" onClick={() => setSkin(row.id)}>{row.icon && <img src={row.icon} alt="" loading="lazy" />}<small>{row.name}</small></button></li>)}</ul>}</Status>
       <SkinDrawer skinId={skin} ownedLevels={state.data ? owned : undefined} onClose={() => setSkin(null)} />
     </>
@@ -302,10 +303,10 @@ function SeasonGoal({ account }: { account: EvalAccount | null }) {
     <>
       <div className="eval-section-head"><h2>{tr("Objectif de saison", "Season goal")}</h2></div>
       <label className="kit-field"><span>{tr("Rang visé", "Target rank")}</span>
-        <select className="eval-select" value={goal} onChange={(event) => { const value = Number(event.target.value); setGoal(value); write("ethone-eval-goal-tier", JSON.stringify(value)); }}>
+        <Select className="eval-select" value={goal} onChange={(event) => { const value = Number(event.target.value); setGoal(value); write("ethone-eval-goal-tier", JSON.stringify(value)); }}>
           <option value={0}>{tr("Aucun", "None")}</option>
           {tiers.map((value) => <option key={value} value={value}>{rankName(value)}</option>)}
-        </select>
+        </Select>
       </label>
       {goal > 0 && (
         <section className="eval-card eval-pad">
@@ -336,8 +337,8 @@ function Lineups() {
       <div className="eval-section-head">
         <h2>Line-ups</h2>
         <span>
-          <select className="eval-select" value={map} aria-label={tr("Carte", "Map")} onChange={(event) => setMap(Number(event.target.value))}><option value={0}>{tr("Toutes les cartes", "All maps")}</option>{Object.entries(LINEUP_MAPS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
-          <select className="eval-select" value={agent} aria-label={tr("Agent", "Agent")} onChange={(event) => setAgent(Number(event.target.value))}><option value={0}>{tr("Tous les agents", "All agents")}</option>{Object.entries(LINEUP_AGENTS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
+          <Select className="eval-select" value={map} aria-label={tr("Carte", "Map")} onChange={(event) => setMap(Number(event.target.value))}><option value={0}>{tr("Toutes les cartes", "All maps")}</option>{Object.entries(LINEUP_MAPS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</Select>
+          <Select className="eval-select" value={agent} aria-label={tr("Agent", "Agent")} onChange={(event) => setAgent(Number(event.target.value))}><option value={0}>{tr("Tous les agents", "All agents")}</option>{Object.entries(LINEUP_AGENTS).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</Select>
         </span>
       </div>
       <Status state={state} height={120}>
@@ -454,8 +455,8 @@ function DiscordRecap({ account, matches }: { account: EvalAccount | null; match
   return (
     <>
       <div className="eval-section-head"><h2>{tr("Récap Discord", "Discord recap")}</h2></div>
-      <label className="kit-field"><span>{tr("Serveur", "Server")}</span><select className="eval-select" value={guild} onChange={(event) => { setGuild(event.target.value); setChannel(""); }}><option value="">{tr("Choisir", "Choose")}</option>{guilds.data?.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-      <label className="kit-field"><span>{tr("Salon", "Channel")}</span><select className="eval-select" value={channel} onChange={(event) => setChannel(event.target.value)}><option value="">{tr("Choisir", "Choose")}</option>{channels.data?.map((item) => <option key={item.id} value={item.id}>#{item.name}</option>)}</select></label>
+      <label className="kit-field"><span>{tr("Serveur", "Server")}</span><Select className="eval-select" value={guild} onChange={(event) => { setGuild(event.target.value); setChannel(""); }}><option value="">{tr("Choisir", "Choose")}</option>{guilds.data?.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</Select></label>
+      <label className="kit-field"><span>{tr("Salon", "Channel")}</span><Select className="eval-select" value={channel} onChange={(event) => setChannel(event.target.value)}><option value="">{tr("Choisir", "Choose")}</option>{channels.data?.map((item) => <option key={item.id} value={item.id}>#{item.name}</option>)}</Select></label>
       <div className="row"><Button variant="primary" disabled={busy || !guild || !channel || !match} onClick={() => void post()}>{tr("Publier mon dernier match", "Post my last match")}</Button></div>
       {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
     </>

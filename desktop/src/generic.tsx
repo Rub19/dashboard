@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import Select from "./Select";
 import { toast } from "./qol";
 import { AnimatePresence, motion } from "framer-motion";
 import { errorText, lang, tr } from "./i18n";
@@ -203,21 +204,21 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
   };
   const pick = (key: string, entries: DirectoryEntry[], current: string, next: string[], id: string, sign: string) => (
     <label key={id} className="kit-field"><span>{humanize(key)}</span>
-      <select value={current} onChange={(event) => change(next, event.target.value || null)}>
+      <Select value={current} onChange={(event) => change(next, event.target.value || null)}>
         <option value="">{tr("Aucun", "None")}</option>
         {!entries.some((entry) => entry.id === current) && current && <option value={current}>{current}</option>}
         {entries.map((entry) => <option key={entry.id} value={entry.id}>{sign}{entry.name}</option>)}
-      </select>
+      </Select>
     </label>
   );
   const pickMany = (key: string, entries: DirectoryEntry[], current: string[], next: string[], id: string, sign: string) => (
     <div key={id} className="kit-field"><span>{humanize(key)}</span>
       <div className="generic-chips">
         {current.map((item) => <button key={item} type="button" title={tr("Retirer", "Remove")} onClick={() => change(next, current.filter((other) => other !== item))}>{sign}{entries.find((entry) => entry.id === item)?.name ?? item} ×</button>)}
-        <select value="" aria-label={tr(`Ajouter : ${humanize(key)}`, `Add: ${humanize(key)}`)} onChange={(event) => event.target.value && change(next, [...current, event.target.value])}>
+        <Select value="" aria-label={tr(`Ajouter : ${humanize(key)}`, `Add: ${humanize(key)}`)} onChange={(event) => event.target.value && change(next, [...current, event.target.value])}>
           <option value="">{tr("Ajouter…", "Add…")}</option>
           {entries.filter((entry) => !current.includes(entry.id)).map((entry) => <option key={entry.id} value={entry.id}>{sign}{entry.name}</option>)}
-        </select>
+        </Select>
       </div>
     </div>
   );
@@ -238,10 +239,10 @@ export function ConfigForm({ value, onSave, directory }: { value: { [key: string
         const current = item === null ? "" : String(item);
         return (
           <label key={id} className="kit-field"><span>{humanize(key)}</span>
-            <select value={current} onChange={(event) => change(next, typeof item === "number" ? Number(event.target.value) : event.target.value)}>
+            <Select value={current} onChange={(event) => change(next, typeof item === "number" ? Number(event.target.value) : event.target.value)}>
               {!choices.some(([option]) => option === current) && <option value={current}>{current || tr("Par défaut", "Default")}</option>}
               {choices.map(([option, label]) => <option key={option} value={option}>{label}</option>)}
-            </select>
+            </Select>
           </label>
         );
       }

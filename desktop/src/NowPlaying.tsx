@@ -1,4 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { apiData, openExternal } from "./api";
 import { tr } from "./i18n";
@@ -90,20 +91,47 @@ export function NowPlayingCard() {
   );
 }
 
-export function MiniPlayer() {
+export function MusicCapsule() {
   const state = useSpotify();
   const now = useClock(state.playing);
+  const [open, setOpen] = useState(false);
+  const reduced = useReducedMotion();
   const track = state.track;
-  if (!track) return null;
-  const cover = track.covers?.[2] ?? track.artworkUrl ?? track.covers?.[0];
-  const total = track.durationMs ?? 0;
+  const spring = reduced ? { duration: 0 } : { type: "spring" as const, duration: 0.42, bounce: 0.12 };
+  const cover = track?.covers?.[2] ?? track?.artworkUrl ?? track?.covers?.[0];
+  const total = track?.durationMs ?? 0;
   const position = liveProgress(state, now);
   return (
-    <div className="mini-player" title={`${track.title}, ${track.artist ?? ""}`}>
-      {cover && <img src={cover} alt="" />}
-      <span className="mini-text"><b>{track.title}</b><small>{track.artist}</small></span>
-      <button type="button" aria-label={state.playing ? tr("Pause", "Pause") : tr("Lecture", "Play")} onClick={() => void control(state.playing ? "pause" : "play")}>{state.playing ? <Pause size={14} /> : <Play size={14} />}</button>
-      <i className="mini-progress" style={{ transform: `scaleX(${total ? position / total : 0})` }} />
-    </div>
+    <AnimatePresence>
+      {track && (
+        <motion.aside
+          key="capsule"
+          layout
+          className={open ? "music-capsule open" : "music-capsule"}
+          aria-label={tr("Musique en cours", "Now playing")}
+          initial={{ opacity: 0, scale: 0.94, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 10 }}
+          transition={spring}
+          style={{ borderRadius: 16 }}
+          onPointerEnter={() => setOpen(true)}
+          onPointerLeave={() => setOpen(false)}
+          onFocus={() => setOpen(true)}
+          onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setOpen(false)}
+        >
+          <motion.button layout="position" type="button" className="capsule-info" title={tr("Ouvrir dans Spotify", "Open in Spotify")} transition={spring} onClick={() => track.id && void openExternal(`https://open.spotify.com/track/${track.id}`)}>
+            {cover ? <img src={cover} alt="" /> : <span className="capsule-noart" />}
+            <span className="capsule-text"><b>{track.title}</b><small>{track.artist}</small></span>
+          </motion.button>
+          {!open && <Bars on={state.playing} />}
+          <motion.div layout="position" className="capsule-controls" transition={spring}>
+            {open && <button type="button" aria-label={tr("Titre précédent", "Previous track")} onClick={() => void control("previous")}><SkipBack size={14} /></button>}
+            <button type="button" aria-label={state.playing ? tr("Pause", "Pause") : tr("Lecture", "Play")} onClick={() => void control(state.playing ? "pause" : "play")}>{state.playing ? <Pause size={15} /> : <Play size={15} />}</button>
+            {open && <button type="button" aria-label={tr("Titre suivant", "Next track")} onClick={() => void control("next")}><SkipForward size={14} /></button>}
+          </motion.div>
+          <i className="capsule-progress" aria-hidden="true" style={{ transform: `scaleX(${total ? position / total : 0})` }} />
+        </motion.aside>
+      )}
+    </AnimatePresence>
   );
 }

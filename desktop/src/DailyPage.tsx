@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import Select from "./Select";
 import { usePersisted } from "./qol";
 import { motion } from "framer-motion";
 import { CalendarDays, Check, FileText, Flame, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2, Zap } from "lucide-react";
@@ -94,7 +95,7 @@ function Habits() {
       <PageHead title={tr("Habitudes", "Habits")} text={tr("Synchronisées avec ton compte Ethone.", "Synced with your Ethone account.")} />
       <form className="daily-add" onSubmit={(event) => void add(event)}>
         <input value={name} maxLength={80} placeholder={tr("Nouvelle habitude", "New habit")} aria-label={tr("Nom de l'habitude", "Habit name")} onChange={(event) => setName(event.target.value)} />
-        <label className="daily-target">{tr("Objectif", "Goal")}<select value={target} onChange={(event) => setTarget(Number(event.target.value))}>{[1, 2, 3, 4, 5, 6, 7].map((value) => <option key={value} value={value}>{value}/{tr("sem.", "wk")}</option>)}</select></label>
+        <label className="daily-target">{tr("Objectif", "Goal")}<Select value={target} onChange={(event) => setTarget(Number(event.target.value))}>{[1, 2, 3, 4, 5, 6, 7].map((value) => <option key={value} value={value}>{value}/{tr("sem.", "wk")}</option>)}</Select></label>
         <Button type="submit" variant="primary" disabled={busy || !name.trim()}>{tr("Ajouter", "Add")}</Button>
       </form>
       {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}

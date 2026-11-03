@@ -1,18 +1,16 @@
-import { Fragment, CSSProperties, FormEvent, useEffect, useState } from "react";
-import { dayLabel } from "./TrackerPage";
+import { CSSProperties, FormEvent, useEffect, useState } from "react";
 import { contextMenu, copyText, toast } from "./qol";
 import { usePersisted } from "./qol";
-import { Check, Archive, Clock, Copy, Inbox, MailOpen, Paperclip, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
+import { ArrowLeft, Check, Archive, Clock, Copy, Inbox, MailOpen, Minus, Paperclip, PenLine, RefreshCw, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
-import { Drawer, Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
+import { Drawer, Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Status, useLoad } from "./kit";
 import { Button } from "./ui";
-import { mailInitials, mailSenderHue } from "./mail";
+import { mailInitials, mailSenderHue, mailTime } from "./mail";
 
 interface Message { id: string; thread_id: string; folder: string; direction: string; from_address: string; from_name?: string; to_addresses: string[]; subject: string; body_text?: string; body_html?: string; snippet?: string; is_read: boolean; is_starred: boolean; received_at: string; sent_at?: string; attachments?: { filename: string; size: number }[] }
 
-const mailDay = (message?: Message) => (message ? new Date(message.received_at ?? message.sent_at ?? "").toDateString() : "");
 type Folder = "inbox" | "sent" | "drafts" | "archive" | "spam" | "trash";
 type Section = Folder | "contacts" | "aliases" | "labels" | "rules" | "templates" | "signatures";
 
@@ -121,73 +119,95 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
     setPicked([]);
     void act(() => Promise.all(ids.map((id) => apiData("api/mail/read", "POST", { id, is_read: true }))));
   };
+  const star = (message: Message) => void apiData("api/mail/read", "POST", { id: message.id, is_starred: !message.is_starred }).then(state.reload, (reason) => setError(errorText(reason)));
   const content = open ? (open.body_text?.trim() || (open.body_html ? htmlToText(open.body_html) : open.snippet ?? "")) : "";
   const sender = (message: Message) => message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address;
-  return (
-    <>
-      <PageHead title={FOLDERS.find((item) => item.id === folder)?.label() ?? ""} onRefresh={state.reload} refreshing={state.loading}>
-        <Button variant="primary" onClick={() => onCompose({ to: "", subject: "", body: "" })}><PenLine size={15} />{tr("Écrire", "Compose")}</Button>
-      </PageHead>
-      <form className="discord-search files-search" onSubmit={(event) => { event.preventDefault(); setSearch(query.trim()); }}><Search size={14} /><input value={query} placeholder={tr("Chercher dans les mails, puis Entrée", "Search mail, then Enter")} aria-label={tr("Chercher dans les mails", "Search mail")} onChange={(event) => { setQuery(event.target.value); if (!event.target.value) setSearch(""); }} /></form>
-      {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}
-      {picked.length > 0 && (
-        <div className="mail-bulk" role="toolbar" aria-label={tr("Actions sur la sélection", "Selection actions")}>
-          <b>{tr(`${picked.length} sélectionné(s)`, `${picked.length} selected`)}</b>
-          <Button onClick={() => setPicked((state.data ?? []).map((message) => message.id))}>{tr("Tout sélectionner", "Select all")}</Button>
-          <Button onClick={readMany}>{tr("Marquer comme lu", "Mark as read")}</Button>
-          {folder !== "archive" && <Button onClick={() => moveMany("archive", tr("Messages archivés", "Messages archived"))}>{tr("Archiver", "Archive")}</Button>}
-          {folder !== "trash" && <Button className="danger" onClick={() => moveMany("trash", tr("Messages mis à la corbeille", "Messages moved to trash"))}>{tr("Corbeille", "Trash")}</Button>}
-          <Button onClick={() => setPicked([])}>{tr("Annuler", "Cancel")}</Button>
+  const rows = state.data ?? [];
+  const allPicked = rows.length > 0 && picked.length === rows.length;
+  const reply = (message: Message, body = "") => onCompose({ to: message.from_address, subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`, body, inReplyTo: message.id });
+  const iconButton = (label: string, icon: React.ReactNode, run: () => void, danger = false) => <button type="button" className={danger ? "gm-icon danger" : "gm-icon"} aria-label={label} title={label} onClick={run}>{icon}</button>;
+  if (open) {
+    const when = new Date(open.received_at ?? open.sent_at ?? "");
+    return (
+      <div className="gm-view">
+        <div className="gm-toolbar">
+          {iconButton(tr("Retour à la liste", "Back to the list"), <ArrowLeft size={17} />, () => setOpen(null))}
+          <span className="gm-sep" />
+          {folder !== "archive" && iconButton(tr("Archiver", "Archive"), <Archive size={16} />, () => move(open, "archive", tr("Message archivé", "Message archived")))}
+          {folder !== "trash" && iconButton(tr("Corbeille", "Trash"), <Trash2 size={16} />, () => move(open, "trash", tr("Message mis à la corbeille", "Message moved to trash")))}
+          {iconButton(tr("Reporter à demain 9 h", "Snooze until tomorrow 9 am"), <Clock size={16} />, () => { const date = new Date(); date.setDate(date.getDate() + 1); date.setHours(9, 0, 0, 0); void act(() => apiData("api/mail/snooze", "POST", { id: open.id, snoozed_until: date.toISOString() })); })}
+          {iconButton(tr("Copier l'adresse", "Copy address"), <Copy size={16} />, () => void copyText(open.from_address, tr("Adresse copiée", "Address copied")))}
         </div>
-      )}
-      <div className={`mail-split ${open ? "reading" : ""} ${picked.length ? "picking" : ""}`}>
-      <div>
-      {!state.data ? (state.loading ? <Skeletons count={6} height={58} /> : null) : state.data.length === 0 ? <Empty title={tr("Aucun message", "No messages")} /> : (
-        <Stagger className="mail-list">
-          {state.data.map((message, index) => (
-            <Fragment key={message.id}>
-            {mailDay(message) !== mailDay(state.data![index - 1]) && <li className="mail-day">{dayLabel(message.received_at ?? message.sent_at ?? "")}</li>}
-            <StaggerItem variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
-              <button type="button" className={picked.includes(message.id) ? "mail-pick on" : "mail-pick"} role="checkbox" aria-checked={picked.includes(message.id)} aria-label={tr(`Sélectionner ${message.subject || "ce message"}`, `Select ${message.subject || "this message"}`)} onClick={() => pick(message.id)}>{picked.includes(message.id) && <Check size={13} />}</button>
-              <button type="button" onClick={() => read(message)} onContextMenu={(event) => contextMenu(event, [
+        {error && <ErrorBox message={error} />}
+        <article className="gm-message">
+          <h1>{open.subject || tr("(sans objet)", "(no subject)")}</h1>
+          <header>
+            <span className="mail-avatar large" style={{ "--mail-hue": mailSenderHue(open.from_address) } as CSSProperties}>{mailInitials(open.from_name, open.from_address)}</span>
+            <span className="gm-from"><b>{open.from_name || open.from_address}</b><small>{open.from_name ? open.from_address : ""}{open.to_addresses?.length ? ` ${tr("à", "to")} ${open.to_addresses.join(", ")}` : ""}</small></span>
+            <time>{Number.isNaN(when.getTime()) ? "" : when.toLocaleString(lang, { dateStyle: "medium", timeStyle: "short" })}</time>
+            {iconButton(open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Ajouter une étoile", "Star"), <Star size={16} fill={open.is_starred ? "currentColor" : "none"} />, () => { star(open); setOpen({ ...open, is_starred: !open.is_starred }); })}
+          </header>
+          {(open.attachments?.length ?? 0) > 0 && <ul className="mail-attachments">{open.attachments?.map((item) => <li key={item.filename}><Paperclip size={14} /><span><b>{item.filename}</b><small>{Math.max(1, Math.round(item.size / 1024))} Ko</small></span></li>)}</ul>}
+          {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
+          <footer><Button onClick={() => reply(open, `\n\n> ${content.split("\n").join("\n> ")}`)}><Reply size={15} />{tr("Répondre", "Reply")}</Button></footer>
+        </article>
+      </div>
+    );
+  }
+  return (
+    <div className="gm-view">
+      <div className="gm-top">
+        <form className="gm-search" onSubmit={(event) => { event.preventDefault(); setSearch(query.trim()); }}>
+          <Search size={16} />
+          <input value={query} placeholder={tr("Rechercher dans les messages", "Search mail")} aria-label={tr("Rechercher dans les messages", "Search mail")} onChange={(event) => setQuery(event.target.value)} />
+          {search && <button type="button" aria-label={tr("Effacer la recherche", "Clear search")} onClick={() => { setQuery(""); setSearch(""); }}><X size={15} /></button>}
+        </form>
+        <Button variant="primary" onClick={() => onCompose({ to: "", subject: "", body: "" })}><PenLine size={15} />{tr("Nouveau message", "Compose")}</Button>
+      </div>
+      <div className="gm-toolbar">
+        <button type="button" className={allPicked ? "gm-check on" : picked.length ? "gm-check some" : "gm-check"} role="checkbox" aria-checked={allPicked ? true : picked.length ? "mixed" : false} aria-label={tr("Tout sélectionner", "Select all")} title={tr("Tout sélectionner", "Select all")} onClick={() => setPicked(picked.length ? [] : rows.map((message) => message.id))}>{allPicked ? <Check size={12} /> : picked.length ? <Minus size={12} /> : null}</button>
+        {picked.length > 0 ? (
+          <>
+            <small className="gm-count">{tr(`${picked.length} sélectionné(s)`, `${picked.length} selected`)}</small>
+            <span className="gm-sep" />
+            {folder !== "archive" && iconButton(tr("Archiver", "Archive"), <Archive size={16} />, () => moveMany("archive", tr("Messages archivés", "Messages archived")))}
+            {folder !== "trash" && iconButton(tr("Corbeille", "Trash"), <Trash2 size={16} />, () => moveMany("trash", tr("Messages mis à la corbeille", "Messages moved to trash")))}
+            {iconButton(tr("Marquer comme lu", "Mark as read"), <MailOpen size={16} />, readMany)}
+          </>
+        ) : iconButton(tr("Actualiser", "Refresh"), <RefreshCw size={15} className={state.loading ? "spin" : ""} />, state.reload)}
+        <small className="gm-range">{rows.length ? tr(`${rows.length} message(s)`, `${rows.length} message(s)`) : ""}</small>
+      </div>
+      {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}
+      {!state.data ? (state.loading ? <Skeletons count={8} height={40} /> : null) : rows.length === 0 ? <Empty title={search ? tr("Aucun résultat", "No results") : tr("Aucun message", "No messages")} /> : (
+        <ul className="gm-list">
+          {rows.map((message) => {
+            const isPicked = picked.includes(message.id);
+            return (
+              <li key={message.id} className={`${message.is_read ? "" : "unread"} ${isPicked ? "picked" : ""}`} onContextMenu={(event) => contextMenu(event, [
                 { label: tr("Ouvrir", "Open"), run: () => read(message) },
-                { label: tr("Répondre", "Reply"), run: () => onCompose({ to: message.from_address, subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`, body: "", inReplyTo: message.id }) },
+                { label: tr("Répondre", "Reply"), run: () => reply(message) },
                 { label: tr("Copier l'adresse", "Copy address"), run: () => void copyText(message.from_address, tr("Adresse copiée", "Address copied")) },
                 ...(folder !== "archive" ? [{ label: tr("Archiver", "Archive"), run: () => move(message, "archive", tr("Message archivé", "Message archived")) }] : []),
                 ...(folder !== "trash" ? [{ label: tr("Corbeille", "Trash"), danger: true, run: () => move(message, "trash", tr("Message mis à la corbeille", "Message moved to trash")) }] : []),
               ])}>
-                <span className="mail-avatar" style={{ "--mail-hue": mailSenderHue(message.from_address || message.to_addresses?.[0] || "") } as CSSProperties}>{mailInitials(message.from_name, message.from_address || message.to_addresses?.[0] || "")}</span>
-                <span className="mail-card-copy">
-                  <span><b>{sender(message)}</b><time>{new Date(message.received_at ?? message.sent_at ?? "").toLocaleDateString(lang, { day: "numeric", month: "short" })}</time></span>
-                  <span className="mail-subject">{message.subject || tr("(sans objet)", "(no subject)")}</span>
-                  {message.snippet && <small>{message.snippet}</small>}
+                <button type="button" className={isPicked ? "gm-check on" : "gm-check"} role="checkbox" aria-checked={isPicked} aria-label={tr(`Sélectionner ${message.subject || "ce message"}`, `Select ${message.subject || "this message"}`)} onClick={() => pick(message.id)}>{isPicked && <Check size={12} />}</button>
+                <button type="button" className={message.is_starred ? "gm-star on" : "gm-star"} aria-pressed={Boolean(message.is_starred)} aria-label={message.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Ajouter une étoile", "Star")} onClick={() => star(message)}><Star size={15} fill={message.is_starred ? "currentColor" : "none"} /></button>
+                <button type="button" className="gm-open" onClick={() => read(message)}>
+                  <span className="gm-sender">{sender(message)}</span>
+                  <span className="gm-line"><b>{message.subject || tr("(sans objet)", "(no subject)")}</b>{message.snippet && <small>{message.snippet}</small>}</span>
+                  {(message.attachments?.length ?? 0) > 0 && <Paperclip size={13} className="gm-clip" />}
+                  <time>{mailTime(message.received_at ?? message.sent_at ?? "", new Date(), lang)}</time>
+                </button>
+                <span className="gm-actions">
+                  {folder !== "archive" && iconButton(tr("Archiver", "Archive"), <Archive size={15} />, () => move(message, "archive", tr("Message archivé", "Message archived")))}
+                  {folder !== "trash" && iconButton(tr("Corbeille", "Trash"), <Trash2 size={15} />, () => move(message, "trash", tr("Message mis à la corbeille", "Message moved to trash")))}
                 </span>
-                <span className="mail-card-flags">{message.is_starred && <Star size={13} fill="currentColor" />}{(message.attachments?.length ?? 0) > 0 && <Paperclip size={13} />}</span>
-              </button>
-            </StaggerItem>
-            </Fragment>
-          ))}
-        </Stagger>
+              </li>
+            );
+          })}
+        </ul>
       )}
-      </div>
-        {open ? (
-          <article className="mail-reader">
-            <header className="mail-reader-head"><div><span className="mail-avatar large" style={{ "--mail-hue": mailSenderHue(open.from_address) } as CSSProperties}>{mailInitials(open.from_name, open.from_address)}</span><span><h2>{open.subject || tr("(sans objet)", "(no subject)")}</h2><p>{open.from_name || open.from_address}</p></span></div><Button aria-label={tr("Fermer le message", "Close message")} onClick={() => setOpen(null)}><X size={15} /></Button></header>
-            <div className="mail-reader-meta"><span>{open.from_name ? `${open.from_name} <${open.from_address}>` : open.from_address}</span><time>{new Date(open.received_at ?? open.sent_at ?? "").toLocaleString(lang, { dateStyle: "long", timeStyle: "short" })}</time></div>
-            <div className="row mail-reader-actions">
-              <Button onClick={() => onCompose({ to: open.from_address, subject: open.subject.startsWith("Re:") ? open.subject : `Re: ${open.subject}`, body: `\n\n> ${content.split("\n").join("\n> ")}`, inReplyTo: open.id })}><Reply size={15} />{tr("Répondre", "Reply")}</Button>
-              <Button onClick={() => void act(() => apiData("api/mail/read", "POST", { id: open.id, is_starred: !open.is_starred }))}><Star size={15} />{open.is_starred ? tr("Retirer l'étoile", "Unstar") : tr("Étoile", "Star")}</Button>
-              <Button onClick={() => { const date = new Date(); date.setDate(date.getDate() + 1); date.setHours(9, 0, 0, 0); void act(() => apiData("api/mail/snooze", "POST", { id: open.id, snoozed_until: date.toISOString() })); }}><Clock size={15} />{tr("Reporter à demain", "Snooze to tomorrow")}</Button>
-              <Button aria-label={tr("Copier l'adresse", "Copy address")} title={tr("Copier l'adresse", "Copy address")} onClick={() => void copyText(open.from_address, tr("Adresse copiée", "Address copied"))}><Copy size={15} /></Button>
-              {folder !== "archive" && <Button onClick={() => move(open, "archive", tr("Message archivé", "Message archived"))}><Archive size={15} />{tr("Archiver", "Archive")}</Button>}
-              {folder !== "trash" && <Button className="danger" onClick={() => move(open, "trash", tr("Message mis à la corbeille", "Message moved to trash"))}><Trash2 size={15} />{tr("Corbeille", "Trash")}</Button>}
-            </div>
-            {(open.attachments?.length ?? 0) > 0 && <ul className="mail-attachments">{open.attachments?.map((item) => <li key={item.filename}><Paperclip size={14} /><span><b>{item.filename}</b><small>{Math.max(1, Math.round(item.size / 1024))} Ko</small></span></li>)}</ul>}
-            {content ? <pre className="mail-body">{content}</pre> : <p className="muted">{tr("Ce message ne contient pas de texte.", "This message has no text.")}</p>}
-          </article>
-        ) : <div className="mail-idle"><span><MailOpen size={28} /></span><b>{tr("Lis tes messages ici", "Read your messages here")}</b><p>{tr("Sélectionne un mail dans la liste pour afficher son contenu.", "Select an email from the list to display its content.")}</p></div>}
-      </div>
-    </>
+    </div>
   );
 }
 

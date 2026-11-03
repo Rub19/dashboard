@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import Select from "./Select";
 import { Check, ListChecks, Play, Plus, Sparkles, Trash2 } from "lucide-react";
 import { apiCall, apiData, itemsList, restCall } from "./api";
 import { dayKey } from "./DailyPage";
@@ -214,7 +215,7 @@ export function MacrosPage() {
       <PageHead title="Macros" text={tr("Un clic pour aller directement à une page.", "One click to jump to a page.")} onRefresh={state.reload} refreshing={state.loading} />
       <form className="daily-add" onSubmit={submit}>
         <input value={label} placeholder={tr("Nom de la macro", "Macro name")} aria-label={tr("Nom de la macro", "Macro name")} onChange={(event) => setLabel(event.target.value)} />
-        <select value={href} aria-label={tr("Page à ouvrir", "Page to open")} onChange={(event) => setHref(event.target.value)}>{MACRO_TARGETS.map(([target, name]) => <option key={target} value={target}>{name()}</option>)}</select>
+        <Select value={href} aria-label={tr("Page à ouvrir", "Page to open")} onChange={(event) => setHref(event.target.value)}>{MACRO_TARGETS.map(([target, name]) => <option key={target} value={target}>{name()}</option>)}</Select>
         <Button type="submit" variant="primary" disabled={!label.trim()}>{editing ? tr("Enregistrer", "Save") : tr("Créer", "Create")}</Button>
         {editing && <Button onClick={() => { setEditing(null); setLabel(""); }}>{tr("Annuler", "Cancel")}</Button>}
       </form>

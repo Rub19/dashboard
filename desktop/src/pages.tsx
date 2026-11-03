@@ -1,4 +1,5 @@
 import { PageHead } from "./kit";
+import Select from "./Select";
 import { ChangeEvent, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { DesktopPrefs, hdvBackground, notifyWindows, readDesktopPrefs, saveDesktopPrefs } from "./notifications";
@@ -194,9 +195,9 @@ export function SettingsPage() {
         </li>
         <li>
           <span className="stack"><b>{tr("Taille du texte", "Text size")}</b><small className="muted">{tr("Agrandit les textes sans changer le scaling Windows.", "Enlarges text without changing Windows scaling.")}</small></span>
-          <select className="settings-select" value={preferences.textScale} aria-label={tr("Taille du texte", "Text size")} onChange={(event) => choosePreference("textScale", Number(event.target.value) as TextScale)}>
+          <Select className="settings-select" value={preferences.textScale} aria-label={tr("Taille du texte", "Text size")} onChange={(event) => choosePreference("textScale", Number(event.target.value) as TextScale)}>
             {([90, 100, 110, 125] as TextScale[]).map((value) => <option key={value} value={value}>{value} %</option>)}
-          </select>
+          </Select>
         </li>
         <li>
           <span className="stack"><b>{tr("Animations", "Animations")}</b><small className="muted">{tr("Suit Windows ou réduit les mouvements dans toute l'application.", "Follows Windows or reduces motion throughout the app.")}</small></span>
@@ -222,12 +223,12 @@ export function SettingsPage() {
         </li>
         <li>
           <span className="stack"><b>{tr("Sons de l'interface", "Interface sounds")}</b><small className="muted">{tr("Un petit son quand tu cliques sur un bouton.", "A small sound when you click a button.")}</small></span>
-          <select className="settings-select" value={pack} aria-label={tr("Sons de l'interface", "Interface sounds")} onChange={(event) => { const next = event.target.value as UiPack; setPack(next); choosePack(next); }}>
+          <Select className="settings-select" value={pack} aria-label={tr("Sons de l'interface", "Interface sounds")} onChange={(event) => { const next = event.target.value as UiPack; setPack(next); choosePack(next); }}>
             <option value="off">{tr("Aucun", "None")}</option>
             <option value="soft">{tr("Doux", "Soft")}</option>
             <option value="crisp">{tr("Net", "Crisp")}</option>
             <option value="retro">{tr("Rétro", "Retro")}</option>
-          </select>
+          </Select>
         </li>
         <li>
           <span className="stack"><b>{tr("Réinitialiser l'apparence", "Reset appearance")}</b><small className="muted">{tr("Restaure le thème automatique et les réglages par défaut.", "Restores the automatic theme and default settings.")}</small></span>

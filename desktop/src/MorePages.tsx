@@ -1,6 +1,7 @@
 import { FormEvent, useMemo, useState } from "react";
+import Select from "./Select";
 import { usePersisted } from "./qol";
-import { Activity, Bell, Crown, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Bell, Crown, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, Profile } from "./api";
 import { AboutPage, AccountCard, DesktopSettings, JournalPage, SettingsPage } from "./pages";
 import BrainChat from "./BrainChat";
@@ -155,39 +156,6 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
   );
 }
 
-function RemoveMember({ id, onDone }: { id: string; onDone: () => void }) {
-  const [asking, setAsking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  if (!asking) return <Button className="danger" onClick={() => setAsking(true)}>{tr("Retirer", "Remove")}</Button>;
-  return (
-    <span className="row">
-      {error && <span className="bad">{error}</span>}
-      <Button onClick={() => setAsking(false)}>{tr("Annuler", "Cancel")}</Button>
-      <Button className="danger" onClick={() => void apiData("api/team/members", "DELETE", { id }).then(onDone, (reason) => setError(errorText(reason)))}>{tr("Confirmer", "Confirm")}</Button>
-    </span>
-  );
-}
-
-function SharedSpaces() {
-  const [name, setName] = useState("");
-  const state = useLoad(() => apiCall<Json>("api/shared-spaces"));
-  const [error, setError] = useState<string | null>(null);
-  const add = (event: FormEvent) => {
-    event.preventDefault();
-    if (!name.trim()) return;
-    setError(null);
-    apiData("api/shared-spaces", "POST", { name: name.trim() }).then(() => { setName(""); state.reload(); }, (reason) => setError(errorText(reason)));
-  };
-  return (
-    <>
-      <PageHead title={tr("Espaces partagés", "Shared spaces")} onRefresh={state.reload} refreshing={state.loading} />
-      <form className="daily-add" onSubmit={add}><input value={name} placeholder={tr("Nom de l'espace", "Space name")} aria-label={tr("Nom de l'espace", "Space name")} onChange={(event) => setName(event.target.value)} /><Button type="submit" variant="primary" disabled={!name.trim()}>{tr("Créer", "Create")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData("api/shared-spaces", "DELETE", { id: asRecord(row).id }) }]} />}</Status>
-    </>
-  );
-}
-
 function Devices() {
   const state = useLoad(() => apiCall<Json>("api/auth/devices"));
   const revoke = { title: tr("Révoquer", "Revoke"), destructive: true, run: (row: Json) => apiData("api/auth/device/revoke", "POST", { deviceId: asRecord(row).id }) };
@@ -270,55 +238,6 @@ function Diagnostic() {
   );
 }
 
-function Team() {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
-  const state = useLoad(() => apiCall<Json>("api/team/members"));
-  const invite = (event: FormEvent) => {
-    event.preventDefault();
-    if (!email.includes("@")) return;
-    setMessage(null);
-    apiData("api/team/invite", "POST", { email: email.trim() }).then(() => { setEmail(""); setMessage({ text: tr("Invitation envoyée.", "Invitation sent."), ok: true }); state.reload(); }, (reason) => setMessage({ text: errorText(reason), ok: false }));
-  };
-  return (
-    <>
-      <PageHead title={tr("Équipe", "Team")} onRefresh={state.reload} refreshing={state.loading} />
-      <form className="daily-add" onSubmit={invite}><input type="email" value={email} placeholder={tr("Adresse e-mail à inviter", "Email to invite")} aria-label={tr("Adresse e-mail à inviter", "Email to invite")} onChange={(event) => setEmail(event.target.value)} /><Button type="submit" variant="primary" disabled={!email.includes("@")}><UserPlus size={15} />{tr("Inviter", "Invite")}</Button></form>
-      {message && <p className={message.ok ? "ok" : "bad"} role="status">{message.text}</p>}
-      <Status state={state}>
-        {(data) => {
-          const rows = firstArray(data).map(asRecord);
-          if (rows.length === 0) return <Empty title={tr("Ton équipe est vide", "Your team is empty")} text={tr("Invite quelqu'un avec son adresse e-mail.", "Invite someone with their email address.")} />;
-          return (
-            <ul className="card-rows">
-              {rows.map((row) => (
-                <li key={String(row.id)}>
-                  <div>
-                    <span><b>{String(row.name ?? row.display_name ?? row.email ?? "")}</b><small>{String(row.email ?? "")}</small></span>
-                    {row.role ? <span className="badge">{String(row.role)}</span> : null}
-                    {row.status ? <span className="badge">{String(row.status)}</span> : null}
-                    <RemoveMember id={String(row.id)} onDone={state.reload} />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          );
-        }}
-      </Status>
-    </>
-  );
-}
-
-export function TeamPage() {
-  return (
-    <div className="kit-split-body team-page">
-      <Team />
-      <SharedSpaces />
-      <Collection kind="spaces" title={tr("Mes espaces", "My spaces")} placeholder={tr("Nom de l'espace", "Space name")} defaults={{ color: "#3aa8ff" }} />
-    </div>
-  );
-}
-
 function Collection({ kind, title, text, placeholder, defaults, choice }: { kind: string; title: string; text?: string; placeholder: string; defaults: { [key: string]: Json }; choice?: { label: string; keys: string[]; options: { id: string; label: string }[] } }) {
   const path = `api/user-data/${kind}`;
   const state = useLoad(() => apiCall<Json>(path), [path]);
@@ -335,7 +254,7 @@ function Collection({ kind, title, text, placeholder, defaults, choice }: { kind
   return (
     <>
       <PageHead title={title} text={text} onRefresh={state.reload} refreshing={state.loading} />
-      <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} />{choice && <select value={selected} aria-label={choice.label} onChange={(event) => setSelected(event.target.value)}>{choice.options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select>}<Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
+      <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} />{choice && <Select value={selected} aria-label={choice.label} onChange={(event) => setSelected(event.target.value)}>{choice.options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</Select>}<Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
       {error && <ErrorBox message={error} />}
       <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Renommer", "Rename"), prompt: tr("Nouveau nom", "New name"), run: (row, text) => apiData(path, "PATCH", { id: asRecord(row).id, label: text }) }, { title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
     </>

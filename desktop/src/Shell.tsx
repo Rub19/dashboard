@@ -9,6 +9,7 @@ import { Action, apiCall, authSignOut, installModule, itemsList, ModuleStatus, m
 import { errorText, Key, t, tr } from "./i18n";
 import EmbeddedApp, { EMBED_EVENT, EmbedTarget } from "./EmbeddedApp";
 import HomePage from "./HomePage";
+import { MusicCapsule } from "./NowPlaying";
 import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, popover } from "./motion";
 import { togglePinned } from "./pinned";
@@ -21,7 +22,8 @@ import WorkPage from "./DailyPage";
 import DiscordPage from "./DiscordPage";
 import FilesPage from "./FilesPage";
 import MailPage from "./MailPage";
-import { AccountPage, BrainPage, InsightsPage, TeamPage } from "./MorePages";
+import { AccountPage, BrainPage, InsightsPage } from "./MorePages";
+import { TeamPage } from "./TeamPage";
 import LolPage from "./LolPage";
 import TrackerPage from "./TrackerPage";
 import { BrandMark, LeagueMark, ValorantMark, WindowControls } from "./ui";
@@ -365,6 +367,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       </main>
 
       {palette && <Palette commands={commands} onClose={() => setPalette(false)} />}
+      {page !== "home" && !embedded && <MusicCapsule />}
       <Overlays />
     </motion.div>
   );

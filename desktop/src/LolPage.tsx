@@ -11,7 +11,7 @@ import { Friends } from "./EvalHub";
 import { errorText, lang, t, tr } from "./i18n";
 import { MatchCard, MatchFilters, ErrorBox, Skeletons, Tabs } from "./kit";
 import { keepMatch, MatchFilter, NO_FILTER, options } from "./match-filter";
-import { addLpPoint, LolAssets, LolLiveGame, LpPoint, parseLolAssets, championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
+import { lolLiveMode, addLpPoint, LolAssets, LolLiveGame, LpPoint, parseLolAssets, championSplash, LolItem, lolLine, LolMatch, lolMode, LolProfile, lolRank, lolSession, lolStats, lolTeams, topChampions } from "./lol";
 import { listStagger, SPRING_SWAP } from "./motion";
 import { RotationView } from "./MorePages";
 import { usePersisted } from "./qol";
@@ -168,7 +168,7 @@ function LiveView({ id, assets, onOpen }: { id: string | null; assets: LolAssets
   const seconds = game.startedAt ? Math.max(0, Math.floor((now - game.startedAt) / 1000)) : game.length ?? 0;
   return (
     <div className="lol-live">
-      <header className="eval-head"><h1>{lolMode(game.mode, lang) || tr("Partie en cours", "Game in progress")}</h1><span className="muted">{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</span></header>
+      <header className="eval-head"><h1>{lolLiveMode(game.mode, game.queueId, lang === "fr" ? "fr" : "en") || tr("Partie en cours", "Game in progress")}</h1><span className="muted">{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</span></header>
       <div className="lol-live-teams">
         {["Blue", "Red"].map((team) => (
           <section key={team} className={`lol-live-team ${team.toLowerCase()}`}>

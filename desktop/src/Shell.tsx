@@ -8,6 +8,8 @@ import { hdvBackground, notifiedEvents, notifyWindows, readDesktopPrefs, remembe
 import { Action, apiCall, authSignOut, installModule, itemsList, ModuleStatus, modulesLocal, modulesRemote, openModule, openReleases, Profile, profileAvatar, Progress } from "./api";
 import { errorText, Key, t, tr } from "./i18n";
 import EmbeddedApp, { EMBED_EVENT, EmbedTarget } from "./EmbeddedApp";
+import { clockKey, inQuietHours, Rule, rulesForPage, rulesForTime } from "./automations";
+import { runRule } from "./BrainExtras";
 import HomePage from "./HomePage";
 import { MusicCapsule } from "./NowPlaying";
 import ModulesPage, { Busy } from "./ModulesPage";
@@ -43,7 +45,7 @@ function progressState(progress: Progress): Busy {
 function SECTION_COMMANDS(): { page: Page; key: string; id: string; label: string }[] {
   const group = (page: Page, key: string, title: string, rows: [string, string][]) => rows.map(([id, label]) => ({ page, key, id, label: `${title} › ${label}` }));
   return [
-    ...group("settings", "ethone-section-settings", tr("Réglages", "Settings"), [["appearance", tr("Apparence", "Appearance")], ["windows", tr("Windows et notifications", "Windows and notifications")], ["shortcuts", tr("Raccourcis", "Shortcuts")], ["privacy", tr("Confidentialité", "Privacy")], ["sync", tr("Synchronisation", "Sync")], ["storage", tr("Stockage et cache", "Storage and cache")], ["performance", "Performance"], ["profile", tr("Profil", "Profile")], ["connections", tr("Connexions", "Connections")], ["devices", tr("Appareils", "Devices")], ["twofactor", tr("Double authentification", "Two-factor")], ["passkeys", tr("Clés d'accès", "Passkeys")], ["events", tr("Journal de sécurité", "Security log")], ["ai", tr("Intelligence artificielle", "Artificial intelligence")], ["about", tr("À propos", "About")]]),
+    ...group("settings", "ethone-section-settings", tr("Réglages", "Settings"), [["appearance", tr("Apparence", "Appearance")], ["windows", tr("Windows et notifications", "Windows and notifications")], ["shortcuts", tr("Raccourcis", "Shortcuts")], ["privacy", tr("Confidentialité", "Privacy")], ["sync", tr("Synchronisation", "Sync")], ["storage", tr("Stockage et cache", "Storage and cache")], ["performance", "Performance"], ["accessibility", tr("Accessibilité", "Accessibility")], ["workspace", tr("Espace de travail", "Workspace")], ["advanced", tr("Avancé", "Advanced")], ["profile", tr("Profil", "Profile")], ["connections", tr("Connexions", "Connections")], ["devices", tr("Appareils", "Devices")], ["twofactor", tr("Double authentification", "Two-factor")], ["passkeys", tr("Clés d'accès", "Passkeys")], ["events", tr("Journal de sécurité", "Security log")], ["ai", tr("Intelligence artificielle", "Artificial intelligence")], ["about", tr("À propos", "About")]]),
     ...group("productivity", "ethone-section-productivity", tr("Productivité", "Productivity"), [["tasks", tr("Tâches", "Tasks")], ["events", tr("Calendrier", "Calendar")], ["notes", "Notes"], ["scratchpad", tr("Mémo", "Scratchpad")], ["capture", tr("Capture rapide", "Quick capture")], ["habits", tr("Habitudes", "Habits")], ["focus", tr("Concentration et ambiance", "Focus and ambience")], ["bills", tr("Factures", "Bills")]]),
     ...group("tracker", "ethone-section-eval", "E:VAL", [["profile", tr("Profil", "Profile")], ["live", tr("En direct", "Live")], ["game", tr("Jeu et boutique", "Game and store")], ["hub", "Hub"]]),
     ...group("insights", "ethone-section-insights", tr("Analyses", "Insights"), [["activity", tr("Activité", "Activity")], ["mail", tr("Statistiques mail", "Mail stats")], ["weather", tr("Météo", "Weather")], ["rss", tr("Flux RSS", "RSS feeds")], ["diagnostic", tr("Diagnostic", "Diagnostics")]]),
@@ -178,11 +180,13 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     const check = async () => {
       const prefs = readDesktopPrefs();
       if (prefs.hdvBackground) await hdvBackground(true).catch(() => undefined);
+      const silent = inQuietHours(new Date(), prefs.quiet, prefs.quietFrom, prefs.quietTo);
       if (prefs.notifyMail) {
         const mail = await apiCall<Json>("api/mail/inbox?folder=inbox&limit=10").then((answer) => firstArray(answer) as unknown as { id: string; from_address: string; from_name?: string; subject?: string }[]).catch(() => null);
         if (mail) {
           const fresh = unseenMail(seen, mail);
           seen = new Set([...(seen ?? []), ...mail.map((item) => item.id)]);
+          if (silent) fresh.length = 0;
           if (fresh.length === 1) void notifyWindows(fresh[0].from_name || fresh[0].from_address, fresh[0].subject || tr("Nouveau mail", "New mail")).catch(() => undefined);
           else if (fresh.length > 1) void notifyWindows("Ethone", tr(`${fresh.length} nouveaux mails`, `${fresh.length} new emails`)).catch(() => undefined);
         }
@@ -192,7 +196,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         if (events) {
           const notified = notifiedEvents();
           const due = dueEvents(events, notified, Date.now());
-          for (const event of due) void notifyWindows(event.title, tr("Commence dans moins de 10 minutes", "Starts in less than 10 minutes")).catch(() => undefined);
+          if (!silent) for (const event of due) void notifyWindows(event.title, tr("Commence dans moins de 10 minutes", "Starts in less than 10 minutes")).catch(() => undefined);
           if (due.length > 0) rememberEvents([...notified, ...due.map((event) => event.id)]);
         }
       }
@@ -206,6 +210,22 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     if (next !== page) history.current = [...history.current.slice(-20), page];
     open(next, page);
   }, [open, page]);
+
+  useEffect(() => {
+    const runTime = () => rulesForTime(readJson<Rule[]>("ethone-automations") ?? [], new Date()).forEach(runRule);
+    let last = "";
+    const tick = setInterval(() => {
+      const key = clockKey(new Date());
+      if (key !== last) {
+        last = key;
+        runTime();
+      }
+    }, 15000);
+    return () => clearInterval(tick);
+  }, []);
+  useEffect(() => {
+    rulesForPage(readJson<Rule[]>("ethone-automations") ?? [], page).forEach(runRule);
+  }, [page]);
 
   const goRef = useRef(go);
   goRef.current = go;

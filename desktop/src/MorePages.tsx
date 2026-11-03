@@ -1,16 +1,15 @@
 import { FormEvent, useMemo, useState } from "react";
-import Select from "./Select";
 import { usePersisted } from "./qol";
-import { Activity, Bell, Crown, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, Users, Workflow, Zap } from "lucide-react";
+import { Accessibility, Activity, Bell, Clock, Crown, LayoutGrid, Wrench, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, Profile } from "./api";
 import { AboutPage, AccountCard, DesktopSettings, JournalPage, SettingsPage } from "./pages";
 import BrainChat from "./BrainChat";
 import Connections from "./Connections";
-import { BriefingPage, FlowsPage, MacrosPage } from "./BrainExtras";
-import { AdminPage, loadAdminStats, PerformancePage, PrivacyPage, ShortcutsPage, StoragePage, SyncPage } from "./SettingsExtra";
+import { BriefingPage, FlowsPage, InteractionsPage, MacrosPage, PersonasPage, RulesPage } from "./BrainExtras";
+import { AccessibilityPage, AdvancedPage, WorkspacePage, AdminPage, loadAdminStats, PerformancePage, PrivacyPage, ShortcutsPage, StoragePage, SyncPage } from "./SettingsExtra";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
-import { Empty, ErrorBox, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
+import { Empty, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
 import { activityWeeks } from "./productivity";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
@@ -110,7 +109,7 @@ function TwoFactor() {
 }
 
 export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
-  const [section, setSection] = usePersisted<"appearance" | "windows" | "shortcuts" | "privacy" | "sync" | "storage" | "performance" | "admin" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
+  const [section, setSection] = usePersisted<"appearance" | "windows" | "accessibility" | "workspace" | "advanced" | "shortcuts" | "privacy" | "sync" | "storage" | "performance" | "admin" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
   const admin = useLoad(() => loadAdminStats().then(() => true, () => false));
   const items = [
     { id: "appearance", label: tr("Apparence", "Appearance"), icon: <Palette size={16} />, group: tr("Application", "App") },
@@ -118,6 +117,9 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
     { id: "shortcuts", label: tr("Raccourcis", "Shortcuts"), icon: <Keyboard size={16} />, group: tr("Application", "App") },
     { id: "storage", label: tr("Stockage et cache", "Storage and cache"), icon: <HardDrive size={16} />, group: tr("Application", "App") },
     { id: "performance", label: "Performance", icon: <Gauge size={16} />, group: tr("Application", "App") },
+    { id: "accessibility", label: tr("Accessibilité", "Accessibility"), icon: <Accessibility size={16} />, group: tr("Application", "App") },
+    { id: "workspace", label: tr("Espace de travail", "Workspace"), icon: <LayoutGrid size={16} />, group: tr("Application", "App") },
+    { id: "advanced", label: tr("Avancé", "Advanced"), icon: <Wrench size={16} />, group: tr("Application", "App") },
     { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
     { id: "about", label: tr("À propos", "About"), icon: <Info size={16} />, group: tr("Application", "App") },
     { id: "profile", label: tr("Profil", "Profile"), icon: <User size={16} />, group: tr("Compte", "Account") },
@@ -136,6 +138,9 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
     <Split id="account" label={tr("Réglages", "Settings")} items={items} value={section} onChange={setSection}>
       {section === "appearance" && <SettingsPage />}
       {section === "windows" && <DesktopSettings />}
+      {section === "accessibility" && <AccessibilityPage />}
+      {section === "workspace" && <WorkspacePage />}
+      {section === "advanced" && <AdvancedPage />}
       {section === "shortcuts" && <ShortcutsPage />}
       {section === "privacy" && <PrivacyPage />}
       {section === "sync" && <SyncPage />}
@@ -238,36 +243,14 @@ function Diagnostic() {
   );
 }
 
-function Collection({ kind, title, text, placeholder, defaults, choice }: { kind: string; title: string; text?: string; placeholder: string; defaults: { [key: string]: Json }; choice?: { label: string; keys: string[]; options: { id: string; label: string }[] } }) {
-  const path = `api/user-data/${kind}`;
-  const state = useLoad(() => apiCall<Json>(path), [path]);
-  const [label, setLabel] = useState("");
-  const [selected, setSelected] = useState(choice?.options[0]?.id ?? "");
-  const [error, setError] = useState<string | null>(null);
-  const add = (event: FormEvent) => {
-    event.preventDefault();
-    if (!label.trim()) return;
-    setError(null);
-    const data = { ...defaults, ...Object.fromEntries((choice?.keys ?? []).map((key) => [key, selected])) };
-    apiData(path, "POST", { slug: `${kind}-${Date.now()}`, label: label.trim(), data }).then(() => { setLabel(""); state.reload(); }, (reason) => setError(errorText(reason)));
-  };
-  return (
-    <>
-      <PageHead title={title} text={text} onRefresh={state.reload} refreshing={state.loading} />
-      <form className="daily-add" onSubmit={add}><input value={label} placeholder={placeholder} aria-label={placeholder} onChange={(event) => setLabel(event.target.value)} />{choice && <Select value={selected} aria-label={choice.label} onChange={(event) => setSelected(event.target.value)}>{choice.options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</Select>}<Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button></form>
-      {error && <ErrorBox message={error} />}
-      <Status state={state}>{(data) => <JsonList rows={firstArray(data)} onChanged={state.reload} actions={[{ title: tr("Renommer", "Rename"), prompt: tr("Nouveau nom", "New name"), run: (row, text) => apiData(path, "PATCH", { id: asRecord(row).id, label: text }) }, { title: tr("Supprimer", "Delete"), destructive: true, run: (row) => apiData(path, "DELETE", { id: asRecord(row).id }) }]} />}</Status>
-    </>
-  );
-}
-
 export function BrainPage() {
-  const [section, setSection] = usePersisted<"chat" | "briefing" | "flows" | "macros" | "interactions" | "personas">("ethone-section-brain", "chat");
+  const [section, setSection] = usePersisted<"chat" | "briefing" | "rules" | "flows" | "macros" | "interactions" | "personas">("ethone-section-brain", "chat");
   const items = [
     { id: "chat", label: "Brain", icon: <MessageSquare size={16} /> },
     { id: "briefing", label: tr("Résumé du jour", "Daily briefing"), icon: <Sparkles size={16} /> },
     { id: "flows", label: "Flows", icon: <Workflow size={16} />, group: tr("Automatisations", "Automation") },
     { id: "macros", label: "Macros", icon: <Zap size={16} />, group: tr("Automatisations", "Automation") },
+    { id: "rules", label: tr("Règles", "Rules"), icon: <Clock size={16} />, group: tr("Automatisations", "Automation") },
     { id: "interactions", label: tr("Interactions", "Interactions"), icon: <Activity size={16} />, group: tr("Automatisations", "Automation") },
     { id: "personas", label: "Personas", icon: <Bot size={16} />, group: tr("Personnalisation", "Personalization") },
   ] as const;
@@ -277,8 +260,9 @@ export function BrainPage() {
       {section === "briefing" && <BriefingPage />}
       {section === "flows" && <FlowsPage />}
       {section === "macros" && <MacrosPage />}
-      {section === "interactions" && <Collection kind="interactions" title={tr("Interactions", "Interactions")} placeholder={tr("Nom de l'interaction", "Interaction name")} defaults={{ action: "navigate" }} />}
-      {section === "personas" && <Collection kind="personas" title="Personas" placeholder={tr("Nom du persona", "Persona name")} defaults={{ theme: "obsidian" }} />}
+      {section === "interactions" && <InteractionsPage />}
+      {section === "rules" && <RulesPage />}
+      {section === "personas" && <PersonasPage />}
     </Split>
   );
 }

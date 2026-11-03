@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { Upload } from "lucide-react";
+import Select from "./Select";
 import { apiCall, apiData, itemsList, openSite, restCall } from "./api";
 import { clearCache } from "./cache";
 import { firstArray, Json } from "./generic";
-import { errorText, lang, tr } from "./i18n";
+import { errorText, lang, t, tr } from "./i18n";
 import { formatBytes, PageHead, Stat, Status, useLoad } from "./kit";
 import { toast } from "./qol";
-import { applyInterfacePreferences, currentInterfacePreferences } from "./settings";
+import { MAIN_PAGES } from "./navigation";
+import { about } from "./api";
+import { applyInterfacePreferences, currentInterfacePreferences, exportSettings, readJson, write } from "./settings";
 import { tasksList } from "./tasks";
 import { Button } from "./ui";
 
@@ -214,7 +219,127 @@ export function AdminPage() {
           </>
         )}
       </Status>
+      <GameOverride />
     </>
   );
 }
 
+function PageSwitch({ title, text, checked, onChange }: { title: string; text: string; checked: boolean; onChange: (next: boolean) => void }) {
+  return (
+    <li>
+      <span className="stack"><b>{title}</b><small className="muted">{text}</small></span>
+      <label className="switch" aria-label={title}>
+        <input type="checkbox" role="switch" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+        <span className="switch-track"><span className="switch-thumb" /></span>
+      </label>
+    </li>
+  );
+}
+
+export function AccessibilityPage() {
+  const [contrast, setContrast] = useState(() => document.documentElement.dataset.contrast === "more");
+  const [motion, setMotion] = useState(() => currentInterfacePreferences().motion === "reduced");
+  const [opaque, setOpaque] = useState(() => currentInterfacePreferences().transparency === "reduced");
+  const toggleContrast = (next: boolean) => {
+    setContrast(next);
+    write("ethone-contrast", next ? "more" : "normal");
+    document.documentElement.dataset.contrast = next ? "more" : "normal";
+  };
+  return (
+    <>
+      <PageHead title={tr("Accessibilité", "Accessibility")} text={tr("Rendre l'application plus lisible et plus calme.", "Make the app easier to read and calmer.")} />
+      <ul className="settings settings-grid">
+        <PageSwitch title={tr("Contraste renforcé", "Higher contrast")} text={tr("Textes plus nets, bordures plus visibles et liens soulignés.", "Sharper text, stronger borders and underlined links.")} checked={contrast} onChange={toggleContrast} />
+        <PageSwitch title={tr("Réduire les animations", "Reduce motion")} text={tr("Retire les mouvements de toute l'application.", "Removes movement across the app.")} checked={motion} onChange={(next) => { setMotion(next); applyInterfacePreferences({ ...currentInterfacePreferences(), motion: next ? "reduced" : "system" }); }} />
+        <PageSwitch title={tr("Surfaces opaques", "Opaque surfaces")} text={tr("Retire les effets de transparence.", "Removes transparency effects.")} checked={opaque} onChange={(next) => { setOpaque(next); applyInterfacePreferences({ ...currentInterfacePreferences(), transparency: next ? "reduced" : "system" }); }} />
+      </ul>
+    </>
+  );
+}
+
+export function WorkspacePage() {
+  const [start, setStart] = useState(() => readJson<string>("ethone-start-page") ?? "last");
+  const choose = (next: string) => {
+    setStart(next);
+    write("ethone-start-page", JSON.stringify(next));
+  };
+  return (
+    <>
+      <PageHead title={tr("Espace de travail", "Workspace")} text={tr("Ce que tu retrouves en ouvrant Ethone.", "What you see when opening Ethone.")} />
+      <ul className="settings settings-grid">
+        <li>
+          <span className="stack"><b>{tr("Page d'ouverture", "Start page")}</b><small className="muted">{tr("La page affichée au lancement.", "The page shown at launch.")}</small></span>
+          <Select className="settings-select" value={start} aria-label={tr("Page d'ouverture", "Start page")} onChange={(event) => choose(event.target.value)}>
+            <option value="last">{tr("Dernière page ouverte", "Last opened page")}</option>
+            {MAIN_PAGES.map(({ id }) => <option key={id} value={id}>{id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}</option>)}
+          </Select>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Blocs de l'Accueil", "Home blocks")}</b><small className="muted">{tr("Choisis-les avec le bouton de réglage en haut de l'Accueil.", "Pick them with the settings button at the top of Home.")}</small></span>
+        </li>
+      </ul>
+    </>
+  );
+}
+
+export function AdvancedPage() {
+  const [asking, setAsking] = useState(false);
+  const copyDiagnostic = async () => {
+    const info = await about().catch(() => null);
+    const text = [`Ethone ${info?.version ?? "?"}`, navigator.userAgent, `Écran ${screen.width}x${screen.height} @${devicePixelRatio}`, `Thème ${document.documentElement.dataset.look}`, `Langue ${lang}`].join("\n");
+    await navigator.clipboard.writeText(text);
+    toast(tr("Diagnostic copié", "Diagnostic copied"));
+  };
+  const saveRaw = () => {
+    invoke<string>("settings_export", { content: exportSettings() }).then((path) => toast(tr(`Réglages enregistrés dans ${path}`, `Settings saved to ${path}`)), () => toast(tr("Export impossible", "Export failed"), { tone: "bad" }));
+  };
+  const reset = () => {
+    for (const key of Object.keys(localStorage)) if (key.startsWith("ethone-") && key !== "ethone-brain-chat") localStorage.removeItem(key);
+    clearCache();
+    window.location.reload();
+  };
+  return (
+    <>
+      <PageHead title={tr("Avancé", "Advanced")} text={tr("Maintenance de l'application sur ce PC.", "App maintenance on this PC.")} />
+      <ul className="settings settings-grid">
+        <li><span className="stack"><b>{tr("Copier le diagnostic", "Copy diagnostic")}</b><small className="muted">{tr("Version, système et écran, sans donnée personnelle.", "Version, system and screen, no personal data.")}</small></span><Button onClick={() => void copyDiagnostic()}>{tr("Copier", "Copy")}</Button></li>
+        <li><span className="stack"><b>{tr("Exporter les réglages", "Export settings")}</b><small className="muted">{tr("Dans ton dossier Téléchargements.", "To your Downloads folder.")}</small></span><Button onClick={saveRaw}>{tr("Exporter", "Export")}</Button></li>
+        <li>
+          <span className="stack"><b>{tr("Réinitialiser l'application", "Reset the app")}</b><small className="muted">{tr("Efface les préférences et le cache de ce PC. Ton compte, tes données en ligne et la conversation Brain restent.", "Clears preferences and cache on this PC. Your account, online data and Brain chat stay.")}</small></span>
+          {asking ? <span className="row"><Button onClick={() => setAsking(false)}>{tr("Annuler", "Cancel")}</Button><Button className="danger" onClick={reset}>{tr("Confirmer", "Confirm")}</Button></span> : <Button className="danger" onClick={() => setAsking(true)}>{tr("Réinitialiser", "Reset")}</Button>}
+        </li>
+      </ul>
+    </>
+  );
+}
+
+export function GameOverride() {
+  const state = useLoad(() => apiData<{ active?: boolean; uploadedAt?: string; sizeBytes?: number } | null>("api/games/dino/override"));
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const run = (action: () => Promise<unknown>, done: string) => {
+    setBusy(true);
+    setError(null);
+    action().then(() => { toast(done); state.reload(); }, (reason) => setError(errorText(reason))).finally(() => setBusy(false));
+  };
+  const upload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) run(async () => invoke("admin_game_upload", { html: await file.text() }), tr("Jeu mis à jour", "Game updated"));
+  };
+  return (
+    <section>
+      <h2 className="group-title">{tr("Jeu Dino Corridor", "Dino Corridor game")}</h2>
+      <ul className="settings">
+        <li>
+          <span className="stack"><b>{state.data?.active ? tr("Version manuelle active", "Manual version active") : tr("Version automatique", "Automatic version")}</b><small className="muted">{state.data?.active ? `${formatBytes(state.data.sizeBytes ?? 0)}${state.data.uploadedAt ? `, ${new Date(state.data.uploadedAt).toLocaleString(lang)}` : ""}` : tr("Le serveur utilise GitHub, puis sa copie de secours.", "The server uses GitHub, then its fallback copy.")}</small></span>
+          <span className="row">
+            <label className="btn files-add"><Upload size={14} />{tr("Envoyer un fichier HTML", "Upload an HTML file")}<input type="file" accept=".html,text/html" disabled={busy} onChange={(event) => void upload(event)} /></label>
+            {state.data?.active && <Button className="danger" disabled={busy} onClick={() => run(() => apiData("api/games/dino/override", "DELETE"), tr("Version manuelle retirée", "Manual version removed"))}>{tr("Retirer", "Remove")}</Button>}
+          </span>
+        </li>
+      </ul>
+      {error && <p className="bad small" role="alert">{error}</p>}
+    </section>
+  );
+}

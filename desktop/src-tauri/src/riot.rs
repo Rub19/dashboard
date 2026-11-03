@@ -89,13 +89,21 @@ pub fn shard_for(region: &str) -> &str {
     }
 }
 
+const RADIANT: i64 = 27;
+
+fn settled_tier(tier: i64, leaderboard_rank: i64) -> i64 {
+    if tier >= RADIANT && leaderboard_rank <= 0 { RADIANT - 1 } else { tier }
+}
+
 pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
     let latest = &player["LatestCompetitiveUpdate"];
     let seasons = player["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"].as_object();
     let season = latest["SeasonID"].as_str().and_then(|id| seasons?.iter().find(|(key, _)| key.eq_ignore_ascii_case(id)).map(|(_, value)| value));
     let number = |value: &Value| value.as_i64().unwrap_or(0);
     let seasonal = season.map_or(0, |info| number(&info["CompetitiveTier"]));
-    let tier = if seasonal > 0 { seasonal } else { number(&latest["TierAfterUpdate"]) };
+    let after_match = number(&latest["TierAfterUpdate"]);
+    let leaderboard_rank = season.map_or(0, |info| number(&info["LeaderboardRank"]));
+    let tier = settled_tier(if after_match > 0 { after_match } else { seasonal }, leaderboard_rank);
     let peak_tier = seasons
         .into_iter()
         .flat_map(|all| all.values())
@@ -124,7 +132,7 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
             .and_then(|info| info["RankedRating"].as_i64())
             .unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"])),
         peak_tier,
-        leaderboard_rank: season.map_or(0, |info| number(&info["LeaderboardRank"])),
+        leaderboard_rank,
         history,
     }
 }
@@ -396,7 +404,25 @@ mod tests {
             } } }
         });
         let rank = parse_rank(&player, &json!({}));
-        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (24, 300, 27));
+        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (26, 300, 27));
+    }
+
+    #[test]
+    fn radiant_needs_a_leaderboard_place_and_the_last_match_wins() {
+        let rank = |tier_after: i64, seasonal: i64, board: i64| {
+            parse_rank(
+                &json!({
+                    "LatestCompetitiveUpdate": { "SeasonID": "act", "TierAfterUpdate": tier_after, "RankedRatingAfterUpdate": 319 },
+                    "QueueSkills": { "competitive": { "SeasonalInfoBySeasonID": { "act": { "CompetitiveTier": seasonal, "RankedRating": 319, "LeaderboardRank": board } } } }
+                }),
+                &Value::Null,
+            )
+            .tier
+        };
+        assert_eq!(rank(27, 24, 0), 26);
+        assert_eq!(rank(27, 24, 412), 27);
+        assert_eq!(rank(25, 24, 0), 25);
+        assert_eq!(rank(0, 24, 0), 24);
     }
 
     #[test]

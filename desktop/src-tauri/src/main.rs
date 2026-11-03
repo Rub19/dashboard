@@ -272,6 +272,11 @@ async fn drive_upload_chunk(request: tauri::ipc::Request<'_>, state: State<'_, A
 }
 
 #[tauri::command]
+async fn admin_game_upload(html: String, state: State<'_, App>) -> Result<serde_json::Value, String> {
+    state.auth.worker_text("api/games/dino/override", "text/html; charset=utf-8", html).await
+}
+
+#[tauri::command]
 fn autostart_get() -> bool {
     background::autostart_enabled()
 }
@@ -726,6 +731,7 @@ fn main() {
             api_call,
             rest_call,
             drive_upload_chunk,
+            admin_game_upload,
             hdv_background,
             embed_open,
             embed_resize,

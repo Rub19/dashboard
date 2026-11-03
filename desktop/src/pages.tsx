@@ -103,6 +103,16 @@ export function DesktopSettings() {
         <DesktopSwitch title={tr("Réduire à la fermeture", "Minimize on close")} text={tr("La croix garde Ethone actif dans la zone de notification.", "The close button keeps Ethone running in the notification area.")} checked={prefs.closeToTray} onChange={(closeToTray) => change({ closeToTray })} />
         <DesktopSwitch title={tr("HDV Tracker en arrière-plan", "HDV Tracker in the background")} text={hdvText} checked={prefs.hdvBackground} onChange={toggleHdv} />
         <DesktopSwitch title={tr("Notifier les nouveaux mails", "Notify new mail")} text={tr("Vérifié toutes les 2 minutes tant qu'Ethone est ouvert.", "Checked every 2 minutes while Ethone is open.")} checked={prefs.notifyMail} onChange={(notifyMail) => change({ notifyMail })} />
+        <DesktopSwitch title={tr("Ne pas déranger", "Do not disturb")} text={tr("Aucune notification sur cette plage horaire.", "No notifications during these hours.")} checked={prefs.quiet} onChange={(quiet) => change({ quiet })} />
+        {prefs.quiet && (
+          <li>
+            <span className="stack"><b>{tr("Plage de silence", "Quiet hours")}</b><small className="muted">{tr("Passe minuit si besoin.", "Can run past midnight.")}</small></span>
+            <span className="row quiet-hours">
+              <input type="time" value={prefs.quietFrom} aria-label={tr("Début", "Start")} onChange={(event) => change({ quietFrom: event.target.value })} />
+              <input type="time" value={prefs.quietTo} aria-label={tr("Fin", "End")} onChange={(event) => change({ quietTo: event.target.value })} />
+            </span>
+          </li>
+        )}
         <DesktopSwitch title={tr("Rappeler les événements", "Remind events")} text={tr("Une notification 10 minutes avant le début.", "A notification 10 minutes before the start.")} checked={prefs.notifyEvents} onChange={(notifyEvents) => change({ notifyEvents })} />
         <li>
           <span className="stack"><b>{tr("Tester les notifications", "Test notifications")}</b><small className="muted">{tr("Envoie une notification Windows.", "Sends a Windows notification.")}</small></span>

@@ -2,13 +2,16 @@ import { FormEvent, useState } from "react";
 import Select from "./Select";
 import { Check, ListChecks, Play, Plus, Sparkles, Trash2 } from "lucide-react";
 import { apiCall, apiData, itemsList, restCall } from "./api";
-import { dayKey } from "./DailyPage";
+import { activityWeeks, dayKey } from "./productivity";
+import { interactionStats, Rule, RuleAction, RuleTrigger } from "./automations";
+import { humanize } from "./generic";
+import { toast } from "./qol";
+import { applyInterfacePreferences, applyLook, currentInterfacePreferences, LookId, LOOKS, readJson, write } from "./settings";
 import { firstArray, Json } from "./generic";
 import { errorText, lang, tr } from "./i18n";
 import { Drawer, Empty, ErrorBox, PageHead, Status, useLoad } from "./kit";
 import { GO_EVENT, MACRO_TARGETS, pageForHref } from "./navigation";
 import { taskDue, taskLate } from "./productivity";
-import { readJson } from "./settings";
 import { tasksList } from "./tasks";
 import { todayEvents } from "./home";
 import { Button } from "./ui";
@@ -236,6 +239,148 @@ export function MacrosPage() {
             </li>
           );
         })}
+      </ul>
+    </>
+  );
+}
+
+const SITE_THEMES: Record<string, LookId> = { obsidian: "obsidian", "cyber-neon": "neon", "northern-aurora": "aurora", "solar-eclipse": "solar", "monochrome-studio": "mono", neon: "neon", aurora: "aurora", solar: "solar", mono: "mono", sunset: "sunset", ethone: "ethone", daylight: "daylight" };
+const LOOK_THEME: Partial<Record<LookId, string>> = { neon: "cyber-neon", aurora: "northern-aurora", solar: "solar-eclipse", mono: "monochrome-studio" };
+const lookName = (id: string) => { const look = LOOKS.find((item) => item.id === id); return look ? (lang === "fr" ? look.fr : look.en) : id; };
+
+export function PersonasPage() {
+  const path = "api/user-data/personas";
+  const state = useLoad(async () => firstArray(await apiCall<Json>(path)) as unknown as Row[]);
+  const [label, setLabel] = useState("");
+  const [look, setLook] = useState<LookId>("obsidian");
+  const [error, setError] = useState<string | null>(null);
+  const run = (action: () => Promise<unknown>, after?: () => void) => {
+    setError(null);
+    action().then(() => { after?.(); state.reload(); }, (reason) => setError(errorText(reason)));
+  };
+  const add = (event: FormEvent) => {
+    event.preventDefault();
+    if (label.trim()) run(() => apiData(path, "POST", { slug: `personas-${Date.now()}`, label: label.trim(), data: { theme: LOOK_THEME[look] ?? look } }), () => setLabel(""));
+  };
+  const rows = state.data ?? [];
+  return (
+    <>
+      <PageHead title="Personas" text={tr("Des ambiances à appliquer en un clic, synchronisées avec ton compte.", "Moods you apply in one click, synced with your account.")} onRefresh={state.reload} refreshing={state.loading} />
+      <form className="daily-add" onSubmit={add}>
+        <input value={label} placeholder={tr("Nom du persona", "Persona name")} aria-label={tr("Nom du persona", "Persona name")} onChange={(event) => setLabel(event.target.value)} />
+        <Select value={look} aria-label={tr("Thème", "Theme")} onChange={(event) => setLook(event.target.value as LookId)}>{LOOKS.map((item) => <option key={item.id} value={item.id}>{lookName(item.id)}</option>)}</Select>
+        <Button type="submit" variant="primary" disabled={!label.trim()}>{tr("Créer", "Create")}</Button>
+      </form>
+      {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}
+      {state.data && rows.length === 0 && <Empty title={tr("Aucun persona", "No personas")} text={tr("Crée ta première ambiance ci-dessus.", "Create your first mood above.")} />}
+      <ul className="settings settings-grid">
+        {rows.map((row) => {
+          const target = SITE_THEMES[String(row.data?.theme ?? "")] ?? "obsidian";
+          return (
+            <li key={row.id}>
+              <span className="stack"><b>{row.label}</b><small className="muted">{lookName(target)}</small></span>
+              <div className="row">
+                <Button onClick={() => { applyLook(target); toast(tr(`Thème ${lookName(target)} appliqué`, `${lookName(target)} theme applied`)); }}><Play size={14} />{tr("Appliquer", "Apply")}</Button>
+                <Button aria-label={tr(`Supprimer ${row.label}`, `Delete ${row.label}`)} className="danger" onClick={() => run(() => apiData(path, "DELETE", { id: row.id }))}><Trash2 size={14} /></Button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
+}
+
+export function InteractionsPage() {
+  const state = useLoad(() => apiData<{ events?: { id?: string; createdAt?: string; eventType?: string; details?: { title?: string } | null }[] }>("api/cloud/activity?limit=2000"));
+  return (
+    <>
+      <PageHead title={tr("Interactions", "Interactions")} text={tr("Ce que tu as fait sur les 12 derniers mois.", "What you did over the last 12 months.")} onRefresh={state.reload} refreshing={state.loading} />
+      <Status state={state}>
+        {(data) => {
+          const events = data.events ?? [];
+          if (events.length === 0) return <Empty title={tr("Aucune interaction", "No interactions")} />;
+          const weeks = activityWeeks(events.flatMap((event) => (event.createdAt ? [event.createdAt] : [])), new Date(), 52);
+          const peak = Math.max(1, ...weeks.flat().map((cell) => cell.count));
+          const stats = interactionStats(events).slice(0, 8);
+          return (
+            <>
+              <div className="activity-map" role="img" aria-label={tr(`${events.length} interactions sur 12 mois`, `${events.length} interactions over 12 months`)}>
+                {weeks.map((week) => <span key={week[0].key}>{week.map((cell) => <i key={cell.key} title={`${new Date(`${cell.key}T12:00:00`).toLocaleDateString(lang)} : ${cell.count}`} className={cell.future ? "future" : ""} style={cell.count ? { opacity: 0.3 + 0.7 * (cell.count / peak), background: "var(--accent-text)" } : undefined} />)}</span>)}
+              </div>
+              <div className="interaction-grid">
+                <section className="briefing-block">
+                  <h2>{tr("Répartition", "Breakdown")}</h2>
+                  <ul className="interaction-bars">{stats.map(([kind, count]) => <li key={kind}><span>{humanize(kind)}</span><i style={{ width: `${(count / stats[0][1]) * 100}%` }} /><b>{count}</b></li>)}</ul>
+                </section>
+                <section className="briefing-block">
+                  <h2>{tr("Récemment", "Recent")}</h2>
+                  <ul className="interaction-log">{events.slice(0, 8).map((event, index) => <li key={event.id ?? index}><span>{event.details?.title ?? humanize(event.eventType ?? "")}</span>{event.createdAt && <time className="muted small">{new Date(event.createdAt).toLocaleString(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</time>}</li>)}</ul>
+                </section>
+              </div>
+            </>
+          );
+        }}
+      </Status>
+    </>
+  );
+}
+
+const RULE_KEY = "ethone-automations";
+
+export function runRule(rule: Rule) {
+  if (rule.action.type === "look") applyLook(rule.action.value as LookId);
+  else applyInterfacePreferences({ ...currentInterfacePreferences(), density: rule.action.value });
+}
+
+export function RulesPage() {
+  const [rules, setRules] = useState<Rule[]>(() => readJson<Rule[]>(RULE_KEY) ?? []);
+  const [when, setWhen] = useState<"time" | "page">("time");
+  const [time, setTime] = useState("09:00");
+  const [page, setPage] = useState("/mail");
+  const [act, setAct] = useState("look:aurora");
+  const store = (next: Rule[]) => {
+    setRules(next);
+    write(RULE_KEY, JSON.stringify(next));
+  };
+  const actionOf = (value: string): RuleAction => {
+    const [type, target] = value.split(":");
+    return type === "look" ? { type: "look", value: target } : { type: "density", value: target as "comfortable" | "compact" };
+  };
+  const add = (event: FormEvent) => {
+    event.preventDefault();
+    const trigger: RuleTrigger = when === "time" ? { type: "time", value: time } : { type: "page", value: pageForHref(page) ?? "home" };
+    store([...rules, { id: crypto.randomUUID(), enabled: true, trigger, action: actionOf(act) }]);
+  };
+  const describeTrigger = (rule: Rule) => rule.trigger.type === "time" ? tr(`Chaque jour à ${rule.trigger.value}`, `Every day at ${rule.trigger.value}`) : tr(`En ouvrant ${MACRO_TARGETS.find(([href]) => pageForHref(href) === rule.trigger.value)?.[1]() ?? rule.trigger.value}`, `When opening ${rule.trigger.value}`);
+  const describeAction = (rule: Rule) => rule.action.type === "look" ? tr(`Thème ${lookName(rule.action.value)}`, `${lookName(rule.action.value)} theme`) : rule.action.value === "compact" ? tr("Densité compacte", "Compact density") : tr("Densité confortable", "Comfortable density");
+  return (
+    <>
+      <PageHead title={tr("Règles", "Rules")} text={tr("Change l'ambiance d'Ethone à une heure ou sur une page. Tant qu'Ethone est ouvert, sur ce PC.", "Change Ethone's mood at a time or on a page. While Ethone is open, on this PC.")} />
+      <form className="daily-add rule-form" onSubmit={add}>
+        <Select value={when} aria-label={tr("Déclencheur", "Trigger")} onChange={(event) => setWhen(event.target.value as "time" | "page")}><option value="time">{tr("À une heure", "At a time")}</option><option value="page">{tr("Sur une page", "On a page")}</option></Select>
+        {when === "time" ? <input type="time" required value={time} aria-label={tr("Heure", "Time")} onChange={(event) => setTime(event.target.value)} /> : <Select value={page} aria-label={tr("Page", "Page")} onChange={(event) => setPage(event.target.value)}>{MACRO_TARGETS.filter(([href], index, all) => all.findIndex(([other]) => pageForHref(other) === pageForHref(href)) === index).map(([href, name]) => <option key={href} value={href}>{name()}</option>)}</Select>}
+        <Select value={act} aria-label={tr("Action", "Action")} onChange={(event) => setAct(event.target.value)}>
+          {LOOKS.map((item) => <option key={item.id} value={`look:${item.id}`}>{tr(`Thème ${lookName(item.id)}`, `${lookName(item.id)} theme`)}</option>)}
+          <option value="density:compact">{tr("Densité compacte", "Compact density")}</option>
+          <option value="density:comfortable">{tr("Densité confortable", "Comfortable density")}</option>
+        </Select>
+        <Button type="submit" variant="primary"><Plus size={14} />{tr("Ajouter", "Add")}</Button>
+      </form>
+      {rules.length === 0 && <Empty title={tr("Aucune règle", "No rules")} text={tr("Ajoute ta première règle ci-dessus.", "Add your first rule above.")} />}
+      <ul className="settings settings-grid">
+        {rules.map((rule) => (
+          <li key={rule.id}>
+            <span className="stack"><b>{describeAction(rule)}</b><small className="muted">{describeTrigger(rule)}</small></span>
+            <div className="row">
+              <label className="switch" aria-label={tr("Activer la règle", "Enable the rule")}>
+                <input type="checkbox" role="switch" checked={rule.enabled} onChange={(event) => store(rules.map((other) => (other.id === rule.id ? { ...other, enabled: event.target.checked } : other)))} />
+                <span className="switch-track"><span className="switch-thumb" /></span>
+              </label>
+              <Button aria-label={tr("Supprimer la règle", "Delete the rule")} className="danger" onClick={() => store(rules.filter((other) => other.id !== rule.id))}><Trash2 size={14} /></Button>
+            </div>
+          </li>
+        ))}
       </ul>
     </>
   );

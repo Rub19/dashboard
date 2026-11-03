@@ -136,6 +136,14 @@ export function lolRank(text: string | undefined, language: "fr" | "en" = "fr") 
   };
 }
 
+const QUEUES: Record<number, [string, string]> = { 420: ["Classée Solo", "Ranked Solo"], 440: ["Classée Flex", "Ranked Flex"], 400: ["Normale", "Normal"], 430: ["Normale", "Normal"], 490: ["Partie rapide", "Quickplay"], 450: ["ARAM", "ARAM"], 700: ["Clash", "Clash"], 900: ["ARURF", "ARURF"], 1700: ["Arena", "Arena"] };
+const GAME_MODES: Record<string, [string, string]> = { CLASSIC: ["Faille de l'invocateur", "Summoner's Rift"], ARAM: ["ARAM", "ARAM"], CHERRY: ["Arena", "Arena"] };
+
+export function lolLiveMode(mode = "", queueId = 0, language: "fr" | "en" = "fr"): string {
+  const found = QUEUES[queueId] ?? GAME_MODES[mode];
+  return found ? found[language === "fr" ? 0 : 1] : mode;
+}
+
 export const lolMode = (mode = "", language: "fr" | "en" = "fr") => (language === "fr" ? MODES[mode] ?? mode : mode);
 
 export function championSplash(image = ""): string {

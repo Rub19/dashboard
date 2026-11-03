@@ -6,7 +6,7 @@ import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
 import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
-import { agentBust, agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
+import { currentTier, agentBust, agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
 import { EASE_SNAP, listStagger, SPRING_SWAP, stepEnter } from "./motion";
 import { readJson, write } from "./settings";
@@ -65,7 +65,7 @@ function RankDisc({ tier, progress, size }: { tier: number; progress: number; si
 }
 
 function ProfileCard({ account, linked, onDisconnect }: { account: EvalAccount; linked: boolean; onDisconnect: () => void }) {
-  const tier = account.mmr?.tier || account.tier || 0;
+  const tier = currentTier(account.mmr, account.tier);
   const peak = account.mmr?.peakTier ?? 0;
   const rr = account.mmr?.rr ?? 0;
   return (

@@ -254,6 +254,11 @@ impl Api {
         .await
     }
 
+    async fn worker_text(&self, path: &str, access: &str, content_type: &str, text: String) -> Result<Value, Failure> {
+        let url = format!("{}/{path}", self.worker_base);
+        self.send(self.client.put(url).bearer_auth(access).header("content-type", content_type).body(text)).await
+    }
+
     async fn drive_chunk(&self, access: &str, headers: &[(&str, String)], bytes: Vec<u8>) -> Result<Value, Failure> {
         let mut request = self.client.post(format!("{}/api/google-drive/upload/chunk", self.worker_base)).bearer_auth(access).body(bytes);
         for (name, value) in headers {
@@ -496,6 +501,27 @@ impl Auth {
             Err(Failure::Status(401, _)) => {
                 let renewed = self.renew_access().await?;
                 self.api.worker_json(method, path, &renewed, body).await.map_err(service_error)
+            }
+            result => result.map_err(service_error),
+        }
+    }
+
+    pub async fn worker_text(&self, path: &str, content_type: &str, text: String) -> Result<Value, String> {
+        let access = {
+            let inner = self.inner.lock().await;
+            if !matches!(inner.stage, Some(Stage::SignedIn { .. })) {
+                return Err("sessionRequired".into());
+            }
+            inner.access.clone()
+        };
+        let access = match access {
+            Some(access) => access,
+            None => self.renew_access().await?,
+        };
+        match self.api.worker_text(path, &access, content_type, text.clone()).await {
+            Err(Failure::Status(401, _)) => {
+                let renewed = self.renew_access().await?;
+                self.api.worker_text(path, &renewed, content_type, text).await.map_err(service_error)
             }
             result => result.map_err(service_error),
         }

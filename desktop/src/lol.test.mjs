@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { addLpPoint, lpScore, parseLolAssets } from "./lol.ts";
+import { addLpPoint, lolLiveMode, lpScore, parseLolAssets } from "./lol.ts";
+
+test("a live game shows a readable mode", () => {
+  assert.equal(lolLiveMode("CLASSIC", 420), "Classée Solo");
+  assert.equal(lolLiveMode("CLASSIC", 0), "Faille de l'invocateur");
+  assert.equal(lolLiveMode("CLASSIC", 440, "en"), "Ranked Flex");
+  assert.equal(lolLiveMode("NEW", 0), "NEW");
+});
 
 test("spells, runes and champions are found by their identifier", () => {
   const assets = parseLolAssets(

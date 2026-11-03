@@ -4,11 +4,15 @@ import { useEffect, useState } from "react";
 import App from "./App";
 import { lang } from "./i18n";
 import { startUiSounds } from "./ui-sound";
+import { readJson, write } from "./settings";
 import { applyAppearance, applyInterfacePreferences, InterfacePreferences, INTERFACE_EVENT } from "./settings";
 import "./style.css";
 
 document.documentElement.lang = lang;
 applyAppearance();
+document.documentElement.dataset.contrast = localStorage.getItem("ethone-contrast") ?? "normal";
+const startPage = readJson<string>("ethone-start-page");
+if (startPage && startPage !== "last") write("ethone-last-page", JSON.stringify(startPage));
 startUiSounds();
 const interfacePreferences = applyInterfacePreferences();
 window.addEventListener("contextmenu", (event) => {

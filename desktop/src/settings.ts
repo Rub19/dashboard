@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 export type Theme = "system" | "dark" | "light";
 
 export const ACCENTS = [
+  { id: "mono", color: "#e8e8ec", on: "#111", dim: "#d4d4d8", text: "#f2f2f5", textDim: "#3a3a40" },
   { id: "ocean", color: "#0a84ff", on: "#fff", dim: "#0071e3", text: "#2997ff", textDim: "#0066cc" },
   { id: "emerald", color: "#30d158", on: "#fff", dim: "#1f8a3c", text: "#30d158", textDim: "#1a7f37" },
   { id: "violet", color: "#bf5af2", on: "#fff", dim: "#8944ab", text: "#c77dff", textDim: "#8944ab" },
@@ -20,6 +21,8 @@ export const LOOKS = [
   { id: "neon", theme: "dark", accent: "cyan", fr: "Cyber Neon", en: "Cyber Neon", textFr: "Cyan et magenta électriques", textEn: "Electric cyan and magenta", colors: ["#070b14", "#00e5ff", "#ff2bd6"] },
   { id: "aurora", theme: "dark", accent: "emerald", fr: "Aurore", en: "Aurora", textFr: "Vert et violet boréal", textEn: "Northern green and violet", colors: ["#07141a", "#17e6a1", "#7a5cff"] },
   { id: "sunset", theme: "dark", accent: "rose", fr: "Crépuscule", en: "Sunset", textFr: "Prune, rose et orange", textEn: "Plum, pink and orange", colors: ["#170c1a", "#ff5c7a", "#ff9f43"] },
+  { id: "solar", theme: "dark", accent: "amber", fr: "Éclipse solaire", en: "Solar eclipse", textFr: "Noir chaud, couronne dorée", textEn: "Warm black, golden corona", colors: ["#120a06", "#ff7a18", "#ffd166"] },
+  { id: "mono", theme: "dark", accent: "mono", fr: "Monochrome", en: "Monochrome", textFr: "Noir et blanc, sans couleur", textEn: "Black and white, no color", colors: ["#0e0e10", "#6b6b73", "#34343a"] },
   { id: "daylight", theme: "light", accent: "ocean", fr: "Jour", en: "Daylight", textFr: "Clair et lumineux", textEn: "Light and bright", colors: ["#eef2fb", "#6ea8ff", "#c8a6ff"] },
   { id: "windows", theme: "system", accent: "ocean", fr: "Windows", en: "Windows", textFr: "Suit Windows, avec transparence", textEn: "Follows Windows, with transparency", colors: ["#2a2a2e", "#55555c", "#3a3a40"] },
 ] as const;
@@ -74,7 +77,7 @@ export function readJson<T>(key: string): T | null {
   }
 }
 
-const SETTINGS_KEYS = ["ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+const SETTINGS_KEYS = ["ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-weather-city", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 export function exportSettings(): string {
   const values = Object.fromEntries(SETTINGS_KEYS.flatMap((key) => {

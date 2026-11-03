@@ -1,5 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { currentTier } from "./eval.ts";
+
+test("Radiant needs a leaderboard place", () => {
+  assert.equal(currentTier({ tier: 27 }, null), 26);
+  assert.equal(currentTier({ tier: 27, leaderboardRank: 200 }, null), 27);
+  assert.equal(currentTier({ tier: 24 }, 27), 24);
+  assert.equal(currentTier(undefined, 27), 26);
+  assert.equal(currentTier(undefined, null), 0);
+});
 import { lastSession, matchAnalysis, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
 
 const player = (puuid, team, score, extra = {}) => ({ puuid, name: puuid, tag: "EUW", team, agent: "Jett", agentId: "a", tier: 12, card: "", level: 1, party: "", score, kills: 10, deaths: 5, assists: 2, hs: 5, bs: 4, ls: 1, dmg: 2000, ...extra });

@@ -1,11 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 import { readJson, write } from "./settings";
 
-export interface DesktopPrefs { closeToTray: boolean; notifyMail: boolean; notifyEvents: boolean; hdvBackground: boolean }
+export interface DesktopPrefs { closeToTray: boolean; notifyMail: boolean; notifyEvents: boolean; hdvBackground: boolean; quiet: boolean; quietFrom: string; quietTo: string }
 const PREFS_KEY = "ethone-desktop-prefs";
 const EVENTS_KEY = "ethone-notified-events";
 
-export const readDesktopPrefs = (): DesktopPrefs => ({ closeToTray: false, notifyMail: true, notifyEvents: true, hdvBackground: true, ...readJson<Partial<DesktopPrefs>>(PREFS_KEY) });
+export const readDesktopPrefs = (): DesktopPrefs => ({ closeToTray: false, notifyMail: true, notifyEvents: true, hdvBackground: true, quiet: false, quietFrom: "22:00", quietTo: "08:00", ...readJson<Partial<DesktopPrefs>>(PREFS_KEY) });
 
 export function saveDesktopPrefs(prefs: DesktopPrefs) {
   write(PREFS_KEY, JSON.stringify(prefs));

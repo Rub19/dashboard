@@ -1,3 +1,4 @@
+import { httpError } from "../middleware/errors.js";
 import { requireSecret } from "../middleware/validation.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
@@ -646,19 +647,15 @@ async function getLolMatchIds(env, puuid, apiKey, queueId) {
   matchIdsUrl.searchParams.set("start", "0");
   matchIdsUrl.searchParams.set("count", "100");
   if (queueId != null) matchIdsUrl.searchParams.set("queue", String(queueId));
-  try {
-    const matchIdsResponse = await requestExternal(matchIdsUrl, {
-      env,
-      expectedOrigin: RIOT_EUROPE,
-      service: "tracker",
-      dedupeKey: `riot:matches_list:${puuid}:${queueId ?? "all"}`,
-      headers: { "X-Riot-Token": apiKey },
-      retries: 1
-    });
-    return matchIdsResponse.data || [];
-  } catch {
-    return [];
-  }
+  const matchIdsResponse = await requestExternal(matchIdsUrl, {
+    env,
+    expectedOrigin: RIOT_EUROPE,
+    service: "tracker",
+    dedupeKey: `riot:matches_list:${puuid}:${queueId ?? "all"}`,
+    headers: { "X-Riot-Token": apiKey },
+    retries: 1
+  });
+  return matchIdsResponse.data || [];
 }
 
 export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
@@ -692,6 +689,8 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
       return null;
     }
   });
+
+  if (matchIds.length > 0 && !matches.some(Boolean)) throw httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: true });
 
   const allowedQueueIds = queueIds ? new Set(queueIds) : null;
 

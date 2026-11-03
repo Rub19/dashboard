@@ -2,7 +2,7 @@ import { Fragment, CSSProperties, FormEvent, useEffect, useState } from "react";
 import { dayLabel } from "./TrackerPage";
 import { contextMenu, copyText, toast } from "./qol";
 import { usePersisted } from "./qol";
-import { Archive, Clock, Copy, Inbox, MailOpen, Paperclip, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
+import { Check, Archive, Clock, Copy, Inbox, MailOpen, Paperclip, PenLine, Reply, Search, Send, ShieldAlert, Star, Trash2, X } from "lucide-react";
 import { apiCall, apiData } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
 import { errorText, tr, lang } from "./i18n";
@@ -81,6 +81,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<Message | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const state = useLoad(async () => {
     const params = new URLSearchParams(search ? { q: search, limit: "50" } : { folder, limit: "50" });
@@ -109,6 +110,17 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
   const move = (message: Message, target: string, done: string) => {
     void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder: target })).then(() => toast(done, { action: { label: tr("Annuler", "Undo"), run: () => void act(() => apiData("api/mail/move", "POST", { ids: [message.id], folder })) } }));
   };
+  const pick = (id: string) => setPicked((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  const moveMany = (target: string, done: string) => {
+    const ids = picked;
+    setPicked([]);
+    void act(() => apiData("api/mail/move", "POST", { ids, folder: target })).then(() => toast(done, { action: { label: tr("Annuler", "Undo"), run: () => void act(() => apiData("api/mail/move", "POST", { ids, folder })) } }));
+  };
+  const readMany = () => {
+    const ids = picked;
+    setPicked([]);
+    void act(() => Promise.all(ids.map((id) => apiData("api/mail/read", "POST", { id, is_read: true }))));
+  };
   const content = open ? (open.body_text?.trim() || (open.body_html ? htmlToText(open.body_html) : open.snippet ?? "")) : "";
   const sender = (message: Message) => message.direction === "outbound" ? (message.to_addresses?.[0] ?? "") : message.from_name || message.from_address;
   return (
@@ -118,7 +130,17 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
       </PageHead>
       <form className="discord-search files-search" onSubmit={(event) => { event.preventDefault(); setSearch(query.trim()); }}><Search size={14} /><input value={query} placeholder={tr("Chercher dans les mails, puis Entrée", "Search mail, then Enter")} aria-label={tr("Chercher dans les mails", "Search mail")} onChange={(event) => { setQuery(event.target.value); if (!event.target.value) setSearch(""); }} /></form>
       {(error || state.error) && <ErrorBox message={error ?? state.error ?? ""} onRetry={state.reload} />}
-      <div className={`mail-split ${open ? "reading" : ""}`}>
+      {picked.length > 0 && (
+        <div className="mail-bulk" role="toolbar" aria-label={tr("Actions sur la sélection", "Selection actions")}>
+          <b>{tr(`${picked.length} sélectionné(s)`, `${picked.length} selected`)}</b>
+          <Button onClick={() => setPicked((state.data ?? []).map((message) => message.id))}>{tr("Tout sélectionner", "Select all")}</Button>
+          <Button onClick={readMany}>{tr("Marquer comme lu", "Mark as read")}</Button>
+          {folder !== "archive" && <Button onClick={() => moveMany("archive", tr("Messages archivés", "Messages archived"))}>{tr("Archiver", "Archive")}</Button>}
+          {folder !== "trash" && <Button className="danger" onClick={() => moveMany("trash", tr("Messages mis à la corbeille", "Messages moved to trash"))}>{tr("Corbeille", "Trash")}</Button>}
+          <Button onClick={() => setPicked([])}>{tr("Annuler", "Cancel")}</Button>
+        </div>
+      )}
+      <div className={`mail-split ${open ? "reading" : ""} ${picked.length ? "picking" : ""}`}>
       <div>
       {!state.data ? (state.loading ? <Skeletons count={6} height={58} /> : null) : state.data.length === 0 ? <Empty title={tr("Aucun message", "No messages")} /> : (
         <Stagger className="mail-list">
@@ -126,6 +148,7 @@ function Folder({ folder, onCompose }: { folder: Folder; onCompose: (draft: { to
             <Fragment key={message.id}>
             {mailDay(message) !== mailDay(state.data![index - 1]) && <li className="mail-day">{dayLabel(message.received_at ?? message.sent_at ?? "")}</li>}
             <StaggerItem variants={staggerItem} className={`${message.is_read ? "" : "unread"} ${open?.id === message.id ? "open" : ""}`}>
+              <button type="button" className={picked.includes(message.id) ? "mail-pick on" : "mail-pick"} role="checkbox" aria-checked={picked.includes(message.id)} aria-label={tr(`Sélectionner ${message.subject || "ce message"}`, `Select ${message.subject || "this message"}`)} onClick={() => pick(message.id)}>{picked.includes(message.id) && <Check size={13} />}</button>
               <button type="button" onClick={() => read(message)} onContextMenu={(event) => contextMenu(event, [
                 { label: tr("Ouvrir", "Open"), run: () => read(message) },
                 { label: tr("Répondre", "Reply"), run: () => onCompose({ to: message.from_address, subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`, body: "", inReplyTo: message.id }) },

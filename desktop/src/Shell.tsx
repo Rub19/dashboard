@@ -14,7 +14,7 @@ import { togglePinned } from "./pinned";
 import { readJson, write } from "./settings";
 import { Overlays, setPersisted, toast, usePersisted } from "./qol";
 import Sidebar, { PAGE_ORDER, PAGE_TINTS } from "./Sidebar";
-import { FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
+import { GO_EVENT, FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import Palette, { Command } from "./Palette";
 import WorkPage from "./DailyPage";
 import DiscordPage from "./DiscordPage";
@@ -40,8 +40,8 @@ function progressState(progress: Progress): Busy {
 function SECTION_COMMANDS(): { page: Page; key: string; id: string; label: string }[] {
   const group = (page: Page, key: string, title: string, rows: [string, string][]) => rows.map(([id, label]) => ({ page, key, id, label: `${title} › ${label}` }));
   return [
-    ...group("settings", "ethone-section-settings", tr("Réglages", "Settings"), [["appearance", tr("Apparence", "Appearance")], ["windows", tr("Windows et notifications", "Windows and notifications")], ["profile", tr("Profil", "Profile")], ["connections", tr("Connexions", "Connections")], ["devices", tr("Appareils", "Devices")], ["twofactor", tr("Double authentification", "Two-factor")], ["passkeys", tr("Clés d'accès", "Passkeys")], ["events", tr("Journal de sécurité", "Security log")], ["ai", tr("Intelligence artificielle", "Artificial intelligence")], ["about", tr("À propos", "About")]]),
-    ...group("productivity", "ethone-section-productivity", tr("Productivité", "Productivity"), [["tasks", tr("Tâches", "Tasks")], ["events", tr("Calendrier", "Calendar")], ["notes", "Notes"], ["scratchpad", tr("Mémo", "Scratchpad")], ["capture", tr("Capture rapide", "Quick capture")], ["habits", tr("Habitudes", "Habits")], ["focus", tr("Concentration", "Focus")], ["ambience", tr("Ambiance", "Ambience")], ["bills", tr("Factures", "Bills")]]),
+    ...group("settings", "ethone-section-settings", tr("Réglages", "Settings"), [["appearance", tr("Apparence", "Appearance")], ["windows", tr("Windows et notifications", "Windows and notifications")], ["shortcuts", tr("Raccourcis", "Shortcuts")], ["privacy", tr("Confidentialité", "Privacy")], ["sync", tr("Synchronisation", "Sync")], ["storage", tr("Stockage et cache", "Storage and cache")], ["performance", "Performance"], ["profile", tr("Profil", "Profile")], ["connections", tr("Connexions", "Connections")], ["devices", tr("Appareils", "Devices")], ["twofactor", tr("Double authentification", "Two-factor")], ["passkeys", tr("Clés d'accès", "Passkeys")], ["events", tr("Journal de sécurité", "Security log")], ["ai", tr("Intelligence artificielle", "Artificial intelligence")], ["about", tr("À propos", "About")]]),
+    ...group("productivity", "ethone-section-productivity", tr("Productivité", "Productivity"), [["tasks", tr("Tâches", "Tasks")], ["events", tr("Calendrier", "Calendar")], ["notes", "Notes"], ["scratchpad", tr("Mémo", "Scratchpad")], ["capture", tr("Capture rapide", "Quick capture")], ["habits", tr("Habitudes", "Habits")], ["focus", tr("Concentration et ambiance", "Focus and ambience")], ["bills", tr("Factures", "Bills")]]),
     ...group("tracker", "ethone-section-eval", "E:VAL", [["profile", tr("Profil", "Profile")], ["live", tr("En direct", "Live")], ["game", tr("Jeu et boutique", "Game and store")], ["hub", "Hub"]]),
     ...group("insights", "ethone-section-insights", tr("Analyses", "Insights"), [["activity", tr("Activité", "Activity")], ["mail", tr("Statistiques mail", "Mail stats")], ["weather", tr("Météo", "Weather")], ["rss", tr("Flux RSS", "RSS feeds")], ["diagnostic", tr("Diagnostic", "Diagnostics")]]),
     ...group("games", "ethone-section-games", "E:LOL", [["profile", tr("Profil", "Profile")], ["tft", "Teamfight Tactics"], ["rotation", tr("Rotation LoL", "LoL rotation")], ["hub", tr("Amis", "Friends")]]),
@@ -206,6 +206,11 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
 
   const goRef = useRef(go);
   goRef.current = go;
+  useEffect(() => {
+    const onGo = (event: Event) => goRef.current((event as CustomEvent<Page>).detail);
+    window.addEventListener(GO_EVENT, onGo);
+    return () => window.removeEventListener(GO_EVENT, onGo);
+  }, []);
   const backRef = useRef(() => undefined as void);
   backRef.current = () => {
     const previous = history.current.pop();

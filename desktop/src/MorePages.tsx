@@ -1,12 +1,15 @@
 import { FormEvent, useMemo, useState } from "react";
 import { usePersisted } from "./qol";
-import { Activity, Bell, Bot, CloudSun, ExternalLink, Info, KeyRound, Link2, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Bell, Crown, Gauge, HardDrive, Keyboard, Lock, RefreshCw, Bot, CloudSun, ExternalLink, Info, KeyRound, MessageSquare, Palette, Plug, Rss, ScrollText, Shield, Sparkles, User, UserPlus, Users, Workflow, Zap } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite, Profile } from "./api";
 import { AboutPage, AccountCard, DesktopSettings, JournalPage, SettingsPage } from "./pages";
 import BrainChat from "./BrainChat";
+import { BriefingPage, FlowsPage, MacrosPage } from "./BrainExtras";
+import { AdminPage, loadAdminStats, PerformancePage, PrivacyPage, ShortcutsPage, StoragePage, SyncPage } from "./SettingsExtra";
 import { ConfigForm, firstArray, humanize, Json, JsonFields, JsonList, unwrapConfig, rowTitle } from "./generic";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, PageHead, SideNav, Stat, Status, useLoad } from "./kit";
+import { activityWeeks } from "./productivity";
 import { readJson, write } from "./settings";
 import { Button } from "./ui";
 
@@ -137,13 +140,19 @@ function Connections() {
 }
 
 export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
-  const [section, setSection] = usePersisted<"appearance" | "windows" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
+  const [section, setSection] = usePersisted<"appearance" | "windows" | "shortcuts" | "privacy" | "sync" | "storage" | "performance" | "admin" | "profile" | "connections" | "devices" | "twofactor" | "passkeys" | "events" | "ai" | "profiles" | "journal" | "about">("ethone-section-settings", "appearance");
+  const admin = useLoad(() => loadAdminStats().then(() => true, () => false));
   const items = [
     { id: "appearance", label: tr("Apparence", "Appearance"), icon: <Palette size={16} />, group: tr("Application", "App") },
     { id: "windows", label: tr("Windows et notifications", "Windows and notifications"), icon: <Bell size={16} />, group: tr("Application", "App") },
+    { id: "shortcuts", label: tr("Raccourcis", "Shortcuts"), icon: <Keyboard size={16} />, group: tr("Application", "App") },
+    { id: "storage", label: tr("Stockage et cache", "Storage and cache"), icon: <HardDrive size={16} />, group: tr("Application", "App") },
+    { id: "performance", label: "Performance", icon: <Gauge size={16} />, group: tr("Application", "App") },
     { id: "journal", label: tr("Journal", "Log"), icon: <ScrollText size={16} />, group: tr("Application", "App") },
     { id: "about", label: tr("À propos", "About"), icon: <Info size={16} />, group: tr("Application", "App") },
     { id: "profile", label: tr("Profil", "Profile"), icon: <User size={16} />, group: tr("Compte", "Account") },
+    { id: "privacy", label: tr("Confidentialité", "Privacy"), icon: <Lock size={16} />, group: tr("Compte", "Account") },
+    { id: "sync", label: tr("Synchronisation", "Sync"), icon: <RefreshCw size={16} />, group: tr("Compte", "Account") },
     { id: "profiles", label: tr("Espaces de profil", "Profile spaces"), icon: <Users size={16} />, group: tr("Compte", "Account") },
     { id: "connections", label: tr("Connexions", "Connections"), icon: <Plug size={16} />, group: tr("Compte", "Account") },
     { id: "devices", label: tr("Appareils", "Devices"), icon: <Shield size={16} />, group: tr("Sécurité", "Security") },
@@ -151,11 +160,18 @@ export function AccountPage({ profile, onSignOut }: { profile: Profile; onSignOu
     { id: "passkeys", label: tr("Clés d'accès", "Passkeys"), icon: <KeyRound size={16} />, group: tr("Sécurité", "Security") },
     { id: "events", label: tr("Journal de sécurité", "Security log"), icon: <Activity size={16} />, group: tr("Sécurité", "Security") },
     { id: "ai", label: tr("Intelligence artificielle", "AI"), icon: <Sparkles size={16} />, group: tr("Services", "Services") },
+    ...(admin.data ? [{ id: "admin", label: tr("Administration", "Administration"), icon: <Crown size={16} />, group: tr("Services", "Services") }] as const : []),
   ] as const;
   return (
     <Split id="account" label={tr("Réglages", "Settings")} items={items} value={section} onChange={setSection}>
       {section === "appearance" && <SettingsPage />}
       {section === "windows" && <DesktopSettings />}
+      {section === "shortcuts" && <ShortcutsPage />}
+      {section === "privacy" && <PrivacyPage />}
+      {section === "sync" && <SyncPage />}
+      {section === "storage" && <StoragePage />}
+      {section === "performance" && <PerformancePage />}
+      {section === "admin" && <AdminPage />}
       {section === "journal" && <JournalPage />}
       {section === "about" && <AboutPage />}
       {section === "profile" && <><AccountCard profile={profile} onSignOut={onSignOut} /><ProfileEditor /></>}
@@ -325,18 +341,12 @@ function Team() {
 }
 
 export function TeamPage() {
-  const [section, setSection] = usePersisted<"team" | "shared" | "personal">("ethone-section-team", "team");
-  const items = [
-    { id: "team", label: tr("Équipe", "Team"), icon: <Users size={16} /> },
-    { id: "shared", label: tr("Espaces partagés", "Shared spaces"), icon: <Link2 size={16} /> },
-    { id: "personal", label: tr("Mes espaces", "My spaces"), icon: <Zap size={16} /> },
-  ] as const;
   return (
-    <Split id="team" label={tr("Équipe", "Team")} items={items} value={section} onChange={setSection}>
-      {section === "team" && <Team />}
-      {section === "shared" && <SharedSpaces />}
-      {section === "personal" && <Collection kind="spaces" title={tr("Mes espaces", "My spaces")} placeholder={tr("Nom de l'espace", "Space name")} defaults={{ color: "#3aa8ff" }} />}
-    </Split>
+    <div className="kit-split-body team-page">
+      <Team />
+      <SharedSpaces />
+      <Collection kind="spaces" title={tr("Mes espaces", "My spaces")} placeholder={tr("Nom de l'espace", "Space name")} defaults={{ color: "#3aa8ff" }} />
+    </div>
   );
 }
 
@@ -364,9 +374,10 @@ function Collection({ kind, title, text, placeholder, defaults, choice }: { kind
 }
 
 export function BrainPage() {
-  const [section, setSection] = usePersisted<"chat" | "flows" | "macros" | "interactions" | "personas">("ethone-section-brain", "chat");
+  const [section, setSection] = usePersisted<"chat" | "briefing" | "flows" | "macros" | "interactions" | "personas">("ethone-section-brain", "chat");
   const items = [
     { id: "chat", label: "Brain", icon: <MessageSquare size={16} /> },
+    { id: "briefing", label: tr("Résumé du jour", "Daily briefing"), icon: <Sparkles size={16} /> },
     { id: "flows", label: "Flows", icon: <Workflow size={16} />, group: tr("Automatisations", "Automation") },
     { id: "macros", label: "Macros", icon: <Zap size={16} />, group: tr("Automatisations", "Automation") },
     { id: "interactions", label: tr("Interactions", "Interactions"), icon: <Activity size={16} />, group: tr("Automatisations", "Automation") },
@@ -375,8 +386,9 @@ export function BrainPage() {
   return (
     <Split id="brain" label="Brain" items={items} value={section} onChange={setSection}>
       {section === "chat" && <BrainChat />}
-      {section === "flows" && <Collection kind="flows" title="Flows" placeholder={tr("Nom du flow", "Flow name")} defaults={{}} choice={{ label: tr("Modèle", "Template"), keys: ["templateId", "workspaceId"], options: [{ id: "personal", label: tr("Personnel", "Personal") }, { id: "focus", label: tr("Concentration", "Focus") }, { id: "studio", label: "Studio" }, { id: "gaming", label: "Gaming" }] }} />}
-      {section === "macros" && <Collection kind="macros" title="Macros" placeholder={tr("Nom de la macro", "Macro name")} defaults={{ action: "navigate" }} choice={{ label: tr("Page à ouvrir", "Page to open"), keys: ["href"], options: [{ id: "/", label: tr("Accueil", "Home") }, { id: "/tasks", label: tr("Tâches", "Tasks") }, { id: "/notes", label: "Notes" }, { id: "/calendar", label: tr("Calendrier", "Calendar") }, { id: "/mail", label: "Mail" }, { id: "/files", label: tr("Fichiers", "Files") }, { id: "/tracker", label: "Tracker" }, { id: "/discord", label: "Discord" }, { id: "/brain", label: "Brain" }] }} />}
+      {section === "briefing" && <BriefingPage />}
+      {section === "flows" && <FlowsPage />}
+      {section === "macros" && <MacrosPage />}
       {section === "interactions" && <Collection kind="interactions" title={tr("Interactions", "Interactions")} placeholder={tr("Nom de l'interaction", "Interaction name")} defaults={{ action: "navigate" }} />}
       {section === "personas" && <Collection kind="personas" title="Personas" placeholder={tr("Nom du persona", "Persona name")} defaults={{ theme: "obsidian" }} />}
     </Split>
@@ -452,7 +464,7 @@ function RssReader() {
 const ACTIVITY_LABELS: Record<string, string> = { shared: "Partage", uploaded: "Envoi", downloaded: "Téléchargement", deleted: "Suppression", renamed: "Renommage", moved: "Déplacement", restored: "Restauration", viewed: "Consultation", revoked: "Révocation" };
 
 export function ActivityView() {
-  const state = useLoad(() => apiData<{ events?: { id?: string; createdAt?: string; eventType?: string; details?: { title?: string } | null }[] }>("api/cloud/activity?limit=200"));
+  const state = useLoad(() => apiData<{ events?: { id?: string; createdAt?: string; eventType?: string; details?: { title?: string } | null }[] }>("api/cloud/activity?limit=1000"));
   const dashboard = useLoad(() => apiData<Json>("api/cloud/dashboard").catch(() => null));
   const numbers = useMemo(() => Object.entries(asRecord(dashboard.data ?? null)).filter(([, value]) => typeof value === "number").slice(0, 6), [dashboard.data]);
   return (
@@ -461,6 +473,13 @@ export function ActivityView() {
       {numbers.length > 0 && <div className="focus-stats">{numbers.map(([key, value]) => <Stat key={key} label={humanize(key)} value={(value as number).toLocaleString(lang)} />)}</div>}
       <Status state={state}>
         {(data) => {
+          const weeks = activityWeeks((data.events ?? []).flatMap((event) => (event.createdAt ? [event.createdAt] : [])), new Date());
+          const peak = Math.max(1, ...weeks.flat().map((cell) => cell.count));
+          const heat = (
+            <div className="activity-map" role="img" aria-label={tr(`Activité des ${weeks.length} dernières semaines`, `Activity over the last ${weeks.length} weeks`)}>
+              {weeks.map((week) => <span key={week[0].key}>{week.map((cell) => <i key={cell.key} title={`${new Date(`${cell.key}T12:00:00`).toLocaleDateString(lang)} : ${cell.count}`} className={cell.future ? "future" : ""} style={cell.count ? { opacity: 0.3 + 0.7 * (cell.count / peak), background: "var(--accent-text)" } : undefined} />)}</span>)}
+            </div>
+          );
           const rows: { key: string; title: string; at: string; count: number }[] = [];
           for (const [index, event] of (data.events ?? []).entries()) {
             const title = event.details?.title ?? (lang === "fr" ? ACTIVITY_LABELS[event.eventType ?? ""] : undefined) ?? humanize(event.eventType ?? "");
@@ -468,7 +487,7 @@ export function ActivityView() {
             if (last?.title === title) last.count += 1;
             else rows.push({ key: event.id ?? String(index), title, at: event.createdAt ?? "", count: 1 });
           }
-          return rows.length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : <ul className="activity-list">{rows.map((row) => <li key={row.key}><b>{row.title}{row.count > 1 && <small className="activity-count">×{row.count}</small>}</b><time>{row.at ? new Date(row.at).toLocaleString(lang) : ""}</time></li>)}</ul>;
+          return rows.length === 0 ? <Empty title={tr("Aucune activité", "No activity")} /> : <>{heat}<ul className="activity-list">{rows.map((row) => <li key={row.key}><b>{row.title}{row.count > 1 && <small className="activity-count">×{row.count}</small>}</b><time>{row.at ? new Date(row.at).toLocaleString(lang) : ""}</time></li>)}</ul></>;
         }}
       </Status>
     </>

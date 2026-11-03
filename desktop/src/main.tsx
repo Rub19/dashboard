@@ -3,11 +3,13 @@ import { MotionConfig } from "framer-motion";
 import { useEffect, useState } from "react";
 import App from "./App";
 import { lang } from "./i18n";
+import { startUiSounds } from "./ui-sound";
 import { applyAppearance, applyInterfacePreferences, InterfacePreferences, INTERFACE_EVENT } from "./settings";
 import "./style.css";
 
 document.documentElement.lang = lang;
 applyAppearance();
+startUiSounds();
 const interfacePreferences = applyInterfacePreferences();
 window.addEventListener("contextmenu", (event) => {
   if (!(event.target instanceof HTMLInputElement)) event.preventDefault();

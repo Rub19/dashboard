@@ -1,9 +1,11 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePersisted } from "./qol";
 import { motion } from "framer-motion";
-import { CalendarDays, Check, FileText, Flame, Headphones, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2, Zap } from "lucide-react";
+import { CalendarDays, Check, FileText, Flame, ListChecks, NotebookPen, Pause, Play, Receipt, RotateCcw, Timer, Trash2, Zap } from "lucide-react";
 import ProductivityPage from "./ProductivityPage";
 import { apiData, itemsCreate, restCall } from "./api";
+import { AMBIENT_IDS, BakedSound, fillAmbient, LOOP_SECONDS, SoundId } from "./sounds";
+import { tasksCreate } from "./tasks";
 import { errorText, tr, lang } from "./i18n";
 import { Empty, ErrorBox, Field, PageHead, SideNav, Skeletons, Stat, useLoad } from "./kit";
 import { EASE_SNAP, SPRING_PRESS } from "./motion";
@@ -254,40 +256,33 @@ function Bills() {
   );
 }
 
-type SoundId = "brown" | "pink" | "rain" | "binaural";
 const SOUNDS: { id: SoundId; label: () => string; text: () => string }[] = [
+  { id: "rain", label: () => tr("Pluie", "Rain"), text: () => tr("Pluie continue.", "Steady rain.") },
+  { id: "storm", label: () => tr("Orage", "Storm"), text: () => tr("Pluie et tonnerre lointain.", "Rain and distant thunder.") },
+  { id: "ocean", label: () => tr("Océan", "Ocean"), text: () => tr("Vagues lentes.", "Slow waves.") },
+  { id: "wind", label: () => tr("Vent", "Wind"), text: () => tr("Rafales douces.", "Soft gusts.") },
+  { id: "forest", label: () => tr("Forêt", "Forest"), text: () => tr("Feuillage et oiseaux.", "Leaves and birds.") },
+  { id: "nature", label: () => "Nature", text: () => tr("Ruisseau et oiseaux.", "Stream and birds.") },
+  { id: "fireplace", label: () => tr("Cheminée", "Fireplace"), text: () => tr("Feu de bois qui crépite.", "Crackling wood fire.") },
+  { id: "cafe", label: () => tr("Café", "Café"), text: () => tr("Brouhaha et tasses.", "Murmur and cups.") },
+  { id: "night", label: () => tr("Nuit", "Night"), text: () => tr("Grillons au calme.", "Quiet crickets.") },
+  { id: "train", label: () => "Train", text: () => tr("Roulement régulier.", "Steady rolling.") },
+  { id: "space", label: () => tr("Espace", "Space"), text: () => tr("Nappe grave et lente.", "Slow deep drone.") },
   { id: "brown", label: () => tr("Bruit brun", "Brown noise"), text: () => tr("Grave et enveloppant.", "Deep and enveloping.") },
   { id: "pink", label: () => tr("Bruit rose", "Pink noise"), text: () => tr("Doux et équilibré.", "Soft and balanced.") },
-  { id: "rain", label: () => tr("Pluie", "Rain"), text: () => tr("Pluie continue simulée.", "Simulated steady rain.") },
   { id: "binaural", label: () => tr("Ondes alpha", "Alpha waves"), text: () => tr("Battement binaural de 10 Hz, à écouter au casque.", "10 Hz binaural beat, best on headphones.") },
 ];
 
-function noiseBuffer(context: AudioContext, kind: "brown" | "pink"): AudioBuffer {
-  const buffer = context.createBuffer(2, context.sampleRate * 4, context.sampleRate);
-  for (let channel = 0; channel < 2; channel++) {
-    const data = buffer.getChannelData(channel);
-    let last = 0;
-    const pink = [0, 0, 0];
-    for (let index = 0; index < data.length; index++) {
-      const white = Math.random() * 2 - 1;
-      if (kind === "brown") {
-        last = (last + 0.02 * white) / 1.02;
-        data[index] = last * 3.5;
-      } else {
-        pink[0] = 0.997 * pink[0] + 0.029 * white;
-        pink[1] = 0.985 * pink[1] + 0.033 * white;
-        pink[2] = 0.95 * pink[2] + 0.07 * white;
-        data[index] = (pink[0] + pink[1] + pink[2]) * 1.6;
-      }
-    }
-  }
+function ambientBuffer(context: AudioContext, id: BakedSound): AudioBuffer {
+  const buffer = context.createBuffer(2, context.sampleRate * LOOP_SECONDS, context.sampleRate);
+  for (let channel = 0; channel < 2; channel++) fillAmbient(id, buffer.getChannelData(channel), context.sampleRate);
   return buffer;
 }
 
 function Ambience() {
   const context = useRef<AudioContext | null>(null);
   const playing = useRef(new Map<SoundId, { gain: GainNode; stop: () => void }>());
-  const [levels, setLevels] = useState<Record<SoundId, number>>(() => readJson<Record<SoundId, number>>("ethone-ambience") ?? { brown: 0.5, pink: 0.5, rain: 0.5, binaural: 0.3 });
+  const [levels, setLevels] = useState<Record<SoundId, number>>(() => ({ ...Object.fromEntries(AMBIENT_IDS.map((id) => [id, 0.4])) as Record<SoundId, number>, ...readJson<Partial<Record<SoundId, number>>>("ethone-ambience") }));
   const [active, setActive] = useState<SoundId[]>([]);
   useEffect(() => {
     const sounds = playing.current;
@@ -319,17 +314,9 @@ function Ambience() {
       return;
     }
     const source = audio.createBufferSource();
-    source.buffer = noiseBuffer(audio, id === "brown" ? "brown" : "pink");
+    source.buffer = ambientBuffer(audio, id);
     source.loop = true;
-    if (id === "rain") {
-      const filter = audio.createBiquadFilter();
-      filter.type = "highpass";
-      filter.frequency.value = 900;
-      source.connect(filter);
-      filter.connect(gain);
-    } else {
-      source.connect(gain);
-    }
+    source.connect(gain);
     source.start();
     playing.current.set(id, { gain, stop: () => { source.stop(); gain.disconnect(); } });
   };
@@ -353,7 +340,7 @@ function Ambience() {
   };
   return (
     <>
-      <PageHead title={tr("Ambiance", "Ambience")} text={tr("Des sons générés sur ce PC, que tu peux mélanger. Ils s'arrêtent quand tu quittes cette page.", "Sounds generated on this PC that you can mix. They stop when you leave this page.")} />
+      <PageHead title={tr("Ambiance", "Ambience")} text={tr("14 sons générés sur ce PC, que tu peux mélanger. Ils s'arrêtent quand tu quittes cette page.", "Sounds generated on this PC that you can mix. They stop when you leave this page.")} />
       <ul className="ambience-sounds">
         {SOUNDS.map((sound) => {
           const on = active.includes(sound.id);
@@ -380,7 +367,8 @@ function Capture() {
     setBusy(true);
     setMessage(null);
     try {
-      await itemsCreate(kind, { title: title.trim() || body.trim().slice(0, 80), body: body.trim(), done: false, startAt: null, endAt: null, data: { source: "desktop-capture" } });
+      const input = { title: title.trim() || body.trim().slice(0, 80), body: body.trim(), done: false, startAt: null, endAt: null, data: { source: "desktop-capture" } };
+      await (kind === "tasks" ? tasksCreate(input) : itemsCreate(kind, input));
       setTitle("");
       setBody("");
       setMessage({ text: kind === "notes" ? tr("Note enregistrée.", "Note saved.") : tr("Tâche ajoutée.", "Task added."), ok: true });
@@ -428,7 +416,6 @@ export default function WorkPage() {
     { id: "capture", label: tr("Capture rapide", "Quick capture"), icon: <Zap size={16} />, group: tr("Organisation", "Organize") },
     { id: "habits", label: tr("Habitudes", "Habits"), icon: <Flame size={16} />, group: tr("Quotidien", "Daily") },
     { id: "focus", label: tr("Concentration", "Focus"), icon: <Timer size={16} />, group: tr("Quotidien", "Daily") },
-    { id: "ambience", label: tr("Ambiance", "Ambience"), icon: <Headphones size={16} />, group: tr("Quotidien", "Daily") },
     { id: "bills", label: tr("Factures", "Bills"), icon: <Receipt size={16} />, group: tr("Quotidien", "Daily") },
   ] as const;
   return (
@@ -437,8 +424,7 @@ export default function WorkPage() {
       <div className="kit-split-body">
         {(section === "notes" || section === "tasks" || section === "events") && <ProductivityPage kind={section} />}
         {section === "habits" && <Habits />}
-        {section === "focus" && <Focus />}
-        {section === "ambience" && <Ambience />}
+        {(section === "focus" || section === "ambience") && <><Focus /><Ambience /></>}
         {section === "bills" && <Bills />}
         {section === "scratchpad" && <Scratchpad />}
         {section === "capture" && <Capture />}

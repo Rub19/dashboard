@@ -4,7 +4,6 @@ import { usePersisted } from "./qol";
 import { ChevronRight, ExternalLink, FileText, Folder, Link2, Search, Star, Trash2, Upload } from "lucide-react";
 import { apiCall, apiData, openExternal, openSite } from "./api";
 import { firstArray, Json, JsonList } from "./generic";
-import { ActivityView } from "./MorePages";
 import { errorText, tr, lang } from "./i18n";
 import { Drawer, Empty, ErrorBox, formatBytes, PageHead, SideNav, Skeletons, Stagger, StaggerItem, staggerItem, Status, useLoad } from "./kit";
 import { Button } from "./ui";
@@ -165,7 +164,6 @@ export default function FilesPage() {
     { id: "favorites", label: tr("Favoris", "Favorites"), icon: <Star size={16} /> },
     { id: "shares", label: tr("Liens de partage", "Share links"), icon: <Link2 size={16} /> },
     { id: "drops", label: tr("Dépôts", "Drops"), icon: <FileText size={16} /> },
-    { id: "activity", label: tr("Activité", "Activity"), icon: <Search size={16} /> },
   ] as const;
   const usage = quota.data && typeof quota.data === "object" && !Array.isArray(quota.data) ? ((quota.data.data ?? quota.data) as { used?: number; total?: number }) : null;
   return (
@@ -175,11 +173,10 @@ export default function FilesPage() {
         {usage?.total ? <p className="muted small files-quota">{formatBytes(usage.used ?? 0)} / {formatBytes(usage.total)}</p> : null}
       </div>
       <div className="kit-split-body">
-        {section === "all" && <Browser favorites={false} />}
+        {(section === "all" || section === "activity") && <Browser favorites={false} />}
         {section === "favorites" && <Browser favorites />}
         {section === "shares" && <Remote title={tr("Liens de partage", "Share links")} path="api/cloud/shares" revoke="api/cloud/shares/revoke" revokeKey="shareId" />}
         {section === "drops" && <Remote title={tr("Dépôts", "Drops")} path="api/cloud/drops" revoke="api/cloud/drops/revoke" revokeKey="dropId" />}
-        {section === "activity" && <ActivityView />}
       </div>
     </div>
   );

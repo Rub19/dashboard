@@ -1774,3 +1774,32 @@ select option { background: var(--row-solid); color: var(--fg); }
 .match-card-foot > span:nth-child(2) { justify-content: center; }
 .match-card-foot svg { flex: none; color: var(--muted); }
 .match-card-map { transform: scale(1.04); }
+.team-page { gap: 28px; }
+.activity-map { display: flex; gap: 3px; overflow-x: auto; padding: 4px 0 10px; }
+.activity-map span { display: grid; gap: 3px; }
+.activity-map i { display: block; width: 13px; height: 13px; border-radius: 3px; background: var(--control); }
+.activity-map i.future { visibility: hidden; }
+.mail-list > li { position: relative; }
+.mail-pick { position: absolute; z-index: 2; left: 18px; top: 50%; display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid var(--fg); border-radius: 6px; background: var(--row-solid); color: var(--on-accent); opacity: 0; transform: translateY(-50%); transition: opacity .1s ease; }
+.mail-list > li:hover .mail-pick, .mail-pick:focus-visible, .picking .mail-pick { opacity: 1; }
+.mail-pick.on { border-color: var(--accent); background: var(--accent); }
+.mail-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--r-m); background: var(--row-solid); }
+.briefing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.briefing-block { padding: 14px 16px; border-radius: var(--r-l); background: var(--row); }
+.briefing-block h2 { margin-bottom: 6px; font: 650 14px/20px var(--display); }
+.briefing-block ul { margin: 0; padding-left: 16px; user-select: text; }
+.briefing-summary { padding: 14px 16px; border-radius: var(--r-l); background: color-mix(in srgb, var(--accent) 16%, var(--row-solid)); line-height: 22px; white-space: pre-wrap; user-select: text; }
+.flow-edit { display: grid; gap: 10px; }
+.flow-step { display: flex; gap: 6px; }
+.flow-step input { flex: 1; min-width: 0; height: var(--control-h); padding: 0 10px; border: 1px solid var(--input-edge); border-radius: var(--r-s); background: var(--control); color: var(--fg); }
+.flow-run { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.flow-run button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: var(--r-s); background: var(--row); text-align: left; }
+.flow-run i { display: grid; place-items: center; flex: none; width: 18px; height: 18px; border: 1px solid var(--muted); border-radius: 5px; color: var(--on-accent); }
+.flow-run .on i { border-color: var(--accent); background: var(--accent); }
+.flow-run .ok { padding: 8px 10px; color: var(--success); font-weight: 600; }
+.discord-modules input[role="switch"] { flex: none; width: 18px; height: 18px; accent-color: var(--accent-text); }
+.discord-module-open:disabled { opacity: 1; cursor: default; }
+kbd { padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--r-xs); background: var(--control); font: 12px/18px var(--sans); }
+.discord-chart { display: flex; align-items: flex-end; gap: 4px; height: 96px; padding: 8px; border-radius: var(--r-m); background: var(--row); }
+.discord-chart span { flex: 1; display: flex; align-items: flex-end; height: 100%; }
+.discord-chart i { display: block; width: 100%; border-radius: 3px 3px 0 0; background: var(--accent-text); }

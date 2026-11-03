@@ -12,6 +12,48 @@ export function monthCells(month: Date): { key: string; date: Date; inMonth: boo
 
 export const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
+export interface TaskRow { id: string; title: string; description: string | null; is_completed: boolean; priority: string | null; due_date: string | null; created_at: string | null; updated_at: string | null }
+
+export function taskRowToItem(row: TaskRow) {
+  return {
+    id: row.id,
+    title: row.title,
+    body: row.description ?? "",
+    done: row.is_completed,
+    startAt: null,
+    endAt: null,
+    data: { priority: row.priority ?? "medium", ...(row.due_date ? { dueDate: row.due_date } : {}) } as Record<string, unknown>,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function itemToTaskRow(item: { title: string; body: string; done: boolean; data: Record<string, unknown> }) {
+  return {
+    title: item.title,
+    description: item.body || null,
+    is_completed: item.done,
+    completed_at: item.done ? new Date().toISOString() : null,
+    priority: taskPriority(item),
+    due_date: taskDue(item) || null,
+  };
+}
+
+export function activityWeeks(dates: string[], today: Date, weeks = 26): { key: string; count: number; future: boolean }[][] {
+  const counts = new Map<string, number>();
+  for (const date of dates) {
+    const parsed = new Date(date);
+    if (Number.isNaN(parsed.getTime())) continue;
+    const key = dayKey(parsed);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7) - (weeks - 1) * 7);
+  return Array.from({ length: weeks }, (_, week) => Array.from({ length: 7 }, (_, day) => {
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + week * 7 + day);
+    return { key: dayKey(date), count: counts.get(dayKey(date)) ?? 0, future: date > today };
+  }));
+}
+
 export type TaskFilter = "open" | "late" | "done" | "all";
 export type TaskPriority = "low" | "medium" | "high";
 interface TaskLike { done: boolean; data: Record<string, unknown> }

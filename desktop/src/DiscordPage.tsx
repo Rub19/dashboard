@@ -181,6 +181,25 @@ function uptime(milliseconds: number) {
   return hours >= 24 ? tr(`${Math.floor(hours / 24)} j ${hours % 24} h`, `${Math.floor(hours / 24)}d ${hours % 24}h`) : `${hours} h ${Math.floor((milliseconds % 3600000) / 60000)} min`;
 }
 
+function ActivityChart({ guild }: { guild: string }) {
+  const state = useLoad(() => botCall<{ timeSeries?: { timestamp: string; messages?: number; commands?: number }[] }>(`api/guilds/${guild}/analytics/overview?period=7d`), [guild]);
+  const points = state.data?.timeSeries ?? [];
+  if (points.length === 0) return null;
+  const value = (point: { messages?: number; commands?: number }) => (point.messages ?? 0) + (point.commands ?? 0);
+  const peak = Math.max(...points.map(value));
+  const total = points.reduce((sum, point) => sum + value(point), 0);
+  return (
+    <section className="discord-section">
+      <h2>{tr("Activité sur 7 jours", "Activity over 7 days")}<small className="discord-count">{tr(`${total} messages et commandes`, `${total} messages and commands`)}</small></h2>
+      {total === 0 ? <p className="muted">{tr("Aucun message ni commande compté sur cette période.", "No messages or commands counted in this period.")}</p> : (
+        <div className="discord-chart" role="img" aria-label={tr(`${total} messages et commandes sur 7 jours`, `${total} messages and commands over 7 days`)}>
+          {points.map((point) => <span key={point.timestamp} title={`${new Date(point.timestamp).toLocaleDateString()} : ${value(point)}`}><i style={{ height: `${Math.max(value(point) ? 4 : 1, (value(point) / peak) * 100)}%` }} /></span>)}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) => void }) {
   const state = useLoad(() => botCall<GuildData>(`api/guilds/${guild.id}/overview`), [guild.id]);
   const modules = useLoad(() => botCall<{ modules?: ModuleState[] }>(`api/guilds/${guild.id}/modules`), [guild.id]);
@@ -217,6 +236,7 @@ function GuildOverview({ guild, onOpen }: { guild: Guild; onOpen: (id: string) =
           {data.botStatus?.uptimeMs ? <div><dt>{tr("En ligne depuis", "Up for")}</dt><dd>{uptime(data.botStatus.uptimeMs)}</dd></div> : null}
         </dl>
       )}
+      <ActivityChart guild={guild.id} />
       <section className="discord-section">
         <h2>{tr("Modules du serveur", "Server modules")}{modules.data?.modules && <small className="discord-count">{tr(`${modules.data.modules.filter((item) => item.enabled).length} actifs sur ${modules.data.modules.length}`, `${modules.data.modules.filter((item) => item.enabled).length} on, ${modules.data.modules.length} total`)}</small>}</h2>
         {error && <ErrorBox message={error} />}

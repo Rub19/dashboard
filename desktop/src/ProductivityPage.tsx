@@ -7,6 +7,7 @@ import { errorText, lang, t } from "./i18n";
 import { tr } from "./i18n";
 import { taskDue, TaskFilter, taskLate, taskPriority, visibleTasks, dateTimeInputToIso, dayKey, eventsByStart, monthCells, itemPreview, newestItemsFirst, toDateTimeInput } from "./productivity";
 import { usePersisted } from "./qol";
+import { tasksCreate, tasksDelete, tasksList, tasksUpdate } from "./tasks";
 import ProductivityEditor, { ProductivityDraft } from "./ProductivityEditor";
 import { Button } from "./ui";
 
@@ -73,7 +74,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     setLoading(true);
     setError(null);
     try {
-      const loaded = await itemsList(kind);
+      const loaded = kind === "tasks" ? await tasksList() : await itemsList(kind);
       setItems(kind === "events" ? eventsByStart(loaded) : newestItemsFirst(loaded));
     } catch (reason) {
       setItems([]);
@@ -116,7 +117,8 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     setSaving(true);
     setError(null);
     try {
-      if (editor === "new") await itemsCreate(kind, inputFor());
+      if (kind === "tasks") await (editor === "new" ? tasksCreate(inputFor()) : tasksUpdate(editor.id, inputFor(editor)));
+      else if (editor === "new") await itemsCreate(kind, inputFor());
       else await itemsUpdate(kind, editor.id, inputFor(editor));
       setEditor(null);
       await load();
@@ -131,7 +133,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     setSaving(true);
     setError(null);
     try {
-      await itemsUpdate(kind, item.id, { title: item.title, body: item.body, done: !item.done, startAt: item.startAt, endAt: item.endAt, data: item.data });
+      await tasksUpdate(item.id, { title: item.title, body: item.body, done: !item.done, startAt: item.startAt, endAt: item.endAt, data: item.data });
       await load();
     } catch (reason) {
       setError(errorText(reason));
@@ -145,7 +147,7 @@ export default function ProductivityPage({ kind }: { kind: ProductivityKind }) {
     setItems((current) => current.filter((other) => other.id !== item.id));
     undoable(
       lang === "fr" ? `« ${item.title} » supprimé` : `"${item.title}" deleted`,
-      () => itemsDelete(kind, item.id),
+      () => (kind === "tasks" ? tasksDelete(item.id) : itemsDelete(kind, item.id)),
       () => void load(),
       (reason) => {
         setError(errorText(reason));

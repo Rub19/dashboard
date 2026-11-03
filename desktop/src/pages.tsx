@@ -10,6 +10,8 @@ import { listItem, listStagger, SPRING_PILL, SPRING_SWAP } from "./motion";
 import { AccentId, ACCENTS, applyAppearance, applyInterfacePreferences, currentAccent, currentInterfacePreferences, currentLook, currentTheme, applyLook, LookId, LOOKS, DEFAULT_INTERFACE_PREFERENCES, Density, exportSettings, InterfacePreferences, MotionPreference, parseSettings, setLanguage, TextScale, Theme, TransparencyPreference, write } from "./settings";
 import { Button } from "./ui";
 import { toast } from "./qol";
+import { UiPack } from "./sounds";
+import { choosePack, currentPack } from "./ui-sound";
 
 const LEGAL: [SitePage, Key][] = [["terms", "terms"], ["privacy", "privacy"], ["cookies", "cookies"], ["legal", "legal"]];
 
@@ -119,6 +121,7 @@ export function DesktopSettings() {
 
 export function SettingsPage() {
   const [look, setLook] = useState<LookId>(currentLook);
+  const [pack, setPack] = useState<UiPack>(currentPack);
   const [theme, setTheme] = useState<Theme>(currentTheme);
   const [accent, setAccent] = useState<AccentId>(currentAccent);
   const [preferences, setPreferences] = useState<InterfacePreferences>(currentInterfacePreferences);
@@ -216,6 +219,15 @@ export function SettingsPage() {
               </button>
             ))}
           </div>
+        </li>
+        <li>
+          <span className="stack"><b>{tr("Sons de l'interface", "Interface sounds")}</b><small className="muted">{tr("Un petit son quand tu cliques sur un bouton.", "A small sound when you click a button.")}</small></span>
+          <select className="settings-select" value={pack} aria-label={tr("Sons de l'interface", "Interface sounds")} onChange={(event) => { const next = event.target.value as UiPack; setPack(next); choosePack(next); }}>
+            <option value="off">{tr("Aucun", "None")}</option>
+            <option value="soft">{tr("Doux", "Soft")}</option>
+            <option value="crisp">{tr("Net", "Crisp")}</option>
+            <option value="retro">{tr("Rétro", "Retro")}</option>
+          </select>
         </li>
         <li>
           <span className="stack"><b>{tr("Réinitialiser l'apparence", "Reset appearance")}</b><small className="muted">{tr("Restaure le thème automatique et les réglages par défaut.", "Restores the automatic theme and default settings.")}</small></span>

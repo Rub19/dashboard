@@ -1,6 +1,7 @@
 use reqwest::Method;
 
-const TABLES: [&str; 9] = [
+const TABLES: [&str; 10] = [
+    "tasks",
     "ethone_habits",
     "ethone_habit_completions",
     "ethone_valorant_matches",

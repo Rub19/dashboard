@@ -12,6 +12,7 @@ import { usePersisted } from "./qol";
 import { readJson } from "./settings";
 import { AppIcon, Busy } from "./ModulesPage";
 import { EASE_SNAP, listItem, listStagger } from "./motion";
+import { tasksList } from "./tasks";
 import { Button, LeagueMark, ValorantMark } from "./ui";
 
 interface Props {
@@ -194,7 +195,7 @@ function Agenda({ visible, onOpen, offline }: { visible: boolean; onOpen: () => 
   useEffect(() => {
     if (!visible) return;
     let active = true;
-    Promise.all([itemsList("tasks"), itemsList("events")]).then(
+    Promise.all([tasksList(), itemsList("events")]).then(
       ([taskList, eventList]) => {
         if (!active) return;
         setTasks(taskList);

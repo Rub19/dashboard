@@ -1,6 +1,26 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { taskLate, taskPriority, visibleTasks } from "./productivity.ts";
+import { activityWeeks, itemToTaskRow, taskDue, taskLate, taskPriority, taskRowToItem, visibleTasks } from "./productivity.ts";
+
+test("a task row of the website keeps its fields in both directions", () => {
+  const row = { id: "1", title: "A", description: "B", is_completed: false, priority: "high", due_date: "2026-11-05", created_at: null, updated_at: null };
+  const item = taskRowToItem(row);
+  assert.equal(taskDue(item), "2026-11-05");
+  assert.equal(taskPriority(item), "high");
+  const back = itemToTaskRow(item);
+  assert.deepEqual([back.title, back.description, back.is_completed, back.priority, back.due_date, back.completed_at], ["A", "B", false, "high", "2026-11-05", null]);
+  assert.ok(itemToTaskRow({ ...item, done: true }).completed_at);
+});
+
+test("the activity map counts by local day and marks future days", () => {
+  const today = new Date(2026, 10, 3, 12);
+  const weeks = activityWeeks([new Date(2026, 10, 3, 9).toISOString(), new Date(2026, 10, 3, 10).toISOString(), "pas une date"], today, 2);
+  assert.equal(weeks.length, 2);
+  const cells = weeks.flat();
+  assert.equal(cells.find((cell) => cell.key === "2026-11-03").count, 2);
+  assert.equal(cells.at(-1).future, true);
+  assert.equal(cells[0].future, false);
+});
 
 test("tasks filter by state and sort by due date then priority", () => {
   const task = (id, done, dueDate, priority) => ({ id, done, data: { ...(dueDate && { dueDate }), ...(priority && { priority }) } });

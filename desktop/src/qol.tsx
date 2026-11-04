@@ -235,7 +235,7 @@ function useKeyboardNavigation() {
         target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: box.left + 24, clientY: box.bottom - 4 }));
         return;
       }
-      if (target.matches("input, textarea, select")) return;
+      if (!(target instanceof Element) || target.matches("input, textarea, select")) return;
       const row = target.closest<HTMLElement>("[role='tablist'], .segmented");
       const column = target.closest<HTMLElement>(".nav, .kit-sidenav, .discord-chips");
       const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";

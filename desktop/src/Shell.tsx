@@ -382,6 +382,9 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       ...modules
         .filter((status) => CAN_RUN.includes(status.action))
         .map((status) => ({ id: `run-${status.module.id}`, label: `${t(`action.${status.action}` as Key)} : ${status.module.name}`, run: () => void run(status) })),
+      ...modules
+        .filter((status) => !CAN_RUN.includes(status.action))
+        .map((status) => ({ id: `see-${status.module.id}`, label: `${tr("Voir", "See")} : ${status.module.name}`, run: () => go("modules") })),
       ...[...MAIN_PAGES, ...FOOT_PAGES].map(({ id }) => ({ id: `page-${id}`, label: id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id), hint: PAGE_ORDER.includes(id) ? `Ctrl+${PAGE_ORDER.indexOf(id) + 1}` : id === "settings" ? "Ctrl+," : undefined, run: () => go(id) })),
       ...SECTION_COMMANDS().map(({ page: target, key, id, label }) => ({ id: `section-${target}-${id}`, label, run: () => { setPersisted(key, id); go(target); } })),
       { id: "sidebar", label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B", run: toggleSidebar },

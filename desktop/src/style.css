@@ -2147,3 +2147,12 @@ html[data-keynav] .palette::backdrop { animation: none; }
   .icon-btn:active:not(:disabled), .kit-tabs button:active, .segmented button:active, .nav-collapse:active, .eval-card-picker button:hover, .eval-bundle:hover img, .music-controls .main:hover { transform: none; }
 }
 :root[data-motion="reduced"] .page, :root[data-motion="reduced"] .palette[open] { animation: scrim-in .12s ease-out; }
+
+.kit-sidenav button { transition: color .12s ease, background-color .12s ease, transform .14s var(--ease-out); }
+.kit-sidenav button:active { transform: scale(.98); }
+.kit-skeletons, .item-skeletons { animation: scrim-in .2s ease-out; }
+:root[data-motion="reduced"] .nav-badge { animation: scrim-in .12s ease-out; }
+:root[data-motion="reduced"] .icon-btn:active:not(:disabled), :root[data-motion="reduced"] .kit-tabs button:active, :root[data-motion="reduced"] .segmented button:active, :root[data-motion="reduced"] .nav-collapse:active, :root[data-motion="reduced"] .kit-sidenav button:active { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .kit-sidenav button:active { transform: none; }
+}

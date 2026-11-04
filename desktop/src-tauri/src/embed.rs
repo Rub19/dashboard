@@ -96,6 +96,7 @@ pub fn bring_forward(exe: &str) -> bool {
         } else {
             ShowWindow(handle, SW_SHOW);
         }
+        SetWindowPos(handle, std::ptr::null_mut(), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
         SetForegroundWindow(handle);
     }
     true

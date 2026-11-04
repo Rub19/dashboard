@@ -8,6 +8,7 @@ test("Radiant needs a leaderboard place", () => {
   assert.equal(currentTier({ tier: 24 }, 27), 24);
   assert.equal(currentTier(undefined, 27), 26);
   assert.equal(currentTier(undefined, null), 0);
+  assert.equal(currentTier({ tier: 0 }, 24), 0);
 });
 import { lastSession, matchAnalysis, matchSummary, modeName, rankName, roundsFor, scoreboard, splitRiotId, statsFor } from "./eval.ts";
 

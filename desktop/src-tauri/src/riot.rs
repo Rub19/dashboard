@@ -55,29 +55,17 @@ pub struct Rank {
     peak_tier: i64,
     leaderboard_rank: i64,
     history: Vec<HistoryPoint>,
-    #[serde(skip)]
-    settled: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct KnownRank {
-    tier: i64,
-    rr: i64,
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+pub struct KnownPeak {
     peak: i64,
 }
 
-pub fn steady_rank(rank: &mut Rank, known: Option<KnownRank>) -> Option<KnownRank> {
-    if let Some(known) = &known {
-        rank.peak_tier = rank.peak_tier.max(known.peak);
-        if !rank.settled {
-            rank.tier = known.tier;
-            rank.rr = known.rr;
-        }
-    }
-    if rank.settled {
-        return Some(KnownRank { tier: rank.tier, rr: rank.rr, peak: rank.peak_tier });
-    }
-    known
+pub fn keep_peak(rank: &mut Rank, known: Option<KnownPeak>) -> Option<KnownPeak> {
+    let before = known.unwrap_or_default().peak;
+    rank.peak_tier = rank.peak_tier.max(before);
+    (rank.peak_tier > before).then_some(KnownPeak { peak: rank.peak_tier })
 }
 
 #[derive(Clone, Serialize)]
@@ -127,7 +115,7 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
     let seasonal = season.map_or(0, |info| number(&info["CompetitiveTier"]));
     let after_match = number(&latest["TierAfterUpdate"]);
     let leaderboard_rank = season.map_or(0, |info| number(&info["LeaderboardRank"]));
-    let tier = settled_tier(if seasonal > 0 { seasonal } else { after_match }, leaderboard_rank);
+    let tier = settled_tier(if season.is_some() { seasonal } else { after_match }, leaderboard_rank);
     let peak_tier = seasons
         .into_iter()
         .flat_map(|all| all.values())
@@ -151,14 +139,17 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
         })
         .collect();
     let peak_tier = history.iter().map(|point| point.tier).max().unwrap_or(0).max(peak_tier);
-    let rr = season.filter(|_| seasonal > 0).and_then(|info| info["RankedRating"].as_i64()).unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"]));
+    let rr = match season {
+        Some(_) if seasonal == 0 => 0,
+        Some(info) => info["RankedRating"].as_i64().unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"])),
+        None => number(&latest["RankedRatingAfterUpdate"]),
+    };
     Rank {
         tier,
         rr,
         peak_tier,
         leaderboard_rank,
         history,
-        settled: seasonal > 0,
     }
 }
 
@@ -433,7 +424,7 @@ impl Riot {
         let mut rank = parse_rank(&player, &updates);
         let file = accounts_directory(app)?.join(format!("riot-rank-{puuid}.json"));
         let known = std::fs::read_to_string(&file).ok().and_then(|text| serde_json::from_str(&text).ok());
-        if let Some(next) = steady_rank(&mut rank, known) {
+        if let Some(next) = keep_peak(&mut rank, known) {
             if let Ok(text) = serde_json::to_string(&next) {
                 let _ = std::fs::write(&file, text);
             }
@@ -511,34 +502,35 @@ mod tests {
         };
         assert_eq!(rank(27, 24, 0), 24);
         assert_eq!(rank(26, 24, 0), 24);
-        assert_eq!(rank(25, 0, 0), 25);
-        assert_eq!(rank(27, 0, 0), 26);
-        assert_eq!(rank(27, 0, 412), 27);
+        assert_eq!(rank(25, 0, 0), 0);
+        assert_eq!(rank(27, 0, 0), 0);
         assert_eq!(rank(0, 24, 0), 24);
+        assert_eq!(rank(27, 27, 412), 27);
+        assert_eq!(rank(27, 27, 0), 26);
     }
 
     #[test]
-    fn an_empty_season_keeps_the_last_known_rank() {
-        let player = |seasonal: i64| json!({
-            "LatestCompetitiveUpdate": { "SeasonID": "act", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319 },
-            "QueueSkills": { "competitive": { "SeasonalInfoBySeasonID": { "act": { "CompetitiveTier": seasonal, "RankedRating": if seasonal > 0 { 300 } else { 0 } } } } }
-        });
+    fn an_empty_season_is_unranked_and_the_best_rank_stays() {
         let updates = json!({ "Matches": [{ "MatchID": "m", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319, "RankedRatingEarned": 20 }] });
+        let player = json!({
+            "LatestCompetitiveUpdate": { "SeasonID": "act", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319 },
+            "QueueSkills": { "competitive": { "SeasonalInfoBySeasonID": { "act": { "CompetitiveTier": 0, "RankedRating": 0, "NumberOfGames": 0 } } } }
+        });
+        let mut rank = parse_rank(&player, &updates);
+        assert_eq!((rank.tier, rank.rr, rank.peak_tier), (0, 0, 27));
+        assert_eq!(keep_peak(&mut rank, None), Some(KnownPeak { peak: 27 }));
 
-        let mut good = parse_rank(&player(24), &updates);
-        let known = steady_rank(&mut good, None);
-        assert_eq!((good.tier, good.rr, good.peak_tier), (24, 300, 27));
-        assert_eq!(known, Some(KnownRank { tier: 24, rr: 300, peak: 27 }));
+        let mut later = parse_rank(&player, &Value::Null);
+        assert_eq!(later.peak_tier, 0);
+        assert_eq!(keep_peak(&mut later, Some(KnownPeak { peak: 27 })), None);
+        assert_eq!(later.peak_tier, 27);
+    }
 
-        let mut empty = parse_rank(&player(0), &updates);
-        assert_eq!((empty.tier, empty.rr, empty.peak_tier), (26, 319, 27));
-        let kept = steady_rank(&mut empty, known.clone());
-        assert_eq!((empty.tier, empty.rr, empty.peak_tier), (24, 300, 27));
-        assert_eq!(kept, known);
-
-        let mut first = parse_rank(&player(0), &Value::Null);
-        assert_eq!(steady_rank(&mut first, None), None);
-        assert_eq!((first.tier, first.rr), (26, 319));
+    #[test]
+    fn without_a_season_entry_the_last_match_is_used() {
+        let player = json!({ "LatestCompetitiveUpdate": { "SeasonID": "act", "TierAfterUpdate": 18, "RankedRatingAfterUpdate": 64 } });
+        let rank = parse_rank(&player, &Value::Null);
+        assert_eq!((rank.tier, rank.rr), (18, 64));
     }
 
     #[test]

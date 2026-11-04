@@ -66,7 +66,7 @@ const MODES: Record<string, string> = {
 };
 
 export function currentTier(mmr: { tier?: number; leaderboardRank?: number } | undefined, accountTier: number | null | undefined): number {
-  const tier = mmr?.tier || accountTier || 0;
+  const tier = mmr?.tier ?? accountTier ?? 0;
   return tier >= 27 && !((mmr?.leaderboardRank ?? 0) > 0) ? 26 : tier;
 }
 

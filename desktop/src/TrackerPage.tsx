@@ -370,7 +370,7 @@ export default function TrackerPage() {
       trackerMatches<EvalMatch>(account.puuid, MATCH_LIMIT),
       linkedId?.toLowerCase() === account.puuid.toLowerCase() ? riotRank<RiotRank>().catch(() => null) : null,
     ]);
-    if (rank && (rank.tier ?? 0) > 0) account.mmr = { ...account.mmr, ...rank };
+    if (rank) account.mmr = { ...account.mmr, ...rank };
     memory = { account, matches, linked: Boolean(linkedId) };
     writeCache(SNAPSHOT, memory);
     setData(memory);

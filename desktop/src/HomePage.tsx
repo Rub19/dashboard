@@ -109,7 +109,7 @@ function HomeTiles({ visible, shown, onMail, onTracker, onLol, onWeather, onDail
   return (
     <div className="home-tiles">
       {shown("mail") && unread !== null && <button type="button" className="home-tile" onClick={onMail}><small>{tr("Mails non lus", "Unread mail")}</small><b>{unread}</b></button>}
-      {shown("valorant") && rank && (rank.tier ?? 0) > 0 && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b><img src={tierIcon(rank.tier ?? 0)} alt="" />{rank.rr} RR</b><small>{rankName(rank.tier ?? 0)}</small></button>}
+      {shown("valorant") && rank && <button type="button" className="home-tile eval" onClick={onTracker}><small>VALORANT</small><b>{(rank.tier ?? 0) > 0 && <img src={tierIcon(rank.tier ?? 0)} alt="" />}{(rank.tier ?? 0) > 0 ? `${rank.rr} RR` : rankName(0)}</b>{(rank.tier ?? 0) > 0 && <small>{rankName(rank.tier ?? 0)}</small>}</button>}
       {shown("league") && league?.emblem && <button type="button" className="home-tile eval" onClick={onLol}><small>League of Legends</small><b><img src={league.emblem} alt="" />{league.lp} LP</b><small>{league.name}</small></button>}
       {shown("weather") && weather?.temperature !== undefined && <button type="button" className="home-tile" onClick={() => { setPersisted("ethone-section-insights", "weather"); onWeather(); }}><small>{weather.city}</small><b>{Math.round(Number(weather.temperature))} °C</b></button>}
       {shown("focus") && <button type="button" className="home-tile" onClick={onDaily}><small>{tr("Concentration aujourd'hui", "Focus today")}</small><b>{focusMinutes} min</b></button>}

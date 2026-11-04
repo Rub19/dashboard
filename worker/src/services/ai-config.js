@@ -19,10 +19,9 @@ export const AI_PROVIDERS = Object.freeze({
     label: "Cloudflare Workers AI",
     kind: "cloud",
     isPrimary: true,
-    defaultModel: "@cf/meta/llama-3.3-70b-instruct-v1",
+    defaultModel: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     fallbackModels: Object.freeze([
-      "@cf/meta/llama-3.1-8b-instruct-v1",
-      "@cf/meta/llama-3.1-70b-instruct-v1"
+      "@cf/meta/llama-3.1-8b-instruct-fp8"
     ]),
     maxTokens: 1024,
     maxContextChars: 12000,

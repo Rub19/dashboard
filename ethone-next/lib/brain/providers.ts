@@ -2,7 +2,7 @@ import { fetchWorker } from "@/lib/api";
 import { type BrainProvider } from "./preferences";
 
 export const BRAIN_PROVIDERS = Object.freeze([
-  Object.freeze({ id: "cloudflare", label: "Cloudflare Workers AI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["@cf/meta/llama-3.3-70b-instruct-v1"]) }),
+  Object.freeze({ id: "cloudflare", label: "Cloudflare Workers AI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["@cf/meta/llama-3.3-70b-instruct-fp8-fast"]) }),
   Object.freeze({ id: "context", label: "ETHONE Context", kind: "local", privacy: "Aucune donnée envoyée", models: Object.freeze(["context-v1"]) }),
   Object.freeze({ id: "openai", label: "OpenAI", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),
   Object.freeze({ id: "anthropic", label: "Anthropic", kind: "cloud", privacy: "Via backend ETHONE", models: Object.freeze(["configure-via-worker"]) }),

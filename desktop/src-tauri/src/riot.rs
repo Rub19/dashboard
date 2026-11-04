@@ -1,3 +1,4 @@
+use crate::riot_accounts::{self, Book};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::{Arc, Mutex as StdMutex};
@@ -142,12 +143,38 @@ fn identity_entry() -> Result<keyring::Entry, String> {
     keyring::Entry::new(service, "riot-identity").map_err(|error| error.to_string())
 }
 
+fn accounts_directory(app: &AppHandle) -> Result<std::path::PathBuf, String> {
+    app.path().app_local_data_dir().map_err(|error| error.to_string())
+}
+
+pub fn account_book(app: &AppHandle) -> Result<Book, String> {
+    Ok(riot_accounts::load(&accounts_directory(app)?, load_identity()))
+}
+
+fn store_identity(identity: Option<&Identity>) -> Result<(), String> {
+    match identity {
+        Some(identity) => {
+            let text = serde_json::to_string(identity).map_err(|error| error.to_string())?;
+            identity_entry()?.set_password(&text).map_err(|error| error.to_string())
+        }
+        None => {
+            let _ = identity_entry()?.delete_credential();
+            Ok(())
+        }
+    }
+}
+
+fn new_slot() -> String {
+    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |elapsed| elapsed.as_millis());
+    format!("{stamp:x}")
+}
+
 pub fn load_identity() -> Option<Identity> {
     serde_json::from_str(&identity_entry().ok()?.get_password().ok()?).ok()
 }
 
-fn open_window(app: &AppHandle, label: &str, visible: bool, sender: oneshot::Sender<Tokens>) -> Result<WebviewWindow, String> {
-    let directory = app.path().app_local_data_dir().map_err(|error| error.to_string())?.join("riot-web");
+fn open_window(app: &AppHandle, label: &str, slot: &str, visible: bool, sender: oneshot::Sender<Tokens>) -> Result<WebviewWindow, String> {
+    let directory = app.path().app_local_data_dir().map_err(|error| error.to_string())?.join(riot_accounts::web_directory(slot));
     let authorize: Url = AUTHORIZE.parse().map_err(|_| "riotFailed".to_string())?;
     let sender = Arc::new(StdMutex::new(Some(sender)));
     let on_navigate = sender.clone();
@@ -206,7 +233,7 @@ impl Riot {
         }
     }
 
-    async fn complete(&self, tokens: Tokens) -> Result<Identity, String> {
+    async fn complete(&self, app: &AppHandle, slot: &str, tokens: Tokens) -> Result<Identity, String> {
         let entitlements = self.json(self.client.post("https://entitlements.auth.riotgames.com/api/token/v1").bearer_auth(&tokens.access).json(&json!({}))).await?;
         let info = self.json(self.client.get("https://auth.riotgames.com/userinfo").bearer_auth(&tokens.access)).await?;
         let geo = self
@@ -230,27 +257,31 @@ impl Riot {
             region,
         });
         *self.silent.lock().await = None;
-        let text = serde_json::to_string(&identity).map_err(|error| error.to_string())?;
-        identity_entry()?.set_password(&text).map_err(|error| error.to_string())?;
+        store_identity(Some(&identity))?;
+        let mut book = account_book(app)?;
+        book.record(slot, identity.clone());
+        riot_accounts::save(&accounts_directory(app)?, &book)?;
         Ok(identity)
     }
 
-    pub async fn link_url(&self, text: &str) -> Result<Identity, String> {
+    pub async fn link_url(&self, app: &AppHandle, text: &str) -> Result<Identity, String> {
         let url: Url = text.trim().parse().map_err(|_| "riotLinkInvalid".to_string())?;
         let tokens = tokens_from_url(&url).ok_or("riotLinkInvalid")?;
-        self.complete(tokens).await
+        let slot = account_book(app)?.active;
+        self.complete(app, &slot, tokens).await
     }
 
-    pub async fn login(&'static self, app: AppHandle) -> Result<(), String> {
+    pub async fn login(&'static self, app: AppHandle, add: bool) -> Result<(), String> {
         if let Some(window) = app.get_webview_window(LOGIN_LABEL) {
             let _ = window.set_focus();
             return Ok(());
         }
         let (sender, receiver) = oneshot::channel();
-        let window = open_window(&app, LOGIN_LABEL, true, sender)?;
+        let slot = if add { new_slot() } else { account_book(&app)?.active };
+        let window = open_window(&app, LOGIN_LABEL, &slot, true, sender)?;
         tauri::async_runtime::spawn(async move {
             let event = match receiver.await {
-                Ok(tokens) => match self.complete(tokens).await {
+                Ok(tokens) => match self.complete(&app, &slot, tokens).await {
                     Ok(_) => LoginEvent { status: "linked", message: None },
                     Err(message) => LoginEvent { status: "failed", message: Some(message) },
                 },
@@ -264,11 +295,12 @@ impl Riot {
 
     async fn silent_login(&self, app: &AppHandle) -> Result<(), String> {
         let (sender, receiver) = oneshot::channel();
-        let window = open_window(app, SILENT_LABEL, false, sender)?;
+        let slot = account_book(app)?.active;
+        let window = open_window(app, SILENT_LABEL, &slot, false, sender)?;
         let result = tokio::time::timeout(SILENT_TIMEOUT, receiver).await;
         let _ = window.close();
         match result {
-            Ok(Ok(tokens)) => self.complete(tokens).await.map(|_| ()),
+            Ok(Ok(tokens)) => self.complete(app, &slot, tokens).await.map(|_| ()),
             _ => Err("riotExpired".into()),
         }
     }
@@ -377,17 +409,43 @@ impl Riot {
         Ok(parse_rank(&player, &updates))
     }
 
-    pub async fn logout(&self, app: &AppHandle) -> Result<(), String> {
+    pub async fn switch(&self, app: &AppHandle, slot: &str) -> Result<(), String> {
+        let _flight = self.refreshing.lock().await;
+        let mut book = account_book(app)?;
+        let identity = book.find(slot).ok_or("riotRequired")?.identity.clone();
+        book.active = slot.to_string();
+        riot_accounts::save(&accounts_directory(app)?, &book)?;
+        store_identity(Some(&identity))?;
         *self.credentials.lock().await = None;
         *self.silent.lock().await = None;
-        if let Ok(entry) = identity_entry() {
-            let _ = entry.delete_credential();
+        let _ = app.emit_to("main", "riot-login", LoginEvent { status: "linked", message: None });
+        Ok(())
+    }
+
+    pub async fn remove(&self, app: &AppHandle, slot: &str) -> Result<(), String> {
+        let _flight = self.refreshing.lock().await;
+        let mut book = account_book(app)?;
+        let was_active = book.active == slot;
+        let next = book.remove(slot);
+        riot_accounts::save(&accounts_directory(app)?, &book)?;
+        if was_active {
+            *self.credentials.lock().await = None;
+            *self.silent.lock().await = None;
+            store_identity(next.as_ref())?;
         }
         let (sender, _receiver) = oneshot::channel();
-        let window = open_window(app, SILENT_LABEL, false, sender)?;
+        let window = open_window(app, SILENT_LABEL, slot, false, sender)?;
         let cleared = window.clear_all_browsing_data().map_err(|error| error.to_string());
         let _ = window.close();
+        if was_active && next.is_some() {
+            let _ = app.emit_to("main", "riot-login", LoginEvent { status: "linked", message: None });
+        }
         cleared
+    }
+
+    pub async fn logout(&self, app: &AppHandle) -> Result<(), String> {
+        let slot = account_book(app)?.active;
+        self.remove(app, &slot).await
     }
 }
 

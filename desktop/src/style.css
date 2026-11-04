@@ -2090,3 +2090,19 @@ li:hover > .team-remove, .team-remove:focus-visible { opacity: 1; }
 .conn-events li { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .conn-events time { flex: none; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .conn-events b { overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+
+.eval-account > b { flex: 1; min-width: 0; }
+.riot-accounts { position: relative; flex: none; }
+.riot-accounts-menu { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; width: 260px; padding: 5px; border: 1px solid var(--line); border-radius: 12px; background: var(--row-solid); box-shadow: var(--shadow); }
+.riot-accounts-menu ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.riot-accounts-menu li { display: flex; align-items: center; border-radius: 8px; }
+.riot-accounts-menu li:hover { background: var(--row-hover); }
+.riot-account-pick { display: flex; flex: 1; align-items: center; gap: 6px; min-width: 0; padding: 7px 8px; border-radius: 8px; color: var(--fg); text-align: left; }
+.riot-account-pick b { overflow: hidden; font-size: 13px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.riot-account-pick b span { color: var(--muted); font-weight: 400; }
+.riot-account-check { display: grid; flex: none; place-items: center; width: 16px; color: var(--accent-text); }
+.riot-account-remove { display: grid; flex: none; place-items: center; min-width: 26px; height: 26px; margin-right: 3px; padding: 0 6px; border-radius: 6px; color: var(--muted); font-size: 12px; }
+.riot-account-remove:hover { background: var(--control-hover); color: var(--fg); }
+.riot-account-remove.asking { color: var(--danger); }
+.riot-account-add { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: 3px; padding: 7px 8px; border-top: 1px solid var(--line); border-radius: 0 0 8px 8px; color: var(--accent-text); font-size: 13px; }
+.riot-account-add:hover { background: var(--row-hover); }

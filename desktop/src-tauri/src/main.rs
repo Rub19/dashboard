@@ -12,6 +12,7 @@ mod gateway;
 mod install;
 mod journal;
 mod riot;
+mod riot_accounts;
 mod system;
 mod sync;
 mod tracker;
@@ -396,7 +397,39 @@ async fn riot_login(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), 
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().login(app).await
+    riot_session().login(app, false).await
+}
+
+#[tauri::command]
+async fn riot_accounts(app: tauri::AppHandle, state: State<'_, App>) -> Result<riot_accounts::Book, String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot::account_book(&app)
+}
+
+#[tauri::command]
+async fn riot_add(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().login(app, true).await
+}
+
+#[tauri::command]
+async fn riot_switch(slot: String, app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().switch(&app, &slot).await
+}
+
+#[tauri::command]
+async fn riot_remove(slot: String, app: tauri::AppHandle, state: State<'_, App>) -> Result<(), String> {
+    if !state.auth.is_signed_in().await {
+        return Err("sessionRequired".into());
+    }
+    riot_session().remove(&app, &slot).await
 }
 
 #[tauri::command]
@@ -408,11 +441,11 @@ async fn riot_open_browser(app: tauri::AppHandle, state: State<'_, App>) -> Resu
 }
 
 #[tauri::command]
-async fn riot_link_url(url: String, state: State<'_, App>) -> Result<riot::Identity, String> {
+async fn riot_link_url(url: String, app: tauri::AppHandle, state: State<'_, App>) -> Result<riot::Identity, String> {
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().link_url(&url).await
+    riot_session().link_url(&app, &url).await
 }
 
 #[tauri::command]
@@ -767,6 +800,10 @@ fn main() {
             riot_friends,
             riot_status,
             riot_login,
+            riot_accounts,
+            riot_add,
+            riot_switch,
+            riot_remove,
             riot_open_browser,
             riot_link_url,
             riot_logout,

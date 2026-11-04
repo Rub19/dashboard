@@ -5,6 +5,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, LogOut, RefreshCw, Search, Star, X } from "lucide-react";
 import { readCache, writeCache, clearCache } from "./cache";
+import RiotAccounts from "./RiotAccounts";
 import { apiData, catalogGet, riotLinkUrl, riotLogin, riotLogout, riotOpenBrowser, riotRank, riotStatus, trackerIdentity, trackerMatches, trackerSync } from "./api";
 import { currentTier, agentBust, agentIcon, bannerImage, EvalAccount, EvalHistoryPoint, EvalMatch, lastSession, mapImage, matchAnalysis, matchLine, matchSummary, modeName, rankColor, rankName, roundsFor, scoreboard, splitRiotId, statsFor, tierIcon, weaponIcon } from "./eval";
 import { errorText, lang, t, tr } from "./i18n";
@@ -70,7 +71,7 @@ function ProfileCard({ account, linked, onDisconnect }: { account: EvalAccount; 
   const rr = account.mmr?.rr ?? 0;
   return (
     <section className="eval-card eval-profile" aria-label={t("evalProfile")}>
-      <header className="eval-account"><b>{account.name}<span>#{account.tag}</span></b>{linked && <button type="button" className="icon-btn" aria-label={t("evalDisconnect")} title={t("evalDisconnect")} onClick={onDisconnect}><LogOut size={15} /></button>}</header>
+      <header className="eval-account"><b>{account.name}<span>#{account.tag}</span></b>{linked && <RiotAccounts />}{linked && <button type="button" className="icon-btn" aria-label={t("evalDisconnect")} title={t("evalDisconnect")} onClick={onDisconnect}><LogOut size={15} /></button>}</header>
       <div className="eval-banner">
         {account.card ? <img src={bannerImage(account.card)} alt="" /> : <span className="eval-banner-empty" />}
         {(account.level ?? 0) > 0 && <span className="eval-level">{account.level}</span>}
@@ -468,7 +469,9 @@ export default function TrackerPage() {
     memory = null;
     setData(null);
     write(LOCAL_ID, "null");
-    riotLogout().catch((reason) => setError(errorText(reason))).finally(() => setNeedsId(true));
+    riotLogout().catch((reason) => setError(errorText(reason))).then(() => riotStatus().catch(() => null)).then((next) => {
+      if (!next) setNeedsId(true);
+    });
   };
 
   const loadMore = async () => {

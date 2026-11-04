@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { ExternalLink, RefreshCw, Search, Star, UserRound, X } from "lucide-react";
 import { apiData, riotLogin, riotStatus } from "./api";
+import RiotAccounts from "./RiotAccounts";
 import { cached, readCache, writeCache } from "./cache";
 import { splitRiotId } from "./eval";
 import { Friends } from "./EvalHub";
@@ -28,6 +29,9 @@ interface Loaded { of?: string; profile: LolProfile; matches: LolMatch[] }
 
 const decimal = (value: number) => value.toFixed(1).replace(".", ",");
 const dateFormat = new Intl.DateTimeFormat(lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const LP_LEGACY = "ethone-lol-lp";
+const lpKey = (own: string) => `${LP_LEGACY}:${own.toLowerCase()}`;
+
 const riotQuery = (id: string) => {
   const parts = splitRiotId(id);
   return `name=${encodeURIComponent(parts?.name ?? "")}&tag=${encodeURIComponent(parts?.tag ?? "")}`;
@@ -57,13 +61,13 @@ function RankDisc({ text, label }: { text?: string; label: string }) {
   );
 }
 
-function ProfileCard({ profile, matches, id }: { profile: LolProfile; matches: LolMatch[]; id: string }) {
+function ProfileCard({ profile, matches, id, mine }: { profile: LolProfile; matches: LolMatch[]; id: string; mine: boolean }) {
   const [name, tag] = (profile.handle ?? id).split("#");
   const level = profile.segments?.[0]?.stats?.level?.value ?? 0;
   const favorite = topChampions(matches, 1)[0];
   return (
     <section className="eval-card eval-profile" aria-label={t("evalProfile")}>
-      <header className="eval-account"><b>{name}<span>#{tag}</span></b>{profile.avatarUrl && <img className="lol-avatar" src={profile.avatarUrl} alt="" />}</header>
+      <header className="eval-account"><b>{name}<span>#{tag}</span></b>{mine && <RiotAccounts />}{profile.avatarUrl && <img className="lol-avatar" src={profile.avatarUrl} alt="" />}</header>
       <div className="eval-banner">
         {favorite ? <img src={championSplash(favorite.image)} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : <span className="eval-banner-empty" />}
         {level > 0 && <span className="eval-level">{level}</span>}
@@ -341,7 +345,7 @@ export default function LolPage() {
   const [connecting, setConnecting] = useState(false);
   const firstLoad = useRef(true);
   const assets = useLolAssets();
-  const [lpPoints, setLpPoints] = useState<LpPoint[]>(() => cleanLpPoints(readJson<LpPoint[]>("ethone-lol-lp") ?? []));
+  const [lpPoints, setLpPoints] = useState<LpPoint[]>([]);
   const [filter, setFilter] = useState<MatchFilter>(NO_FILTER);
 
   const load = useCallback(async (riotId: string, force = false) => {
@@ -422,10 +426,18 @@ export default function LolPage() {
   const matches = useMemo(() => data?.matches ?? [], [data]);
   const shownMatches = matches.filter((match) => keepMatch(filter, { won: lolLine(match).won, draw: lolLine(match).remake, mode: lolMode(match.metadata?.modeName, lang), pick: match.metadata?.agentName ?? "" }));
   useEffect(() => {
+    if (!own) return;
+    const legacy = readJson<LpPoint[]>(LP_LEGACY);
+    const points = readJson<LpPoint[]>(lpKey(own)) ?? legacy ?? [];
+    if (legacy?.length) write(LP_LEGACY, "[]");
+    setLpPoints(cleanLpPoints(points));
+    if (legacy?.length) write(lpKey(own), JSON.stringify(points));
+  }, [own]);
+  useEffect(() => {
     if (!own || id !== own || !data?.profile || data.of !== own.toLowerCase()) return;
     setLpPoints((current) => {
       const next = addLpPoint(current, data.profile.rankSolo, Date.now());
-      if (next !== current) write("ethone-lol-lp", JSON.stringify(next));
+      if (next !== current) write(lpKey(own), JSON.stringify(next));
       return next;
     });
   }, [own, id, data]);
@@ -460,7 +472,7 @@ export default function LolPage() {
       {tab === "profile" && (
         <div className="eval-grid" inert={Boolean(open)}>
           <div className="eval-side">
-            {data ? <ProfileCard profile={data.profile} matches={matches} id={id} /> : <Skeletons count={1} height={280} />}
+            {data ? <ProfileCard profile={data.profile} matches={matches} id={id} mine={id === own} /> : <Skeletons count={1} height={280} />}
             {matches.length > 0 && <Summary matches={matches} />}
             {id === own && <LpHistory points={lpPoints} />}
             {matches.length > 0 && <Champions matches={matches} />}

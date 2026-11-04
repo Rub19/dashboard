@@ -134,6 +134,19 @@ export interface RiotIdentity {
 }
 export const riotStatus = () => invoke<RiotIdentity | null>("riot_status");
 export const riotLogin = () => invoke<void>("riot_login");
+export interface RiotAccountBook { active: string; accounts: { slot: string; identity: RiotIdentity }[] }
+export const riotAccounts = () => invoke<RiotAccountBook>("riot_accounts");
+export const riotAdd = () => invoke<void>("riot_add");
+export const riotSwitch = (slot: string) => {
+  clearCache("riot:");
+  clearCache("eval-snapshot");
+  return invoke<void>("riot_switch", { slot });
+};
+export const riotRemove = (slot: string) => {
+  clearCache("riot:");
+  clearCache("eval-snapshot");
+  return invoke<void>("riot_remove", { slot });
+};
 export const riotOpenBrowser = () => invoke<void>("riot_open_browser");
 export const riotLinkUrl = (url: string) => invoke<RiotIdentity>("riot_link_url", { url });
 export const riotLogout = () => {

@@ -8,6 +8,9 @@ import { readJson, write } from "./settings";
 import { applyAppearance, applyInterfacePreferences, InterfacePreferences, INTERFACE_EVENT } from "./settings";
 import "./style.css";
 
+window.addEventListener("keydown", () => document.documentElement.setAttribute("data-keynav", ""), true);
+window.addEventListener("pointerdown", () => document.documentElement.removeAttribute("data-keynav"), true);
+
 document.documentElement.lang = lang;
 applyAppearance();
 document.documentElement.dataset.contrast = localStorage.getItem("ethone-contrast") ?? "normal";

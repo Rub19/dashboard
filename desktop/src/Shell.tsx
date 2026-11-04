@@ -1,7 +1,7 @@
-import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
-import { CircleUser, LogOut, Search, WifiOff } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bell, CheckCircle2, AlertCircle, CircleUser, LogOut, Search, WifiOff } from "lucide-react";
 import { firstArray, Json } from "./generic";
 import { dueEvents, unseenMail } from "./home";
 import { hdvBackground, notifiedEvents, notifyWindows, readDesktopPrefs, rememberEvents, saveDesktopPrefs } from "./notifications";
@@ -17,7 +17,8 @@ import ModulesPage, { Busy } from "./ModulesPage";
 import { EASE_SNAP, popover } from "./motion";
 import { togglePinned } from "./pinned";
 import { readJson, write } from "./settings";
-import { Overlays, setPersisted, toast, usePersisted } from "./qol";
+import { clearToastLog, Overlays, setPersisted, toast, usePersisted, useToastLog } from "./qol";
+import { Drawer, Empty } from "./kit";
 import Sidebar, { PAGE_ORDER, PAGE_TINTS } from "./Sidebar";
 import { GO_EVENT, FOOT_PAGES, MAIN_PAGES, Page } from "./navigation";
 import Palette, { Command } from "./Palette";
@@ -41,6 +42,28 @@ function progressState(progress: Progress): Busy {
   const value = progress.total ? progress.received / progress.total : null;
   const percent = value !== null ? `${Math.round(value * 100)} %` : `${Math.round(progress.received / 1048576)} Mo`;
   return { label: t("progress.downloading", { percent }), value };
+}
+
+function ToastLog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const log = useToastLog();
+  return (
+    <Drawer open={open} title={tr("Dernières notifications", "Recent notifications")} onClose={onClose} width={420}>
+      {log.length === 0 ? <Empty title={tr("Rien pour l'instant", "Nothing yet")} text={tr("Les messages affichés depuis l'ouverture d'Ethone restent ici.", "Messages shown since Ethone opened stay here.")} /> : (
+        <>
+          <ul className="toast-log">
+            {log.map((item) => (
+              <li key={item.id} className={item.tone}>
+                {item.tone === "bad" ? <AlertCircle size={15} /> : <CheckCircle2 size={15} />}
+                <span>{item.message}</span>
+                <time className="muted">{new Date(item.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="btn toast-log-clear" onClick={clearToastLog}>{tr("Tout effacer", "Clear all")}</button>
+        </>
+      )}
+    </Drawer>
+  );
 }
 
 function SECTION_COMMANDS(): { page: Page; key: string; id: string; label: string }[] {
@@ -74,6 +97,13 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const [savedPage, savePage] = usePersisted<Page>("ethone-last-page", "home");
   const page = ALL_PAGES.includes(savedPage) ? savedPage : "home";
   const history = useRef<Page[]>([]);
+  const future = useRef<Page[]>([]);
+  const scrolls = useRef<Partial<Record<Page, number>>>({});
+  const pageRef = useRef(page);
+  pageRef.current = page;
+  const [newMail, setNewMail] = useState(0);
+  const [online, setOnline] = useState(navigator.onLine);
+  const [logOpen, setLogOpen] = useState(false);
   const [modules, setModules] = useState<ModuleStatus[]>([]);
   const [checking, setChecking] = useState(false);
   const [moduleError, setModuleError] = useState<string | null>(null);
@@ -143,6 +173,10 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         event.preventDefault();
         backRef.current();
       }
+      if (event.altKey && event.key === "ArrowRight") {
+        event.preventDefault();
+        forwardRef.current();
+      }
       if (event.key === "Escape" && popupRef.current) {
         setMenu(false);
         menuButton.current?.focus();
@@ -153,6 +187,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     };
     const onBack = (event: MouseEvent) => {
       if (event.button === 3) backRef.current();
+      if (event.button === 4) forwardRef.current();
     };
     const onResize = () => setMenu(false);
     window.addEventListener("mouseup", onBack);
@@ -170,10 +205,18 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const open = useCallback((next: Page, current: Page) => {
     if (current === next) return;
     setDirection(ALL_PAGES.indexOf(next) >= ALL_PAGES.indexOf(current) ? 1 : -1);
-    if (layer.current) layer.current.scrollTop = 0;
+    if (layer.current) scrolls.current[current] = layer.current.scrollTop;
     savePage(next);
     setVisited((seen) => (seen.includes(next) ? seen : [...seen, next]));
   }, [savePage]);
+
+  useLayoutEffect(() => {
+    if (layer.current) layer.current.scrollTop = scrolls.current[page] ?? 0;
+  }, [page]);
+
+  useEffect(() => {
+    if (page === "mail") setNewMail(0);
+  }, [page]);
 
   useEffect(() => {
     saveDesktopPrefs(readDesktopPrefs());
@@ -187,6 +230,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         if (mail) {
           const fresh = unseenMail(seen, mail);
           seen = new Set([...(seen ?? []), ...mail.map((item) => item.id)]);
+          if (fresh.length > 0 && pageRef.current !== "mail") setNewMail((count) => count + fresh.length);
           if (silent) fresh.length = 0;
           if (fresh.length === 1) void notifyWindows(fresh[0].from_name || fresh[0].from_address, fresh[0].subject || tr("Nouveau mail", "New mail")).catch(() => undefined);
           else if (fresh.length > 1) void notifyWindows("Ethone", tr(`${fresh.length} nouveaux mails`, `${fresh.length} new emails`)).catch(() => undefined);
@@ -208,7 +252,10 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   }, []);
 
   const go = useCallback((next: Page) => {
-    if (next !== page) history.current = [...history.current.slice(-20), page];
+    if (next !== page) {
+      history.current = [...history.current.slice(-20), page];
+      future.current = [];
+    }
     open(next, page);
   }, [open, page]);
 
@@ -245,8 +292,37 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
   const backRef = useRef(() => undefined as void);
   backRef.current = () => {
     const previous = history.current.pop();
-    if (previous) open(previous, page);
+    if (!previous) return;
+    future.current = [page, ...future.current.slice(0, 20)];
+    open(previous, page);
   };
+  const forwardRef = useRef(() => undefined as void);
+  forwardRef.current = () => {
+    const [next, ...rest] = future.current;
+    if (!next) return;
+    future.current = rest;
+    history.current = [...history.current.slice(-20), page];
+    open(next, page);
+  };
+  useEffect(() => {
+    const change = (event: Event) => {
+      const back = event.type === "online";
+      setOnline(back);
+      if (offline) return;
+      if (back) {
+        toast(tr("Connexion rétablie", "Back online"));
+        void refresh();
+      } else {
+        toast(tr("Connexion perdue. Ce qui demande Internet reprendra au retour du réseau.", "Connection lost. Online features resume when the network returns."), { tone: "bad" });
+      }
+    };
+    window.addEventListener("online", change);
+    window.addEventListener("offline", change);
+    return () => {
+      window.removeEventListener("online", change);
+      window.removeEventListener("offline", change);
+    };
+  }, [offline, refresh]);
 
   const toggleSidebar = useCallback(() => {
     setCompact((value) => {
@@ -310,13 +386,15 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
       ...SECTION_COMMANDS().map(({ page: target, key, id, label }) => ({ id: `section-${target}-${id}`, label, run: () => { setPersisted(key, id); go(target); } })),
       { id: "sidebar", label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B", run: toggleSidebar },
       { id: "refresh", label: tr("Actualiser les applications", "Refresh apps"), run: () => void refresh() },
+      { id: "toast-log", label: tr("Voir les dernières notifications", "See recent notifications"), run: () => setLogOpen(true) },
       { id: "signout", label: t("signOut"), run: () => void signOut() },
     ],
     [modules, run, refresh, go, toggleSidebar],
   );
 
 
-  const reachable = !offline && navigator.onLine;
+  const reachable = !offline && online;
+  const mailBadges = useMemo(() => (newMail ? { mail: newMail } : undefined), [newMail]);
   const anchor = menuButton.current?.getBoundingClientRect();
   const menuPosition = anchor ? anchoredMenuPosition(anchor, { width: window.innerWidth, height: window.innerHeight }) : { left: 8, bottom: 8 };
 
@@ -324,13 +402,19 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
     <motion.div className={`shell ${compact ? "compact" : ""}`} data-world={page === "tracker" ? "eval" : "ethone"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: EASE_SNAP }}>
       <button type="button" className="skip-link" onClick={() => layer.current?.focus()}>{tr("Aller au contenu", "Skip to content")}</button>
       <header className="titlebar" data-tauri-drag-region>
+        <div className="titlebar-nav">
+          <button type="button" className="icon-btn" aria-label={tr("Page précédente", "Previous page")} title={tr("Page précédente (Alt+Gauche)", "Previous page (Alt+Left)")} disabled={history.current.length === 0} onClick={() => backRef.current()}><ArrowLeft size={15} /></button>
+          <button type="button" className="icon-btn" aria-label={tr("Page suivante", "Next page")} title={tr("Page suivante (Alt+Droite)", "Next page (Alt+Right)")} disabled={future.current.length === 0} onClick={() => forwardRef.current()}><ArrowRight size={15} /></button>
+        </div>
         <button type="button" className="searchbox" onClick={() => setPalette(true)}>
           <Search size={14} />
           <span>{t("searchPlaceholder")}</span>
           <kbd>Ctrl+K</kbd>
         </button>
+        <button type="button" className="icon-btn titlebar-bell" aria-label={tr("Dernières notifications", "Recent notifications")} title={tr("Dernières notifications", "Recent notifications")} onClick={() => setLogOpen(true)}><Bell size={15} /></button>
         <WindowControls />
       </header>
+      <ToastLog open={logOpen} onClose={() => setLogOpen(false)} />
 
       <Sidebar
         page={page}
@@ -341,6 +425,7 @@ export default function Shell({ profile, offline, onSignedOut }: { profile: Prof
         onUnpin={pin}
         compact={compact}
         onToggle={toggleSidebar}
+        badges={mailBadges}
         brand={<div className="nav-brand" data-tauri-drag-region>{page === "tracker" ? <span className="title-valorant"><ValorantMark size={18} /></span> : page === "games" ? <span className="title-valorant"><LeagueMark size={18} /></span> : <BrandMark size={22} />}<b data-tauri-drag-region>{page === "tracker" ? "E:VAL" : page === "games" ? "E:LOL" : "Ethone"}</b></div>}
         note={!reachable && <div className="nav-note" title={t("offline")}><WifiOff size={16} /><span className="nav-label">{t("offline")}</span></div>}
         account={<div className="usermenu" ref={menuRef}>

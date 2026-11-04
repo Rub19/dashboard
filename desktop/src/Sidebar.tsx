@@ -37,9 +37,10 @@ interface Props {
   account: ReactNode;
   compact: boolean;
   onToggle: () => void;
+  badges?: Partial<Record<Page, number>>;
 }
 
-function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, brand, account, compact, onToggle }: Props) {
+function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, brand, account, compact, onToggle, badges }: Props) {
   const [hover, setHover] = useState<string | null>(null);
   const item = ({ id }: { id: Page }) => {
     const Icon = PAGE_ICONS[id];
@@ -51,7 +52,7 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         className={`nav-item ${active ? "on" : ""}`}
         style={{ "--tint": PAGE_TINTS[id] } as CSSProperties}
         aria-current={active ? "page" : undefined}
-        aria-label={id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}
+        aria-label={`${id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}${badges?.[id] ? ` (${badges[id]})` : ""}`}
         title={`${id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}${SHORTCUTS[id] ? ` (${SHORTCUTS[id]})` : ""}`}
         onPointerEnter={() => setHover(id)}
         onPointerDown={(event) => event.button === 0 && onGo(id)}
@@ -61,6 +62,7 @@ function Sidebar({ page, modules, pinned, onGo, onOpenPinned, onUnpin, note, bra
         {hover === id && !active && <motion.span layoutId="nav-hover" className="nav-hover" transition={SPRING_PILL} />}
         <span className="nav-icon"><Icon size={18} /></span>
         <span className="nav-label">{id === "tracker" ? "E:VAL" : id === "games" ? "E:LOL" : t(id)}</span>
+        {badges?.[id] ? <span className="nav-badge" key={badges[id]} aria-hidden="true">{badges[id]}</span> : null}
       </button>
     );
   };

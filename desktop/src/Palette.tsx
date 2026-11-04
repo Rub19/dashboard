@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { t } from "./i18n";
+import { t, tr } from "./i18n";
+import { matchRange, rank, remember } from "./palette-search";
+import { readJson, write } from "./settings";
 
 export interface Command {
   id: string;
@@ -9,15 +11,19 @@ export interface Command {
   run: () => void;
 }
 
-function normalize(text: string) {
-  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+const RECENT_KEY = "ethone-palette-recent";
+
+function Label({ text, query }: { text: string; query: string }) {
+  const range = matchRange(text, query);
+  if (!range) return <span>{text}</span>;
+  return <span>{text.slice(0, range[0])}<mark>{text.slice(range[0], range[1])}</mark>{text.slice(range[1])}</span>;
 }
 
 export default function Palette({ commands, onClose }: { commands: Command[]; onClose: () => void }) {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const dialog = useRef<HTMLDialogElement>(null);
-  const results = useMemo(() => commands.filter((command) => normalize(command.label).includes(normalize(query))), [commands, query]);
+  const { list: results, recentCount } = useMemo(() => rank(commands, query, readJson<string[]>(RECENT_KEY) ?? []), [commands, query]);
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -29,6 +35,7 @@ export default function Palette({ commands, onClose }: { commands: Command[]; on
 
   const pick = (command?: Command) => {
     if (!command) return;
+    write(RECENT_KEY, JSON.stringify(remember(readJson<string[]>(RECENT_KEY) ?? [], command.id)));
     onClose();
     command.run();
   };
@@ -65,9 +72,13 @@ export default function Palette({ commands, onClose }: { commands: Command[]; on
       </div>
       <ul id="palette-results" role="listbox">
         {results.map((command, position) => (
-          <li key={command.id} id={`palette-${command.id}`} role="option" aria-selected={position === index} onMouseEnter={() => setIndex(position)} onClick={() => pick(command)}>
-            <span>{command.label}</span>{command.hint && <kbd>{command.hint}</kbd>}
-          </li>
+          <Fragment key={command.id}>
+            {recentCount > 0 && position === 0 && <li className="palette-group" role="presentation">{tr("Récents", "Recent")}</li>}
+            {recentCount > 0 && position === recentCount && <li className="palette-group" role="presentation">{tr("Tout", "All")}</li>}
+            <li id={`palette-${command.id}`} role="option" aria-selected={position === index} onMouseEnter={() => setIndex(position)} onClick={() => pick(command)}>
+              <Label text={command.label} query={query} />{command.hint && <kbd>{command.hint}</kbd>}
+            </li>
+          </Fragment>
         ))}
         {results.length === 0 && <li className="muted">{t("noResult")}</li>}
       </ul>

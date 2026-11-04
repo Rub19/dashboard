@@ -35,7 +35,33 @@ interface ToastItem {
 const TOAST_EVENT = "ethone-toast";
 let toastId = 0;
 
+export interface LoggedToast {
+  id: number;
+  at: number;
+  message: string;
+  tone: ToastItem["tone"];
+}
+const LOG_EVENT = "ethone-toast-log";
+const toastLog: LoggedToast[] = [];
+export const readToastLog = () => toastLog;
+export const clearToastLog = () => {
+  toastLog.length = 0;
+  window.dispatchEvent(new Event(LOG_EVENT));
+};
+export function useToastLog() {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const listener = () => setTick((value) => value + 1);
+    window.addEventListener(LOG_EVENT, listener);
+    return () => window.removeEventListener(LOG_EVENT, listener);
+  }, []);
+  return toastLog;
+}
+
 export function toast(message: string, options: { tone?: ToastItem["tone"]; action?: ToastItem["action"]; duration?: number } = {}) {
+  toastLog.unshift({ id: toastId + 1, at: Date.now(), message, tone: options.tone ?? "ok" });
+  toastLog.length = Math.min(toastLog.length, 30);
+  window.dispatchEvent(new Event(LOG_EVENT));
   window.dispatchEvent(new CustomEvent(TOAST_EVENT, { detail: { id: ++toastId, message, tone: options.tone ?? "ok", action: options.action, duration: options.duration ?? (options.action ? 6000 : 2600) } }));
 }
 

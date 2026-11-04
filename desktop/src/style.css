@@ -2106,3 +2106,44 @@ li:hover > .team-remove, .team-remove:focus-visible { opacity: 1; }
 .riot-account-remove.asking { color: var(--danger); }
 .riot-account-add { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: 3px; padding: 7px 8px; border-top: 1px solid var(--line); border-radius: 0 0 8px 8px; color: var(--accent-text); font-size: 13px; }
 .riot-account-add:hover { background: var(--row-hover); }
+
+:root { --ease-out: cubic-bezier(.23, 1, .32, 1); --ease-move: cubic-bezier(.77, 0, .175, 1); }
+.page { animation: page-in .18s var(--ease-out); }
+.page[data-direction="up"] { --page-from: -5px; }
+@keyframes page-in { from { opacity: 0; transform: translateY(var(--page-from, 5px)); } }
+html[data-keynav] .page, html[data-keynav] .palette { animation: none; }
+.palette[open] { animation: palette-in .14s var(--ease-out); transform-origin: top center; }
+.palette::backdrop { animation: scrim-in .12s ease-out; }
+html[data-keynav] .palette::backdrop { animation: none; }
+@keyframes scrim-in { from { opacity: 0; } }
+.palette mark { background: none; color: inherit; font-weight: 650; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.palette li.palette-group { padding: 8px 11px 3px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.titlebar-nav { position: relative; display: flex; gap: 2px; padding-left: 4px; }
+.titlebar-nav .icon-btn { width: 28px; height: 28px; }
+.titlebar-nav .icon-btn:disabled { opacity: .35; cursor: default; }
+.titlebar-bell { margin-left: auto; width: 28px; height: 28px; }
+.titlebar-bell + .winbtns { margin-left: 4px; }
+.icon-btn:active:not(:disabled) { transform: scale(.92); }
+.nav-badge { flex: none; display: grid; place-items: center; min-width: 18px; height: 18px; margin-left: auto; padding: 0 5px; border-radius: 9px; background: var(--accent); color: var(--on-accent); font-size: 11px; font-weight: 650; font-variant-numeric: tabular-nums; animation: badge-in .22s var(--ease-out); }
+@keyframes badge-in { from { opacity: 0; transform: scale(.7); } }
+.shell.compact .nav-badge { position: absolute; top: 1px; right: 3px; min-width: 14px; height: 14px; margin: 0; padding: 0 3px; font-size: 9.5px; }
+.toast-log { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 2px; }
+.toast-log li { display: grid; grid-template-columns: 15px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 8px 4px; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 18px; }
+.toast-log li:last-child { border-bottom: 0; }
+.toast-log svg { margin-top: 1px; color: var(--success); }
+.toast-log li.bad svg { color: var(--danger); }
+.toast-log time { font-size: 12px; font-variant-numeric: tabular-nums; }
+.nav-item:hover .nav-icon, .eval-card-picker button:hover, .eval-bundle:hover img, .music-controls .main:hover { transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .eval-card-picker button:hover { transform: scale(1.03); }
+  .eval-bundle:hover img { transform: scale(1.02); }
+  .music-controls .main:hover { transform: scale(1.04); }
+}
+.kit-tabs button, .segmented button, .nav-collapse { transition: color .12s ease, background-color .12s ease, transform .14s var(--ease-out); }
+.kit-tabs button:active, .segmented button:active, .nav-collapse:active { transform: scale(.97); }
+@media (prefers-reduced-motion: reduce) {
+  .page, .palette[open] { animation: scrim-in .12s ease-out; }
+  .nav-badge { animation: scrim-in .12s ease-out; }
+  .icon-btn:active:not(:disabled), .kit-tabs button:active, .segmented button:active, .nav-collapse:active, .eval-card-picker button:hover, .eval-bundle:hover img, .music-controls .main:hover { transform: none; }
+}
+:root[data-motion="reduced"] .page, :root[data-motion="reduced"] .palette[open] { animation: scrim-in .12s ease-out; }

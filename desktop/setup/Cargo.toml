@@ -1,6 +1,6 @@
 [package]
 name = "ethone-setup"
-version = "0.1.0"
+version = "0.1.1"
 description = "Ethone Setup"
 authors = ["Rub19"]
 edition = "2021"

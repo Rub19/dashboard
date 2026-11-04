@@ -55,6 +55,29 @@ pub struct Rank {
     peak_tier: i64,
     leaderboard_rank: i64,
     history: Vec<HistoryPoint>,
+    #[serde(skip)]
+    settled: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct KnownRank {
+    tier: i64,
+    rr: i64,
+    peak: i64,
+}
+
+pub fn steady_rank(rank: &mut Rank, known: Option<KnownRank>) -> Option<KnownRank> {
+    if let Some(known) = &known {
+        rank.peak_tier = rank.peak_tier.max(known.peak);
+        if !rank.settled {
+            rank.tier = known.tier;
+            rank.rr = known.rr;
+        }
+    }
+    if rank.settled {
+        return Some(KnownRank { tier: rank.tier, rr: rank.rr, peak: rank.peak_tier });
+    }
+    known
 }
 
 #[derive(Clone, Serialize)]
@@ -114,7 +137,7 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
         .max()
         .unwrap_or(0)
         .max(tier);
-    let history = updates["Matches"]
+    let history: Vec<HistoryPoint> = updates["Matches"]
         .as_array()
         .into_iter()
         .flatten()
@@ -127,14 +150,15 @@ pub fn parse_rank(player: &Value, updates: &Value) -> Rank {
             })
         })
         .collect();
+    let peak_tier = history.iter().map(|point| point.tier).max().unwrap_or(0).max(peak_tier);
+    let rr = season.filter(|_| seasonal > 0).and_then(|info| info["RankedRating"].as_i64()).unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"]));
     Rank {
         tier,
-        rr: season
-            .and_then(|info| info["RankedRating"].as_i64())
-            .unwrap_or_else(|| number(&latest["RankedRatingAfterUpdate"])),
+        rr,
         peak_tier,
         leaderboard_rank,
         history,
+        settled: seasonal > 0,
     }
 }
 
@@ -406,7 +430,15 @@ impl Riot {
             .game(&credentials, &format!("/mmr/v1/players/{puuid}/competitiveupdates?startIndex=0&endIndex=20&queue=competitive"))
             .await
             .unwrap_or(Value::Null);
-        Ok(parse_rank(&player, &updates))
+        let mut rank = parse_rank(&player, &updates);
+        let file = accounts_directory(app)?.join(format!("riot-rank-{puuid}.json"));
+        let known = std::fs::read_to_string(&file).ok().and_then(|text| serde_json::from_str(&text).ok());
+        if let Some(next) = steady_rank(&mut rank, known) {
+            if let Ok(text) = serde_json::to_string(&next) {
+                let _ = std::fs::write(&file, text);
+            }
+        }
+        Ok(rank)
     }
 
     pub async fn switch(&self, app: &AppHandle, slot: &str) -> Result<(), String> {
@@ -483,6 +515,30 @@ mod tests {
         assert_eq!(rank(27, 0, 0), 26);
         assert_eq!(rank(27, 0, 412), 27);
         assert_eq!(rank(0, 24, 0), 24);
+    }
+
+    #[test]
+    fn an_empty_season_keeps_the_last_known_rank() {
+        let player = |seasonal: i64| json!({
+            "LatestCompetitiveUpdate": { "SeasonID": "act", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319 },
+            "QueueSkills": { "competitive": { "SeasonalInfoBySeasonID": { "act": { "CompetitiveTier": seasonal, "RankedRating": if seasonal > 0 { 300 } else { 0 } } } } }
+        });
+        let updates = json!({ "Matches": [{ "MatchID": "m", "TierAfterUpdate": 27, "RankedRatingAfterUpdate": 319, "RankedRatingEarned": 20 }] });
+
+        let mut good = parse_rank(&player(24), &updates);
+        let known = steady_rank(&mut good, None);
+        assert_eq!((good.tier, good.rr, good.peak_tier), (24, 300, 27));
+        assert_eq!(known, Some(KnownRank { tier: 24, rr: 300, peak: 27 }));
+
+        let mut empty = parse_rank(&player(0), &updates);
+        assert_eq!((empty.tier, empty.rr, empty.peak_tier), (26, 319, 27));
+        let kept = steady_rank(&mut empty, known.clone());
+        assert_eq!((empty.tier, empty.rr, empty.peak_tier), (24, 300, 27));
+        assert_eq!(kept, known);
+
+        let mut first = parse_rank(&player(0), &Value::Null);
+        assert_eq!(steady_rank(&mut first, None), None);
+        assert_eq!((first.tier, first.rr), (26, 319));
     }
 
     #[test]

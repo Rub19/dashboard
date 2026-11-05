@@ -61,16 +61,16 @@ Ethone lit `latest.json` sur la dernière release de `Rub19/dashboard`, avec sa 
 | Chemin | Rôle |
 |---|---|
 | `catalog/catalog.json` | Modules connus : flux, clé publique, détection, règle de mise à jour, compatibilité |
-| `src-tauri/src/auth.rs` | Connexion au compte Ethone, session dans le Gestionnaire d'identifiants |
-| `src-tauri/src/gateway.rs` | Liste des chemins autorisés vers le Worker, Supabase, Riot et le catalogue |
-| `src-tauri/src/riot.rs` | Connexion Riot, jetons en mémoire, appels au jeu |
-| `src-tauri/src/chat.rs` | Lecture ponctuelle des amis Riot par le chat |
-| `src-tauri/src/bot.rs` | Connexion Discord et appels au bot |
-| `src-tauri/src/action.rs` | Décide de l'action possible, sans effet de bord |
-| `src-tauri/src/feed.rs` | Lit les flux de versions |
-| `src-tauri/src/install.rs` | Télécharge, vérifie, installe, contrôle le résultat |
-| `src-tauri/src/system.rs` | Registre Windows, processus, lancement |
-| `src-tauri/src/journal.rs` | Journal local des opérations |
+| `native/engine/src/auth.rs` | Connexion au compte Ethone, session dans le Gestionnaire d'identifiants |
+| `native/engine/src/gateway.rs` | Liste des chemins autorisés vers le Worker, Supabase, Riot et le catalogue |
+| `native/engine/src/riot.rs` | Connexion Riot, jetons en mémoire, appels au jeu |
+| `native/engine/src/chat.rs` | Lecture ponctuelle des amis Riot par le chat |
+| `native/engine/src/bot.rs` | Connexion Discord et appels au bot |
+| `native/engine/src/action.rs` | Décide de l'action possible, sans effet de bord |
+| `native/engine/src/feed.rs` | Lit les flux de versions |
+| `native/engine/src/install.rs` | Télécharge, vérifie, installe, contrôle le résultat |
+| `native/engine/src/system.rs` | Registre Windows, processus, lancement |
+| `native/engine/src/journal.rs` | Journal local des opérations |
 | `src/Shell.tsx`, `src/Sidebar.tsx` | Fenêtre, barre latérale, applications épinglées, pages gardées en mémoire |
 | `src/kit.tsx`, `src/generic.tsx` | Composants communs, affichage et formulaires des données du bot |
 | `src/TrackerPage.tsx`, `src/Eval*.tsx`, `src/eval.ts` | E:VAL : Profil, En direct, Jeu, Hub |

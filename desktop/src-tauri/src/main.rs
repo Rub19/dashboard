@@ -1,20 +1,35 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[path = "../../native/engine/src/embed.rs"]
 mod embed;
 mod background;
+#[path = "../../native/engine/src/action.rs"]
 mod action;
+#[path = "../../native/engine/src/auth.rs"]
 mod auth;
+#[path = "../../native/engine/src/bot.rs"]
 mod bot;
+#[path = "../../native/engine/src/catalog.rs"]
 mod catalog;
+#[path = "../../native/engine/src/chat.rs"]
 mod chat;
+#[path = "../../native/engine/src/feed.rs"]
 mod feed;
+#[path = "../../native/engine/src/gateway.rs"]
 mod gateway;
+#[path = "../../native/engine/src/install.rs"]
 mod install;
+#[path = "../../native/engine/src/journal.rs"]
 mod journal;
+#[path = "../../native/engine/src/riot.rs"]
 mod riot;
+#[path = "../../native/engine/src/riot_accounts.rs"]
 mod riot_accounts;
+#[path = "../../native/engine/src/system.rs"]
 mod system;
+#[path = "../../native/engine/src/sync.rs"]
 mod sync;
+#[path = "../../native/engine/src/tracker.rs"]
 mod tracker;
 mod windowing;
 
@@ -43,6 +58,85 @@ static BOT: std::sync::OnceLock<bot::Bot> = std::sync::OnceLock::new();
 
 fn bot_client() -> &'static bot::Bot {
     BOT.get_or_init(bot::Bot::new)
+}
+
+struct TauriWeb(WebviewWindow);
+
+impl riot::WebWindow for TauriWeb {
+    fn close(&self) {
+        let _ = self.0.close();
+    }
+}
+
+struct TauriRiot(AppHandle);
+
+const RIOT_LOGIN_LABEL: &str = "riot-login";
+const RIOT_SILENT_LABEL: &str = "riot-silent";
+
+impl TauriRiot {
+    fn window(&self, label: &str, slot: &str, visible: bool, sender: tokio::sync::oneshot::Sender<riot::Tokens>) -> Result<WebviewWindow, String> {
+        let directory = self.0.path().app_local_data_dir().map_err(|error| error.to_string())?.join(riot_accounts::web_directory(slot));
+        let authorize: tauri::Url = riot::AUTHORIZE.parse().map_err(|_| "riotFailed".to_string())?;
+        let sender = std::sync::Arc::new(std::sync::Mutex::new(Some(sender)));
+        let on_navigate = sender.clone();
+        let window = tauri::WebviewWindowBuilder::new(&self.0, label, tauri::WebviewUrl::External(authorize))
+            .title("Compte Riot")
+            .inner_size(480.0, 720.0)
+            .visible(visible)
+            .data_directory(directory)
+            .on_navigation(move |url| {
+                if let Some(tokens) = riot::tokens_from_url(url) {
+                    if let Some(sender) = on_navigate.lock().ok().and_then(|mut slot| slot.take()) {
+                        let _ = sender.send(tokens);
+                    }
+                    return false;
+                }
+                url.scheme() == "https"
+            })
+            .build()
+            .map_err(|error| error.to_string())?;
+        window.on_window_event(move |event| {
+            if matches!(event, tauri::WindowEvent::Destroyed) {
+                if let Ok(mut slot) = sender.lock() {
+                    slot.take();
+                }
+            }
+        });
+        Ok(window)
+    }
+}
+
+impl riot::Host for TauriRiot {
+    fn data_dir(&self) -> Result<PathBuf, String> {
+        self.0.path().app_local_data_dir().map_err(|error| error.to_string())
+    }
+
+    fn login_open(&self) -> bool {
+        self.0.get_webview_window(RIOT_LOGIN_LABEL).is_some()
+    }
+
+    fn focus_login(&self) {
+        if let Some(window) = self.0.get_webview_window(RIOT_LOGIN_LABEL) {
+            let _ = window.set_focus();
+        }
+    }
+
+    fn open_web(&self, slot: &str, visible: bool, sender: tokio::sync::oneshot::Sender<riot::Tokens>) -> Result<Box<dyn riot::WebWindow>, String> {
+        let label = if visible { RIOT_LOGIN_LABEL } else { RIOT_SILENT_LABEL };
+        Ok(Box::new(TauriWeb(self.window(label, slot, visible, sender)?)))
+    }
+
+    fn clear_web(&self, slot: &str) -> Result<(), String> {
+        let (sender, _receiver) = tokio::sync::oneshot::channel();
+        let window = self.window(RIOT_SILENT_LABEL, slot, false, sender)?;
+        let cleared = window.clear_all_browsing_data().map_err(|error| error.to_string());
+        let _ = window.close();
+        cleared
+    }
+
+    fn login_event(&self, status: &'static str, message: Option<String>) {
+        let _ = self.0.emit_to("main", "riot-login", serde_json::json!({ "status": status, "message": message }));
+    }
 }
 
 static RIOT: std::sync::OnceLock<riot::Riot> = std::sync::OnceLock::new();
@@ -326,7 +420,7 @@ async fn riot_friends(app: tauri::AppHandle, state: State<'_, App>) -> Result<Ve
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().friends(&app).await
+    riot_session().friends(&TauriRiot(app)).await
 }
 
 #[tauri::command]
@@ -343,7 +437,7 @@ async fn riot_call(host: String, path: String, method: String, body: Option<serd
         return Err("sessionRequired".into());
     }
     let method = gateway::method(&method)?;
-    riot_session().call(&app, &host, gateway::riot_path(&path)?, method, body).await
+    riot_session().call(&TauriRiot(app), &host, gateway::riot_path(&path)?, method, body).await
 }
 
 #[tauri::command]
@@ -397,7 +491,7 @@ async fn riot_login(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), 
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().login(app, false).await
+    riot_session().login(std::sync::Arc::new(TauriRiot(app)), false).await
 }
 
 #[tauri::command]
@@ -405,7 +499,7 @@ async fn riot_accounts(app: tauri::AppHandle, state: State<'_, App>) -> Result<r
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot::account_book(&app)
+    riot::account_book(&TauriRiot(app))
 }
 
 #[tauri::command]
@@ -413,7 +507,7 @@ async fn riot_add(app: tauri::AppHandle, state: State<'_, App>) -> Result<(), St
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().login(app, true).await
+    riot_session().login(std::sync::Arc::new(TauriRiot(app)), true).await
 }
 
 #[tauri::command]
@@ -421,7 +515,7 @@ async fn riot_switch(slot: String, app: tauri::AppHandle, state: State<'_, App>)
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().switch(&app, &slot).await
+    riot_session().switch(&TauriRiot(app), &slot).await
 }
 
 #[tauri::command]
@@ -429,7 +523,7 @@ async fn riot_remove(slot: String, app: tauri::AppHandle, state: State<'_, App>)
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().remove(&app, &slot).await
+    riot_session().remove(&TauriRiot(app), &slot).await
 }
 
 #[tauri::command]
@@ -445,12 +539,12 @@ async fn riot_link_url(url: String, app: tauri::AppHandle, state: State<'_, App>
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().link_url(&app, &url).await
+    riot_session().link_url(&TauriRiot(app), &url).await
 }
 
 #[tauri::command]
 async fn riot_logout(app: tauri::AppHandle) -> Result<(), String> {
-    riot_session().logout(&app).await
+    riot_session().logout(&TauriRiot(app)).await
 }
 
 #[tauri::command]
@@ -458,7 +552,7 @@ async fn riot_rank(app: tauri::AppHandle, state: State<'_, App>) -> Result<riot:
     if !state.auth.is_signed_in().await {
         return Err("sessionRequired".into());
     }
-    riot_session().rank(&app).await
+    riot_session().rank(&TauriRiot(app)).await
 }
 
 #[tauri::command]

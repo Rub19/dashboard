@@ -1,0 +1,22 @@
+[package]
+name = "ethone-engine"
+version = "0.1.1"
+edition = "2021"
+authors = ["Rub19"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+futures-util = "0.3"
+tokio = { version = "1", features = ["fs", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12", "logging"] }
+webpki-roots = "0.26"
+minisign-verify = "0.2"
+base64 = "0.22"
+semver = "1"
+winreg = "0.55"
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_Diagnostics_ToolHelp", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
+keyring = { version = "3", features = ["windows-native"] }
+sha2 = "0.10"
+getrandom = "0.3"

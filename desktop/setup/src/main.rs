@@ -1,22 +1,22 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/action.rs"]
+#[path = "../../native/engine/src/action.rs"]
 mod action;
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/catalog.rs"]
+#[path = "../../native/engine/src/catalog.rs"]
 mod catalog;
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/feed.rs"]
+#[path = "../../native/engine/src/feed.rs"]
 mod feed;
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/install.rs"]
+#[path = "../../native/engine/src/install.rs"]
 mod install;
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/journal.rs"]
+#[path = "../../native/engine/src/journal.rs"]
 mod journal;
 #[allow(dead_code)]
-#[path = "../../src-tauri/src/system.rs"]
+#[path = "../../native/engine/src/system.rs"]
 mod system;
 #[allow(dead_code)]
 #[path = "../../src-tauri/src/windowing.rs"]

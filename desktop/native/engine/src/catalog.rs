@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 pub const SCHEMA_VERSION: u32 = 1;
-const EMBEDDED: &str = include_str!("../../catalog/catalog.json");
+const EMBEDDED: &str = include_str!("../../../catalog/catalog.json");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

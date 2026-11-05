@@ -99,7 +99,7 @@ fn detail(app: &mut App, provider: &str, out: &mut Vec<B>) {
         "google-calendar" => {
             let res = app.load("connections:agenda", || api_data(&format!("api/google-calendar/events?clientId={}", encode(DRIVE_CLIENT))));
             if let Some(message) = res.error {
-                out.push(row(vec![muted(&error), link("connections:link", &tr("Reconnecter", "Link again"))]).level(1));
+                out.push(row(vec![muted(&message), link("connections:link", &tr("Reconnecter", "Link again"))]).level(1));
             } else if let Some(data) = res.data {
                 let events = first_array(&data["events"], None);
                 if events.is_empty() {
@@ -121,7 +121,7 @@ fn detail(app: &mut App, provider: &str, out: &mut Vec<B>) {
             let holder = login.clone();
             let res = app.load("connections:twitch", move || api_data(&format!("api/twitch/channel?login={}", encode(&holder))));
             if let Some(message) = res.error {
-                out.push(row(vec![muted(&error), link("connections:twitch-change", &tr("Changer", "Change"))]).level(1));
+                out.push(row(vec![muted(&message), link("connections:twitch-change", &tr("Changer", "Change"))]).level(1));
             } else if let Some(data) = res.data {
                 let picture = app.img(data["profileImageUrl"].as_str().unwrap_or_default());
                 let viewers = crate::pages::generic::number_text(data["stream"]["viewers"].as_f64().unwrap_or(0.0));

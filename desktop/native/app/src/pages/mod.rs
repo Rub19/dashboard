@@ -1,13 +1,21 @@
 pub mod admin;
 pub mod ambience;
+pub mod brain;
+pub mod brain_extras;
 pub mod connections;
 pub mod daily;
 pub mod eval;
+pub mod eval_game;
+pub mod eval_hub;
+pub mod eval_more;
 pub mod files;
 pub mod form;
+pub mod discord;
 pub mod generic;
 pub mod home;
+pub mod insights;
 pub mod login;
+pub mod lol;
 pub mod mail;
 pub mod modules;
 pub mod settings;
@@ -28,6 +36,14 @@ pub struct PageStates {
     pub files: files::FilesState,
     pub team: team::TeamState,
     pub settings: settings::SettingsState,
+    pub insights: insights::InsightsState,
+    pub brain: brain::BrainState,
+    pub extras: brain_extras::ExtrasState,
+    pub eval: eval::EvalState,
+    pub game: eval_game::GameState,
+    pub hub: eval_hub::HubState,
+    pub lol: lol::LolState,
+    pub discord: discord::DiscordState,
 }
 
 pub fn encode(text: &str) -> String {
@@ -82,6 +98,8 @@ pub fn first_array(value: &Value, key: Option<&str>) -> Vec<Value> {
 pub fn refresh_current(app: &mut App) {
     match app.page.as_str() {
         "home" => home::reload_all(app),
+        "tracker" => eval::act(app, "refresh", ""),
+        "games" => lol::act(app, "refresh", ""),
         "modules" => modules::load_modules(app, false),
         page => {
             let prefix = format!("{page}:");
@@ -91,6 +109,7 @@ pub fn refresh_current(app: &mut App) {
 }
 
 pub fn discord_login(app: &mut App, result: Result<(), String>) {
+    discord::login_done(app, &result);
     match result {
         Ok(()) => app.forget("discord:"),
         Err(error) => {
@@ -118,6 +137,11 @@ pub fn view(app: &mut App) -> Page {
         "files" => files::view(app),
         "team" => team::view(app),
         "settings" => settings::view(app),
+        "insights" => insights::view(app),
+        "brain" => brain::view(app),
+        "tracker" => eval::view(app),
+        "games" => lol::view(app),
+        "discord" => discord::view(app),
         other => Page { main: vec![head(&shell::page_label(other), "", vec![]), empty(&tr("Page en cours de portage", "Page being ported"), "")], ..Default::default() },
     }
 }
@@ -135,6 +159,11 @@ pub fn dispatch(app: &mut App, id: &str, value: &str) {
         "filedrawer" => files::drawer_act(app, rest),
         "team" => team::act(app, rest, value),
         "settings" => settings::act(app, rest, value),
+        "insights" => insights::act(app, rest, value),
+        "brain" => brain::act(app, rest, value),
+        "eval" => eval::act(app, rest, value),
+        "lol" => lol::act(app, rest, value),
+        "discord" => discord::act(app, rest, value),
         "connections" => connections::act(app, rest, value),
         "admin" => admin::act(app, rest),
         "form" => form::act(app, rest, value),

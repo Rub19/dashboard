@@ -520,9 +520,16 @@ fn spotify_poll() {
         }
     });
     svc().rt.spawn(async {
+        let mut last = String::new();
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-            post(|_| {});
+            let clock = time::clock(&chrono::Local::now());
+            if clock != last {
+                last = clock.clone();
+                post(move |app| crate::pages::brain_extras::run_time_rules(app, &clock));
+            } else {
+                post(|_| {});
+            }
         }
     });
 }

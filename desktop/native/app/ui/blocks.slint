@@ -89,6 +89,7 @@ export component BlockView inherits VerticalLayout {
                     font-weight: 650;
                     accessible-role: text;
                     overflow: elide;
+                    horizontal-alignment: block.extra == "center" ? center : left;
                 }
                 if block.sub != "": Text {
                     text: block.sub;
@@ -328,7 +329,19 @@ export component BlockView inherits VerticalLayout {
             image-fit: cover;
         }
         Rectangle {
-            background: @linear-gradient(90deg, #000000b3 0%, #00000000 75%);
+            background: @linear-gradient(90deg, #000000c7 0%, #00000059 60%, #00000080 100%);
+        }
+        if block.tone == "win" || block.tone == "loss" || block.tone == "draw": Rectangle {
+            x: 0;
+            width: 4px;
+            background: block.tone == "win" ? Theme.success : block.tone == "loss" ? Theme.danger : Theme.muted;
+        }
+        if block.sub != "": Text {
+            x: parent.width - self.width - 12px;
+            y: 8px;
+            text: block.sub;
+            color: #ffffffb3;
+            font-size: Theme.f11;
         }
         HorizontalLayout {
             padding: 14px;
@@ -341,6 +354,79 @@ export component BlockView inherits VerticalLayout {
             enabled: block.id != "";
             mouse-cursor: block.id != "" ? pointer : default;
             clicked => { Ui.act(block.id, ""); }
+        }
+    }
+    if block.kind == "stage": Rectangle {
+        height: block.height > 0 ? block.height : 220px;
+        border-radius: 12px;
+        background: @radial-gradient(circle, Theme.row-hover 0%, Theme.row 80%);
+        clip: true;
+        Image {
+            x: 16px;
+            y: 12px;
+            width: parent.width - 32px;
+            height: parent.height - 24px;
+            source: block.image;
+            image-fit: contain;
+        }
+    }
+    if block.kind == "orb": HorizontalLayout {
+        alignment: center;
+        padding-top: 18px;
+        Rectangle {
+            width: block.height;
+            height: block.height;
+            border-radius: self.width / 2;
+            property <float> pulse: Theme.reduced ? 0 : (1 + sin(mod(animation-tick(), 2400ms) / 2400ms * 360deg)) / 2;
+            background: @radial-gradient(circle, Theme.glow-b 0%, Theme.glow-a 60%, Theme.glow-a.with-alpha(0.15) 100%);
+            opacity: 0.8 + 0.2 * self.pulse;
+            drop-shadow-blur: 24px + 12px * self.pulse;
+            drop-shadow-color: Theme.glow-a.with-alpha(0.55);
+        }
+    }
+    if block.kind == "bubble": HorizontalLayout {
+        alignment: block.tone == "user" ? end : start;
+        spacing: 8px;
+        if block.tone == "assistant": VerticalLayout {
+            alignment: start;
+            padding-top: 6px;
+            Rectangle {
+                width: 22px;
+                height: 22px;
+                border-radius: 11px;
+                property <float> pulse: Theme.reduced || !(block.on || block.busy) ? 0 : (1 + sin(mod(animation-tick(), 900ms) / 900ms * 360deg)) / 2;
+                background: @radial-gradient(circle, Theme.glow-b 0%, Theme.glow-a 70%);
+                opacity: 0.7 + 0.3 * self.pulse;
+            }
+        }
+        Rectangle {
+            max-width: 620px;
+            preferred-width: bubble-text.preferred-width + 28px;
+            border-radius: 14px;
+            background: block.tone == "user" ? Theme.accent : Theme.row;
+            min-height: bubble-text.preferred-height + 18px;
+            bubble-text := TextInput {
+                x: 14px;
+                y: 9px;
+                width: parent.width - 28px;
+                text: block.title;
+                color: block.tone == "user" ? Theme.on-accent : Theme.fg;
+                font-size: Theme.f13;
+                wrap: word-wrap;
+                read-only: true;
+                single-line: false;
+                selection-background-color: Theme.accent;
+            }
+            TouchArea {
+                enabled: block.id != "";
+                clicked => { Ui.act(block.id, ""); }
+            }
+        }
+        for cell in block.cells: VerticalLayout {
+            alignment: end;
+            CellView {
+                cell: cell;
+            }
         }
     }
     if block.kind == "aboutslint": HorizontalLayout {

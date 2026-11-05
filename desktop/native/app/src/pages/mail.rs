@@ -410,7 +410,7 @@ fn folder_view(app: &mut App, folder: &str) -> Vec<B> {
     }
     out.push(row(tools));
     if let Some(message) = app.state.mail.error.clone().or(res.error.clone()) {
-        out.push(error_block(&error, "mail:refresh"));
+        out.push(error_block(&message, "mail:refresh"));
     }
     if res.data.is_none() {
         if res.loading {
@@ -481,7 +481,7 @@ fn message_view(app: &mut App, folder: &str) -> Vec<B> {
     tools.push(ibtn(&format!("mail:copy:{id}"), copy, &tr("Copier l'adresse", "Copy address")));
     let mut out = vec![row(tools)];
     if let Some(message) = app.state.mail.error.clone() {
-        out.push(error_block(&error, "mail:refresh"));
+        out.push(error_block(&message, "mail:refresh"));
     }
     let subject = message["subject"].as_str().filter(|text| !text.is_empty()).map_or_else(|| tr("(sans objet)", "(no subject)"), str::to_string);
     out.push(head(&subject, "", vec![]));
@@ -534,7 +534,7 @@ fn manage_view(app: &mut App, id: &str) -> Vec<B> {
         out.push(row(vec![primary(&format!("mail:manage-add:{id}"), &tr("Ajouter", "Add")).off(!ready)]));
     }
     if let Some(message) = app.state.mail.error.clone().or(res.error.clone()) {
-        out.push(error_block(&error, &format!("mail:manage-refresh:{id}")));
+        out.push(error_block(&message, &format!("mail:manage-refresh:{id}")));
     }
     let Some(data) = res.data else {
         if res.loading {

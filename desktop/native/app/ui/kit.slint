@@ -673,6 +673,40 @@ export component CellView inherits HorizontalLayout {
             }
         }
     }
+    if cell.kind == "presence": VerticalLayout {
+        alignment: center;
+        Rectangle {
+            width: cell.size > 0 ? cell.size : 36px;
+            height: self.width;
+            Rectangle {
+                border-radius: self.width / 2;
+                clip: true;
+                background: Theme.control-hover;
+                Text {
+                    text: cell.title;
+                    color: Theme.fg;
+                    font-size: parent.width * 0.4;
+                    font-weight: 600;
+                }
+                if cell.image.width > 0: Image {
+                    width: 100%;
+                    height: 100%;
+                    source: cell.image;
+                    image-fit: cover;
+                }
+            }
+            Rectangle {
+                x: parent.width - 12px;
+                y: parent.height - 12px;
+                width: 13px;
+                height: 13px;
+                border-radius: 7px;
+                border-width: 2px;
+                border-color: Theme.row-solid;
+                background: cell.tone == "online" ? Theme.success : cell.tone == "busy" ? Theme.danger : cell.tone == "away" ? Theme.warning : Theme.faint;
+            }
+        }
+    }
     if cell.kind == "icon": VerticalLayout {
         alignment: center;
         Ico {
@@ -794,6 +828,250 @@ export component CellView inherits HorizontalLayout {
         }
         day-touch := TouchArea {
             mouse-cursor: pointer;
+            clicked => { Ui.act(cell.id, ""); }
+        }
+    }
+    if cell.kind == "heat": Rectangle {
+        min-height: 11px;
+        min-width: 6px;
+        horizontal-stretch: 1;
+        border-radius: 3px;
+        background: cell.on ? cell.color.with-alpha(0.3 + 0.7 * cell.progress) : Theme.control;
+        opacity: cell.disabled ? 0.35 : 1;
+        TouchArea {
+            changed has-hover => {
+                if (self.has-hover) {
+                    Ui.tip(cell.tip, self.absolute-position.x, self.absolute-position.y + 16px);
+                } else {
+                    Ui.tip-off();
+                }
+            }
+        }
+    }
+    if cell.kind == "hour": VerticalLayout {
+        horizontal-stretch: 1;
+        spacing: 3px;
+        alignment: center;
+        Text {
+            text: cell.title;
+            color: Theme.muted;
+            font-size: Theme.f11;
+            horizontal-alignment: center;
+        }
+        HorizontalLayout {
+            alignment: center;
+            Ico {
+                source: cell.icon;
+                size: 18px;
+                tint: Theme.fg;
+            }
+        }
+        Text {
+            text: cell.value;
+            color: Theme.fg;
+            font-size: Theme.f13;
+            font-weight: 600;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: cell.sub;
+            color: Theme.accent-text;
+            font-size: Theme.f11;
+            horizontal-alignment: center;
+        }
+    }
+    if cell.kind == "range": VerticalLayout {
+        alignment: center;
+        horizontal-stretch: 1;
+        Rectangle {
+            height: 5px;
+            border-radius: 3px;
+            background: Theme.control;
+            Rectangle {
+                x: parent.width * (cell.size / 1px);
+                width: max(4px, parent.width * (cell.progress - cell.size / 1px));
+                height: 100%;
+                border-radius: 3px;
+                background: @linear-gradient(90deg, #64d2ff 0%, #ffb340 100%);
+            }
+        }
+    }
+    if cell.kind == "orb": VerticalLayout {
+        alignment: center;
+        Rectangle {
+            width: cell.size;
+            height: cell.size;
+            border-radius: self.width / 2;
+            property <float> pulse: Theme.reduced || cell.tone == "idle" ? 0 : (1 + sin(mod(animation-tick(), cell.tone == "thinking" ? 900ms : 1600ms) / (cell.tone == "thinking" ? 900ms : 1600ms) * 360deg)) / 2;
+            background: @radial-gradient(circle, Theme.glow-b 0%, Theme.glow-a 60%, Theme.glow-a.with-alpha(0.2) 100%);
+            opacity: 0.75 + 0.25 * self.pulse;
+            drop-shadow-blur: 8px + 8px * self.pulse;
+            drop-shadow-color: Theme.glow-a.with-alpha(0.6);
+        }
+    }
+    if cell.kind == "rank": VerticalLayout {
+        horizontal-stretch: 1;
+        spacing: 4px;
+        alignment: center;
+        Text {
+            text: cell.title;
+            color: Theme.muted;
+            font-size: Theme.f12;
+            horizontal-alignment: center;
+        }
+        HorizontalLayout {
+            alignment: center;
+            Rectangle {
+                width: 96px;
+                height: 96px;
+                Path {
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    commands: "M 50 5 A 45 45 0 1 1 49.99 5";
+                    stroke: Theme.control;
+                    stroke-width: 5px;
+                    fill: transparent;
+                }
+                Path {
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    commands: cell.extra;
+                    stroke: cell.color;
+                    stroke-width: 5px;
+                    fill: transparent;
+                }
+                Image {
+                    width: 62px;
+                    height: 62px;
+                    source: cell.image;
+                    image-fit: contain;
+                }
+            }
+        }
+        Text {
+            text: cell.value;
+            color: cell.color;
+            font-size: Theme.f14;
+            font-weight: 650;
+            horizontal-alignment: center;
+        }
+        if cell.sub != "": Text {
+            text: cell.sub;
+            color: Theme.muted;
+            font-size: Theme.f12;
+            horizontal-alignment: center;
+        }
+    }
+    if cell.kind == "menubtn": VerticalLayout {
+        alignment: center;
+        menu-btn := IconBtn {
+            icon: cell.icon;
+            tip: cell.tip;
+            clicked => {
+                Ui.menu(cell.value, self.absolute-position.x, self.absolute-position.y + self.height + 4px, 260px);
+            }
+        }
+    }
+    if cell.kind == "offer": offer := Rectangle {
+        min-height: 150px;
+        horizontal-stretch: 1;
+        border-radius: 12px;
+        background: offer-touch.has-hover && cell.id != "" ? Theme.row-hover : Theme.row;
+        border-width: cell.color.alpha > 0 ? 1px : 0;
+        border-color: cell.color.with-alpha(0.55);
+        accessible-role: button;
+        accessible-label: cell.title;
+        animate background { duration: Theme.fast; }
+        clip: true;
+        Rectangle {
+            y: 0;
+            height: parent.height * 0.6;
+            background: cell.color.alpha > 0 ? @linear-gradient(180deg, cell.color.with-alpha(0.22) 0%, cell.color.with-alpha(0) 100%) : transparent;
+        }
+        Image {
+            x: 12px;
+            y: 10px;
+            width: parent.width - 24px;
+            height: parent.height - 66px;
+            source: cell.image;
+            image-fit: contain;
+        }
+        VerticalLayout {
+            y: parent.height - 54px;
+            height: 48px;
+            padding-left: 12px;
+            padding-right: 12px;
+            spacing: 1px;
+            Text {
+                text: cell.title;
+                color: Theme.fg;
+                font-size: Theme.f13;
+                font-weight: 600;
+                overflow: elide;
+            }
+            HorizontalLayout {
+                Text {
+                    text: cell.sub;
+                    color: cell.color.alpha > 0 ? cell.color : Theme.muted;
+                    font-size: Theme.f11;
+                    overflow: elide;
+                    horizontal-stretch: 1;
+                }
+                if cell.extra != "": Text {
+                    text: cell.extra;
+                    color: Theme.faint;
+                    font-size: Theme.f11;
+                }
+                Text {
+                    text: cell.value;
+                    color: Theme.fg;
+                    font-size: Theme.f12;
+                    font-weight: 600;
+                }
+            }
+        }
+        offer-touch := TouchArea {
+            enabled: cell.id != "" && !cell.disabled;
+            mouse-cursor: cell.id != "" ? pointer : default;
+            clicked => { Ui.act(cell.id, ""); }
+        }
+    }
+    if cell.kind == "variant": Rectangle {
+        min-height: 96px;
+        horizontal-stretch: 1;
+        border-radius: 10px;
+        background: variant-touch.has-hover && cell.id != "" ? Theme.row-hover : Theme.row;
+        border-width: cell.on ? 2px : 0;
+        border-color: Theme.accent;
+        opacity: cell.disabled ? 0.5 : 1;
+        accessible-role: button;
+        accessible-label: cell.title;
+        clip: true;
+        Image {
+            x: 8px;
+            y: 8px;
+            width: parent.width - 16px;
+            height: parent.height - 34px;
+            source: cell.image;
+            image-fit: contain;
+        }
+        Text {
+            x: 8px;
+            y: parent.height - 22px;
+            width: parent.width - 16px;
+            text: cell.title;
+            color: Theme.muted;
+            font-size: Theme.f11;
+            overflow: elide;
+            horizontal-alignment: center;
+        }
+        variant-touch := TouchArea {
+            enabled: cell.id != "" && !cell.disabled;
+            mouse-cursor: cell.id != "" ? pointer : default;
             clicked => { Ui.act(cell.id, ""); }
         }
     }

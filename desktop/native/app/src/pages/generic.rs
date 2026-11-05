@@ -351,6 +351,27 @@ fn run(app: &mut App) {
     });
 }
 
+pub fn flatten_entries(value: &Value, prefix: &str) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    match value {
+        Value::Array(list) => {
+            for item in list {
+                out.extend(flatten_entries(item, prefix));
+            }
+        }
+        Value::Object(map) => {
+            if let (Some(id), Some(name)) = (map.get("id").and_then(Value::as_str), map.get("name").and_then(Value::as_str)) {
+                out.push((id.to_string(), format!("{prefix}{name}")));
+            }
+            for item in map.values().filter(|item| item.is_object() || item.is_array()) {
+                out.extend(flatten_entries(item, prefix));
+            }
+        }
+        _ => {}
+    }
+    out
+}
+
 pub fn activity_label(kind: &str) -> String {
     if fr() {
         let found = match kind { "shared" => "Partage", "uploaded" => "Envoi", "downloaded" => "Téléchargement", "deleted" => "Suppression", "renamed" => "Renommage", "moved" => "Déplacement", "restored" => "Restauration", "viewed" => "Consultation", "revoked" => "Révocation", _ => "" };
@@ -403,6 +424,12 @@ mod tests {
         assert_eq!(to_hex(&json!("#abc")).as_deref(), Some("#aabbcc"));
         assert_eq!(to_hex(&json!("12345678")).as_deref(), Some("#123456"));
         assert_eq!(to_hex(&json!("rouge")), None);
+    }
+
+    #[test]
+    fn directory_entries_are_flattened() {
+        let entries = flatten_entries(&json!({ "channels": [{ "id": "1", "name": "général", "children": [{ "id": "2", "name": "sous" }] }] }), "");
+        assert_eq!(entries, vec![("1".to_string(), "général".to_string()), ("2".to_string(), "sous".to_string())]);
     }
 
     #[test]

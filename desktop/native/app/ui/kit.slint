@@ -763,6 +763,40 @@ export component CellView inherits HorizontalLayout {
             }
         }
     }
+    if cell.kind == "day": day := Rectangle {
+        min-height: 72px;
+        horizontal-stretch: 1;
+        border-radius: 8px;
+        background: cell.on ? Theme.control-hover : day-touch.has-hover ? Theme.row-hover : Theme.row;
+        border-width: cell.tone == "accent" ? 1.5px : 0;
+        border-color: Theme.accent;
+        opacity: cell.tone == "faint" ? 0.45 : 1;
+        accessible-role: button;
+        accessible-label: cell.title;
+        animate background { duration: Theme.fast; }
+        VerticalLayout {
+            padding: 6px;
+            spacing: 2px;
+            alignment: start;
+            Text {
+                text: cell.title;
+                color: cell.tone == "accent" ? Theme.accent-text : Theme.fg;
+                font-size: Theme.f12;
+                font-weight: 600;
+            }
+            Text {
+                text: cell.sub;
+                color: Theme.muted;
+                font-size: Theme.f11;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+        day-touch := TouchArea {
+            mouse-cursor: pointer;
+            clicked => { Ui.act(cell.id, ""); }
+        }
+    }
     if cell.kind == "gap": Rectangle {
         horizontal-stretch: 1;
         min-width: cell.size;

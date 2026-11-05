@@ -35,6 +35,8 @@ pub fn linked_google_events() -> Fut {
         if !linked {
             return Ok(json!([]));
         }
-        Ok(Value::Array(crate::pages::first_array(&services::api("api/google-calendar/events").await.unwrap_or(Value::Null), None)))
+        let path = format!("api/google-calendar/events?clientId={}", crate::pages::encode(crate::pages::files::DRIVE_CLIENT));
+        let data = services::api_data(&path).await.unwrap_or(Value::Null);
+        Ok(Value::Array(crate::pages::first_array(&data["events"], None)))
     })
 }

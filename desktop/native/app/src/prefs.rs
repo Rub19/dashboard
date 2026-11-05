@@ -16,6 +16,11 @@ fn with<T>(work: impl FnOnce(&mut BTreeMap<String, String>) -> T) -> T {
     work(store)
 }
 
+pub fn reload() {
+    let mut guard = STORE.lock().unwrap_or_else(|poison| poison.into_inner());
+    *guard = None;
+}
+
 pub fn read(key: &str) -> Option<String> {
     with(|store| store.get(key).cloned())
 }

@@ -106,6 +106,20 @@ pub fn video_page(url: &str) -> String {
     format!("<!doctype html><meta charset=utf-8><style>html,body{{margin:0;height:100%;background:#000}}video{{width:100%;height:100%;object-fit:contain}}</style><video src=\"{safe}\" controls autoplay></video>")
 }
 
+pub fn mail_page(html: &str, images: bool) -> String {
+    let policy = format!("default-src 'none'; style-src 'unsafe-inline'; img-src data:{}", if images { " https:" } else { "" });
+    format!("<!doctype html><html><head><meta charset=utf-8><meta http-equiv=\"Content-Security-Policy\" content=\"{policy}\"><style>body{{margin:0;padding:16px;background:#fff;color:#202124;font:14px/1.5 system-ui,sans-serif;overflow-wrap:anywhere}}img{{max-width:100%;height:auto}}table{{max-width:100%}}a{{color:#0b57d0}}</style></head><body>{html}</body></html>")
+}
+
+pub fn show_mail(html: &str, title: &str, images: bool) -> Result<(), String> {
+    use std::io::Write as _;
+    let exe = std::env::current_exe().map_err(|error| error.to_string())?;
+    let mut child = std::process::Command::new(exe).args(["--web", "mail", if images { "1" } else { "0" }, title]).stdin(Stdio::piped()).spawn().map_err(|error| error.to_string())?;
+    let mut input = child.stdin.take().ok_or("server")?;
+    input.write_all(html.as_bytes()).map_err(|error| error.to_string())?;
+    Ok(())
+}
+
 pub fn child_main(args: &[String]) {
     use slint::winit_030::winit::application::ApplicationHandler;
     use slint::winit_030::winit::dpi::LogicalSize;
@@ -128,7 +142,7 @@ pub fn child_main(args: &[String]) {
             if self.window.is_some() {
                 return;
             }
-            let (width, height) = if self.kind == "video" { (960.0, 560.0) } else { (480.0, 720.0) };
+            let (width, height) = match self.kind.as_str() { "video" => (960.0, 560.0), "mail" => (820.0, 760.0), _ => (480.0, 720.0) };
             let attributes = Window::default_attributes().with_title(self.title.clone()).with_inner_size(LogicalSize::new(width, height)).with_visible(self.visible);
             let Ok(window) = event_loop.create_window(attributes) else {
                 event_loop.exit();
@@ -147,6 +161,17 @@ pub fn child_main(args: &[String]) {
                             return false;
                         }
                         url.starts_with("https://")
+                    })
+                    .build(&window)
+            } else if self.kind == "mail" {
+                wry::WebViewBuilder::new()
+                    .with_html(self.target.clone())
+                    .with_navigation_handler(|url: String| {
+                        if url.starts_with("https://") {
+                            let _ = std::process::Command::new("rundll32").args(["url.dll,FileProtocolHandler", &url]).spawn();
+                            return false;
+                        }
+                        url.starts_with("about:") || url.starts_with("data:")
                     })
                     .build(&window)
             } else {
@@ -183,10 +208,20 @@ pub fn child_main(args: &[String]) {
     if kind == "video" && !video_allowed(&target) {
         return;
     }
-    if kind != "video" && kind != "riot" {
+    if kind != "video" && kind != "riot" && kind != "mail" {
         return;
     }
-    let (visible, title) = if kind == "riot" { (args.get(2).map(String::as_str) != Some("0"), "Compte Riot".to_string()) } else { (true, args.get(2).cloned().unwrap_or_else(|| "Ethone".into())) };
+    let mut target = target;
+    if kind == "mail" {
+        use std::io::Read as _;
+        let mut html = String::new();
+        let _ = std::io::stdin().take(8 * 1024 * 1024).read_to_string(&mut html);
+        target = mail_page(&html, args.get(1).map(String::as_str) == Some("1"));
+    }
+    let (visible, title) = match kind.as_str() {
+        "riot" => (args.get(2).map(String::as_str) != Some("0"), "Compte Riot".to_string()),
+        _ => (true, args.get(2).cloned().filter(|title| !title.is_empty()).unwrap_or_else(|| "Ethone".into())),
+    };
     let Ok(event_loop) = EventLoop::new() else { return };
     let mut web = Web { kind, target, visible, title, window: None, view: None, context: None };
     let _ = event_loop.run_app(&mut web);
@@ -203,6 +238,13 @@ mod tests {
         assert!(!video_allowed("http://media.valorant-api.com/x.mp4"));
         assert!(!video_allowed("https://exemple.com/x.mp4"));
         assert!(!video_allowed("https://media.valorant-api.com.exemple.com/x.mp4"));
+    }
+
+    #[test]
+    fn mail_pages_block_remote_content_unless_asked() {
+        assert!(mail_page("<p>x</p>", false).contains("img-src data:\""));
+        assert!(mail_page("<p>x</p>", true).contains("img-src data: https:"));
+        assert!(mail_page("<p>x</p>", false).contains("default-src 'none'"));
     }
 
     #[test]

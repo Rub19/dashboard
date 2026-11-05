@@ -34,6 +34,9 @@ pub fn svc() -> &'static Svc {
 }
 
 pub fn data_dir() -> PathBuf {
+    if cfg!(test) {
+        return std::env::temp_dir().join("ethone-native-tests");
+    }
     let base = std::env::var("LOCALAPPDATA").map(PathBuf::from).unwrap_or_else(|_| std::env::temp_dir());
     base.join("dev.ethone.desktop")
 }

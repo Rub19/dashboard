@@ -1,9 +1,19 @@
+pub mod admin;
+pub mod ambience;
+pub mod connections;
 pub mod daily;
 pub mod eval;
+pub mod files;
+pub mod form;
+pub mod generic;
 pub mod home;
 pub mod login;
+pub mod mail;
 pub mod modules;
+pub mod settings;
 pub mod shell;
+pub mod team;
+pub mod work;
 
 use crate::app::{App, Page};
 use crate::i18n::tr;
@@ -12,7 +22,13 @@ use crate::vm::*;
 use serde_json::Value;
 
 #[derive(Default)]
-pub struct PageStates {}
+pub struct PageStates {
+    pub work: work::WorkState,
+    pub mail: mail::MailState,
+    pub files: files::FilesState,
+    pub team: team::TeamState,
+    pub settings: settings::SettingsState,
+}
 
 pub fn encode(text: &str) -> String {
     let mut out = String::new();
@@ -97,6 +113,11 @@ pub fn view(app: &mut App) -> Page {
     match page.as_str() {
         "home" => home::view(app),
         "modules" => modules::view(app),
+        "productivity" => work::view(app),
+        "mail" => mail::view(app),
+        "files" => files::view(app),
+        "team" => team::view(app),
+        "settings" => settings::view(app),
         other => Page { main: vec![head(&shell::page_label(other), "", vec![]), empty(&tr("Page en cours de portage", "Page being ported"), "")], ..Default::default() },
     }
 }
@@ -108,6 +129,17 @@ pub fn dispatch(app: &mut App, id: &str, value: &str) {
         "shell" | "palette" | "menu" | "drawer" | "toast" | "pin" | "pin-menu" | "account" | "music" => shell::act(app, scope, rest, value),
         "login" => login::act(app, rest, value),
         "home" => home::act(app, rest, value),
+        "work" => work::act(app, rest, value),
+        "mail" => mail::act(app, rest, value),
+        "files" => files::act(app, rest, value),
+        "filedrawer" => files::drawer_act(app, rest),
+        "team" => team::act(app, rest, value),
+        "settings" => settings::act(app, rest, value),
+        "connections" => connections::act(app, rest, value),
+        "admin" => admin::act(app, rest),
+        "form" => form::act(app, rest, value),
+        "generic" => generic::act(app, rest, value),
+        "ambience" => ambience::act(app, rest, value),
         "modules" | "embed" | "update" => modules::act(app, scope, rest, value),
         _ => {}
     }

@@ -171,6 +171,9 @@ pub fn start(ui: &AppWindow, hidden: bool) {
     crate::win::wire(ui);
     let bridge = ui.global::<Ui>();
     bridge.on_act(|id, value| {
+        if value.is_empty() || value == "true" || value == "false" {
+            crate::sounds::click();
+        }
         with_app(|app| app.act(&id, &value));
         request_render();
     });

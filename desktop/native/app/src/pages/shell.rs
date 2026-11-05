@@ -89,6 +89,9 @@ fn open(app: &mut App, next: &str) {
     if app.embedded.is_some() {
         crate::pages::modules::leave_embedded(app);
     }
+    if app.page == "productivity" {
+        crate::pages::ambience::stop_all(app);
+    }
     app.page = next.to_string();
     prefs::write_json("ethone-last-page", &app.page);
     if next == "mail" {

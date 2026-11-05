@@ -6,6 +6,8 @@ mod app;
 mod assets;
 mod background;
 mod cache;
+mod clipboard;
+mod dialogs;
 #[cfg(feature = "drive")]
 mod drive;
 mod i18n;
@@ -15,6 +17,7 @@ mod net;
 mod pages;
 mod prefs;
 mod services;
+mod sounds;
 mod theme;
 mod vm;
 mod web;

@@ -1,6 +1,7 @@
 pub mod eval;
 pub mod home;
 pub mod lol;
+pub mod mail;
 pub mod navigation;
 pub mod palette;
 pub mod productivity;

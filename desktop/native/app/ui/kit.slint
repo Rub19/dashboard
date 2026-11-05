@@ -1,0 +1,823 @@
+import { Theme, Cell } from "theme.slint";
+
+export global Ui {
+    callback act(id: string, value: string);
+    callback menu(id: string, x: length, y: length, width: length);
+    callback tip(text: string, x: length, y: length);
+    callback tip-off();
+    in property <length> window-width;
+    in property <length> window-height;
+}
+
+export component Ico inherits Image {
+    in property <length> size: 16px;
+    in property <color> tint: Theme.fg;
+    width: size;
+    height: size;
+    colorize: tint;
+    image-fit: contain;
+}
+
+component Tipped inherits TouchArea {
+    in property <string> tip;
+    mouse-cursor: pointer;
+    wait := Timer {
+        interval: 450ms;
+        running: false;
+        triggered => {
+            self.running = false;
+            Ui.tip(root.tip, root.absolute-position.x, root.absolute-position.y + root.height + 6px);
+        }
+    }
+    changed has-hover => {
+        if (self.has-hover && root.tip != "") {
+            wait.running = true;
+        } else {
+            wait.running = false;
+            Ui.tip-off();
+        }
+    }
+    pointer-event(event) => {
+        if (event.kind == PointerEventKind.down) {
+            wait.running = false;
+            Ui.tip-off();
+        }
+    }
+}
+
+export component Btn {
+    in property <string> id;
+    in property <string> text;
+    in property <string> tip;
+    in property <image> icon;
+    in property <string> tone;
+    in property <bool> disabled;
+    in property <bool> busy;
+    in property <bool> grow;
+    callback clicked();
+    min-height: Theme.control-h;
+    min-width: layout.min-width;
+    preferred-width: layout.preferred-width;
+    horizontal-stretch: root.grow ? 1 : 0;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.text != "" ? root.text : root.tip;
+    accessible-enabled: !root.disabled;
+    accessible-action-default => { touch.clicked(); }
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                touch.clicked();
+                return accept;
+            }
+            reject
+        }
+    }
+    bg := Rectangle {
+        border-radius: 8px;
+        background: root.tone == "primary" ? (touch.has-hover && !root.disabled ? Theme.accent.brighter(12%) : Theme.accent) : root.tone == "danger" ? (touch.has-hover ? Theme.danger-bg.mix(Theme.danger, 75%) : Theme.danger-bg) : (touch.has-hover && !root.disabled ? Theme.control-hover : Theme.control);
+        border-width: focus.has-focus ? 2px : 0;
+        border-color: Theme.accent;
+        opacity: root.disabled ? 0.45 : 1;
+        animate background { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        layout := HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            spacing: 6px;
+            alignment: center;
+            if root.icon.width > 0: VerticalLayout {
+                alignment: center;
+                Ico {
+                    source: root.icon;
+                    size: 14px;
+                    tint: root.tone == "primary" ? Theme.on-accent : root.tone == "danger" ? Theme.danger : Theme.fg;
+                }
+            }
+            if root.text != "": Text {
+                text: root.text;
+                vertical-alignment: center;
+                font-size: Theme.f13;
+                font-weight: root.tone == "primary" ? 600 : 500;
+                color: root.tone == "primary" ? Theme.on-accent : root.tone == "danger" ? Theme.danger : Theme.fg;
+            }
+        }
+        touch := Tipped {
+            tip: root.tip;
+            enabled: !root.disabled;
+            clicked => {
+                root.clicked();
+                if (root.id != "") {
+                    Ui.act(root.id, "");
+                }
+            }
+        }
+    }
+}
+
+export component IconBtn {
+    in property <string> id;
+    in property <image> icon;
+    in property <string> tip;
+    in property <bool> on;
+    in property <bool> disabled;
+    in property <length> box: 28px;
+    in property <length> ico: 15px;
+    in property <color> tint: Theme.muted;
+    callback clicked();
+    width: box;
+    height: box;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.tip;
+    accessible-enabled: !root.disabled;
+    accessible-action-default => { touch.clicked(); }
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                touch.clicked();
+                return accept;
+            }
+            reject
+        }
+    }
+    Rectangle {
+        border-radius: 8px;
+        background: root.on ? Theme.control-hover : touch.has-hover && !root.disabled ? Theme.control : transparent;
+        border-width: focus.has-focus ? 2px : 0;
+        border-color: Theme.accent;
+        opacity: root.disabled ? 0.35 : 1;
+        animate background { duration: Theme.fast; }
+        Ico {
+            source: root.icon;
+            size: root.ico;
+            tint: touch.has-hover || root.on ? Theme.fg : root.tint;
+            animate tint { duration: Theme.fast; }
+        }
+    }
+    touch := Tipped {
+        tip: root.tip;
+        enabled: !root.disabled;
+        clicked => {
+            root.clicked();
+            if (root.id != "") {
+                Ui.act(root.id, "");
+            }
+        }
+    }
+}
+
+export component Linky {
+    in property <string> id;
+    in property <string> text;
+    in property <bool> strong;
+    in property <color> ink: Theme.accent-text;
+    callback clicked();
+    preferred-width: label.preferred-width;
+    min-height: label.preferred-height;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-action-default => { touch.clicked(); }
+    label := Text {
+        width: 100%;
+        text: root.text;
+        color: root.ink;
+        font-size: Theme.f12;
+        font-weight: root.strong ? 600 : 400;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.clicked();
+            if (root.id != "") {
+                Ui.act(root.id, "");
+            }
+        }
+    }
+}
+
+export component Switch {
+    in property <string> id;
+    in property <bool> on;
+    in property <string> label;
+    callback toggled();
+    width: 38px;
+    height: 22px;
+    forward-focus: focus;
+    accessible-role: switch;
+    accessible-label: root.label;
+    accessible-checkable: true;
+    accessible-checked: root.on;
+    accessible-action-default => { touch.clicked(); }
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                touch.clicked();
+                return accept;
+            }
+            reject
+        }
+    }
+    Rectangle {
+        border-radius: 11px;
+        background: root.on ? Theme.switch-on : Theme.control-hover;
+        border-width: focus.has-focus ? 2px : 0;
+        border-color: Theme.accent;
+        animate background { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        Rectangle {
+            x: root.on ? 18px : 2px;
+            y: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            background: white;
+            drop-shadow-blur: 3px;
+            drop-shadow-color: #0000004d;
+            animate x { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        }
+    }
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.toggled();
+            if (root.id != "") {
+                Ui.act(root.id, root.on ? "false" : "true");
+            }
+        }
+    }
+}
+
+export component Field {
+    in property <string> id;
+    in property <string> value;
+    in property <string> placeholder;
+    in property <image> icon;
+    in property <bool> secret;
+    in property <bool> multi;
+    in property <bool> disabled;
+    in property <bool> autofocus;
+    in property <string> label;
+    in property <length> tall: 90px;
+    callback submit();
+    callback edited(text: string);
+    public function focus-now() { input.focus(); }
+    min-height: root.multi ? root.tall : Theme.control-h + 2px;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    horizontal-stretch: 1;
+    forward-focus: input;
+    Rectangle {
+        border-radius: 8px;
+        background: Theme.control;
+        border-width: 1px;
+        border-color: input.has-focus ? Theme.accent : Theme.input-edge;
+        animate border-color { duration: Theme.fast; }
+        HorizontalLayout {
+            padding-left: 10px;
+            padding-right: 10px;
+            spacing: 8px;
+            if root.icon.width > 0: VerticalLayout {
+                alignment: center;
+                Ico {
+                    source: root.icon;
+                    size: 15px;
+                    tint: Theme.muted;
+                }
+            }
+            Rectangle {
+                horizontal-stretch: 1;
+                clip: true;
+                hint := Text {
+                    x: 0;
+                    width: parent.width;
+                    height: parent.height;
+                    text: root.placeholder;
+                    visible: input.text == "";
+                    color: Theme.faint;
+                    font-size: Theme.f13;
+                    vertical-alignment: root.multi ? top : center;
+                }
+                input := TextInput {
+                    x: 0;
+                    y: root.multi ? 6px : 0;
+                    width: parent.width;
+                    height: root.multi ? parent.height - 12px : parent.height;
+                    color: Theme.fg;
+                    font-size: Theme.f13;
+                    enabled: !root.disabled;
+                    single-line: !root.multi;
+                    wrap: root.multi ? word-wrap : no-wrap;
+                    input-type: root.secret ? InputType.password : InputType.text;
+                    vertical-alignment: root.multi ? top : center;
+                    selection-background-color: Theme.accent;
+                    selection-foreground-color: Theme.on-accent;
+                    accessible-label: root.label != "" ? root.label : root.placeholder;
+                    edited => {
+                        root.edited(self.text);
+                        if (root.id != "") {
+                            Ui.act(root.id, self.text);
+                        }
+                    }
+                    accepted => {
+                        root.submit();
+                        if (root.id != "") {
+                            Ui.act(root.id + ":submit", self.text);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    init => {
+        input.text = root.value;
+        if (root.autofocus) {
+            input.focus();
+        }
+    }
+    changed value => {
+        if (input.text != root.value) {
+            input.text = root.value;
+        }
+    }
+}
+
+export component Bar {
+    in property <float> progress;
+    in property <bool> busy;
+    in property <color> ink: Theme.accent;
+    height: 4px;
+    horizontal-stretch: 1;
+    Rectangle {
+        border-radius: 2px;
+        background: Theme.control;
+        clip: true;
+        Rectangle {
+            x: 0;
+            height: 100%;
+            width: parent.width * clamp(root.progress, 0, 1);
+            border-radius: 2px;
+            background: root.ink;
+            animate width { duration: Theme.slow; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        }
+    }
+}
+
+export component Skeleton {
+    in property <length> tall: 64px;
+    height: tall;
+    Rectangle {
+        border-radius: 12px;
+        background: Theme.row;
+        property <bool> pulse: false;
+        opacity: pulse ? 0.55 : 1;
+        animate opacity { duration: Theme.reduced ? 0ms : 240ms; }
+        Timer {
+            interval: 700ms;
+            running: !Theme.reduced;
+            triggered => { parent.pulse = !parent.pulse; }
+        }
+    }
+}
+
+export component Spinner {
+    in property <length> size: 18px;
+    in property <image> icon;
+    width: size;
+    height: size;
+    Ico {
+        source: root.icon;
+        size: root.size;
+        tint: Theme.muted;
+        
+        
+        transform-rotation: Theme.reduced ? 0deg : mod(animation-tick(), 900ms) / 900ms * 360deg;
+    }
+}
+
+export component CellView inherits HorizontalLayout {
+    in property <Cell> cell;
+    horizontal-stretch: cell.weight;
+    alignment: stretch;
+    if cell.kind == "text": Text {
+        text: cell.title;
+        color: cell.tone == "muted" ? Theme.muted : cell.tone == "faint" ? Theme.faint : cell.tone == "ok" ? Theme.success : cell.tone == "bad" ? Theme.danger : cell.tone == "warn" ? Theme.warning : cell.tone == "accent" ? Theme.accent-text : Theme.fg;
+        font-size: cell.size > 0 ? cell.size * Theme.text-scale : Theme.f13;
+        font-weight: cell.on ? 600 : 400;
+        vertical-alignment: center;
+        horizontal-alignment: cell.extra == "right" ? right : cell.extra == "center" ? center : left;
+        overflow: elide;
+        horizontal-stretch: cell.weight;
+    }
+    if cell.kind == "wrap": Text {
+        text: cell.title;
+        color: cell.tone == "muted" ? Theme.muted : cell.tone == "bad" ? Theme.danger : Theme.fg;
+        font-size: cell.size > 0 ? cell.size * Theme.text-scale : Theme.f13;
+        wrap: word-wrap;
+        vertical-alignment: center;
+        horizontal-stretch: cell.weight;
+    }
+    if cell.kind == "stack": VerticalLayout {
+        alignment: center;
+        spacing: 2px;
+        horizontal-stretch: cell.weight;
+        Text {
+            text: cell.title;
+            color: cell.tone == "bad" ? Theme.danger : cell.tone == "ok" ? Theme.success : Theme.fg;
+            font-size: cell.size > 0 ? cell.size * Theme.text-scale : Theme.f13;
+            font-weight: 600;
+            overflow: elide;
+            horizontal-alignment: cell.extra == "right" ? right : left;
+        }
+        if cell.sub != "": Text {
+            text: cell.sub;
+            color: Theme.muted;
+            font-size: Theme.f12;
+            overflow: elide;
+            horizontal-alignment: cell.extra == "right" ? right : left;
+        }
+    }
+    if cell.kind == "stackwrap": VerticalLayout {
+        alignment: center;
+        spacing: 2px;
+        horizontal-stretch: cell.weight;
+        Text {
+            text: cell.title;
+            color: Theme.fg;
+            font-size: Theme.f13;
+            font-weight: 600;
+            wrap: word-wrap;
+        }
+        if cell.sub != "": Text {
+            text: cell.sub;
+            color: Theme.muted;
+            font-size: Theme.f12;
+            wrap: word-wrap;
+        }
+    }
+    if cell.kind == "btn": Btn {
+        id: cell.id;
+        text: cell.title;
+        tip: cell.tip;
+        icon: cell.icon;
+        tone: cell.tone;
+        disabled: cell.disabled;
+        busy: cell.busy;
+        grow: cell.weight > 0;
+    }
+    if cell.kind == "ibtn": VerticalLayout {
+        alignment: center;
+        IconBtn {
+            id: cell.id;
+            icon: cell.icon;
+            tip: cell.tip;
+            on: cell.on;
+            disabled: cell.disabled;
+        }
+    }
+    if cell.kind == "link": Linky {
+        id: cell.id;
+        text: cell.title;
+        strong: cell.on;
+        ink: cell.tone == "muted" ? Theme.muted : cell.tone == "bad" ? Theme.danger : Theme.accent-text;
+    }
+    if cell.kind == "switch": VerticalLayout {
+        alignment: center;
+        Switch {
+            id: cell.id;
+            on: cell.on;
+            label: cell.title;
+        }
+    }
+    if cell.kind == "input": Field {
+        id: cell.id;
+        value: cell.value;
+        placeholder: cell.title;
+        icon: cell.icon;
+        secret: cell.on;
+        disabled: cell.disabled;
+        autofocus: cell.busy;
+        label: cell.tip;
+    }
+    if cell.kind == "area": Field {
+        id: cell.id;
+        value: cell.value;
+        placeholder: cell.title;
+        multi: true;
+        tall: cell.size > 0 ? cell.size : 96px;
+        disabled: cell.disabled;
+        label: cell.tip;
+    }
+    if cell.kind == "select": sel := Rectangle {
+        min-height: Theme.control-h;
+        min-width: 110px;
+        preferred-width: max(140px, sel-text.preferred-width + 40px);
+        horizontal-stretch: cell.weight;
+        border-radius: 8px;
+        background: sel-touch.has-hover ? Theme.control-hover : Theme.control;
+        accessible-role: combobox;
+        accessible-label: cell.tip;
+        accessible-value: cell.title;
+        animate background { duration: Theme.fast; }
+        sel-text := Text {
+            x: 10px;
+            width: parent.width - 34px;
+            height: 100%;
+            text: cell.title;
+            color: Theme.fg;
+            font-size: Theme.f13;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        Ico {
+            x: parent.width - 22px;
+            source: cell.icon;
+            size: 14px;
+            tint: Theme.muted;
+        }
+        sel-touch := TouchArea {
+            mouse-cursor: pointer;
+            enabled: !cell.disabled;
+            clicked => {
+                Ui.menu(cell.id, self.absolute-position.x, self.absolute-position.y + self.height + 4px, self.width);
+            }
+        }
+    }
+    if cell.kind == "stat": Rectangle {
+        min-height: 70px;
+        horizontal-stretch: cell.weight;
+        border-radius: 12px;
+        background: Theme.row;
+        VerticalLayout {
+            padding: 12px;
+            spacing: 2px;
+            alignment: center;
+            Text {
+                text: cell.title;
+                color: Theme.muted;
+                font-size: Theme.f12;
+                overflow: elide;
+            }
+            Text {
+                text: cell.value;
+                color: cell.tone == "ok" ? Theme.success : cell.tone == "bad" ? Theme.danger : Theme.fg;
+                font-size: Theme.f20;
+                font-weight: 650;
+                overflow: elide;
+            }
+            if cell.sub != "": Text {
+                text: cell.sub;
+                color: Theme.faint;
+                font-size: Theme.f11;
+                overflow: elide;
+            }
+        }
+    }
+    if cell.kind == "tile": tile := Rectangle {
+        min-height: 78px;
+        horizontal-stretch: cell.weight;
+        border-radius: 12px;
+        background: tile-touch.has-hover && cell.id != "" ? Theme.row-hover : Theme.row;
+        accessible-role: button;
+        accessible-label: cell.title + " " + cell.value;
+        animate background { duration: Theme.fast; }
+        HorizontalLayout {
+            padding: 12px;
+            spacing: 10px;
+            if cell.image.width > 0: VerticalLayout {
+                alignment: center;
+                Image {
+                    source: cell.image;
+                    width: 38px;
+                    height: 38px;
+                    image-fit: contain;
+                }
+            }
+            if cell.icon.width > 0: VerticalLayout {
+                alignment: center;
+                Ico {
+                    source: cell.icon;
+                    size: 22px;
+                    tint: cell.color.alpha > 0 ? cell.color : Theme.fg;
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+                Text {
+                    text: cell.title;
+                    color: Theme.muted;
+                    font-size: Theme.f12;
+                    overflow: elide;
+                }
+                Text {
+                    text: cell.value;
+                    color: Theme.fg;
+                    font-size: Theme.f20;
+                    font-weight: 650;
+                    overflow: elide;
+                }
+                if cell.sub != "": Text {
+                    text: cell.sub;
+                    color: Theme.muted;
+                    font-size: Theme.f12;
+                    overflow: elide;
+                }
+            }
+        }
+        tile-touch := TouchArea {
+            mouse-cursor: cell.id != "" ? pointer : default;
+            clicked => {
+                if (cell.id != "") {
+                    Ui.act(cell.id, "");
+                }
+            }
+        }
+    }
+    if cell.kind == "img": VerticalLayout {
+        alignment: center;
+        horizontal-stretch: cell.weight;
+        Rectangle {
+            width: cell.size > 0 ? cell.size : 36px;
+            height: cell.progress > 0 ? cell.progress * 1px : self.width;
+            border-radius: cell.round ? self.width / 2 : 8px;
+            clip: true;
+            background: cell.image.width > 0 ? transparent : Theme.control;
+            Image {
+                width: 100%;
+                height: 100%;
+                source: cell.image;
+                image-fit: cover;
+            }
+        }
+    }
+    if cell.kind == "avatar": VerticalLayout {
+        alignment: center;
+        Rectangle {
+            width: cell.size > 0 ? cell.size : 32px;
+            height: self.width;
+            border-radius: self.width / 2;
+            clip: true;
+            background: cell.color.alpha > 0 ? cell.color : Theme.control-hover;
+            Text {
+                text: cell.title;
+                color: white;
+                font-size: parent.width * 0.42;
+                font-weight: 600;
+            }
+            if cell.image.width > 0: Image {
+                width: 100%;
+                height: 100%;
+                source: cell.image;
+                image-fit: cover;
+            }
+        }
+    }
+    if cell.kind == "icon": VerticalLayout {
+        alignment: center;
+        Ico {
+            source: cell.icon;
+            size: cell.size > 0 ? cell.size : 16px;
+            tint: cell.color.alpha > 0 ? cell.color : cell.tone == "ok" ? Theme.success : cell.tone == "bad" ? Theme.danger : cell.tone == "warn" ? Theme.warning : Theme.muted;
+        }
+    }
+    if cell.kind == "chip": chip := VerticalLayout {
+        alignment: center;
+        Rectangle {
+            height: 24px * Theme.density;
+            min-width: chip-row.min-width;
+            preferred-width: chip-row.preferred-width;
+            border-radius: 12px;
+            background: cell.on ? Theme.accent : chip-touch.has-hover && cell.id != "" ? Theme.control-hover : (cell.color.alpha > 0 ? cell.color.with-alpha(0.18) : Theme.control);
+            animate background { duration: Theme.fast; }
+            chip-row := HorizontalLayout {
+                padding-left: 9px;
+                padding-right: 9px;
+                spacing: 4px;
+                if cell.icon.width > 0: VerticalLayout {
+                    alignment: center;
+                    Ico {
+                        source: cell.icon;
+                        size: 12px;
+                        tint: cell.on ? Theme.on-accent : cell.color.alpha > 0 ? cell.color : Theme.fg;
+                    }
+                }
+                Text {
+                    text: cell.title;
+                    vertical-alignment: center;
+                    font-size: Theme.f12;
+                    color: cell.on ? Theme.on-accent : cell.color.alpha > 0 ? cell.color : Theme.fg;
+                }
+            }
+            chip-touch := TouchArea {
+                mouse-cursor: cell.id != "" ? pointer : default;
+                clicked => {
+                    if (cell.id != "") {
+                        Ui.act(cell.id, "");
+                    }
+                }
+            }
+        }
+    }
+    if cell.kind == "kbd": VerticalLayout {
+        alignment: center;
+        Rectangle {
+            height: 20px;
+            min-width: kbd-text.preferred-width + 12px;
+            border-radius: 5px;
+            background: Theme.control;
+            kbd-text := Text {
+                text: cell.title;
+                color: Theme.muted;
+                font-size: Theme.f11;
+            }
+        }
+    }
+    if cell.kind == "bar": VerticalLayout {
+        alignment: center;
+        horizontal-stretch: cell.weight;
+        Bar {
+            progress: cell.progress;
+            ink: cell.color.alpha > 0 ? cell.color : Theme.accent;
+        }
+    }
+    if cell.kind == "swatch": VerticalLayout {
+        alignment: center;
+        Rectangle {
+            width: 26px;
+            height: 26px;
+            border-radius: 13px;
+            background: cell.color;
+            border-width: cell.on ? 2px : 0;
+            border-color: Theme.fg;
+            accessible-role: button;
+            accessible-label: cell.tip;
+            if cell.on: Ico {
+                source: cell.icon;
+                size: 14px;
+                tint: cell.color2;
+            }
+            TouchArea {
+                mouse-cursor: pointer;
+                clicked => { Ui.act(cell.id, ""); }
+            }
+        }
+    }
+    if cell.kind == "gap": Rectangle {
+        horizontal-stretch: 1;
+        min-width: cell.size;
+    }
+    if cell.kind == "theme": theme-card := Rectangle {
+        min-height: 118px;
+        horizontal-stretch: 1;
+        border-radius: 12px;
+        background: Theme.row;
+        border-width: cell.on ? 2px : 0;
+        border-color: Theme.accent;
+        accessible-role: button;
+        accessible-label: cell.title;
+        VerticalLayout {
+            padding: 6px;
+            spacing: 6px;
+            Rectangle {
+                height: 66px;
+                border-radius: 8px;
+                background: @linear-gradient(135deg, cell.color 0%, cell.color2 60%, cell.image2.width > 0 ? cell.color : cell.color 100%);
+                clip: true;
+                if cell.on: Rectangle {
+                    x: parent.width - 26px;
+                    y: 6px;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 10px;
+                    background: Theme.accent;
+                    Ico {
+                        source: cell.icon;
+                        size: 13px;
+                        tint: Theme.on-accent;
+                    }
+                }
+            }
+            VerticalLayout {
+                padding-left: 4px;
+                Text {
+                    text: cell.title;
+                    color: Theme.fg;
+                    font-size: Theme.f13;
+                    font-weight: 600;
+                    overflow: elide;
+                }
+                Text {
+                    text: cell.sub;
+                    color: Theme.muted;
+                    font-size: Theme.f11;
+                    overflow: elide;
+                }
+            }
+        }
+        TouchArea {
+            mouse-cursor: pointer;
+            clicked => { Ui.act(cell.id, ""); }
+        }
+    }
+}

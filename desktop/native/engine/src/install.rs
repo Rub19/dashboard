@@ -67,7 +67,7 @@ async fn download(url: &str, path: &Path, on: &(dyn Fn(Progress) + Send + Sync))
     Ok(())
 }
 
-async fn fetch_and_verify(module: &Module, latest: &feed::Latest, on: &(dyn Fn(Progress) + Send + Sync)) -> Result<PathBuf, String> {
+pub async fn fetch_and_verify(module: &Module, latest: &feed::Latest, on: &(dyn Fn(Progress) + Send + Sync)) -> Result<PathBuf, String> {
     let url = latest.url.as_deref().ok_or("Ce flux ne propose pas de paquet")?;
     let signature = latest.signature.as_deref().ok_or("Ce flux n'est pas signé")?;
     let pubkey = module.pubkey.as_deref().ok_or("Clé publique absente du catalogue")?;

@@ -1,0 +1,105 @@
+export global Theme {
+    in property <color> window: #0b1020;
+    in property <color> sidebar: #ffffff0d;
+    in property <color> sidebar-edge: #ffffff1a;
+    in property <color> row: #ffffff12;
+    in property <color> row-hover: #ffffff21;
+    in property <color> row-solid: #151c33;
+    in property <color> control: #ffffff1a;
+    in property <color> control-hover: #ffffff2b;
+    in property <color> control-solid: #1f2845;
+    in property <color> fg: #f3f5ff;
+    in property <color> muted: #a3acc7;
+    in property <color> faint: #6d7692;
+    in property <color> line: #ffffff1f;
+    in property <color> input-edge: #ffffff2e;
+    in property <color> accent: #0a84ff;
+    in property <color> on-accent: #ffffff;
+    in property <color> accent-text: #2997ff;
+    in property <color> success: #30d158;
+    in property <color> warning: #ff9f0a;
+    in property <color> danger: #ff453a;
+    in property <color> danger-bg: #ff453a26;
+    in property <color> popup: #131a30f2;
+    in property <color> scrim: #00000080;
+    in property <color> glow-a: #2f6bff;
+    in property <color> glow-b: #7c4dff;
+    in property <color> tint: #5aa9ff;
+    in property <color> switch-on: #30d158;
+    in property <bool> reduced: false;
+    in property <float> text-scale: 1;
+    in property <float> density: 1;
+
+    out property <duration> fast: root.reduced ? 0ms : 120ms;
+    out property <duration> mid: root.reduced ? 0ms : 180ms;
+    out property <duration> slow: root.reduced ? 0ms : 240ms;
+
+    out property <length> f11: 11px * root.text-scale;
+    out property <length> f12: 12px * root.text-scale;
+    out property <length> f13: 13px * root.text-scale;
+    out property <length> f14: 14px * root.text-scale;
+    out property <length> f16: 16px * root.text-scale;
+    out property <length> f20: 20px * root.text-scale;
+    out property <length> f24: 24px * root.text-scale;
+    out property <length> f30: 30px * root.text-scale;
+    out property <length> control-h: 30px * root.density;
+    out property <length> gap: 12px * root.density;
+}
+
+export struct Item {
+    id: string,
+    label: string,
+    hint: string,
+    icon: image,
+    kind: string,
+    badge: int,
+    on: bool,
+    dot: bool,
+    y: length,
+}
+
+export struct Cell {
+    kind: string,
+    id: string,
+    title: string,
+    sub: string,
+    value: string,
+    extra: string,
+    tip: string,
+    icon: image,
+    image: image,
+    image2: image,
+    tone: string,
+    on: bool,
+    busy: bool,
+    disabled: bool,
+    round: bool,
+    progress: float,
+    weight: float,
+    size: length,
+    color: color,
+    color2: color,
+}
+
+export struct Block {
+    kind: string,
+    id: string,
+    title: string,
+    sub: string,
+    value: string,
+    extra: string,
+    tone: string,
+    icon: image,
+    image: image,
+    on: bool,
+    busy: bool,
+    disabled: bool,
+    corners: int,
+    level: int,
+    height: length,
+    gap: length,
+    progress: float,
+    color: color,
+    path: string,
+    cells: [Cell],
+}

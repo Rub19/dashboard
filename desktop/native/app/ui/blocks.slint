@@ -1,0 +1,454 @@
+import { Theme, Cell, Block, Item } from "theme.slint";
+import { Ui, Ico, Btn, IconBtn, Linky, Switch, Field, Bar, Skeleton, CellView, Spinner } from "kit.slint";
+
+component Cells inherits HorizontalLayout {
+    in property <[Cell]> cells;
+    in property <length> gap: 8px;
+    spacing: gap;
+    for cell in cells: CellView {
+        cell: cell;
+    }
+}
+
+component Pills {
+    in property <[Cell]> cells;
+    in property <bool> wide;
+    in property <int> active: -1;
+    in property <string> longest;
+    property <int> count: cells.length;
+    property <length> tab-width: root.wide ? root.width / max(root.count, 1) : max(92px, measure.preferred-width + 26px);
+    min-height: Theme.control-h + 4px;
+    horizontal-stretch: wide ? 1 : 0;
+    preferred-width: root.count * max(92px, measure.preferred-width + 26px);
+    min-width: self.preferred-width;
+    measure := Text {
+        visible: false;
+        text: root.longest;
+        font-size: Theme.f13;
+        font-weight: 600;
+    }
+    Rectangle {
+        border-radius: 9px;
+        background: Theme.control;
+        accessible-role: tab-list;
+        Rectangle {
+            x: root.active * root.tab-width + 2px;
+            y: 2px;
+            width: root.tab-width - 4px;
+            height: parent.height - 4px;
+            visible: root.active >= 0;
+            border-radius: 7px;
+            background: Theme.row-solid;
+            drop-shadow-blur: 3px;
+            drop-shadow-color: #00000040;
+            animate x { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        }
+        for entry[index] in cells: Rectangle {
+                x: index * root.tab-width;
+                width: root.tab-width;
+                accessible-role: tab;
+                accessible-label: entry.title;
+                Text {
+                    text: entry.title;
+                    font-size: Theme.f13;
+                    font-weight: entry.on ? 600 : 400;
+                    color: entry.on ? Theme.fg : Theme.muted;
+                    animate color { duration: Theme.fast; }
+                }
+                TouchArea {
+                    mouse-cursor: pointer;
+                    enabled: !entry.disabled;
+                    clicked => { Ui.act(entry.id, ""); }
+                }
+        }
+    }
+}
+
+export component BlockView inherits VerticalLayout {
+    in property <Block> block;
+    in property <int> index;
+    in property <bool> entered: true;
+    in property <length> direction: 8px;
+    property <bool> clickable: block.id != "" && (block.kind == "row" || block.kind == "match");
+    alignment: start;
+    padding-left: block.level * 16px;
+    if block.kind == "head": VerticalLayout {
+        padding-bottom: 6px;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: stretch;
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 2px;
+                alignment: center;
+                Text {
+                    text: block.title;
+                    color: Theme.fg;
+                    font-size: Theme.f24;
+                    font-weight: 650;
+                    accessible-role: text;
+                    overflow: elide;
+                }
+                if block.sub != "": Text {
+                    text: block.sub;
+                    color: Theme.muted;
+                    font-size: Theme.f13;
+                    wrap: word-wrap;
+                }
+            }
+            Cells {
+                cells: block.cells;
+                alignment: end;
+            }
+        }
+    }
+    if block.kind == "h2": VerticalLayout {
+        padding-top: 8px;
+        HorizontalLayout {
+            spacing: 8px;
+            Text {
+                text: block.title;
+                color: Theme.fg;
+                font-size: Theme.f14;
+                font-weight: 650;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+            if block.sub != "": Text {
+                text: block.sub;
+                color: Theme.muted;
+                font-size: Theme.f12;
+                vertical-alignment: center;
+            }
+            Rectangle {
+                horizontal-stretch: 1;
+            }
+            Cells {
+                cells: block.cells;
+            }
+        }
+    }
+    if block.kind == "prose": Text {
+        text: block.title;
+        color: block.tone == "muted" ? Theme.muted : block.tone == "bad" ? Theme.danger : block.tone == "ok" ? Theme.success : Theme.fg;
+        font-size: Theme.f13;
+        wrap: word-wrap;
+    }
+    if block.kind == "read": TextInput {
+        text: block.title;
+        color: Theme.fg;
+        font-size: Theme.f13;
+        wrap: word-wrap;
+        read-only: true;
+        single-line: false;
+        selection-background-color: Theme.accent;
+        selection-foreground-color: Theme.on-accent;
+    }
+    if block.kind == "error": Rectangle {
+        border-radius: 10px;
+        background: Theme.danger-bg;
+        accessible-role: text;
+        accessible-label: block.title;
+        HorizontalLayout {
+            padding: 10px;
+            spacing: 8px;
+            Text {
+                horizontal-stretch: 1;
+                text: block.title;
+                color: Theme.danger;
+                font-size: Theme.f13;
+                wrap: word-wrap;
+                vertical-alignment: center;
+            }
+            Cells {
+                cells: block.cells;
+            }
+        }
+    }
+    if block.kind == "empty": VerticalLayout {
+        padding: 28px;
+        spacing: 6px;
+        alignment: center;
+        Text {
+            text: block.title;
+            color: Theme.fg;
+            font-size: Theme.f14;
+            font-weight: 600;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+        if block.sub != "": Text {
+            text: block.sub;
+            color: Theme.muted;
+            font-size: Theme.f13;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+        Cells {
+            cells: block.cells;
+            alignment: center;
+        }
+    }
+    if block.kind == "skeleton": Skeleton {
+        tall: block.height > 0 ? block.height : 64px;
+    }
+    if block.kind == "space": Rectangle {
+        height: block.height;
+    }
+    if block.kind == "divider": Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    if block.kind == "row": box := Rectangle {
+        min-height: inner.min-height;
+        border-top-left-radius: block.tone == "" ? 0 : (block.corners == 0 || block.corners == 1) ? 12px : 0;
+        border-top-right-radius: self.border-top-left-radius;
+        border-bottom-left-radius: block.tone == "" ? 0 : (block.corners == 0 || block.corners == 3) ? 12px : 0;
+        border-bottom-right-radius: self.border-bottom-left-radius;
+        background: block.tone == "" ? (root.clickable && touch.has-hover ? Theme.row : transparent) : block.on ? Theme.control-hover : (root.clickable && touch.has-hover ? Theme.row-hover : Theme.row);
+        accessible-role: button;
+        accessible-label: block.title;
+        animate background { duration: Theme.fast; }
+        touch := TouchArea {
+            enabled: root.clickable;
+            mouse-cursor: root.clickable ? pointer : default;
+            clicked => { Ui.act(block.id, ""); }
+            pointer-event(event) => {
+                if (event.button == PointerEventButton.right && event.kind == PointerEventKind.down && block.value != "") {
+                    Ui.menu(block.value, self.absolute-position.x + self.mouse-x, self.absolute-position.y + self.mouse-y, 0);
+                }
+            }
+        }
+        inner := HorizontalLayout {
+            padding-left: block.tone == "" ? 0 : 14px;
+            padding-right: block.tone == "" ? 0 : 12px;
+            padding-top: block.tone == "" ? 0 : 8px * Theme.density;
+            padding-bottom: block.tone == "" ? 0 : 8px * Theme.density;
+            spacing: block.gap > 0 ? block.gap : 10px;
+            alignment: block.extra == "end" ? end : block.extra == "center" ? center : stretch;
+            for cell in block.cells: CellView {
+                cell: cell;
+            }
+        }
+        if block.corners == 2 || block.corners == 3: Rectangle {
+            x: 14px;
+            y: 0;
+            width: parent.width - 14px;
+            height: 1px;
+            background: Theme.line;
+        }
+    }
+    if block.kind == "tabs": HorizontalLayout {
+        alignment: start;
+        Pills {
+            cells: block.cells;
+            longest: block.title;
+            active: block.corners;
+        }
+    }
+    if block.kind == "seg": HorizontalLayout {
+        alignment: block.extra == "wide" ? stretch : start;
+        Pills {
+            cells: block.cells;
+            wide: block.extra == "wide";
+            longest: block.title;
+            active: block.corners;
+        }
+    }
+    if block.kind == "field": VerticalLayout {
+        spacing: 4px;
+        Text {
+            text: block.title;
+            color: Theme.muted;
+            font-size: Theme.f12;
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            for cell in block.cells: CellView {
+                cell: cell;
+            }
+        }
+    }
+    if block.kind == "bars": Rectangle {
+        height: block.height > 0 ? block.height : 120px;
+        HorizontalLayout {
+            spacing: 3px;
+            alignment: stretch;
+            for bar in block.cells: VerticalLayout {
+                horizontal-stretch: 1;
+                alignment: end;
+                spacing: 3px;
+                Rectangle {
+                    height: max(2px, (parent.height - 18px) * clamp(bar.progress, 0, 1));
+                    border-top-left-radius: 3px;
+                    border-top-right-radius: 3px;
+                    background: bar.color.alpha > 0 ? bar.color : Theme.accent;
+                    animate height { duration: Theme.slow; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+                }
+                Text {
+                    text: bar.title;
+                    height: 14px;
+                    color: Theme.faint;
+                    font-size: Theme.f11;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                }
+            }
+        }
+    }
+    if block.kind == "spark": Rectangle {
+        height: block.height > 0 ? block.height : 60px;
+        border-radius: 10px;
+        background: Theme.row;
+        Path {
+            x: 8px;
+            y: 6px;
+            width: parent.width - 16px;
+            height: parent.height - 12px;
+            commands: block.path;
+            viewbox-x: 0;
+            viewbox-y: 0;
+            viewbox-width: 100;
+            viewbox-height: 100;
+            stroke: block.color.alpha > 0 ? block.color : Theme.accent;
+            stroke-width: 2px;
+            fill: transparent;
+        }
+    }
+    if block.kind == "banner": Rectangle {
+        height: block.height > 0 ? block.height : 120px;
+        border-radius: 12px;
+        clip: true;
+        background: block.color.alpha > 0 ? block.color : Theme.row;
+        if block.image.width > 0: Image {
+            width: 100%;
+            height: 100%;
+            source: block.image;
+            image-fit: cover;
+        }
+        Rectangle {
+            background: @linear-gradient(90deg, #000000b3 0%, #00000000 75%);
+        }
+        HorizontalLayout {
+            padding: 14px;
+            spacing: 10px;
+            for cell in block.cells: CellView {
+                cell: cell;
+            }
+        }
+        TouchArea {
+            enabled: block.id != "";
+            mouse-cursor: block.id != "" ? pointer : default;
+            clicked => { Ui.act(block.id, ""); }
+        }
+    }
+    if block.kind == "logo": VerticalLayout {
+        alignment: center;
+        spacing: 8px;
+        padding-top: 4px;
+        HorizontalLayout {
+            alignment: center;
+            Rectangle {
+                width: 64px;
+                height: 64px;
+                border-radius: 18px;
+                background: block.on ? Theme.success : transparent;
+                animate background { duration: Theme.mid; }
+                Image {
+                    width: block.on ? 28px : (block.tone == "icon" ? 28px : 56px);
+                    height: self.width;
+                    source: block.image;
+                    colorize: block.tone == "icon" || block.on ? Theme.fg : transparent;
+                    image-fit: contain;
+                }
+            }
+        }
+        Text {
+            text: block.title;
+            color: Theme.fg;
+            font-size: Theme.f20;
+            font-weight: 650;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: block.sub;
+            color: Theme.muted;
+            font-size: Theme.f13;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+    if block.kind == "spinner": HorizontalLayout {
+        alignment: center;
+        padding: 12px;
+        Spinner {
+            icon: block.icon;
+            size: 22px;
+        }
+    }
+}
+
+export component BlockList {
+    in property <[Block]> blocks;
+    in property <bool> entered: true;
+    in property <length> pad: 20px;
+    in property <length> spacing: Theme.gap;
+    in property <length> direction: 8px;
+    in-out property <length> scroll <=> flick.content-y;
+    out property <length> content-height: flick.height;
+    flick := Flickable {
+        width: 100%;
+        height: 100%;
+        content-width: self.width;
+        content-height: col.preferred-height;
+        interactive: false;
+        col := VerticalLayout {
+            width: flick.width - 2 * root.pad;
+            x: root.pad;
+            padding-top: root.pad;
+            padding-bottom: root.pad + 24px;
+            spacing: root.spacing;
+            alignment: start;
+            for block[index] in root.blocks: Rectangle {
+                min-height: view.min-height;
+                preferred-height: view.preferred-height;
+                states [
+                    waiting when !root.entered: {
+                        opacity: 0;
+                        view.y: root.direction;
+                        out {
+                            animate opacity, view.y {
+                                duration: Theme.slow;
+                                delay: Theme.reduced ? 0ms : min(index, 8) * 30ms;
+                                easing: cubic-bezier(0.23, 1, 0.32, 1);
+                            }
+                        }
+                    }
+                ]
+                view := BlockView {
+                    width: parent.width;
+                    height: parent.height;
+                    block: block;
+                    index: index;
+                }
+            }
+        }
+    }
+    if flick.content-height > flick.height: Rectangle {
+        x: parent.width - 8px;
+        y: -flick.content-y / flick.content-height * flick.height + 2px;
+        width: thumb.has-hover ? 7px : 4px;
+        height: max(28px, flick.height * flick.height / flick.content-height - 4px);
+        border-radius: 3px;
+        background: Theme.input-edge;
+        animate width { duration: Theme.fast; }
+        thumb := TouchArea {
+            mouse-cursor: default;
+            moved => {
+                if (self.pressed) {
+                    flick.content-y = clamp(flick.content-y - (self.mouse-y - self.pressed-y) * flick.content-height / flick.height, flick.height - flick.content-height, 0);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,1446 @@
+import { Theme, Cell, Block, Item } from "theme.slint";
+import { Ui, Ico, Btn, IconBtn, Field, Bar } from "kit.slint";
+import { BlockList } from "blocks.slint";
+
+export { Theme, Ui }
+
+component WinButton {
+    in property <image> icon;
+    in property <string> label;
+    in property <bool> danger;
+    callback clicked();
+    width: 44px;
+    height: 34px;
+    accessible-role: button;
+    accessible-label: root.label;
+    accessible-action-default => { touch.clicked(); }
+    Rectangle {
+        background: touch.has-hover ? (root.danger ? #e81123 : Theme.control-hover) : transparent;
+        animate background { duration: Theme.fast; }
+        Ico {
+            source: root.icon;
+            size: 12px;
+            tint: touch.has-hover && root.danger ? white : Theme.fg;
+        }
+    }
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}
+
+component WinControls inherits HorizontalLayout {
+    in property <image> min-icon;
+    in property <image> max-icon;
+    in property <image> close-icon;
+    in property <string> min-label;
+    in property <string> max-label;
+    in property <string> close-label;
+    in property <bool> can-maximize: true;
+    callback minimize();
+    callback maximize();
+    callback close();
+    alignment: end;
+    WinButton {
+        icon: root.min-icon;
+        label: root.min-label;
+        clicked => { root.minimize(); }
+    }
+    if root.can-maximize: WinButton {
+        icon: root.max-icon;
+        label: root.max-label;
+        clicked => { root.maximize(); }
+    }
+    WinButton {
+        icon: root.close-icon;
+        label: root.close-label;
+        danger: true;
+        clicked => { root.close(); }
+    }
+}
+
+component Glow {
+    in property <color> ink;
+    in property <float> strength: 0.28;
+    Rectangle {
+        background: @radial-gradient(circle, ink.with-alpha(root.strength) 0%, ink.with-alpha(0) 70%);
+    }
+}
+
+component SideNav {
+    in property <[Item]> items;
+    in property <length> active-y;
+    in property <bool> has-active;
+    width: 196px;
+    Rectangle {
+        background: Theme.sidebar;
+        border-radius: 12px;
+    }
+    Rectangle {
+        x: 8px;
+        y: root.active-y;
+        visible: root.has-active;
+        width: parent.width - 16px;
+        height: 32px;
+        border-radius: 8px;
+        background: Theme.control-hover;
+        animate y { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+    }
+    Flickable {
+        content-height: col.preferred-height;
+        interactive: false;
+        col := VerticalLayout {
+            padding: 8px;
+            for item in root.items: Rectangle {
+                height: item.kind == "head" ? 28px : 32px;
+                accessible-role: button;
+                accessible-label: item.label;
+                if item.kind == "head": Text {
+                    x: 8px;
+                    y: 10px;
+                    text: item.label;
+                    color: Theme.faint;
+                    font-size: Theme.f11;
+                    font-weight: 600;
+                }
+                if item.kind != "head": HorizontalLayout {
+                    padding-left: 10px;
+                    padding-right: 8px;
+                    spacing: 8px;
+                    if item.icon.width > 0: VerticalLayout {
+                        alignment: center;
+                        Ico {
+                            source: item.icon;
+                            size: 15px;
+                            tint: item.on ? Theme.fg : Theme.muted;
+                        }
+                    }
+                    Text {
+                        text: item.label;
+                        color: item.on ? Theme.fg : Theme.muted;
+                        font-size: Theme.f13;
+                        font-weight: item.on ? 600 : 400;
+                        vertical-alignment: center;
+                        overflow: elide;
+                        horizontal-stretch: 1;
+                    }
+                }
+                if item.kind != "head": TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => { Ui.act(item.id, ""); }
+                }
+            }
+        }
+    }
+}
+
+component Sidebar {
+    in property <[Item]> items;
+    in property <[Item]> foot;
+    in property <bool> compact;
+    in property <image> brand;
+    in property <string> brand-name;
+    in property <bool> brand-mono;
+    in property <string> user-name;
+    in property <image> user-image;
+    in property <string> user-initial;
+    in property <image> collapse-icon;
+    in property <string> collapse-label;
+    in property <string> offline-label;
+    in property <image> offline-icon;
+    in property <length> active-y;
+    in property <bool> has-active;
+    in property <color> active-tint;
+    property <length> hover-y: -100px;
+    callback drag();
+    width: root.compact ? 64px : 224px;
+    animate width { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+    Rectangle {
+        background: Theme.sidebar;
+        Rectangle {
+            x: parent.width - 1px;
+            width: 1px;
+            background: Theme.sidebar-edge;
+        }
+    }
+    VerticalLayout {
+        padding-bottom: 8px;
+        Rectangle {
+            height: 52px;
+            TouchArea {
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down && event.button == PointerEventButton.left) {
+                        root.drag();
+                    }
+                }
+            }
+            HorizontalLayout {
+                padding-left: 21px;
+                spacing: 10px;
+                alignment: start;
+                VerticalLayout {
+                    alignment: center;
+                    Image {
+                        width: 22px;
+                        height: 22px;
+                        source: root.brand;
+                        colorize: root.brand-mono ? Theme.tint : transparent;
+                    }
+                }
+                if !root.compact: Text {
+                    text: root.brand-name;
+                    color: Theme.fg;
+                    font-size: Theme.f14;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                }
+            }
+        }
+        flick := Flickable {
+            vertical-stretch: 1;
+            content-height: nav-col.preferred-height;
+            interactive: false;
+            Rectangle {
+                x: 8px;
+                y: root.hover-y;
+                width: parent.width - 16px;
+                height: 34px;
+                border-radius: 8px;
+                background: Theme.row;
+                visible: root.hover-y >= 0;
+                animate y { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+            }
+            Rectangle {
+                x: 8px;
+                y: root.active-y;
+                width: parent.width - 16px;
+                height: 34px;
+                visible: root.has-active;
+                border-radius: 8px;
+                background: Theme.control-hover;
+                animate y { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+                Rectangle {
+                    x: 0;
+                    y: 8px;
+                    width: 3px;
+                    height: 18px;
+                    border-radius: 2px;
+                    background: root.active-tint;
+                    animate background { duration: Theme.mid; }
+                }
+            }
+            nav-col := VerticalLayout {
+                for item in root.items: Rectangle {
+                    height: item.kind == "head" ? (root.compact ? 12px : 30px) : 34px;
+                    accessible-role: button;
+                    accessible-label: item.badge > 0 ? item.label + " (" + item.badge + ")" : item.label;
+                    if item.kind == "head" && !root.compact: Text {
+                        x: 20px;
+                        y: 12px;
+                        text: item.label;
+                        color: Theme.faint;
+                        font-size: Theme.f11;
+                        font-weight: 600;
+                    }
+                    if item.kind != "head": HorizontalLayout {
+                        padding-left: 21px;
+                        padding-right: 16px;
+                        spacing: 10px;
+                        VerticalLayout {
+                            alignment: center;
+                            Image {
+                                width: item.kind == "pin" ? 20px : 18px;
+                                height: self.width;
+                                source: item.icon;
+                                colorize: item.kind == "pin" ? transparent : item.on ? Theme.fg : Theme.muted;
+                                image-fit: contain;
+                                animate colorize { duration: Theme.fast; }
+                            }
+                        }
+                        if !root.compact: Text {
+                            text: item.label;
+                            color: item.on ? Theme.fg : Theme.muted;
+                            font-size: Theme.f13;
+                            font-weight: item.on ? 600 : 400;
+                            vertical-alignment: center;
+                            overflow: elide;
+                            horizontal-stretch: 1;
+                        }
+                        if !root.compact && item.dot: VerticalLayout {
+                            alignment: center;
+                            Rectangle {
+                                width: 7px;
+                                height: 7px;
+                                border-radius: 4px;
+                                background: Theme.success;
+                            }
+                        }
+                        if item.badge > 0: VerticalLayout {
+                            alignment: center;
+                            Rectangle {
+                                width: max(18px, badge-text.preferred-width + 10px);
+                                height: 18px;
+                                border-radius: 9px;
+                                background: Theme.accent;
+                                badge-text := Text {
+                                    text: item.badge;
+                                    color: Theme.on-accent;
+                                    font-size: Theme.f11;
+                                    font-weight: 700;
+                                }
+                            }
+                        }
+                    }
+                    if item.kind != "head": item-touch := TouchArea {
+                        mouse-cursor: pointer;
+                        changed has-hover => {
+                            if (self.has-hover) {
+                                root.hover-y = parent.y;
+                            } else if (root.hover-y == parent.y) {
+                                root.hover-y = -100px;
+                            }
+                        }
+                        pointer-event(event) => {
+                            if (event.kind == PointerEventKind.down) {
+                                if (event.button == PointerEventButton.left) {
+                                    Ui.act(item.id, "");
+                                } else if (event.button == PointerEventButton.right && item.kind == "pin") {
+                                    Ui.menu("pin-menu:" + item.hint, self.absolute-position.x + self.mouse-x, self.absolute-position.y + self.mouse-y, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if root.offline-label != "": HorizontalLayout {
+            padding-left: 21px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            spacing: 10px;
+            alignment: start;
+            Ico {
+                source: root.offline-icon;
+                size: 16px;
+                tint: Theme.warning;
+            }
+            if !root.compact: Text {
+                text: root.offline-label;
+                color: Theme.warning;
+                font-size: Theme.f12;
+            }
+        }
+        for item in root.foot: Rectangle {
+            height: 34px;
+            accessible-role: button;
+            accessible-label: item.label;
+            Rectangle {
+                x: 8px;
+                width: parent.width - 16px;
+                border-radius: 8px;
+                background: item.on ? Theme.control-hover : foot-touch.has-hover ? Theme.row : transparent;
+                animate background { duration: Theme.fast; }
+            }
+            HorizontalLayout {
+                padding-left: 21px;
+                spacing: 10px;
+                VerticalLayout {
+                    alignment: center;
+                    Ico {
+                        source: item.icon;
+                        size: 18px;
+                        tint: item.on ? Theme.fg : Theme.muted;
+                    }
+                }
+                if !root.compact: Text {
+                    text: item.label;
+                    color: item.on ? Theme.fg : Theme.muted;
+                    font-size: Theme.f13;
+                    vertical-alignment: center;
+                }
+            }
+            foot-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => { Ui.act(item.id, ""); }
+            }
+        }
+        user := Rectangle {
+            height: 42px;
+            accessible-role: button;
+            accessible-label: root.user-name;
+            Rectangle {
+                x: 8px;
+                width: parent.width - 16px;
+                border-radius: 8px;
+                background: user-touch.has-hover ? Theme.row : transparent;
+                animate background { duration: Theme.fast; }
+            }
+            HorizontalLayout {
+                padding-left: 18px;
+                padding-right: 12px;
+                spacing: 10px;
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 26px;
+                        height: 26px;
+                        border-radius: 13px;
+                        clip: true;
+                        background: Theme.control-hover;
+                        Text {
+                            text: root.user-initial;
+                            color: Theme.fg;
+                            font-size: Theme.f12;
+                            font-weight: 600;
+                        }
+                        if root.user-image.width > 0: Image {
+                            width: 100%;
+                            height: 100%;
+                            source: root.user-image;
+                            image-fit: cover;
+                        }
+                    }
+                }
+                if !root.compact: Text {
+                    text: root.user-name;
+                    color: Theme.fg;
+                    font-size: Theme.f13;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+            }
+            user-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    Ui.menu("account", self.absolute-position.x + 8px, self.absolute-position.y - 4px, 0);
+                }
+            }
+        }
+        HorizontalLayout {
+            padding-left: 18px;
+            alignment: start;
+            IconBtn {
+                id: "shell:sidebar";
+                icon: root.collapse-icon;
+                tip: root.collapse-label + " (Ctrl+B)";
+            }
+        }
+    }
+}
+
+component Toast {
+    in property <Cell> toast;
+    property <bool> shown: false;
+    height: 40px;
+    width: row.preferred-width;
+    opacity: shown ? 1 : 0;
+    Timer {
+        interval: 1ms;
+        running: !root.shown;
+        triggered => { root.shown = true; }
+    }
+    animate opacity { duration: Theme.slow; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+    Rectangle {
+        y: root.shown ? 0 : 12px;
+        animate y { duration: Theme.slow; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        border-radius: 10px;
+        background: Theme.popup;
+        border-width: 1px;
+        border-color: Theme.line;
+        drop-shadow-blur: 18px;
+        drop-shadow-color: #00000066;
+        accessible-role: text;
+        accessible-label: toast.title;
+        row := HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            spacing: 8px;
+            if toast.icon.width > 0: VerticalLayout {
+                alignment: center;
+                Ico {
+                    source: toast.icon;
+                    size: 15px;
+                    tint: toast.tone == "bad" ? Theme.danger : Theme.success;
+                }
+            }
+            Text {
+                text: toast.title;
+                color: Theme.fg;
+                font-size: Theme.f13;
+                vertical-alignment: center;
+            }
+            if toast.value != "": VerticalLayout {
+                alignment: center;
+                Btn {
+                    id: toast.id;
+                    text: toast.value;
+                }
+            }
+        }
+    }
+}
+
+component Menu {
+    in property <[Item]> items;
+    in property <length> left;
+    in property <length> top;
+    in property <length> wide: 220px;
+    in property <int> index: -1;
+    in property <string> head;
+    in property <string> head-sub;
+    in property <bool> open;
+    property <length> line-h: 30px;
+    property <length> full: items.length * line-h + 12px + (head != "" ? 48px : 0);
+    visible: open;
+    TouchArea {
+        enabled: root.open;
+        pointer-event(event) => {
+            if (event.kind == PointerEventKind.down) {
+                Ui.act("menu:close", "");
+            }
+        }
+    }
+    box := Rectangle {
+        property <length> real-h: min(root.full, root.height - 16px);
+        x: min(root.left, root.width - root.wide - 8px);
+        y: max(8px, min(root.top, root.height - self.real-h - 8px));
+        width: root.wide;
+        height: self.real-h;
+        border-radius: 10px;
+        background: Theme.popup;
+        border-width: 1px;
+        border-color: Theme.line;
+        drop-shadow-blur: 22px;
+        drop-shadow-color: #00000080;
+        opacity: root.open ? 1 : 0;
+        animate opacity { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        TouchArea { }
+        VerticalLayout {
+            padding: 6px;
+            if root.head != "": VerticalLayout {
+                height: 48px;
+                padding: 6px;
+                Text {
+                    text: root.head;
+                    color: Theme.fg;
+                    font-size: Theme.f13;
+                    font-weight: 600;
+                    overflow: elide;
+                }
+                Text {
+                    text: root.head-sub;
+                    color: Theme.muted;
+                    font-size: Theme.f12;
+                    overflow: elide;
+                }
+            }
+            Flickable {
+                content-height: root.items.length * root.line-h;
+                interactive: false;
+                VerticalLayout {
+                    for item[i] in root.items: Rectangle {
+                        height: root.line-h;
+                        border-radius: 6px;
+                        background: i == root.index || touch.has-hover ? Theme.control-hover : transparent;
+                        accessible-role: list-item;
+                        accessible-label: item.label;
+                        HorizontalLayout {
+                            padding-left: 8px;
+                            padding-right: 8px;
+                            spacing: 8px;
+                            if item.icon.width > 0: VerticalLayout {
+                                alignment: center;
+                                Ico {
+                                    source: item.icon;
+                                    size: 14px;
+                                    tint: item.kind == "danger" ? Theme.danger : Theme.fg;
+                                }
+                            }
+                            Text {
+                                text: item.label;
+                                color: item.kind == "danger" ? Theme.danger : Theme.fg;
+                                font-size: Theme.f13;
+                                font-weight: item.on ? 600 : 400;
+                                vertical-alignment: center;
+                                overflow: elide;
+                                horizontal-stretch: 1;
+                            }
+                        }
+                        touch := TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { Ui.act("menu:pick", item.id); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+component Palette {
+    in property <[Item]> items;
+    in property <int> index;
+    in property <string> query;
+    in property <string> placeholder;
+    in property <image> search-icon;
+    in property <bool> open;
+    in property <string> none-label;
+    public function focus-now() { input.focus-now(); }
+    visible: open;
+    Rectangle {
+        background: Theme.scrim;
+        TouchArea {
+            enabled: root.open;
+            clicked => { Ui.act("palette:close", ""); }
+        }
+    }
+    Rectangle {
+        y: 70px;
+        x: (parent.width - self.width) / 2;
+        width: min(620px, parent.width - 40px);
+        height: min(440px, parent.height - 110px);
+        border-radius: 14px;
+        background: Theme.popup;
+        border-width: 1px;
+        border-color: Theme.line;
+        drop-shadow-blur: 36px;
+        drop-shadow-color: #00000099;
+        clip: true;
+        TouchArea { }
+        VerticalLayout {
+            HorizontalLayout {
+                padding: 10px;
+                input := Field {
+                    id: "palette:query";
+                    value: root.query;
+                    placeholder: root.placeholder;
+                    icon: root.search-icon;
+                    label: root.placeholder;
+                }
+            }
+            Rectangle {
+                height: 1px;
+                background: Theme.line;
+            }
+            flick := Flickable {
+                vertical-stretch: 1;
+                content-height: col.preferred-height;
+                interactive: false;
+                content-y: min(0px, max(flick.height - (root.index + 2) * 34px, -(col.preferred-height - flick.height)));
+                col := VerticalLayout {
+                    padding: 6px;
+                    for item[i] in root.items: Rectangle {
+                        height: item.kind == "head" ? 26px : 34px;
+                        border-radius: 7px;
+                        background: item.on ? Theme.control-hover : transparent;
+                        accessible-role: list-item;
+                        accessible-label: item.label;
+                        if item.kind == "head": Text {
+                            x: 10px;
+                            text: item.label;
+                            color: Theme.faint;
+                            font-size: Theme.f11;
+                            font-weight: 600;
+                        }
+                        if item.kind != "head": HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            spacing: 8px;
+                            Text {
+                                text: item.label;
+                                color: Theme.fg;
+                                font-size: Theme.f13;
+                                vertical-alignment: center;
+                                overflow: elide;
+                                horizontal-stretch: 1;
+                            }
+                            if item.hint != "": VerticalLayout {
+                                alignment: center;
+                                Rectangle {
+                                    width: hint.preferred-width + 12px;
+                                    height: 20px;
+                                    border-radius: 5px;
+                                    background: Theme.control;
+                                    hint := Text {
+                                        text: item.hint;
+                                        color: Theme.muted;
+                                        font-size: Theme.f11;
+                                    }
+                                }
+                            }
+                        }
+                        if item.kind != "head": TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { Ui.act("palette:pick", item.id); }
+                        }
+                    }
+                    if root.items.length == 0: Text {
+                        text: root.none-label;
+                        color: Theme.muted;
+                        font-size: Theme.f13;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+component Drawer {
+    in property <bool> open;
+    in property <string> title;
+    in property <[Block]> blocks;
+    in property <length> wide: 560px;
+    in property <image> close-icon;
+    in property <string> close-label;
+    in-out property <length> scroll <=> list.scroll;
+    visible: self.open || fade.opacity > 0.01;
+    fade := Rectangle {
+        background: Theme.scrim;
+        opacity: root.open ? 1 : 0;
+        animate opacity { duration: Theme.mid; }
+        TouchArea {
+            enabled: root.open;
+            clicked => { Ui.act("drawer:close", ""); }
+        }
+    }
+    panel := Rectangle {
+        property <length> real-w: min(root.wide, root.width * 0.92);
+        x: root.open ? root.width - self.real-w : root.width;
+        width: self.real-w;
+        animate x { duration: Theme.slow; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        background: Theme.row-solid;
+        border-width: 1px;
+        border-color: Theme.line;
+        accessible-role: groupbox;
+        accessible-label: root.title;
+        TouchArea { }
+        VerticalLayout {
+            HorizontalLayout {
+                padding: 14px;
+                spacing: 8px;
+                Text {
+                    text: root.title;
+                    color: Theme.fg;
+                    font-size: Theme.f16;
+                    font-weight: 650;
+                    vertical-alignment: center;
+                    overflow: elide;
+                    horizontal-stretch: 1;
+                }
+                IconBtn {
+                    id: "drawer:close";
+                    icon: root.close-icon;
+                    tip: root.close-label;
+                }
+            }
+            list := BlockList {
+                vertical-stretch: 1;
+                blocks: root.blocks;
+                pad: 14px;
+            }
+        }
+    }
+}
+
+component Capsule {
+    in property <Cell> track;
+    in property <image> prev-icon;
+    in property <image> next-icon;
+    in property <image> play-icon;
+    in property <bool> visible-capsule;
+    property <bool> wide: touch.has-hover;
+    visible: self.visible-capsule;
+    width: wide ? 300px : 220px;
+    height: wide ? 112px : 52px;
+    animate width, height { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+    Rectangle {
+        border-radius: 14px;
+        background: Theme.popup;
+        border-width: 1px;
+        border-color: Theme.line;
+        drop-shadow-blur: 18px;
+        drop-shadow-color: #00000066;
+        clip: true;
+        touch := TouchArea { }
+        Rectangle {
+            x: 8px;
+            y: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            clip: true;
+            background: Theme.control;
+            Image {
+                width: 100%;
+                height: 100%;
+                source: track.image;
+                image-fit: cover;
+            }
+        }
+        Text {
+            x: 52px;
+            y: 8px;
+            width: parent.width - 62px;
+            text: track.title;
+            color: Theme.fg;
+            font-size: Theme.f13;
+            font-weight: 600;
+            overflow: elide;
+        }
+        Text {
+            x: 52px;
+            y: 28px;
+            width: parent.width - 62px;
+            text: track.sub;
+            color: Theme.muted;
+            font-size: Theme.f12;
+            overflow: elide;
+        }
+        Rectangle {
+            x: 0;
+            y: parent.height - 2px;
+            height: 2px;
+            width: parent.width * clamp(track.progress, 0, 1);
+            background: Theme.accent;
+            visible: !root.wide;
+        }
+        if root.wide: HorizontalLayout {
+            y: 58px;
+            height: 22px;
+            padding-left: 10px;
+            padding-right: 10px;
+            spacing: 8px;
+            Text {
+                text: track.value;
+                color: Theme.muted;
+                font-size: Theme.f11;
+                vertical-alignment: center;
+            }
+            VerticalLayout {
+                alignment: center;
+                Bar {
+                    progress: track.progress;
+                }
+            }
+            Text {
+                text: track.extra;
+                color: Theme.muted;
+                font-size: Theme.f11;
+                vertical-alignment: center;
+            }
+        }
+        if root.wide: HorizontalLayout {
+            y: 82px;
+            height: 28px;
+            alignment: center;
+            spacing: 10px;
+            IconBtn {
+                id: "music:previous";
+                icon: root.prev-icon;
+            }
+            IconBtn {
+                id: "music:toggle";
+                icon: root.play-icon;
+            }
+            IconBtn {
+                id: "music:next";
+                icon: root.next-icon;
+            }
+        }
+    }
+}
+
+export component AppWindow inherits Window {
+    no-frame: true;
+    title: "Ethone";
+    default-font-family: "Segoe UI Variable Text";
+    background: root.see-through ? transparent : Theme.window;
+    min-width: root.mode == "shell" ? 900px : 440px;
+    min-height: root.mode == "shell" ? 600px : 600px;
+
+    in property <bool> see-through: false;
+    in property <string> mode: "boot";
+    in property <[Block]> login-blocks;
+    in property <bool> login-done;
+    in property <bool> login-can-maximize: false;
+    in property <int> shake;
+    in property <string> blocked-text;
+    in property <string> lang-label;
+
+    in property <[Item]> nav;
+    in property <[Item]> foot;
+    in property <bool> compact;
+    in property <image> brand;
+    in property <string> brand-name;
+    in property <bool> brand-mono;
+    in property <string> user-name;
+    in property <image> user-image;
+    in property <string> user-initial;
+    in property <image> collapse-icon;
+    in property <string> collapse-label;
+    in property <string> offline-label;
+    in property <image> offline-icon;
+    in property <length> active-y;
+    in property <bool> has-active;
+    in property <color> active-tint;
+
+    in property <image> back-icon;
+    in property <image> forward-icon;
+    in property <image> bell-icon;
+    in property <image> search-icon;
+    in property <string> search-label;
+    in property <string> back-label;
+    in property <string> forward-label;
+    in property <string> bell-label;
+    in property <bool> can-back;
+    in property <bool> can-forward;
+    in property <image> min-icon;
+    in property <image> max-icon;
+    in property <image> close-icon;
+    in property <string> min-label;
+    in property <string> max-label;
+    in property <string> close-label;
+
+    in property <[Block]> banner;
+    in property <[Item]> side;
+    in property <length> side-y;
+    in property <bool> side-active;
+    in property <[Block]> main-blocks;
+    in property <[Block]> aside-blocks;
+    in property <length> aside-width: 340px;
+    in property <bool> entered: true;
+    in property <length> direction: 10px;
+    in-out property <length> main-scroll;
+
+    in property <bool> embed-on;
+    in property <string> embed-title;
+    in property <string> embed-note;
+    in property <string> embed-back;
+    in property <string> embed-apart;
+    in property <bool> embed-ready;
+    in-out property <length> embed-x;
+    in-out property <length> embed-y;
+    in-out property <length> embed-w;
+    in-out property <length> embed-h;
+    callback embed-moved();
+
+    in property <bool> palette-open;
+    in property <[Item]> palette-items;
+    in property <int> palette-index;
+    in property <string> palette-query;
+    in property <string> palette-none;
+
+    in property <bool> menu-open;
+    in property <[Item]> menu-items;
+    in property <length> menu-x;
+    in property <length> menu-y;
+    in property <length> menu-w: 220px;
+    in property <int> menu-index: -1;
+    in property <string> menu-head;
+    in property <string> menu-sub;
+
+    in property <bool> drawer-open;
+    in property <string> drawer-title;
+    in property <[Block]> drawer-blocks;
+    in property <length> drawer-width: 560px;
+    in-out property <length> drawer-scroll <=> drawer.scroll;
+
+    in property <[Cell]> toasts;
+    in property <string> tip-text;
+    in property <length> tip-x;
+    in property <length> tip-y;
+
+    in property <bool> capsule-on;
+    in property <Cell> capsule;
+    in property <image> music-prev;
+    in property <image> music-next;
+    in property <image> music-play;
+
+    callback key(text: string, ctrl: bool, alt: bool, shift: bool) -> bool;
+    callback drag();
+    callback toggle-maximize();
+    callback minimize();
+    callback close-window();
+    callback resize-from(edge: string);
+
+    pure function key-name(text: string) -> string {
+        if (text == Key.Escape) { return "esc"; }
+        if (text == Key.F5) { return "f5"; }
+        if (text == Key.UpArrow) { return "up"; }
+        if (text == Key.DownArrow) { return "down"; }
+        if (text == Key.LeftArrow) { return "left"; }
+        if (text == Key.RightArrow) { return "right"; }
+        if (text == Key.Return) { return "enter"; }
+        return text;
+    }
+    public function focus-palette() { palette.focus-now(); }
+    public function focus-root() { scope.focus(); }
+
+    scope := FocusScope {
+        key-pressed(event) => {
+            if (root.key(root.key-name(event.text), event.modifiers.control, event.modifiers.alt, event.modifiers.shift)) {
+                return accept;
+            }
+            reject
+        }
+
+        if root.mode != "shell": Rectangle {
+            background: Theme.window;
+            Glow {
+                x: parent.width * 0.3;
+                y: -parent.height * 0.3;
+                width: parent.width;
+                height: parent.width;
+                ink: Theme.glow-a;
+                strength: 0.32;
+            }
+            Glow {
+                x: -parent.width * 0.4;
+                y: parent.height * 0.5;
+                width: parent.width;
+                height: parent.width;
+                ink: Theme.glow-b;
+                strength: 0.28;
+            }
+            Rectangle {
+                border-width: 1.5px;
+                border-radius: 8px;
+                property <angle> turn: Theme.reduced ? 45deg : mod(animation-tick(), 9s) / 9s * 360deg;
+                border-color: @linear-gradient(self.turn, root.login-done ? Theme.success : Theme.glow-a 0%, #ffffff00 45%, #ffffff00 55%, root.login-done ? Theme.success : Theme.glow-b 100%);
+            }
+            TouchArea {
+                y: 0;
+                height: 44px;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down && event.button == PointerEventButton.left) {
+                        root.drag();
+                    }
+                }
+            }
+            HorizontalLayout {
+                y: 0;
+                height: 34px;
+                alignment: end;
+                WinControls {
+                    can-maximize: false;
+                    min-icon: root.min-icon;
+                    close-icon: root.close-icon;
+                    min-label: root.min-label;
+                    close-label: root.close-label;
+                    minimize => { root.minimize(); }
+                    close => { root.close-window(); }
+                }
+            }
+            shaker := Rectangle {
+                y: 34px;
+                height: parent.height - 34px;
+                property <int> last-shake: root.shake;
+                x: 0;
+                animate x { duration: 70ms; easing: ease-out; }
+                Timer {
+                    interval: 70ms;
+                    running: shaker.steps > 0;
+                    triggered => {
+                        shaker.steps -= 1;
+                        shaker.x = shaker.steps == 4 ? -8px : shaker.steps == 3 ? 7px : shaker.steps == 2 ? -4px : shaker.steps == 1 ? 2px : 0;
+                    }
+                }
+                property <int> steps: 0;
+                changed last-shake => {
+                    if (!Theme.reduced) {
+                        self.steps = 5;
+                    }
+                }
+                BlockList {
+                    blocks: root.login-blocks;
+                    pad: 28px;
+                    spacing: 12px;
+                }
+            }
+        }
+
+        if root.mode == "shell": Rectangle {
+            background: root.see-through ? transparent : Theme.window;
+            Glow {
+                x: parent.width - 460px;
+                y: -320px;
+                width: 760px;
+                height: 760px;
+                ink: Theme.glow-a;
+                strength: 0.2;
+            }
+            Glow {
+                x: -240px;
+                y: parent.height - 420px;
+                width: 640px;
+                height: 640px;
+                ink: Theme.glow-b;
+                strength: 0.14;
+            }
+            HorizontalLayout {
+                Sidebar {
+                    items: root.nav;
+                    foot: root.foot;
+                    compact: root.compact;
+                    brand: root.brand;
+                    brand-name: root.brand-name;
+                    brand-mono: root.brand-mono;
+                    user-name: root.user-name;
+                    user-image: root.user-image;
+                    user-initial: root.user-initial;
+                    collapse-icon: root.collapse-icon;
+                    collapse-label: root.collapse-label;
+                    offline-label: root.offline-label;
+                    offline-icon: root.offline-icon;
+                    active-y: root.active-y;
+                    has-active: root.has-active;
+                    active-tint: root.active-tint;
+                    drag => { root.drag(); }
+                }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    titlebar := Rectangle {
+                        height: 44px;
+                        TouchArea {
+                            pointer-event(event) => {
+                                if (event.kind == PointerEventKind.down && event.button == PointerEventButton.left) {
+                                    root.drag();
+                                }
+                            }
+                            double-clicked => { root.toggle-maximize(); }
+                        }
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            spacing: 4px;
+                            VerticalLayout {
+                                alignment: center;
+                                IconBtn {
+                                    id: "shell:back";
+                                    icon: root.back-icon;
+                                    tip: root.back-label;
+                                    disabled: !root.can-back;
+                                }
+                            }
+                            VerticalLayout {
+                                alignment: center;
+                                IconBtn {
+                                    id: "shell:forward";
+                                    icon: root.forward-icon;
+                                    tip: root.forward-label;
+                                    disabled: !root.can-forward;
+                                }
+                            }
+                            Rectangle {
+                                width: 8px;
+                            }
+                            VerticalLayout {
+                                alignment: center;
+                                search := Rectangle {
+                                    width: 360px;
+                                    height: 28px;
+                                    border-radius: 8px;
+                                    background: search-touch.has-hover ? Theme.control-hover : Theme.control;
+                                    accessible-role: button;
+                                    accessible-label: root.search-label;
+                                    animate background { duration: Theme.fast; }
+                                    HorizontalLayout {
+                                        padding-left: 9px;
+                                        padding-right: 6px;
+                                        spacing: 7px;
+                                        VerticalLayout {
+                                            alignment: center;
+                                            Ico {
+                                                source: root.search-icon;
+                                                size: 14px;
+                                                tint: Theme.muted;
+                                            }
+                                        }
+                                        Text {
+                                            text: root.search-label;
+                                            color: Theme.muted;
+                                            font-size: Theme.f13;
+                                            vertical-alignment: center;
+                                            overflow: elide;
+                                            horizontal-stretch: 1;
+                                        }
+                                        VerticalLayout {
+                                            alignment: center;
+                                            Rectangle {
+                                                width: 48px;
+                                                height: 20px;
+                                                border-radius: 5px;
+                                                background: Theme.control;
+                                                Text {
+                                                    text: "Ctrl+K";
+                                                    color: Theme.muted;
+                                                    font-size: Theme.f11;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    search-touch := TouchArea {
+                                        mouse-cursor: pointer;
+                                        clicked => { Ui.act("shell:palette", ""); }
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                horizontal-stretch: 1;
+                            }
+                            VerticalLayout {
+                                alignment: center;
+                                IconBtn {
+                                    id: "shell:log";
+                                    icon: root.bell-icon;
+                                    tip: root.bell-label;
+                                }
+                            }
+                            VerticalLayout {
+                                alignment: start;
+                                WinControls {
+                                    min-icon: root.min-icon;
+                                    max-icon: root.max-icon;
+                                    close-icon: root.close-icon;
+                                    min-label: root.min-label;
+                                    max-label: root.max-label;
+                                    close-label: root.close-label;
+                                    minimize => { root.minimize(); }
+                                    maximize => { root.toggle-maximize(); }
+                                    close => { root.close-window(); }
+                                }
+                            }
+                        }
+                    }
+                    layer := Rectangle {
+                        vertical-stretch: 1;
+                        clip: true;
+                        VerticalLayout {
+                            if root.banner.length > 0: BlockList {
+                                height: 68px;
+                                blocks: root.banner;
+                                pad: 10px;
+                            }
+                            if root.embed-on: Rectangle {
+                                height: 44px;
+                                HorizontalLayout {
+                                    padding: 7px;
+                                    spacing: 8px;
+                                    Btn {
+                                        id: "embed:back";
+                                        text: root.embed-back;
+                                        icon: root.back-icon;
+                                    }
+                                    Text {
+                                        text: root.embed-title;
+                                        color: Theme.fg;
+                                        font-size: Theme.f13;
+                                        font-weight: 600;
+                                        vertical-alignment: center;
+                                        horizontal-alignment: center;
+                                        horizontal-stretch: 1;
+                                    }
+                                    Btn {
+                                        id: "embed:apart";
+                                        text: root.embed-apart;
+                                        disabled: !root.embed-ready;
+                                    }
+                                }
+                            }
+                            embed-box := Rectangle {
+                                vertical-stretch: root.embed-on ? 1 : 0;
+                                height: root.embed-on ? self.preferred-height : 0;
+                                visible: root.embed-on;
+                                function report() {
+                                    root.embed-x = self.absolute-position.x;
+                                    root.embed-y = self.absolute-position.y;
+                                    root.embed-w = self.width;
+                                    root.embed-h = self.height;
+                                    root.embed-moved();
+                                }
+                                changed width => { self.report(); }
+                                changed height => { self.report(); }
+                                Text {
+                                    text: root.embed-note;
+                                    color: Theme.muted;
+                                    font-size: Theme.f13;
+                                }
+                            }
+                            if !root.embed-on: HorizontalLayout {
+                                vertical-stretch: 1;
+                                padding-left: root.side.length > 0 ? 12px : 0;
+                                padding-bottom: root.side.length > 0 ? 12px : 0;
+                                spacing: 0;
+                                if root.side.length > 0: SideNav {
+                                    items: root.side;
+                                    active-y: root.side-y;
+                                    has-active: root.side-active;
+                                }
+                                BlockList {
+                                    horizontal-stretch: 1;
+                                    scroll <=> root.main-scroll;
+                                    blocks: root.main-blocks;
+                                    entered: root.entered;
+                                    direction: root.direction;
+                                }
+                                if root.aside-blocks.length > 0: BlockList {
+                                    width: root.aside-width;
+                                    blocks: root.aside-blocks;
+                                    entered: root.entered;
+                                    pad: 16px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            x: 0;
+            y: 0;
+            width: 5px;
+            height: root.height;
+            visible: root.mode == "shell";
+            TouchArea {
+                mouse-cursor: ew-resize;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down) {
+                        root.resize-from("w");
+                    }
+                }
+            }
+        }
+        Rectangle {
+            x: root.width - 5px;
+            y: 0;
+            width: 5px;
+            height: root.height;
+            visible: root.mode == "shell";
+            TouchArea {
+                mouse-cursor: ew-resize;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down) {
+                        root.resize-from("e");
+                    }
+                }
+            }
+        }
+        Rectangle {
+            x: 0;
+            y: 0;
+            width: root.width;
+            height: 4px;
+            visible: root.mode == "shell";
+            TouchArea {
+                mouse-cursor: ns-resize;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down) {
+                        root.resize-from("n");
+                    }
+                }
+            }
+        }
+        Rectangle {
+            x: 0;
+            y: root.height - 5px;
+            width: root.width;
+            height: 5px;
+            visible: root.mode == "shell";
+            TouchArea {
+                mouse-cursor: ns-resize;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down) {
+                        root.resize-from("s");
+                    }
+                }
+            }
+        }
+        Rectangle {
+            x: root.width - 12px;
+            y: root.height - 12px;
+            width: 12px;
+            height: 12px;
+            visible: root.mode == "shell";
+            TouchArea {
+                mouse-cursor: nwse-resize;
+                pointer-event(event) => {
+                    if (event.kind == PointerEventKind.down) {
+                        root.resize-from("se");
+                    }
+                }
+            }
+        }
+
+        Capsule {
+            x: root.width - self.width - 16px;
+            y: root.height - self.height - 16px;
+            visible-capsule: root.capsule-on && root.mode == "shell" && !root.embed-on;
+            track: root.capsule;
+            prev-icon: root.music-prev;
+            next-icon: root.music-next;
+            play-icon: root.music-play;
+        }
+
+        palette := Palette {
+            open: root.palette-open;
+            items: root.palette-items;
+            index: root.palette-index;
+            query: root.palette-query;
+            placeholder: root.search-label;
+            search-icon: root.search-icon;
+            none-label: root.palette-none;
+        }
+
+        drawer := Drawer {
+            open: root.drawer-open;
+            title: root.drawer-title;
+            blocks: root.drawer-blocks;
+            wide: root.drawer-width;
+            close-icon: root.close-icon;
+            close-label: root.close-label;
+        }
+
+        Menu {
+            open: root.menu-open;
+            items: root.menu-items;
+            left: root.menu-x;
+            top: root.menu-y;
+            wide: root.menu-w;
+            index: root.menu-index;
+            head: root.menu-head;
+            head-sub: root.menu-sub;
+        }
+
+        VerticalLayout {
+            x: 0;
+            y: root.height - self.preferred-height - 16px;
+            width: root.width;
+            height: self.preferred-height;
+            spacing: 6px;
+            alignment: end;
+            for toast in root.toasts: HorizontalLayout {
+                alignment: center;
+                Toast {
+                    toast: toast;
+                }
+            }
+        }
+
+        if root.tip-text != "": Rectangle {
+            x: min(root.tip-x, root.width - self.width - 8px);
+            y: min(root.tip-y, root.height - 30px);
+            width: min(280px, tip.preferred-width + 16px);
+            height: 24px;
+            border-radius: 6px;
+            background: Theme.popup;
+            border-width: 1px;
+            border-color: Theme.line;
+            tip := Text {
+                text: root.tip-text;
+                color: Theme.fg;
+                font-size: Theme.f12;
+                overflow: elide;
+            }
+        }
+    }
+}

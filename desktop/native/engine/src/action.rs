@@ -16,6 +16,8 @@ pub enum Action {
     Unavailable,
 }
 
+pub type SemVersion = Version;
+
 pub struct Facts<'a> {
     pub installed: Option<&'a str>,
     pub latest: Option<&'a str>,

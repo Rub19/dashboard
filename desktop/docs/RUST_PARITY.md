@@ -2,7 +2,6 @@
 
 Interface Slint 1.18, logique Rust, sans WebView dans le processus principal. L'app Tauri reste en place tant que tout n'est pas coché.
 
-
 ## Organisation
 
 | Dossier | Rôle |

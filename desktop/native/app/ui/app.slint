@@ -1272,10 +1272,13 @@ export component AppWindow inherits Window {
                                 padding-left: root.side.length > 0 ? 12px : 0;
                                 padding-bottom: root.side.length > 0 ? 12px : 0;
                                 spacing: 0;
-                                if root.side.length > 0: SideNav {
-                                    items: root.side;
-                                    active-y: root.side-y;
-                                    has-active: root.side-active;
+                                if root.side.length > 0: VerticalLayout {
+                                    alignment: start;
+                                    SideNav {
+                                        items: root.side;
+                                        active-y: root.side-y;
+                                        has-active: root.side-active;
+                                    }
                                 }
                                 BlockList {
                                     horizontal-stretch: 1;

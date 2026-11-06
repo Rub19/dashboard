@@ -41,7 +41,7 @@ fn main() {
             use slint::winit_030::winit::platform::windows::WindowAttributesExtWindows;
             let attrs = attrs.with_undecorated_shadow(true);
             if win::offscreen() {
-                attrs.with_position(slint::winit_030::winit::dpi::PhysicalPosition::new(-32000, -32000)).with_active(false)
+                attrs.with_position(slint::winit_030::winit::dpi::PhysicalPosition::new(-10000, -10000)).with_active(false)
             } else {
                 attrs
             }

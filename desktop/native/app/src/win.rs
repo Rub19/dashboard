@@ -177,7 +177,7 @@ pub fn set_login_mode(ui: &AppWindow) {
 
 fn center(ui: &AppWindow) {
     if offscreen() {
-        ui.window().with_winit_window(|window| window.set_outer_position(PhysicalPosition::new(-32000, -32000)));
+        ui.window().with_winit_window(|window| window.set_outer_position(PhysicalPosition::new(-10000, -10000)));
         return;
     }
     ui.window().with_winit_window(|window| {
@@ -240,7 +240,7 @@ pub fn save_later(ui: &AppWindow) {
 }
 
 pub fn save_now(ui: &AppWindow) {
-    if ui.get_mode() != "shell" {
+    if ui.get_mode() != "shell" || offscreen() {
         return;
     }
     let previous = prefs::read_json::<Saved>("ethone-window").unwrap_or(DEFAULT_APP);

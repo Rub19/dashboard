@@ -32,14 +32,18 @@ Le processus principal ne charge jamais WebView2 : la fenêtre web est un second
 
 `[x]` veut dire vu dans le vrai exe, connecté au compte de Rub19, par une capture de la fenêtre de l'app seule (`window.take_snapshot()`, harnais `--features drive`). Les captures du 6 novembre 2026 ont été prises hors écran (`ETHONE_DRIVE_OFFSCREEN=1`), sans clic sur un envoi, une suppression ou une installation. `[~]` veut dire écrit, compilé et couvert par les tests automatiques, mais pas vu en réel. `[ ]` veut dire pas encore porté.
 
-Tests : 85 pour le moteur, 121 pour l'app.
+Tests : 85 pour le moteur, 123 pour l'app.
 
 ## Socle
 
 - [x] Moteur séparé de Tauri, session partagée avec l'app Tauri (même coffre en build release)
 - [x] Sauvegarde des identités avant le premier lancement natif
 - [~] Fenêtre sans cadre, déplacement, agrandissement, redimensionnement, position mémorisée sur plusieurs écrans
-- [~] Instance unique, liens `ethone://`
+- [x] Instance unique : un second lancement transmet son lien `ethone://` à la fenêtre ouverte et se ferme en 0,1 s
+- [~] Traitement des liens `ethone://` reçus (connexion Google, GitHub, Discord)
+- [x] Logo Ethone sur l'exe (ressource Windows, avec nom, éditeur et version), la fenêtre, la barre des tâches et les fenêtres web
+- [~] Logo de la zone de notification (même image que Tauri, pas vue)
+- [~] Raccourci global Ctrl+Alt+E : ouvre Ethone et la recherche depuis n'importe où (nouveau)
 - [~] Zone de notification, réduction à la fermeture, lancement avec Windows en réduit
 - [~] Notifications Windows
 - [~] Mise à jour d'Ethone (flux signé)
@@ -58,8 +62,9 @@ Tests : 85 pour le moteur, 121 pour l'app.
 - [x] Barre de titre : précédent, suivant, recherche, cloche, boutons de fenêtre
 - [x] Menus de section des pages, lecteur Spotify flottant
 - [~] Transitions de page, retour de la position de défilement
-- [~] Palette Ctrl+K (le raccourci envoyé par le harnais ne l'a pas ouverte : à vérifier à la main)
-- [~] Cloche, toasts, annulation, menu contextuel, infobulles, panneau latéral
+- [x] Palette Ctrl+K : ouverture au clavier, recherche, résultats, au-dessus de tout
+- [x] Cloche, panneau latéral, listes déroulantes, menu du compte
+- [~] Toasts, annulation, menu contextuel, infobulles
 - [~] Raccourcis clavier et boutons de souris
 - [x] Réglages d'apparence : 9 thèmes, 8 accents, langue, densité
 - [~] Changement de thème en direct, Mica de Windows, réduction du mouvement, sons d'interface
@@ -71,14 +76,16 @@ Tests : 85 pour le moteur, 121 pour l'app.
 - [~] Installer, mettre à jour, ouvrir dans Ethone, HDV Tracker en arrière-plan
 - [x] Productivité : tâches
 - [~] Calendrier, notes, mémo, capture rapide, habitudes, concentration et ambiance, factures
-- [~] Fichiers (capture prise, pas relue)
+- [x] Fichiers : liste, recherche, état vide
 - [x] Mail : boîte de réception, dossiers, menu de gestion
 - [~] Lecture d'un mail (fenêtre web séparée), envoi, report, étiquettes, modèles, signatures
-- [~] Équipe (capture prise, pas relue)
+- [x] Équipe : membres, invitation, espaces
 - [x] E:VAL : profil, rang actuel et meilleur rang, résumé, dernière session, filtres, matchs
-- [~] E:VAL : En direct, Jeu (boutique, skins, missions), Hub, connexion Riot (fenêtre web séparée)
+- [x] E:VAL : Jeu (portefeuille, packs, boutique du jour, accessoires, passe, missions, équipement) et Hub (amis, groupe), avec les jetons Riot obtenus par la fenêtre web cachée
+- [~] E:VAL : En direct, aperçu des skins et vidéos, connexion Riot visible
 - [x] E:LOL : profil, rangs Solo et Flex, résumé, historique des LP, champions, matchs
-- [~] E:LOL : En direct, TFT, Rotation, Amis, panneau d'un match
+- [x] E:LOL : panneau d'un match (tableau des deux équipes)
+- [~] E:LOL : En direct, TFT, Rotation, Amis
 - [x] Discord : serveurs, vue d'ensemble, modules du serveur
 - [~] Discord : pages de modules, modération, membres, tickets, concours, suggestions, journal, musique, formulaires de création
 - [x] Brain : discussion (état vide), menu Flows, Macros, Règles, Interactions, Personas
@@ -108,6 +115,18 @@ Tests : 85 pour le moteur, 121 pour l'app.
 | `riot-session.ts` | `logic/mod.rs` |
 | `automations.ts` | `pages/brain_extras.rs` |
 
+## Installeur
+
+`native/installer/ethone-native.nsi` construit un installeur par utilisateur, sans droits administrateur. Il installe dans `%LOCALAPPDATA%\Programs\Ethone Native`, à côté de l'app Tauri sans la toucher, ajoute un raccourci au menu Démarrer et une entrée de désinstallation. La désinstallation garde la session et les données.
+
+Construire (depuis `desktop/native`) :
+
+```
+cargo build -p ethone-native --release
+cd installer
+makensis -DVERSION=0.1.1 ethone-native.nsi
+```
+
 ## Mesures
 
 | | Tauri | Natif |
@@ -123,5 +142,6 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - Les fenêtres web annexes : connexion Riot, vidéos des skins, lecture des mails.
 - Connexion par navigateur et liens `ethone://`, zone de notification, notifications Windows, instance unique.
 - Les animations et la réduction du mouvement, le changement de thème en direct, le thème Windows (Mica), les sons.
-- La palette ouverte au clavier, les raccourcis, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
-- L'installeur NSIS de l'app native n'existe pas encore.
+- Les raccourcis globaux, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
+- L'installeur natif est construit mais jamais lancé (installer modifie le PC).
+- La palette et les menus ouverts au clavier dans la vraie fenêtre affichée, hors harnais.

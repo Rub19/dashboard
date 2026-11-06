@@ -166,6 +166,7 @@ pub fn start(ui: &AppWindow, hidden: bool) {
     services::init(runtime.handle().clone());
     std::mem::forget(runtime);
     let _ = ethone_engine::safety::backup_identities();
+    crate::migrate::run();
     let app = App::new(ui);
     APP.with(|cell| *cell.borrow_mut() = Some(app));
     crate::theme::apply(ui);

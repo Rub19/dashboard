@@ -13,6 +13,7 @@ mod drive;
 mod i18n;
 mod icons_table;
 mod logic;
+mod migrate;
 mod net;
 mod pages;
 mod prefs;

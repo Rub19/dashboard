@@ -25,6 +25,7 @@ tray-icon = { version = "0.21", default-features = false }
 notify-rust = "4"
 wry = { version = "0.53", default-features = false, features = ["os-webview"] }
 rodio = { version = "0.20", default-features = false }
+rusty-leveldb = "4"
 keyring = { version = "3", features = ["windows-native"] }
 
 [build-dependencies]

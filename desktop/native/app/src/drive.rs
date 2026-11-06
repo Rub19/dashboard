@@ -24,6 +24,10 @@ fn snapshot(ui: &AppWindow, path: &str) {
 fn dump(path: &str) {
     let text = with_app(|app| {
         let mut text = crate::pages::dump_blocks(app);
+        text.push_str(&format!("\nIMAGES loaded={} pending={} failed={}\n", app.images.len(), app.image_pending.len(), app.image_failed.len()));
+        for url in app.image_failed.iter().take(12) {
+            text.push_str(&format!("failed {url}\n"));
+        }
         app.with_ui(|ui| text.push_str(&format!("\nUI mode={} size={:?} scale={}\n", ui.get_mode(), ui.window().size(), ui.window().scale_factor())));
         text
     }).unwrap_or_default();

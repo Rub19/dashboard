@@ -167,17 +167,17 @@ fn tiles(app: &mut App, out: &mut Vec<B>, shown: &dyn Fn(&str) -> bool) {
         let holder = city.clone();
         let weather = app.load("home:weather", move || services::api_data(&format!("api/weather?city={}", crate::pages::encode(&holder))));
         if let Some(temperature) = weather.data.as_ref().and_then(|data| data["temperature"].as_f64()) {
-            cells.push(tile("home:weather", &city, &format!("{} °C", temperature.round()), ""));
+            cells.push(tile("home:weather", &city, &format!("{} °C", temperature.round() as i64), ""));
         }
     }
     if shown("focus") {
         let history: Vec<Value> = prefs::read_json("ethone-focus-history").unwrap_or_default();
         let today = time::day_key(&Local::now());
         let seconds: f64 = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).sum();
-        cells.push(tile("go:productivity", &tr("Concentration aujourd'hui", "Focus today"), &format!("{} min", (seconds / 60.0).round()), ""));
+        cells.push(tile("go:productivity", &tr("Concentration aujourd'hui", "Focus today"), &format!("{} min", (seconds / 60.0).round() as i64), ""));
     }
-    if !cells.is_empty() {
-        out.push(row(cells));
+    for chunk in cells.chunks(3) {
+        out.push(row(chunk.to_vec()));
     }
 }
 

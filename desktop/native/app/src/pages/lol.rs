@@ -213,13 +213,9 @@ fn match_block(app: &mut App, item: &Value, table: Option<&Value>) -> B {
     cells.push(title);
     let runes = table.map(|table| &table["runes"]);
     let spells = table.map(|table| &table["spells"]);
-    cells.extend(icons(app, &[line.me.as_ref().and_then(|me| me["rune"]["id"].as_i64())], runes, 22.0));
+    cells.extend(icons(app, &[line.me.as_ref().and_then(|me| me["rune"]["id"].as_i64())], runes, 20.0));
     let spell_ids: Vec<Option<i64>> = line.me.as_ref().and_then(|me| me["spells"].as_array()).map(|list| list.iter().map(|spell| spell["id"].as_i64()).collect()).unwrap_or_default();
-    cells.extend(icons(app, &spell_ids, spells, 22.0));
-    for item_data in line.items.iter().take(7) {
-        let picture = app.img(item_data["image"].as_str().unwrap_or_default());
-        cells.push(img(picture, 24.0));
-    }
+    cells.extend(icons(app, &spell_ids, spells, 20.0));
     cells.push(C { kind: "stack", title: format!("{} / {} / {}", line.kills, line.deaths, line.assists), sub: format!("{} CS", line.cs), extra: "right".into(), ..Default::default() });
     let result = if line.remake { tr("Remake", "Remake") } else if line.won { tr("Victoire", "Win") } else { tr("Défaite", "Loss") };
     let score = if line.minutes > 0 { format!("{} — {} · {} min", line.score.0, line.score.1, line.minutes) } else { format!("{} — {}", line.score.0, line.score.1) };
@@ -309,7 +305,7 @@ fn profile(app: &mut App, id: &str) -> (Vec<B>, Vec<B>) {
         Some(data) => {
             let profile = &data["profile"];
             let handle = profile["handle"].as_str().unwrap_or(id).to_string();
-            let mut header = vec![stack(&handle, &t("evalProfile"))];
+            let mut header = vec![stack(&handle, &tr("Profil League of Legends", "League of Legends profile"))];
             if mine.as_deref() == Some(id) {
                 crate::pages::eval::prepare_accounts_menu(app);
                 let users = app.icon("users");
@@ -371,7 +367,7 @@ fn profile(app: &mut App, id: &str) -> (Vec<B>, Vec<B>) {
         }
     }
     let search_text = app.state.lol.search.clone();
-    actions.push(input("lol:search", &search_text, &t("evalRiotPlaceholder")).tip(&t("evalOtherPlayer")));
+    actions.push(input("lol:search", &search_text, &t("evalRiotPlaceholder")).tip(&t("evalOtherPlayer")).size(220.0));
     actions.push(ibtn("lol:search-submit", search, &t("evalSearch")));
     actions.push(btn("lol:refresh", &t("refresh")).icon(refresh).off(app.state.lol.busy).tip("F5"));
     let mut main = vec![head(&t("evalMatches"), "", actions)];

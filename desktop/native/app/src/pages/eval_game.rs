@@ -433,7 +433,7 @@ fn bundle_drawer(app: &mut App) -> Vec<B> {
         }
     }
     if let Some(discount) = bundle["TotalDiscountPercent"].as_f64().filter(|value| *value > 0.0) {
-        summary.push(chip("", &format!("−{} %", (discount * 100.0).round())).color(hex("#30d158")));
+        summary.push(chip("", &format!("−{} %", (discount * 100.0).round() as i64)).color(hex("#30d158")));
     }
     summary.push(gap());
     if let Some(left) = bundle["DurationRemainingInSeconds"].as_i64() {

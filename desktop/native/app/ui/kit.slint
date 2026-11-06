@@ -498,6 +498,7 @@ export component CellView inherits HorizontalLayout {
         disabled: cell.disabled;
         autofocus: cell.busy;
         label: cell.tip;
+        min-width: cell.size;
     }
     if cell.kind == "area": Field {
         id: cell.id;

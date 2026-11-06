@@ -41,9 +41,8 @@ pub fn mail_time(date: &DateTime<Local>, now: &DateTime<Local>, fr: bool) -> Str
     if date.date_naive() == now.date_naive() {
         return crate::logic::time::clock(date);
     }
-    let month = crate::logic::time::month_name(date.month0() as usize, fr);
-    let short: String = month.chars().take(if fr { 4 } else { 3 }).collect();
-    let short = if fr && month.chars().count() > 4 { format!("{short}.") } else { short };
+    const SHORT_FR: [&str; 12] = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+    let short: String = if fr { SHORT_FR[date.month0() as usize % 12].to_string() } else { crate::logic::time::month_name(date.month0() as usize, false).chars().take(3).collect() };
     if date.year() == now.year() {
         if fr { format!("{} {short}", date.day()) } else { format!("{short} {}", date.day()) }
     } else if fr {
@@ -143,6 +142,7 @@ mod tests {
         let now = Local.with_ymd_and_hms(2026, 11, 5, 18, 0, 0).unwrap();
         assert_eq!(mail_time(&Local.with_ymd_and_hms(2026, 11, 5, 9, 7, 0).unwrap(), &now, true), "09:07");
         assert_eq!(mail_time(&Local.with_ymd_and_hms(2026, 3, 2, 9, 0, 0).unwrap(), &now, true), "2 mars");
+        assert_eq!(mail_time(&Local.with_ymd_and_hms(2026, 10, 31, 9, 0, 0).unwrap(), &now, true), "31 oct.");
         assert_eq!(mail_time(&Local.with_ymd_and_hms(2025, 11, 2, 9, 0, 0).unwrap(), &now, false), "Nov 2, 2025");
     }
 

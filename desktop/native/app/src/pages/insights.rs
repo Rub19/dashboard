@@ -204,7 +204,7 @@ fn mail_stats(app: &mut App) -> Vec<B> {
 }
 
 fn degrees(value: Option<f64>) -> String {
-    value.map_or("–".into(), |value| format!("{}°", value.round()))
+    value.map_or("–".into(), |value| format!("{}°", value.round() as i64))
 }
 
 fn weather(app: &mut App) -> Vec<B> {
@@ -290,25 +290,25 @@ fn weather(app: &mut App) -> Vec<B> {
         tiles.push(cell);
     };
     if let Some(wind) = number("windSpeedKmh") {
-        let hint = [number("windDirection").map(|value| compass(value).to_string()), number("windGustsKmh").map(|value| tr(&format!("rafales {} km/h", value.round()), &format!("gusts {} km/h", value.round())))].into_iter().flatten().collect::<Vec<_>>().join(", ");
-        tile_of("wind", tr("Vent", "Wind"), format!("{} km/h", wind.round()), hint);
+        let hint = [number("windDirection").map(|value| compass(value).to_string()), number("windGustsKmh").map(|value| tr(&format!("rafales {} km/h", value.round() as i64), &format!("gusts {} km/h", value.round() as i64)))].into_iter().flatten().collect::<Vec<_>>().join(", ");
+        tile_of("wind", tr("Vent", "Wind"), format!("{} km/h", wind.round() as i64), hint);
     }
     if let Some(value) = number("humidityPercent") {
-        tile_of("droplets", tr("Humidité", "Humidity"), format!("{} %", value.round()), number("dewPoint").map_or(String::new(), |dew| tr(&format!("Point de rosée {}", degrees(Some(dew))), &format!("Dew point {}", degrees(Some(dew))))));
+        tile_of("droplets", tr("Humidité", "Humidity"), format!("{} %", value.round() as i64), number("dewPoint").map_or(String::new(), |dew| tr(&format!("Point de rosée {}", degrees(Some(dew))), &format!("Dew point {}", degrees(Some(dew))))));
     }
     if let Some(value) = number("uvIndex") {
         let level = match uv_level(value) { "low" => tr("Faible", "Low"), "moderate" => tr("Modéré", "Moderate"), "high" => tr("Élevé", "High"), _ => tr("Très élevé", "Very high") };
-        tile_of("sun", tr("Indice UV", "UV index"), format!("{}", value.round()), level);
+        tile_of("sun", tr("Indice UV", "UV index"), format!("{}", value.round() as i64), level);
     }
     if let Some(value) = number("airQuality") {
         let level = match air_level(value) { "good" => tr("Bon", "Good"), "fair" => tr("Correct", "Fair"), "moderate" => tr("Moyen", "Moderate"), "poor" => tr("Médiocre", "Poor"), _ => tr("Mauvais", "Bad") };
-        tile_of("leaf", tr("Qualité de l'air", "Air quality"), format!("{}", value.round()), level);
+        tile_of("leaf", tr("Qualité de l'air", "Air quality"), format!("{}", value.round() as i64), level);
     }
     if let Some(value) = number("pressure") {
-        tile_of("gauge", tr("Pression", "Pressure"), format!("{} hPa", value.round()), String::new());
+        tile_of("gauge", tr("Pression", "Pressure"), format!("{} hPa", value.round() as i64), String::new());
     }
     if let Some(value) = number("visibility") {
-        tile_of("eye", tr("Visibilité", "Visibility"), format!("{} km", (value / 1000.0).round()), String::new());
+        tile_of("eye", tr("Visibilité", "Visibility"), format!("{} km", (value / 1000.0).round() as i64), String::new());
     }
     if let Some(value) = number("precipitationProbability") {
         tile_of("cloud-rain", tr("Précipitations", "Precipitation"), format!("{value} %"), number("precipitation").map_or(String::new(), |mm| format!("{mm} mm")));

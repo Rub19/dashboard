@@ -397,7 +397,7 @@ fn panel(app: &mut App) -> Vec<B> {
         detail.push_str(&format!(", {}", time::date_time(&date, fr)));
     }
     if let Some(length) = item["lengthSec"].as_f64().filter(|length| *length > 0.0) {
-        detail.push_str(&format!(", {} min", (length / 60.0).round()));
+        detail.push_str(&format!(", {} min", (length / 60.0).round() as i64));
     }
     let banner_url = images.get(&map.to_lowercase()).cloned().or_else(|| item["mapId"].as_str().map(map_image)).unwrap_or_default();
     let mut out = vec![banner(app.img(&banner_url), 110.0, vec![stack(map, &detail)])];

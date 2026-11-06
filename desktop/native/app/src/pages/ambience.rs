@@ -87,7 +87,7 @@ pub fn view(app: &mut App) -> Vec<B> {
             ibtn(&format!("ambience:down:{id}"), minus.clone(), &tr("Moins fort", "Quieter")),
             C { weight: 0.5, ..bar(value) },
             ibtn(&format!("ambience:up:{id}"), plus.clone(), &tr("Plus fort", "Louder")),
-            muted(&format!("{} %", (value * 100.0).round())),
+            muted(&format!("{} %", (value * 100.0).round() as i64)),
         ])
     }).collect();
     out.extend(group(rows));

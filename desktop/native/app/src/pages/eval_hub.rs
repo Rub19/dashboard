@@ -332,7 +332,7 @@ fn hub_drawer(app: &mut App) -> Vec<B> {
                 let ranges = stats["damageRanges"].as_array().cloned().unwrap_or_default();
                 if !ranges.is_empty() {
                     out.push(row(vec![muted(&tr("Distance", "Range")).grow(), muted(&tr("Tête", "Head")), muted(&tr("Corps", "Body")), muted(&tr("Jambes", "Legs"))]));
-                    out.extend(group(ranges.iter().map(|range| row(vec![text(&format!("{}–{} m", range["rangeStartMeters"], range["rangeEndMeters"])).grow(), text(&format!("{}", range["headDamage"].as_f64().unwrap_or(0.0).round())), text(&format!("{}", range["bodyDamage"].as_f64().unwrap_or(0.0).round())), text(&format!("{}", range["legDamage"].as_f64().unwrap_or(0.0).round()))])).collect()));
+                    out.extend(group(ranges.iter().map(|range| row(vec![text(&format!("{}–{} m", range["rangeStartMeters"], range["rangeEndMeters"])).grow(), text(&format!("{}", range["headDamage"].as_f64().unwrap_or(0.0).round() as i64)), text(&format!("{}", range["bodyDamage"].as_f64().unwrap_or(0.0).round() as i64)), text(&format!("{}", range["legDamage"].as_f64().unwrap_or(0.0).round() as i64))])).collect()));
                 }
             }
             out.push(h2(&tr("Apparences", "Skins")));

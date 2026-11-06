@@ -2,7 +2,6 @@
 
 Interface Slint 1.18, logique Rust, sans WebView dans le processus principal. L'app Tauri reste en place tant que tout n'est pas coché.
 
-Légende : `[x]` porté et vu dans le vrai exe, `[~]` porté, compilé et testé par les tests automatiques mais pas vu en réel, `[ ]` pas encore porté.
 
 ## Organisation
 
@@ -30,98 +29,100 @@ Le jeton de rafraîchissement change à chaque usage : si l'app Tauri tourne en 
 
 Le processus principal ne charge jamais WebView2 : la fenêtre web est un second lancement de l'exe, fermé dès qu'il a fini.
 
+## Comment c'est vérifié
+
+`[x]` veut dire vu dans le vrai exe, connecté au compte de Rub19, par une capture de la fenêtre de l'app seule (`window.take_snapshot()`, harnais `--features drive`). Les captures du 6 novembre 2026 ont été prises hors écran (`ETHONE_DRIVE_OFFSCREEN=1`), sans clic sur un envoi, une suppression ou une installation. `[~]` veut dire écrit, compilé et couvert par les tests automatiques, mais pas vu en réel. `[ ]` veut dire pas encore porté.
+
+Tests : 85 pour le moteur, 121 pour l'app.
+
 ## Socle
 
-- [~] Moteur séparé de Tauri, 85 tests
-- [ ] Fenêtre sans cadre, déplacement, agrandissement, redimensionnement, position mémorisée sur plusieurs écrans
-- [ ] Instance unique, liens `ethone://`
-- [ ] Zone de notification, réduction à la fermeture, lancement avec Windows en réduit
-- [ ] Notifications Windows
-- [ ] Mise à jour d'Ethone (flux signé)
-- [ ] Attribution Slint dans À propos
+- [x] Moteur séparé de Tauri, session partagée avec l'app Tauri (même coffre en build release)
+- [x] Sauvegarde des identités avant le premier lancement natif
+- [~] Fenêtre sans cadre, déplacement, agrandissement, redimensionnement, position mémorisée sur plusieurs écrans
+- [~] Instance unique, liens `ethone://`
+- [~] Zone de notification, réduction à la fermeture, lancement avec Windows en réduit
+- [~] Notifications Windows
+- [~] Mise à jour d'Ethone (flux signé)
+- [~] Attribution Slint dans À propos
 
 ## Connexion
 
-- [ ] Mot de passe, se souvenir de moi
-- [ ] Code par e-mail
-- [ ] Google, GitHub, Discord par le navigateur
-- [ ] Double authentification, code de secours
-- [ ] Liens inscription, récupération, mentions légales
-- [ ] Session restaurée, mode hors ligne, déconnexion
+- [x] Écran de connexion : mot de passe, code par e-mail, Google, GitHub, Discord, liens
+- [x] Session restaurée au lancement
+- [~] Connexion par mot de passe, code par e-mail, navigateur, double authentification, code de secours
+- [~] Mode hors ligne, déconnexion
 
 ## Interface commune
 
-- [ ] Barre latérale : groupes, épingles, badges, réduction Ctrl+B, pastille active animée
-- [ ] Barre de titre : précédent, suivant, recherche, cloche, boutons de fenêtre
-- [ ] Transitions de page, retour de la position de défilement, pages gardées en mémoire
-- [ ] Palette Ctrl+K : pages, sections, applications, récents, surlignage
-- [ ] Cloche : journal des notifications
-- [ ] Toasts, annulation, menu contextuel, infobulles
-- [ ] Listes déroulantes, onglets, navigation de section, panneau latéral
-- [ ] Raccourcis : Ctrl+1 à 9, Ctrl+virgule, Ctrl+B, Ctrl+F, F5, Alt+flèches, boutons de souris, Échap
-- [ ] 9 thèmes, 8 accents, clair et sombre, Windows
-- [ ] Densité, taille du texte, réduction du mouvement, transparence, contraste
-- [ ] Français et anglais
-- [ ] Sons d'interface
+- [x] Barre latérale : groupes, page active, profil, bouton de réduction
+- [x] Barre de titre : précédent, suivant, recherche, cloche, boutons de fenêtre
+- [x] Menus de section des pages, lecteur Spotify flottant
+- [~] Transitions de page, retour de la position de défilement
+- [~] Palette Ctrl+K (le raccourci envoyé par le harnais ne l'a pas ouverte : à vérifier à la main)
+- [~] Cloche, toasts, annulation, menu contextuel, infobulles, panneau latéral
+- [~] Raccourcis clavier et boutons de souris
+- [x] Réglages d'apparence : 9 thèmes, 8 accents, langue, densité
+- [~] Changement de thème en direct, Mica de Windows, réduction du mouvement, sons d'interface
 
-## Accueil
+## Pages
 
-- [ ] Salutation, date, état de connexion, choix des blocs
-- [ ] Musique, mails non lus, VALORANT, League, météo, concentration
-- [ ] Agenda et tâches du jour, habitudes cochables, derniers mails, applications
-
-## Applications et installation
-
-- [ ] Détection, version, flux, politique de mise à jour
-- [ ] Installer, mettre à jour, ouvrir, page des versions, progression, erreurs
-- [ ] Épingler, ouvrir dans Ethone, retour, ouvrir à part
-- [ ] HDV Tracker en arrière-plan
-
-## Productivité
-
-- [ ] Tâches, calendrier, notes, mémo, capture rapide, habitudes, concentration et ambiance, factures
-
-## Fichiers, Mail, Équipe
-
-- [ ] Fichiers : Drive, envoi par morceaux, partage
-- [ ] Mail : liste, lecture, envoi programmé, report, étiquettes, modèles, signatures
-- [ ] Équipe
-
-## E:VAL
-
-- [ ] Connexion Riot, plusieurs comptes
-- [ ] Profil, rang, résumé, session, matchs, tableau, manches, éliminations, filtres
-- [ ] En direct
-- [ ] Jeu : portefeuille, boutique, packs, accessoires, passe, récompense, missions, équipement, aperçu des skins
-- [ ] Hub : classement, amis, recherche, cartes, agents, armes, collection, groupe
-
-## E:LOL
-
-- [ ] Profil, En direct, TFT, Rotation, Amis, historique des LP
-
-## Discord
-
-- [ ] Connexion, serveurs, vue d'ensemble, moteur de modules, pages sur mesure, formulaires de création
-
-## Brain
-
-- [ ] Discussion, résumé du jour, Flows, Macros, Personas, Interactions, Règles
-
-## Analyses
-
-- [ ] Activité, statistiques mail, météo, RSS, diagnostic
-
-## Réglages
-
-- [ ] Apparence, Windows et notifications, raccourcis, confidentialité, synchronisation, stockage, performance, accessibilité, espace de travail, avancé
-- [ ] Profil, connexions, appareils, double authentification, clés d'accès, journal de sécurité, IA, À propos, Administration
+- [x] Accueil : salutation, Spotify, mails non lus, rangs VALORANT et League, météo, concentration, tâches, derniers mails, applications
+- [x] Applications : versions installées, mises à jour disponibles, boutons
+- [~] Installer, mettre à jour, ouvrir dans Ethone, HDV Tracker en arrière-plan
+- [x] Productivité : tâches
+- [~] Calendrier, notes, mémo, capture rapide, habitudes, concentration et ambiance, factures
+- [~] Fichiers (capture prise, pas relue)
+- [x] Mail : boîte de réception, dossiers, menu de gestion
+- [~] Lecture d'un mail (fenêtre web séparée), envoi, report, étiquettes, modèles, signatures
+- [~] Équipe (capture prise, pas relue)
+- [x] E:VAL : profil, rang actuel et meilleur rang, résumé, dernière session, filtres, matchs
+- [~] E:VAL : En direct, Jeu (boutique, skins, missions), Hub, connexion Riot (fenêtre web séparée)
+- [x] E:LOL : profil, rangs Solo et Flex, résumé, historique des LP, champions, matchs
+- [~] E:LOL : En direct, TFT, Rotation, Amis, panneau d'un match
+- [x] Discord : serveurs, vue d'ensemble, modules du serveur
+- [~] Discord : pages de modules, modération, membres, tickets, concours, suggestions, journal, musique, formulaires de création
+- [x] Brain : discussion (état vide), menu Flows, Macros, Règles, Interactions, Personas
+- [~] Brain : réponses, résumé du jour, automatisations
+- [x] Analyses : activité
+- [~] Analyses : statistiques mail, météo, RSS, diagnostic
+- [x] Réglages : menu complet, Apparence
+- [~] Autres sections des Réglages, Administration
 
 ## Logique portée avec ses tests
 
-| Fichier TS | Module Rust | État |
-|---|---|---|
-| Tous les `src/*.ts` et `*.test.mjs` | `native/app/src/logic` | [ ] |
+| Fichier TS | Module Rust |
+|---|---|
+| `navigation.ts`, `pinned.ts` | `logic/navigation.rs`, `logic/mod.rs` |
+| `palette-search.ts` | `logic/palette.rs` |
+| `settings.ts` | `logic/settings.rs` |
+| `spotify.ts` | `logic/spotify.rs` |
+| `home.ts` | `logic/home.rs` |
+| `productivity.ts`, `tasks.ts` | `logic/productivity.rs` |
+| `eval.ts`, `match-filter.ts` | `logic/eval.rs`, `logic/mod.rs` |
+| `lol.ts` | `logic/lol.rs` |
+| `tft.ts` | dans `pages/lol.rs`, sans test séparé |
+| `mail.ts` | `logic/mail.rs` |
+| `weather.ts` | `logic/weather.rs` |
+| `friends.ts`, `friend-portraits.ts` | `logic/friends.rs` |
+| `sounds.ts`, `ui-sound.ts` | `sounds.rs` |
+| `riot-session.ts` | `logic/mod.rs` |
+| `automations.ts` | `pages/brain_extras.rs` |
 
 ## Mesures
 
-À remplir sur le build release : taille de l'exe et mémoire au repos, Tauri contre natif.
+| | Tauri | Natif |
+|---|---|---|
+| Exe | 12,9 Mo, plus le runtime WebView2 de Windows | 23,9 Mo, tout compris (Slint, rendu, images, sons, fenêtre web annexe) |
+| Mémoire sur l'Accueil | pas mesurée | 196 Mo de mémoire de travail, 166 Mo privés (build `fast`, fenêtre 1770×1140) |
+
+La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aurait fait tourner le jeton de session deux fois pour rien.
+
+## Pas encore vérifié
+
+- Toutes les actions qui écrivent : envoi de mail, création, suppression, installation, mise à jour, réglages Discord.
+- Les fenêtres web annexes : connexion Riot, vidéos des skins, lecture des mails.
+- Connexion par navigateur et liens `ethone://`, zone de notification, notifications Windows, instance unique.
+- Les animations et la réduction du mouvement, le changement de thème en direct, le thème Windows (Mica), les sons.
+- La palette ouverte au clavier, les raccourcis, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
+- L'installeur NSIS de l'app native n'existe pas encore.

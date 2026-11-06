@@ -143,7 +143,7 @@ pub fn child_main(args: &[String]) {
                 return;
             }
             let (width, height) = match self.kind.as_str() { "video" => (960.0, 560.0), "mail" => (820.0, 760.0), _ => (480.0, 720.0) };
-            let attributes = Window::default_attributes().with_title(self.title.clone()).with_inner_size(LogicalSize::new(width, height)).with_visible(self.visible);
+            let attributes = Window::default_attributes().with_title(self.title.clone()).with_inner_size(LogicalSize::new(width, height)).with_visible(self.visible).with_window_icon(crate::win::app_icon());
             let Ok(window) = event_loop.create_window(attributes) else {
                 event_loop.exit();
                 return;

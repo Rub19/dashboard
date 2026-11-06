@@ -383,7 +383,7 @@ fn shortcuts() -> Vec<B> {
     let mut out = vec![head(&tr("Raccourcis", "Shortcuts"), &tr("Les raccourcis clavier de l'application.", "The app's keyboard shortcuts."), vec![])];
     let groups = [
         (tr("Navigation", "Navigation"), vec![("Ctrl+K", tr("Rechercher une application ou une action", "Search an app or action")), ("Ctrl+1 à 9", tr("Ouvrir une page de la barre latérale", "Open a sidebar page")), ("Ctrl+,", tr("Ouvrir les réglages", "Open settings")), ("Alt+←", tr("Revenir en arrière", "Go back")), ("Alt+→", tr("Aller en avant", "Go forward"))]),
-        (tr("Fenêtre", "Window"), vec![("Ctrl+B", tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar")), ("F5", tr("Actualiser la page", "Refresh the page")), ("Échap", tr("Fermer un panneau", "Close a panel"))]),
+        (tr("Fenêtre", "Window"), vec![("Ctrl+Alt+E", tr("Ouvrir Ethone et la recherche depuis n'importe où", "Open Ethone and search from anywhere")), ("Ctrl+B", tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar")), ("F5", tr("Actualiser la page", "Refresh the page")), ("Échap", tr("Fermer un panneau", "Close a panel"))]),
         ("Brain".into(), vec![(if fr() { "Entrée" } else { "Enter" }, tr("Envoyer le message", "Send the message"))]),
     ];
     for (title, rows) in groups {

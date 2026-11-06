@@ -29,6 +29,11 @@ fn dump(path: &str) {
         for url in app.image_failed.iter().take(12) {
             text.push_str(&format!("failed {url}\n"));
         }
+        app.with_ui(|ui| {
+            use windows_sys::Win32::UI::WindowsAndMessaging::{SendMessageW, ICON_BIG, ICON_SMALL, WM_GETICON};
+            let icons = crate::win::hwnd(ui).map(|window| unsafe { (SendMessageW(window as _, WM_GETICON, ICON_BIG as usize, 0) != 0, SendMessageW(window as _, WM_GETICON, ICON_SMALL as usize, 0) != 0) });
+            text.push_str(&format!("\nWINDOW-ICON loaded={} hwnd={} big={} small={}\n", crate::win::app_icon().is_some(), crate::win::hwnd(ui).is_some(), icons.is_some_and(|icons| icons.0), icons.is_some_and(|icons| icons.1)));
+        });
         app.with_ui(|ui| text.push_str(&format!("\nUI mode={} size={:?} scale={}\n", ui.get_mode(), ui.window().size(), ui.window().scale_factor())));
         text
     }).unwrap_or_default();

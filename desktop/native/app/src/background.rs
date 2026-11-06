@@ -152,6 +152,9 @@ thread_local! {
 pub fn start(_hidden: bool) {
     CLOSE_TO_TRAY.store(read_prefs().close_to_tray, Ordering::SeqCst);
     TRAY.with(|cell| *cell.borrow_mut() = build_tray());
+    if !crate::win::offscreen() {
+        start_hotkey();
+    }
     svc().rt.spawn(serve_links());
     svc().rt.spawn(async {
         let mut was = true;
@@ -161,6 +164,27 @@ pub fn start(_hidden: bool) {
             if now != was {
                 was = now;
                 post(move |app| crate::pages::shell::online_changed(app, now));
+            }
+        }
+    });
+}
+
+fn start_hotkey() {
+    std::thread::spawn(|| unsafe {
+        use windows_sys::Win32::UI::Input::KeyboardAndMouse::{RegisterHotKey, MOD_ALT, MOD_CONTROL, MOD_NOREPEAT};
+        use windows_sys::Win32::UI::WindowsAndMessaging::{GetMessageW, MSG, WM_HOTKEY};
+        if RegisterHotKey(std::ptr::null_mut(), 1, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, u32::from(b'E')) == 0 {
+            return;
+        }
+        let mut message: MSG = std::mem::zeroed();
+        while GetMessageW(&mut message, std::ptr::null_mut(), 0, 0) > 0 {
+            if message.message == WM_HOTKEY {
+                post(|app| {
+                    app.with_ui(crate::win::show_main);
+                    if matches!(app.stage, Some(ethone_engine::auth::Stage::SignedIn { .. })) {
+                        crate::pages::shell::open_palette(app);
+                    }
+                });
             }
         }
     });

@@ -219,7 +219,7 @@ pub fn prepare_menu(app: &mut App, id: &str) {
     }
 }
 
-fn open_palette(app: &mut App) {
+pub fn open_palette(app: &mut App) {
     app.palette_open = true;
     app.palette_query.clear();
     app.palette_index = 0;

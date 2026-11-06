@@ -512,7 +512,9 @@ component Menu {
         drop-shadow-blur: 22px;
         drop-shadow-color: #00000080;
         opacity: root.open ? 1 : 0;
-        animate opacity { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        transform-origin: { x: 0px, y: 0px };
+        transform-scale: root.open ? 1 : 0.96;
+        animate opacity, transform-scale { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
         TouchArea { }
         VerticalLayout {
             padding: 6px;

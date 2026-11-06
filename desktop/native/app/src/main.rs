@@ -39,7 +39,7 @@ fn main() {
     let _ = slint::BackendSelector::new()
         .with_winit_window_attributes_hook(|attrs| {
             use slint::winit_030::winit::platform::windows::WindowAttributesExtWindows;
-            let attrs = attrs.with_undecorated_shadow(true);
+            let attrs = attrs.with_undecorated_shadow(true).with_window_icon(win::app_icon()).with_taskbar_icon(win::app_icon());
             if win::offscreen() {
                 attrs.with_position(slint::winit_030::winit::dpi::PhysicalPosition::new(-10000, -10000)).with_active(false)
             } else {

@@ -141,6 +141,11 @@ pub fn request_close() {
     });
 }
 
+pub fn app_icon() -> Option<slint::winit_030::winit::window::Icon> {
+    use slint::winit_030::winit::platform::windows::IconExtWindows;
+    slint::winit_030::winit::window::Icon::from_resource(1, None).ok()
+}
+
 pub fn offscreen() -> bool {
     cfg!(feature = "drive") && std::env::var_os("ETHONE_DRIVE_OFFSCREEN").is_some()
 }
@@ -157,9 +162,6 @@ pub fn show_main(ui: &AppWindow) {
 
 pub fn after_show(ui: &AppWindow, hidden: bool) {
     HIDDEN_START.with(|cell| cell.set(hidden));
-    if let Some(window) = hwnd(ui) {
-        ethone_engine::embed::apply_exe_icon(window as usize);
-    }
     if hidden {
         ui.window().with_winit_window(|window| window.set_visible(false));
     }

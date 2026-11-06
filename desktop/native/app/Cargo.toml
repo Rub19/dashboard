@@ -20,7 +20,7 @@ image = { version = "0.25", default-features = false, features = ["png", "jpeg",
 base64 = "0.22"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 winreg = "0.55"
-windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Graphics_Dwm", "Win32_Networking_WinInet", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_UI_Controls_Dialogs", "Win32_System_ProcessStatus"] }
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Graphics_Dwm", "Win32_Networking_WinInet", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_UI_Controls_Dialogs", "Win32_System_ProcessStatus", "Win32_UI_Input_KeyboardAndMouse"] }
 tray-icon = { version = "0.21", default-features = false }
 notify-rust = "4"
 wry = { version = "0.53", default-features = false, features = ["os-webview"] }
@@ -29,3 +29,4 @@ keyring = { version = "3", features = ["windows-native"] }
 
 [build-dependencies]
 slint-build = "=1.18.1"
+embed-resource = "3"

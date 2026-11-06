@@ -115,9 +115,19 @@ Tests : 85 pour le moteur, 123 pour l'app.
 | `riot-session.ts` | `logic/mod.rs` |
 | `automations.ts` | `pages/brain_extras.rs` |
 
-## Installeur
+## Installeur et passage depuis Tauri
 
-`native/installer/ethone-native.nsi` construit un installeur par utilisateur, sans droits administrateur. Il installe dans `%LOCALAPPDATA%\Programs\Ethone Native`, à côté de l'app Tauri sans la toucher, ajoute un raccourci au menu Démarrer et une entrée de désinstallation. La désinstallation garde la session et les données.
+`native/installer/ethone-native.nsi` construit `Ethone_<version>_x64-setup.exe`, par utilisateur, sans droits administrateur. Il prend la place de l'app Tauri au même endroit : `%LOCALAPPDATA%\Ethone\ethone.exe`, mêmes clés `Software\Rub19\Ethone` et `Uninstall\Ethone`, même raccourci du menu Démarrer, même lancement avec Windows (`Ethone`, `--minimized`).
+
+Il accepte les arguments du programme de mise à jour Tauri : `/P` et `/S` (sans question), `/UPDATE`, `/R` (relance). Une app Tauri installée peut donc recevoir la version native par sa mise à jour automatique, à condition de publier ce fichier dans `latest.json` avec la signature de la clé de mise à jour Tauri (étape de publication de Rub19).
+
+Ce qui est gardé :
+
+- la session Ethone, l'identité Riot et le bot Discord : même Gestionnaire d'identifiants (`dev.ethone.desktop`), l'installeur n'y touche pas ;
+- les réglages : au premier lancement, l'app native lit une copie du stockage local de l'app Tauri (WebView2) et reprend toutes les clés `ethone-*`, une seule fois ;
+- les données : `%LOCALAPPDATA%\dev.ethone.desktop` reste en place, la désinstallation ne le supprime pas.
+
+Testé : sur une copie des vraies données Tauri, 38 réglages relus. Passage complet dans un dossier et des clés de test (`-DTEST`) : `ethone.exe` 0.1.0 Tauri remplacé par 0.1.1 natif, clés et raccourci mis à jour, désinstallation propre, données gardées. Ces essais tournent dans le conteneur MSIX de Claude, dont le registre et `%LOCALAPPDATA%` sont redirigés : l'installation réelle sur Windows reste à faire par Rub19.
 
 Construire (depuis `desktop/native`) :
 
@@ -143,5 +153,5 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - Connexion par navigateur et liens `ethone://`, zone de notification, notifications Windows, instance unique.
 - Les animations et la réduction du mouvement, le changement de thème en direct, le thème Windows (Mica), les sons.
 - Les raccourcis globaux, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
-- L'installeur natif est construit mais jamais lancé (installer modifie le PC).
+- L'installation réelle sur Windows, hors du conteneur de Claude, et la mise à jour automatique depuis l'app Tauri (latest.json signé).
 - La palette et les menus ouverts au clavier dans la vraie fenêtre affichée, hors harnais.

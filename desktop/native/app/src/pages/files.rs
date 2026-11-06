@@ -97,7 +97,7 @@ fn side() -> Vec<(String, String, String, String)> {
     vec![
         ("files:section:all".into(), tr("Mes fichiers", "My files"), "folder".into(), String::new()),
         ("files:section:favorites".into(), tr("Favoris", "Favorites"), "star".into(), String::new()),
-        ("files:section:shares".into(), tr("Liens de partage", "Share links"), "link-2".into(), String::new()),
+        ("files:section:shares".into(), tr("Liens de partage", "Share links"), "link2".into(), String::new()),
         ("files:section:drops".into(), tr("Dépôts", "Drops"), "file-text".into(), String::new()),
     ]
 }
@@ -174,7 +174,7 @@ fn file_drawer(app: &mut App, file: &Value) -> Vec<B> {
         out.push(prose(summary));
     }
     let id = file["driveFileId"].as_str().or(file["id"].as_str()).unwrap_or_default().to_string();
-    let (link, star, share, trash) = (app.icon("external-link"), app.icon("star"), app.icon("link-2"), app.icon("trash-2"));
+    let (link, star, share, trash) = (app.icon("external-link"), app.icon("star"), app.icon("link2"), app.icon("trash2"));
     let mut cells = Vec::new();
     if file["webViewLink"].as_str().is_some() {
         cells.push(primary("filedrawer:open", &tr("Ouvrir", "Open")).icon(link));

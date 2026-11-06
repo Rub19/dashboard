@@ -48,7 +48,7 @@ fn folder_icon(id: &str) -> &'static str {
         "drafts" => "pen-line",
         "archive" => "archive",
         "spam" => "shield-alert",
-        _ => "trash-2",
+        _ => "trash2",
     }
 }
 
@@ -380,7 +380,7 @@ fn folder_view(app: &mut App, folder: &str) -> Vec<B> {
     let search = app.state.mail.search.clone();
     let holder = (folder.to_string(), search.clone());
     let res = app.load(&list_key(folder, &search), move || load_list(&holder.0, &holder.1));
-    let (search_icon, pen, refresh, close, archive, trash, open_icon, star, star_on, clip, check, circle) = (app.icon("search"), app.icon("pen-line"), app.icon("refresh-cw"), app.icon("x"), app.icon("archive"), app.icon("trash-2"), app.icon("mail-open"), app.icon("star"), app.icon("star"), app.icon("paperclip"), app.icon("circle-check"), app.icon("circle"));
+    let (search_icon, pen, refresh, close, archive, trash, open_icon, star, star_on, clip, check, circle) = (app.icon("search"), app.icon("pen-line"), app.icon("refresh-cw"), app.icon("x"), app.icon("archive"), app.icon("trash2"), app.icon("mail-open"), app.icon("star"), app.icon("star"), app.icon("paperclip"), app.icon("circle-check"), app.icon("circle"));
     let query = app.state.mail.query.clone();
     let mut top = vec![input("mail:query", &query, &tr("Rechercher dans les messages", "Search mail")).icon(search_icon)];
     if !search.is_empty() {
@@ -469,7 +469,7 @@ fn folder_view(app: &mut App, folder: &str) -> Vec<B> {
 fn message_view(app: &mut App, folder: &str) -> Vec<B> {
     let Some(message) = app.state.mail.open.clone() else { return Vec::new() };
     let id = message["id"].as_str().unwrap_or_default().to_string();
-    let (back, archive, trash, clock, copy, star, reply, clip, layout) = (app.icon("arrow-left"), app.icon("archive"), app.icon("trash-2"), app.icon("clock"), app.icon("copy"), app.icon("star"), app.icon("reply"), app.icon("paperclip"), app.icon("external-link"));
+    let (back, archive, trash, clock, copy, star, reply, clip, layout) = (app.icon("arrow-left"), app.icon("archive"), app.icon("trash2"), app.icon("clock"), app.icon("copy"), app.icon("star"), app.icon("reply"), app.icon("paperclip"), app.icon("external-link"));
     let mut tools = vec![ibtn("mail:back", back, &tr("Retour à la liste", "Back to the list"))];
     if folder != "archive" {
         tools.push(ibtn(&format!("mail:archive:{id}"), archive, &tr("Archiver", "Archive")));

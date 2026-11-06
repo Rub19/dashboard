@@ -138,7 +138,7 @@ fn chat(app: &mut App) -> Vec<B> {
     let state = &app.state.brain;
     let (busy, input_text, error_text, reveal) = (state.busy, state.input.clone(), state.error.clone(), state.reveal);
     let orb = if busy { "thinking" } else if reveal.is_some() { "speaking" } else { "idle" };
-    let (trash, copy, retry, send) = (app.icon("trash-2"), app.icon("copy"), app.icon("rotate-ccw"), app.icon("arrow-up"));
+    let (trash, copy, retry, send) = (app.icon("trash2"), app.icon("copy"), app.icon("rotate-ccw"), app.icon("arrow-up"));
     let status = match orb { "thinking" => tr("Réfléchit…", "Thinking…"), "speaking" => tr("Répond…", "Answering…"), _ => tr("La conversation reste sur ce PC", "The conversation stays on this PC") };
     let mut top = vec![C { kind: "orb", tone: orb, size: 26.0, ..Default::default() }, stack("Brain", &status)];
     if !list.is_empty() {

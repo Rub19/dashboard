@@ -413,7 +413,7 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
         out.push(empty(&text, ""));
         return out;
     }
-    let (done_icon, open_icon, event_icon, note_icon, pencil, trash, undo) = (app.icon("circle-check"), app.icon("circle"), app.icon("calendar-days"), app.icon("notebook-pen"), app.icon("pencil"), app.icon("trash-2"), app.icon("rotate-ccw"));
+    let (done_icon, open_icon, event_icon, note_icon, pencil, trash, undo) = (app.icon("circle-check"), app.icon("circle"), app.icon("calendar-days"), app.icon("notebook-pen"), app.icon("pencil"), app.icon("trash2"), app.icon("rotate-ccw"));
     let fr = fr();
     let rows = list.iter().map(|item| {
         let id = item["id"].as_str().unwrap_or_default();
@@ -544,7 +544,7 @@ fn habits(app: &mut App) -> Vec<B> {
     let now = Local::now();
     let week = last_days(7, now);
     let today = time::day_key(&now);
-    let (check, trash, flame) = (app.icon("check"), app.icon("trash-2"), app.icon("flame"));
+    let (check, trash, flame) = (app.icon("check"), app.icon("trash2"), app.icon("flame"));
     let letters = if fr() { ["L", "M", "M", "J", "V", "S", "D"] } else { ["M", "T", "W", "T", "F", "S", "S"] };
     let rows = habits.iter().map(|habit| {
         let id = habit["id"].as_str().unwrap_or_default();
@@ -707,7 +707,7 @@ fn bills(app: &mut App) -> Vec<B> {
         out.push(empty(&tr("Aucune facture", "No bills"), ""));
         return out;
     }
-    let (check, circle, trash) = (app.icon("circle-check"), app.icon("circle"), app.icon("trash-2"));
+    let (check, circle, trash) = (app.icon("circle-check"), app.icon("circle"), app.icon("trash2"));
     let rows = list.iter().map(|bill| {
         let id = bill["id"].as_str().unwrap_or_default();
         let paid = bill["data"]["paid"] == true;

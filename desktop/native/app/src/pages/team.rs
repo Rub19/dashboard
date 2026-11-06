@@ -84,7 +84,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
 }
 
 fn confirmed(app: &mut App, key: &str, action: &str, label: &str) -> Vec<C> {
-    let trash = app.icon("trash-2");
+    let trash = app.icon("trash2");
     let check = app.icon("check");
     if app.state.team.confirm.as_deref() == Some(key) {
         vec![btn("team:cancel", &tr("Annuler", "Cancel")), danger(action, &tr("Confirmer", "Confirm")).icon(check)]

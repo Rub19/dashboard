@@ -39,7 +39,12 @@ fn main() {
     let _ = slint::BackendSelector::new()
         .with_winit_window_attributes_hook(|attrs| {
             use slint::winit_030::winit::platform::windows::WindowAttributesExtWindows;
-            attrs.with_undecorated_shadow(true)
+            let attrs = attrs.with_undecorated_shadow(true);
+            if win::offscreen() {
+                attrs.with_position(slint::winit_030::winit::dpi::PhysicalPosition::new(-32000, -32000)).with_active(false)
+            } else {
+                attrs
+            }
         })
         .select();
     let ui = AppWindow::new().expect("fenêtre");

@@ -176,12 +176,24 @@ pub fn dispatch(app: &mut App, id: &str, value: &str) {
 
 #[cfg(feature = "drive")]
 pub fn dump_blocks(app: &mut App) -> String {
-    let page = view(app);
     let line = |block: &B| {
         let cells: Vec<String> = block.cells.iter().map(|cell| format!("{}[{}|{}|{}]", cell.kind, cell.title, cell.sub, cell.value)).collect();
         format!("{} {} | {} | {} {}\n", block.kind, block.id, block.title, block.sub, cells.join(" "))
     };
-    let mut out = format!("PAGE {}\n", app.page);
+    let stage = match &app.stage {
+        None => "none",
+        Some(ethone_engine::auth::Stage::SignedOut) => "signed-out",
+        Some(ethone_engine::auth::Stage::MfaRequired { .. }) => "mfa",
+        Some(ethone_engine::auth::Stage::SignedIn { offline: true, .. }) => "signed-in-offline",
+        Some(ethone_engine::auth::Stage::SignedIn { .. }) => "signed-in",
+    };
+    if app.blocked || stage != "signed-in" && stage != "signed-in-offline" {
+        let mut out = format!("LOGIN stage={stage} blocked={}\n", app.blocked);
+        out.extend(login::view(app).iter().map(line));
+        return out;
+    }
+    let page = view(app);
+    let mut out = format!("PAGE {} stage={stage}\n", app.page);
     out.extend(page.main.iter().map(line));
     out.push_str("ASIDE\n");
     out.extend(page.aside.iter().map(line));

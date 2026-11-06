@@ -141,11 +141,17 @@ pub fn request_close() {
     });
 }
 
+pub fn offscreen() -> bool {
+    cfg!(feature = "drive") && std::env::var_os("ETHONE_DRIVE_OFFSCREEN").is_some()
+}
+
 pub fn show_main(ui: &AppWindow) {
     ui.window().with_winit_window(|window| {
         window.set_visible(true);
         window.set_minimized(false);
-        window.focus_window();
+        if !offscreen() {
+            window.focus_window();
+        }
     });
 }
 
@@ -170,6 +176,10 @@ pub fn set_login_mode(ui: &AppWindow) {
 }
 
 fn center(ui: &AppWindow) {
+    if offscreen() {
+        ui.window().with_winit_window(|window| window.set_outer_position(PhysicalPosition::new(-32000, -32000)));
+        return;
+    }
     ui.window().with_winit_window(|window| {
         let Some(monitor) = window.current_monitor() else { return };
         let (area, size) = (monitor.size(), window.outer_size());
@@ -199,10 +209,10 @@ pub fn set_app_mode(ui: &AppWindow) {
         }
         false
     }).unwrap_or(false);
-    if !placed {
+    if !placed || offscreen() {
         center(ui);
     }
-    if saved.maximized {
+    if saved.maximized && !offscreen() {
         ui.window().with_winit_window(|window| window.set_maximized(true));
     }
     if !HIDDEN_START.with(Cell::get) {

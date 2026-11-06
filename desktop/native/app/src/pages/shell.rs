@@ -200,7 +200,7 @@ fn open_log(app: &mut App) {
             return vec![empty(&tr("Rien pour l'instant", "Nothing yet"), &tr("Les messages affichés depuis l'ouverture d'Ethone restent ici.", "Messages shown since Ethone opened stay here."))];
         }
         let ok = app.icon("circle-check");
-        let alert = app.icon("circle-alert");
+        let alert = app.icon("alert-circle");
         let rows = app.toast_log.iter().map(|item| {
             let (image, tone) = if item.tone == "bad" { (alert.clone(), "bad") } else { (ok.clone(), "ok") };
             row(vec![icon(image).tone(tone), wrap(&item.message), muted(&time::clock(&time::from_ms(item.at)))])

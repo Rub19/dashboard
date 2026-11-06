@@ -333,7 +333,7 @@ pub fn valid_clock(text: &str) -> bool {
 fn flow_drawer(app: &mut App) -> Vec<B> {
     let state = &app.state.extras;
     let (steps, running, done, label) = (state.steps.clone(), state.flow_running, state.done_steps.clone(), state.label.clone());
-    let (check, circle, trash, plus) = (app.icon("circle-check"), app.icon("circle"), app.icon("trash-2"), app.icon("plus"));
+    let (check, circle, trash, plus) = (app.icon("circle-check"), app.icon("circle"), app.icon("trash2"), app.icon("plus"));
     let mut out = Vec::new();
     if running {
         out.extend(group(steps.iter().enumerate().map(|(at, step)| {
@@ -420,7 +420,7 @@ fn briefing(app: &mut App) -> Vec<B> {
 fn flows(app: &mut App) -> Vec<B> {
     let res = app.load("brain:flows", || load_rows("flows"));
     let label = app.state.extras.label.clone();
-    let (play, list, trash) = (app.icon("play"), app.icon("list-checks"), app.icon("trash-2"));
+    let (play, list, trash) = (app.icon("play"), app.icon("list-checks"), app.icon("trash2"));
     let mut out = vec![list_head("Flows", &tr("Tes routines, étape par étape.", "Your routines, step by step."), "flows", res.loading, app), row(vec![input("brain:label", &label, &tr("Nom du flow", "Flow name")), primary("brain:flow-add", &tr("Créer", "Create")).off(label.trim().is_empty())])];
     if let Some(message) = app.state.extras.error.clone().filter(|_| app.drawer.is_none()).or(res.error.clone()) {
         out.push(error(&message, vec![]));
@@ -449,7 +449,7 @@ fn macros(app: &mut App) -> Vec<B> {
     if editing.is_some() {
         form.push(btn("brain:macro-cancel", &tr("Annuler", "Cancel")));
     }
-    let (play, trash) = (app.icon("play"), app.icon("trash-2"));
+    let (play, trash) = (app.icon("play"), app.icon("trash2"));
     let mut out = vec![list_head("Macros", &tr("Un clic pour aller directement à une page.", "One click to jump to a page."), "macros", res.loading, app), row(form)];
     if let Some(message) = app.state.extras.error.clone().or(res.error.clone()) {
         out.push(error(&message, vec![]));
@@ -476,7 +476,7 @@ fn personas(app: &mut App) -> Vec<B> {
     let look = if app.state.extras.look.is_empty() { "obsidian".to_string() } else { app.state.extras.look.clone() };
     let options: Vec<(String, String)> = LOOKS.iter().map(|item| (item.id.to_string(), look_name(item.id))).collect();
     let pick = app.select("brain:look", &look, &options);
-    let (play, trash) = (app.icon("play"), app.icon("trash-2"));
+    let (play, trash) = (app.icon("play"), app.icon("trash2"));
     let mut out = vec![list_head("Personas", &tr("Des ambiances à appliquer en un clic, synchronisées avec ton compte.", "Moods you apply in one click, synced with your account."), "personas", res.loading, app), row(vec![input("brain:label", &label, &tr("Nom du persona", "Persona name")), pick, primary("brain:persona-add", &tr("Créer", "Create")).off(label.trim().is_empty())])];
     if let Some(message) = app.state.extras.error.clone().or(res.error.clone()) {
         out.push(error(&message, vec![]));
@@ -553,7 +553,7 @@ fn rules(app: &mut App) -> Vec<B> {
         form.push(page_pick);
     }
     form.push(action_pick);
-    let (plus, trash) = (app.icon("plus"), app.icon("trash-2"));
+    let (plus, trash) = (app.icon("plus"), app.icon("trash2"));
     form.push(primary("brain:rule-add", &tr("Ajouter", "Add")).icon(plus));
     let mut out = vec![head(&tr("Règles", "Rules"), &tr("Change l'ambiance d'Ethone à une heure ou sur une page. Tant qu'Ethone est ouvert, sur ce PC.", "Change Ethone's mood at a time or on a page. While Ethone is open, on this PC."), vec![]), row(form)];
     if rules.is_empty() {

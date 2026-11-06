@@ -12,6 +12,7 @@ use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::rc::Rc;
 
+
 thread_local! {
     pub static APP: RefCell<Option<App>> = const { RefCell::new(None) };
     static RENDER_QUEUED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
@@ -533,7 +534,7 @@ impl App {
             ui.set_drawer_open(false);
         }
         let check = self.icon("circle-check");
-        let alert = self.icon("circle-alert");
+        let alert = self.icon("alert-circle");
         let toasts: Vec<Cell> = self.toasts.iter().map(|toast| Cell {
             id: format!("toast:{}", toast.id).into(),
             title: toast.message.clone().into(),
@@ -559,7 +560,7 @@ pub fn app_image(app: &mut App, id: &str) -> Image {
     if let Some(found) = app.images.get(&key) {
         return found.clone();
     }
-    let image = crate::assets::app_icon(id).unwrap_or_else(|| crate::assets::icon("gamepad-2"));
+    let image = crate::assets::app_icon(id).unwrap_or_else(|| crate::assets::icon("gamepad2"));
     app.images.insert(key, image.clone());
     image
 }

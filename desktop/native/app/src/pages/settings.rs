@@ -476,7 +476,7 @@ fn advanced(app: &mut App) -> Vec<B> {
 
 fn journal(app: &mut App) -> Vec<B> {
     let entries = ethone_engine::journal::read(&crate::services::journal_path());
-    let (ok, bad) = (app.icon("circle-check"), app.icon("circle-x"));
+    let (ok, bad) = (app.icon("circle-check"), app.icon("xcircle"));
     let mut out = vec![head(&t("journal"), "", vec![])];
     if entries.is_empty() {
         out.push(empty(&t("emptyJournal"), ""));

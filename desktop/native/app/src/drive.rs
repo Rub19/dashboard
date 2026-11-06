@@ -22,7 +22,11 @@ fn snapshot(ui: &AppWindow, path: &str) {
 }
 
 fn dump(path: &str) {
-    let text = with_app(|app| crate::pages::dump_blocks(app)).unwrap_or_default();
+    let text = with_app(|app| {
+        let mut text = crate::pages::dump_blocks(app);
+        app.with_ui(|ui| text.push_str(&format!("\nUI mode={} size={:?} scale={}\n", ui.get_mode(), ui.window().size(), ui.window().scale_factor())));
+        text
+    }).unwrap_or_default();
     if let Ok(mut file) = std::fs::File::create(path) {
         let _ = file.write_all(text.as_bytes());
     }

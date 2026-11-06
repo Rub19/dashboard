@@ -1386,17 +1386,6 @@ export component AppWindow inherits Window {
             play-icon: root.music-play;
         }
 
-        palette := Palette {
-            width: 100%;
-            height: 100%;
-            open: root.palette-open;
-            items: root.palette-items;
-            index: root.palette-index;
-            query: root.palette-query;
-            placeholder: root.search-label;
-            search-icon: root.search-icon;
-            none-label: root.palette-none;
-        }
 
         drawer := Drawer {
             width: 100%;
@@ -1420,6 +1409,18 @@ export component AppWindow inherits Window {
             index: root.menu-index;
             head: root.menu-head;
             head-sub: root.menu-sub;
+        }
+
+        palette := Palette {
+            width: 100%;
+            height: 100%;
+            open: root.palette-open;
+            items: root.palette-items;
+            index: root.palette-index;
+            query: root.palette-query;
+            placeholder: root.search-label;
+            search-icon: root.search-icon;
+            none-label: root.palette-none;
         }
 
         VerticalLayout {

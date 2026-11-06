@@ -117,9 +117,9 @@ Tests : 85 pour le moteur, 123 pour l'app.
 
 ## Installeur et passage depuis Tauri
 
-`native/installer/ethone-native.nsi` construit `Ethone_<version>_x64-setup.exe`, par utilisateur, sans droits administrateur. Il prend la place de l'app Tauri au même endroit : `%LOCALAPPDATA%\Ethone\ethone.exe`, mêmes clés `Software\Rub19\Ethone` et `Uninstall\Ethone`, même raccourci du menu Démarrer, même lancement avec Windows (`Ethone`, `--minimized`).
+L'installeur est écrit en Rust et Slint, sans NSIS : `native/setup` (exe `ethone-setup.exe`, à renommer `Ethone_<version>_x64-setup.exe` pour la publication). Il embarque l'app compressée, porte le logo Ethone, suit le style de l'app (fond sombre, halos, bordure animée, transitions courtes, réduction du mouvement respectée) et s'installe par utilisateur, sans droits administrateur. Écrans : accueil (ou mise à jour, avec la version installée), progression, terminé, erreur avec « Réessayer », et désinstallation. Options : raccourci sur le bureau, lancement avec Windows. Il prend la place de l'app Tauri au même endroit : `%LOCALAPPDATA%\Ethone\ethone.exe`, mêmes clés `Software\Rub19\Ethone` et `Uninstall\Ethone`, même raccourci du menu Démarrer, même lancement avec Windows (`Ethone`, `--minimized`).
 
-Il accepte les arguments du programme de mise à jour Tauri : `/P` et `/S` (sans question), `/UPDATE`, `/R` (relance). Une app Tauri installée peut donc recevoir la version native par sa mise à jour automatique, à condition de publier ce fichier dans `latest.json` avec la signature de la clé de mise à jour Tauri (étape de publication de Rub19).
+Il accepte les arguments du programme de mise à jour Tauri : `/P` et `/UPDATE` (progression seule, fermeture automatique), `/S` (sans fenêtre), `/R` (relance). Il se copie en `uninstall.exe` : la désinstallation retire l'app, les raccourcis et les clés, puis se supprime elle-même. Une app Tauri installée peut donc recevoir la version native par sa mise à jour automatique, à condition de publier ce fichier dans `latest.json` avec la signature de la clé de mise à jour Tauri (étape de publication de Rub19).
 
 Ce qui est gardé :
 
@@ -127,21 +127,23 @@ Ce qui est gardé :
 - les réglages : au premier lancement, l'app native lit une copie du stockage local de l'app Tauri (WebView2) et reprend toutes les clés `ethone-*`, une seule fois ;
 - les données : `%LOCALAPPDATA%\dev.ethone.desktop` reste en place, la désinstallation ne le supprime pas.
 
-Testé : sur une copie des vraies données Tauri, 38 réglages relus. Passage complet dans un dossier et des clés de test (`-DTEST`) : `ethone.exe` 0.1.0 Tauri remplacé par 0.1.1 natif, clés et raccourci mis à jour, désinstallation propre, données gardées. Ces essais tournent dans le conteneur MSIX de Claude, dont le registre et `%LOCALAPPDATA%` sont redirigés : l'installation réelle sur Windows reste à faire par Rub19.
+Testé : sur une copie des vraies données Tauri, 38 réglages relus. Passage complet dans un dossier et des clés de test (`ETHONE_SETUP_TEST=1`), à partir d'une copie de l'app Tauri installée : par l'interface, en silencieux (`/S`) et comme mise à jour automatique (`/P /UPDATE`), `ethone.exe` 0.1.0 Tauri devient 0.1.1 natif, clés et raccourci mis à jour, réglages natifs intacts ; la désinstallation retire l'exe, le raccourci, les clés, `uninstall.exe` et le dossier, et garde les données. Les écrans ont été capturés hors écran (`ETHONE_SETUP_SNAP`). Ces essais tournent dans le conteneur MSIX de Claude, dont le registre et `%LOCALAPPDATA%` sont redirigés : l'installation réelle sur Windows reste à faire par Rub19.
 
 Construire (depuis `desktop/native`) :
 
 ```
 cargo build -p ethone-native --release
-cd installer
-makensis -DVERSION=0.1.1 ethone-native.nsi
+cargo build -p ethone-setup --release
 ```
+
+L'installeur lit `target/release/ethone-native.exe` au moment de sa construction (ou le chemin donné par `ETHONE_PAYLOAD`) : construire l'app d'abord.
 
 ## Mesures
 
 | | Tauri | Natif |
 |---|---|---|
 | Exe | 12,9 Mo, plus le runtime WebView2 de Windows | 23,9 Mo, tout compris (Slint, rendu, images, sons, fenêtre web annexe) |
+| Installeur | 8,4 Mo (NSIS de Tauri) | 19,9 Mo (Rust et Slint, app compressée incluse) |
 | Mémoire sur l'Accueil | pas mesurée | 196 Mo de mémoire de travail, 166 Mo privés (build `fast`, fenêtre 1770×1140) |
 
 La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aurait fait tourner le jeton de session deux fois pour rien.

@@ -1332,6 +1332,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ethone-setup"
+version = "0.1.1"
+dependencies = [
+ "embed-resource",
+ "flate2",
+ "slint",
+ "slint-build",
+ "windows 0.61.3",
+ "winreg 0.55.0",
+]
+
+[[package]]
 name = "euclid"
 version = "0.22.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"

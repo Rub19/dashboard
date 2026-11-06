@@ -101,11 +101,11 @@ mod tests {
 
     #[tokio::test]
     async fn a_stale_value_survives_an_error_only_if_asked() {
-        write("test:stale", &json!(5));
-        with_memory(|memory| memory.get_mut("test:stale").unwrap().0 = 0);
+        write("stale-test:value", &json!(5));
+        with_memory(|memory| memory.get_mut("stale-test:value").unwrap().0 = 0);
         let failing = || -> Fut { Box::pin(async { Err::<Value, String>("x".to_string()) }) };
-        assert_eq!(cached("test:stale".into(), 10, true, failing()).await, Ok(json!(5)));
-        assert!(cached("test:stale".into(), 10, false, failing()).await.is_err());
-        clear("test:");
+        assert_eq!(cached("stale-test:value".into(), 10, true, failing()).await, Ok(json!(5)));
+        assert!(cached("stale-test:value".into(), 10, false, failing()).await.is_err());
+        clear("stale-test:");
     }
 }

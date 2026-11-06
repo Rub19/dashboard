@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["engine", "app"]
+members = ["engine", "app", "setup"]
 
 [profile.release]
 lto = true

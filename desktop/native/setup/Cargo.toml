@@ -1,0 +1,20 @@
+[package]
+name = "ethone-setup"
+version = "0.1.1"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "ethone-setup"
+path = "src/main.rs"
+
+[dependencies]
+slint = { version = "=1.18.1", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-femtovg", "renderer-software", "unstable-winit-030"] }
+flate2 = "1"
+winreg = "0.55"
+windows = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Com", "Win32_UI_Shell", "Win32_UI_Shell_Common", "Win32_UI_WindowsAndMessaging", "Win32_Globalization"] }
+
+[build-dependencies]
+slint-build = "=1.18.1"
+embed-resource = "3"
+flate2 = "1"

@@ -3,6 +3,7 @@ use crate::AppWindow;
 use slint::platform::{Key, PointerEventButton, WindowEvent};
 use slint::{ComponentHandle, LogicalPosition, SharedString};
 use std::io::Write;
+use slint::winit_030::WinitWindowAccessor;
 use std::time::Duration;
 
 fn on_ui(work: impl FnOnce(&AppWindow) + Send + 'static) {
@@ -48,7 +49,17 @@ fn run_line(line: &str) -> bool {
                 crate::app::request_render();
             });
         }
-        "snap" => on_ui(move |ui| snapshot(ui, &rest)),
+        "snap" => {
+            on_ui(|ui| {
+                ui.window().with_winit_window(|window| {
+                    if window.is_minimized().unwrap_or(false) {
+                        window.set_minimized(false);
+                    }
+                });
+            });
+            std::thread::sleep(Duration::from_millis(500));
+            on_ui(move |ui| snapshot(ui, &rest));
+        }
         "dump" => {
             let _ = slint::invoke_from_event_loop(move || dump(&rest));
         }

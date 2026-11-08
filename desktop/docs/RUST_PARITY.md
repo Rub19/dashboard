@@ -30,9 +30,9 @@ Le processus principal ne charge jamais WebView2 : la fenêtre web est un second
 
 ## Comment c'est vérifié
 
-`[x]` veut dire vu dans le vrai exe, connecté au compte de Rub19, par une capture de la fenêtre de l'app seule (`window.take_snapshot()`, harnais `--features drive`). Les captures du 6 novembre 2026 ont été prises hors écran (`ETHONE_DRIVE_OFFSCREEN=1`), sans clic sur un envoi, une suppression ou une installation. `[~]` veut dire écrit, compilé et couvert par les tests automatiques, mais pas vu en réel. `[ ]` veut dire pas encore porté.
+`[x]` veut dire vu dans le vrai exe, connecté au compte de Rub19, par une capture de la fenêtre de l'app seule (`window.take_snapshot()`, harnais `--features drive`). Les captures ont été prises hors écran (`ETHONE_DRIVE_OFFSCREEN=1`), sans clic sur un envoi, une suppression ou une installation. Les interactions ont été jouées avec de vrais événements Slint envoyés à la fenêtre (`dispatch_event` : clics, molette, survol, clic droit, clavier), et chaque section a été ouverte puis vérifiée par son contenu. `[~]` veut dire écrit, compilé et couvert par les tests automatiques, mais pas vu en réel. `[ ]` veut dire pas encore porté.
 
-Tests : 85 pour le moteur, 123 pour l'app.
+Tests : 85 pour le moteur, 125 pour l'app, 1 pour l'installeur.
 
 ## Socle
 
@@ -47,7 +47,7 @@ Tests : 85 pour le moteur, 123 pour l'app.
 - [~] Zone de notification, réduction à la fermeture, lancement avec Windows en réduit
 - [~] Notifications Windows
 - [~] Mise à jour d'Ethone (flux signé)
-- [~] Attribution Slint dans À propos
+- [x] Attribution Slint dans À propos
 
 ## Connexion
 
@@ -61,39 +61,50 @@ Tests : 85 pour le moteur, 123 pour l'app.
 - [x] Barre latérale : groupes, page active, profil, bouton de réduction
 - [x] Barre de titre : précédent, suivant, recherche, cloche, boutons de fenêtre
 - [x] Menus de section des pages, lecteur Spotify flottant
+- [x] Molette dans les pages et les menus de section, le menu suit la section active, barre réduite automatiquement en petite fenêtre
 - [~] Transitions de page, retour de la position de défilement
 - [x] Palette Ctrl+K : ouverture au clavier, recherche, résultats, au-dessus de tout
 - [x] Cloche, panneau latéral, listes déroulantes, menu du compte
-- [~] Toasts, annulation, menu contextuel, infobulles
-- [~] Raccourcis clavier et boutons de souris
+- [x] Menu du clic droit, infobulles au survol, surbrillance qui suit la souris
+- [~] Toasts, annulation
+- [x] Raccourcis dans l'app : Ctrl+1 à 9, Ctrl+virgule, Ctrl+B, Ctrl+K, F5, Alt+flèches, Échap
+- [~] Boutons précédent et suivant de la souris
 - [x] Réglages d'apparence : 9 thèmes, 8 accents, langue, densité
-- [~] Changement de thème en direct, Mica de Windows, réduction du mouvement, sons d'interface
+- [x] Changement de thème en direct, y compris le thème clair
+- [~] Mica de Windows, réduction du mouvement, sons d'interface
+- [ ] Émojis en couleur : le moteur de texte n'affiche pas les polices couleur, un carré ou un point apparaît à la place
 
 ## Pages
 
 - [x] Accueil : salutation, Spotify, mails non lus, rangs VALORANT et League, météo, concentration, tâches, derniers mails, applications
 - [x] Applications : versions installées, mises à jour disponibles, boutons
 - [~] Installer, mettre à jour, ouvrir dans Ethone, HDV Tracker en arrière-plan
-- [x] Productivité : tâches
-- [~] Calendrier, notes, mémo, capture rapide, habitudes, concentration et ambiance, factures
+- [x] Productivité : tâches, calendrier, notes, mémo, capture rapide, habitudes, concentration, factures (affichage)
+- [~] Productivité : création, modification, suppression, sons d'ambiance
 - [x] Fichiers : liste, recherche, état vide
 - [x] Mail : boîte de réception, dossiers, menu de gestion
-- [~] Lecture d'un mail (fenêtre web séparée), envoi, report, étiquettes, modèles, signatures
+- [x] Mail : dossiers, contacts, adresses, étiquettes, règles, modèles, signatures (affichage)
+- [~] Lecture d'un mail (fenêtre web séparée), envoi, report
 - [x] Équipe : membres, invitation, espaces
 - [x] E:VAL : profil, rang actuel et meilleur rang, résumé, dernière session, filtres, matchs
 - [x] E:VAL : Jeu (portefeuille, packs, boutique du jour, accessoires, passe, missions, équipement) et Hub (amis, groupe), avec les jetons Riot obtenus par la fenêtre web cachée
-- [~] E:VAL : En direct, aperçu des skins et vidéos, connexion Riot visible
+- [x] E:VAL : En direct (sans partie en cours)
+- [~] E:VAL : En direct pendant une partie, aperçu des skins et vidéos, connexion Riot visible
 - [x] E:LOL : profil, rangs Solo et Flex, résumé, historique des LP, champions, matchs
 - [x] E:LOL : panneau d'un match (tableau des deux équipes)
-- [~] E:LOL : En direct, TFT, Rotation, Amis
+- [x] E:LOL : En direct (sans partie en cours), TFT (sans partie), Rotation, Amis
+- [~] E:LOL : En direct pendant une partie, TFT avec des parties
 - [x] Discord : serveurs, vue d'ensemble, modules du serveur
-- [~] Discord : pages de modules, modération, membres, tickets, concours, suggestions, journal, musique, formulaires de création
+- [x] Discord : les 46 modules ouverts sans erreur, modération, membres, tickets, concours, suggestions, journal, musique, réglages
+- [~] Discord : enregistrement des réglages, actions, formulaires de création
 - [x] Brain : discussion (état vide), menu Flows, Macros, Règles, Interactions, Personas
-- [~] Brain : réponses, résumé du jour, automatisations
+- [x] Brain : résumé du jour, Flows, Macros, Règles, Interactions, Personas (affichage)
+- [~] Brain : réponses, exécution des automatisations
 - [x] Analyses : activité
-- [~] Analyses : statistiques mail, météo, RSS, diagnostic
+- [x] Analyses : statistiques mail, météo, RSS, diagnostic
 - [x] Réglages : menu complet, Apparence
-- [~] Autres sections des Réglages, Administration
+- [x] Réglages : toutes les sections (affichage)
+- [~] Administration (réservée aux comptes administrateurs), actions qui modifient le compte
 
 ## Logique portée avec ses tests
 
@@ -117,9 +128,9 @@ Tests : 85 pour le moteur, 123 pour l'app.
 
 ## Installeur et passage depuis Tauri
 
-L'installeur est écrit en Rust et Slint, sans NSIS : `native/setup` (exe `ethone-setup.exe`, à renommer `Ethone_<version>_x64-setup.exe` pour la publication). Il embarque l'app compressée, porte le logo Ethone, suit le style de l'app (fond sombre, halos, bordure animée, transitions courtes, réduction du mouvement respectée) et s'installe par utilisateur, sans droits administrateur. Écrans : accueil (ou mise à jour, avec la version installée), progression, terminé, erreur avec « Réessayer », et désinstallation. Options : raccourci sur le bureau, lancement avec Windows. Il prend la place de l'app Tauri au même endroit : `%LOCALAPPDATA%\Ethone\ethone.exe`, mêmes clés `Software\Rub19\Ethone` et `Uninstall\Ethone`, même raccourci du menu Démarrer, même lancement avec Windows (`Ethone`, `--minimized`).
+L'installeur est écrit en Rust et Slint, sans NSIS : `native/setup`. Il porte l'app compressée à la fin de son fichier, porte le logo Ethone, suit le style de l'app (fond sombre, halos, bordure animée, transitions courtes, réduction du mouvement respectée) et s'installe par utilisateur, sans droits administrateur. Écrans : accueil (ou mise à jour, avec la version installée), progression, terminé, erreur avec « Réessayer », et désinstallation. Options : raccourci sur le bureau, lancement avec Windows. Il prend la place de l'app Tauri au même endroit : `%LOCALAPPDATA%\Ethone\ethone.exe`, mêmes clés `Software\Rub19\Ethone` et `Uninstall\Ethone`, même raccourci du menu Démarrer, même lancement avec Windows (`Ethone`, `--minimized`).
 
-Il accepte les arguments du programme de mise à jour Tauri : `/P` et `/UPDATE` (progression seule, fermeture automatique), `/S` (sans fenêtre), `/R` (relance). Il se copie en `uninstall.exe` : la désinstallation retire l'app, les raccourcis et les clés, puis se supprime elle-même. Une app Tauri installée peut donc recevoir la version native par sa mise à jour automatique, à condition de publier ce fichier dans `latest.json` avec la signature de la clé de mise à jour Tauri (étape de publication de Rub19).
+Il accepte les arguments du programme de mise à jour Tauri : `/P` et `/UPDATE` (progression seule, fermeture automatique), `/S` (sans fenêtre), `/R` (relance). Il dépose en `uninstall.exe` une copie de lui-même sans l'app : la désinstallation retire l'app, les raccourcis et les clés, puis se supprime elle-même. Une app Tauri installée peut donc recevoir la version native par sa mise à jour automatique, à condition de publier ce fichier dans `latest.json` avec la signature de la clé de mise à jour Tauri (étape de publication de Rub19).
 
 Ce qui est gardé :
 
@@ -132,18 +143,17 @@ Testé : sur une copie des vraies données Tauri, 38 réglages relus. Passage co
 Construire (depuis `desktop/native`) :
 
 ```
-cargo build -p ethone-native --release
-cargo build -p ethone-setup --release
+cargo build -p ethone-native -p ethone-setup --release
+target/release/ethone-setup.exe --pack target/release/ethone-native.exe target/release/Ethone_0.1.1_x64-setup.exe
 ```
-
-L'installeur lit `target/release/ethone-native.exe` au moment de sa construction (ou le chemin donné par `ETHONE_PAYLOAD`) : construire l'app d'abord.
 
 ## Mesures
 
 | | Tauri | Natif |
 |---|---|---|
-| Exe | 12,9 Mo, plus le runtime WebView2 de Windows | 23,9 Mo, tout compris (Slint, rendu, images, sons, fenêtre web annexe) |
-| Installeur | 8,4 Mo (NSIS de Tauri) | 19,9 Mo (Rust et Slint, app compressée incluse) |
+| Exe | 12,9 Mo, plus le runtime WebView2 de Windows | 24,3 Mo, tout compris (Slint, rendu, images, sons, fenêtre web annexe) |
+| Installeur | 8,4 Mo (NSIS) | 19,9 Mo (Rust et Slint, app compressée incluse) |
+| Désinstalleur installé | 0,08 Mo | 9,2 Mo |
 | Mémoire sur l'Accueil | pas mesurée | 196 Mo de mémoire de travail, 166 Mo privés (build `fast`, fenêtre 1770×1140) |
 
 La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aurait fait tourner le jeton de session deux fois pour rien.
@@ -152,8 +162,8 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 
 - Toutes les actions qui écrivent : envoi de mail, création, suppression, installation, mise à jour, réglages Discord.
 - Les fenêtres web annexes : connexion Riot, vidéos des skins, lecture des mails.
-- Connexion par navigateur et liens `ethone://`, zone de notification, notifications Windows, instance unique.
-- Les animations et la réduction du mouvement, le changement de thème en direct, le thème Windows (Mica), les sons.
+- Connexion par navigateur et liens `ethone://`, zone de notification, notifications Windows.
+- Les animations vues en mouvement et la réduction du mouvement, le thème Windows (Mica), les sons.
 - Les raccourcis globaux, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
 - L'installation réelle sur Windows, hors du conteneur de Claude, et la mise à jour automatique depuis l'app Tauri (latest.json signé).
-- La palette et les menus ouverts au clavier dans la vraie fenêtre affichée, hors harnais.
+- Le clavier et la souris physiques dans la vraie fenêtre affichée : tout a été joué par événements Slint, hors écran. Les boutons latéraux de la souris passent par winit et n'ont pas pu être joués ainsi.

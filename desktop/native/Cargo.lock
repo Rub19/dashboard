@@ -1307,7 +1307,7 @@ dependencies = [
 
 [[package]]
 name = "ethone-native"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -1333,7 +1333,7 @@ dependencies = [
 
 [[package]]
 name = "ethone-setup"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "embed-resource",
  "flate2",

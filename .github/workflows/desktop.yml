@@ -36,3 +36,14 @@ jobs:
       - run: cargo test --manifest-path src-tauri/Cargo.toml --locked
       - run: npm run build:setup
       - run: cargo test --manifest-path setup/Cargo.toml --locked
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: desktop/native
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --workspace --locked
+      - run: cargo build -p ethone-native -p ethone-setup --release --locked

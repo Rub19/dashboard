@@ -771,7 +771,10 @@ component Capsule {
         drop-shadow-blur: 18px;
         drop-shadow-color: #00000066;
         clip: true;
-        touch := TouchArea { }
+        touch := TouchArea {
+            mouse-cursor: pointer;
+            clicked => { Ui.act("home:spotify-open", ""); }
+        }
         Rectangle {
             x: 8px;
             y: 8px;
@@ -987,6 +990,13 @@ export component AppWindow inherits Window {
     public function focus-root() { scope.focus(); }
 
     scope := FocusScope {
+        capture-key-pressed(event) => {
+            if (Ui.enter-id != "" && event.text == Key.Return && !event.modifiers.shift) {
+                Ui.act(Ui.enter-id + ":submit", "");
+                return accept;
+            }
+            reject
+        }
         key-pressed(event) => {
             if (root.key(root.key-name(event.text), event.modifiers.control, event.modifiers.alt, event.modifiers.shift)) {
                 return accept;

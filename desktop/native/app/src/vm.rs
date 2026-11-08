@@ -213,6 +213,9 @@ pub fn kbd(title: &str) -> C {
 pub fn bar(progress: f32) -> C {
     C { kind: "bar", progress, weight: 1.0, ..Default::default() }
 }
+pub fn seek(id: &str, progress: f32) -> C {
+    C { kind: "seek", id: id.into(), progress, weight: 1.0, ..Default::default() }
+}
 pub fn gap() -> C {
     C { kind: "gap", weight: 1.0, ..Default::default() }
 }
@@ -385,7 +388,17 @@ impl Sync {
         for (at, block) in next.iter().enumerate() {
             match self.last.get(at) {
                 Some(old) if old == block => {}
-                Some(_) => self.model.set_row_data(at, block.block(None)),
+                Some(old) => {
+                    let kept = self.model.row_data(at).map(|row| row.cells).filter(|cells| old.cells.len() == block.cells.len() && cells.row_count() == block.cells.len() && old.kind == block.kind);
+                    if let Some(cells) = &kept {
+                        for (index, cell) in block.cells.iter().enumerate() {
+                            if old.cells[index] != *cell {
+                                cells.set_row_data(index, cell.cell());
+                            }
+                        }
+                    }
+                    self.model.set_row_data(at, block.block(kept));
+                }
                 None => self.model.push(block.block(None)),
             }
         }

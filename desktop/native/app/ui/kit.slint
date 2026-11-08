@@ -5,6 +5,9 @@ export global Ui {
     callback menu(id: string, x: length, y: length, width: length);
     callback tip(text: string, x: length, y: length);
     callback tip-off();
+    in property <string> focus-id;
+    in-out property <string> enter-id;
+    in property <int> focus-tick;
     in property <length> window-width;
     in property <length> window-height;
 }
@@ -255,6 +258,20 @@ export component Field {
     in property <image> icon;
     in property <bool> secret;
     in property <bool> multi;
+    in property <bool> enter-sends;
+    property <bool> focused: input.has-focus;
+    changed focused => {
+        if (root.enter-sends) {
+            Ui.enter-id = self.focused ? root.id : "";
+        }
+    }
+    property <int> focus-tick: Ui.focus-tick;
+    changed focus-tick => {
+        if (root.id != "" && root.id == Ui.focus-id) {
+            input.focus();
+            input.select-all();
+        }
+    }
     in property <bool> disabled;
     in property <bool> autofocus;
     in property <string> label;
@@ -505,6 +522,7 @@ export component CellView inherits HorizontalLayout {
         value: cell.value;
         placeholder: cell.title;
         multi: true;
+        enter-sends: cell.on;
         tall: cell.size > 0 ? cell.size : 96px;
         disabled: cell.disabled;
         label: cell.tip;
@@ -774,6 +792,19 @@ export component CellView inherits HorizontalLayout {
         Bar {
             progress: cell.progress;
             ink: cell.color.alpha > 0 ? cell.color : Theme.accent;
+        }
+    }
+    if cell.kind == "seek": Rectangle {
+        height: 14px;
+        horizontal-stretch: 1;
+        Bar {
+            width: parent.width;
+            y: (parent.height - self.height) / 2;
+            progress: cell.progress;
+        }
+        TouchArea {
+            mouse-cursor: pointer;
+            clicked => { Ui.act(cell.id, "" + (self.pressed-x / self.width)); }
         }
     }
     if cell.kind == "swatch": VerticalLayout {

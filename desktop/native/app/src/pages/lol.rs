@@ -473,12 +473,9 @@ fn tft(app: &mut App) -> Vec<B> {
         out.push(empty(&tr("Aucune partie TFT", "No TFT games"), &tr("Aucune partie récente n'est disponible pour cet identifiant.", "No recent match is available for this Riot ID.")));
         return out;
     }
-    let placements: Vec<i64> = matches.iter().filter_map(|item| item["me"]["placement"].as_i64()).filter(|place| *place > 0).collect();
-    let games = placements.len();
-    let top_four = placements.iter().filter(|place| **place <= 4).count();
-    let wins = placements.iter().filter(|place| **place == 1).count();
-    let average = if games > 0 { placements.iter().sum::<i64>() as f64 / games as f64 } else { 0.0 };
-    out.push(row(vec![stat(&tr("Parties", "Games"), &games.to_string(), ""), stat(&tr("Place moyenne", "Average place"), &decimal(average), ""), stat("Top 4", &format!("{} %", if games > 0 { (top_four as f64 / games as f64 * 100.0).round() } else { 0.0 }), &format!("{top_four}/{games}")), stat(&tr("Victoires", "Wins"), &wins.to_string(), "")]));
+    let totals = crate::logic::tft::summary(&matches);
+    let games = totals.games;
+    out.push(row(vec![stat(&tr("Parties", "Games"), &games.to_string(), ""), stat(&tr("Place moyenne", "Average place"), &decimal(totals.average), ""), stat("Top 4", &format!("{} %", totals.top_four_rate), &format!("{}/{games}", totals.top_four)), stat(&tr("Victoires", "Wins"), &totals.wins.to_string(), "")]));
     out.push(h2x(&tr("Historique", "History"), &tr(&format!("{games} parties analysées"), &format!("{games} games analyzed")), vec![]));
     let fr = fr();
     let expanded = app.state.lol.tft_expanded.clone();
@@ -486,7 +483,7 @@ fn tft(app: &mut App) -> Vec<B> {
         let key = item["id"].as_str().map_or(at.to_string(), str::to_string);
         let me = &item["me"];
         let placement = me["placement"].as_i64().unwrap_or(0);
-        let tone = if placement == 1 { "ok" } else if placement > 0 && placement <= 4 { "accent" } else if placement > 0 { "bad" } else { "" };
+        let tone = match crate::logic::tft::placement_tone(Some(placement)) { "first" => "ok", "top" => "accent", "out" => "bad", _ => "" };
         let mut sub = Vec::new();
         if let Some(set) = item["setNumber"].as_i64() {
             sub.push(format!("Set {set}"));
@@ -494,8 +491,9 @@ fn tft(app: &mut App) -> Vec<B> {
         if let Some(date) = item["playedAt"].as_str().and_then(time::parse) {
             sub.push(time::date_time(&date, fr));
         }
-        if let Some(seconds) = item["durationSeconds"].as_f64().filter(|seconds| *seconds > 0.0) {
-            sub.push(format!("{} min {} s", (seconds / 60.0).floor(), (seconds % 60.0).round()));
+        let length = crate::logic::tft::duration(item["durationSeconds"].as_f64());
+        if !length.is_empty() {
+            sub.push(length);
         }
         let metric = |value: &Value, label: String| C { kind: "stack", title: value.as_f64().map_or("–".into(), number_text), sub: label, extra: "right".into(), ..Default::default() };
         out.push(card(vec![strong(&if placement > 0 { format!("#{placement}") } else { "–".into() }).tone(tone).size(20.0), stack(item["mode"].as_str().filter(|mode| !mode.is_empty()).unwrap_or("TFT"), &sub.join(" · ")), metric(&me["level"], tr("Niveau", "Level")), metric(&me["damage"], tr("Dégâts", "Damage")), metric(&me["playersEliminated"], tr("Élim.", "Elims")), metric(&me["lastRound"], tr("Manche", "Round"))]).id(&format!("lol:tft-toggle:{key}")));

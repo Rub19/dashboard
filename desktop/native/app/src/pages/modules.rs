@@ -346,8 +346,8 @@ fn install_update(app: &mut App) {
         pubkey: Some(UPDATE_KEY.into()),
         detect: None,
         update_policy: ethone_engine::catalog::UpdatePolicy::Delegated,
-        install_args: vec!["/P".into()],
-        update_args: vec!["/P".into()],
+        install_args: vec!["/P".into(), "/R".into()],
+        update_args: vec!["/P".into(), "/R".into()],
         min_ethone: "0.1.0".into(),
         blocked_versions: Vec::new(),
         releases_url: None,
@@ -366,7 +366,7 @@ fn install_update(app: &mut App) {
                 }
             };
             let path = install::fetch_and_verify(&module, &latest, &notify).await?;
-            system::run_installer(&path, &module.update_args)?;
+            std::process::Command::new(&path).args(&module.update_args).spawn().map_err(|error| error.to_string())?;
             Ok::<(), String>(())
         },
         move |app, result| {

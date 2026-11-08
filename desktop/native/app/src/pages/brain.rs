@@ -186,7 +186,7 @@ fn chat(app: &mut App) -> Vec<B> {
         }
         out.push(error(&message, cells));
     }
-    out.push(row(vec![input("brain:input", &input_text, &tr("Écris à Brain", "Message Brain")).tip(&tr("Message pour Brain", "Message for Brain")), ibtn("brain:send", send, &tr("Envoyer (Entrée)", "Send (Enter)")).off(busy || input_text.trim().is_empty())]));
+    out.push(row(vec![area("brain:input", &input_text, &tr("Écris à Brain", "Message Brain"), 56.0).tip(&tr("Message pour Brain", "Message for Brain")).on(true), ibtn("brain:send", send, &tr("Envoyer (Entrée)", "Send (Enter)")).off(busy || input_text.trim().is_empty())]));
     out
 }
 

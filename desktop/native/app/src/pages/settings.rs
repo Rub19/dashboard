@@ -383,8 +383,8 @@ fn shortcuts() -> Vec<B> {
     let mut out = vec![head(&tr("Raccourcis", "Shortcuts"), &tr("Les raccourcis clavier de l'application.", "The app's keyboard shortcuts."), vec![])];
     let groups = [
         (tr("Navigation", "Navigation"), vec![("Ctrl+K", tr("Rechercher une application ou une action", "Search an app or action")), ("Ctrl+1 à 9", tr("Ouvrir une page de la barre latérale", "Open a sidebar page")), ("Ctrl+,", tr("Ouvrir les réglages", "Open settings")), ("Alt+←", tr("Revenir en arrière", "Go back")), ("Alt+→", tr("Aller en avant", "Go forward"))]),
-        (tr("Fenêtre", "Window"), vec![("Ctrl+Alt+E", tr("Ouvrir Ethone et la recherche depuis n'importe où", "Open Ethone and search from anywhere")), ("Ctrl+B", tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar")), ("F5", tr("Actualiser la page", "Refresh the page")), ("Échap", tr("Fermer un panneau", "Close a panel"))]),
-        ("Brain".into(), vec![(if fr() { "Entrée" } else { "Enter" }, tr("Envoyer le message", "Send the message"))]),
+        (tr("Fenêtre", "Window"), vec![("Ctrl+Alt+E", tr("Ouvrir Ethone et la recherche depuis n'importe où", "Open Ethone and search from anywhere")), ("Ctrl+F", tr("Aller au champ de recherche de la page", "Go to the page search field")), ("Ctrl+B", tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar")), ("F5", tr("Actualiser la page", "Refresh the page")), ("Échap", tr("Fermer un panneau", "Close a panel"))]),
+        ("Brain".into(), vec![(if fr() { "Entrée" } else { "Enter" }, tr("Envoyer le message", "Send the message")), (if fr() { "Maj+Entrée" } else { "Shift+Enter" }, tr("Aller à la ligne", "New line"))]),
     ];
     for (title, rows) in groups {
         out.push(h2(&title));
@@ -400,6 +400,14 @@ fn folder_size(path: &std::path::Path) -> u64 {
     }).sum()).unwrap_or(0)
 }
 
+fn free_space(path: &std::path::Path) -> Option<u64> {
+    use std::os::windows::ffi::OsStrExt;
+    let wide: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+    let mut free = 0u64;
+    let done = unsafe { windows_sys::Win32::Storage::FileSystem::GetDiskFreeSpaceExW(wide.as_ptr(), &mut free, std::ptr::null_mut(), std::ptr::null_mut()) };
+    (done != 0).then_some(free)
+}
+
 fn storage(app: &mut App) -> Vec<B> {
     let base = crate::services::data_dir();
     let cache = folder_size(&base.join("native-cache"));
@@ -408,7 +416,7 @@ fn storage(app: &mut App) -> Vec<B> {
     let _ = app;
     vec![
         head(&tr("Stockage et cache", "Storage and cache"), &tr("La place utilisée par Ethone sur ce PC.", "The space Ethone uses on this PC."), vec![]),
-        row(vec![stat(&tr("Espace utilisé", "Space used"), &format_bytes(total as f64), ""), stat(&tr("Préférences", "Preferences"), &format_bytes(preferences as f64), ""), stat(&tr("Cache", "Cache"), &format_bytes(cache as f64), "")]),
+        row(vec![stat(&tr("Espace utilisé", "Space used"), &format_bytes(total as f64), ""), stat(&tr("Préférences", "Preferences"), &format_bytes(preferences as f64), ""), stat(&tr("Cache", "Cache"), &format_bytes(cache as f64), ""), stat(&tr("Espace disponible", "Space available"), &free_space(&base).map_or("–".to_string(), |free| format_bytes(free as f64)), "")]),
         B { corners: 0, tone: "card", ..row(vec![stack(&tr("Vider le cache", "Clear the cache"), &tr("Efface les données de jeu, les images et les matchs mémorisés. Tes réglages restent.", "Clears remembered game data, images and matches. Your settings stay.")), btn("settings:clear-cache", &tr("Vider", "Clear"))]) },
     ]
 }

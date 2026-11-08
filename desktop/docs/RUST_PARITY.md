@@ -118,7 +118,7 @@ Tests : 85 pour le moteur, 125 pour l'app, 1 pour l'installeur.
 | `productivity.ts`, `tasks.ts` | `logic/productivity.rs` |
 | `eval.ts`, `match-filter.ts` | `logic/eval.rs`, `logic/mod.rs` |
 | `lol.ts` | `logic/lol.rs` |
-| `tft.ts` | dans `pages/lol.rs`, sans test séparé |
+| `tft.ts` | `logic/tft.rs` |
 | `mail.ts` | `logic/mail.rs` |
 | `weather.ts` | `logic/weather.rs` |
 | `friends.ts`, `friend-portraits.ts` | `logic/friends.rs` |

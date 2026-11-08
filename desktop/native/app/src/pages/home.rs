@@ -114,7 +114,7 @@ fn music_card(app: &mut App, out: &mut Vec<B>) {
         ibtn("music:toggle", play, &if state.playing { tr("Pause", "Pause") } else { tr("Lecture", "Play") }),
         ibtn("music:next", next, &tr("Titre suivant", "Next track")),
     ]).id("home:spotify-open"));
-    out.push(row(vec![muted(&spotify::clock(position)), bar(if track.duration_ms > 0.0 { (position / track.duration_ms) as f32 } else { 0.0 }), muted(&spotify::clock(track.duration_ms))]));
+    out.push(row(vec![muted(&spotify::clock(position)), seek("music:seek", if track.duration_ms > 0.0 { (position / track.duration_ms) as f32 } else { 0.0 }), muted(&spotify::clock(track.duration_ms))]));
 }
 
 fn tiles(app: &mut App, out: &mut Vec<B>, shown: &dyn Fn(&str) -> bool) {

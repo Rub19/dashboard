@@ -74,7 +74,10 @@ pub fn go(app: &mut App, next: &str) {
     if !navigation::page_exists(next) {
         return;
     }
-    app.with_ui(|ui| ui.set_tip_text(Default::default()));
+    app.with_ui(|ui| {
+        ui.set_tip_text(Default::default());
+        ui.invoke_focus_root();
+    });
     let current = app.page.clone();
     app.history.visit(&current, next);
     open(app, next);
@@ -185,9 +188,29 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("pin", id) => crate::pages::modules::open_pinned(app, id),
         ("account", "manage") => go(app, "settings"),
         ("account", "sign-out") => sign_out(app),
+        ("music", "seek") => {
+            let Some(duration) = app.spotify.track.as_ref().map(|track| track.duration_ms) else { return };
+            let position = (value.parse::<f64>().unwrap_or(0.0).clamp(0.0, 1.0) * duration).round();
+            if let Some(track) = &mut app.spotify.track {
+                track.progress_ms = position;
+            }
+            app.spotify.at = time::now_ms();
+            music_control(app, "seek", serde_json::json!({ "positionMs": position }));
+        }
         ("music", action) => music(app, action),
         _ => {}
     }
+}
+
+fn focus_page_search(app: &mut App) -> bool {
+    let page = crate::pages::view(app);
+    let Some(id) = page.main.iter().flat_map(|block| block.cells.iter()).find(|cell| cell.kind == "input" && !cell.id.is_empty()).map(|cell| cell.id.clone()) else { return false };
+    app.with_ui(|ui| {
+        let bridge = ui.global::<crate::Ui>();
+        bridge.set_focus_id(id.into());
+        bridge.set_focus_tick(bridge.get_focus_tick() + 1);
+    });
+    true
 }
 
 pub fn toggle_sidebar(app: &mut App) {
@@ -378,7 +401,7 @@ pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bo
             "k" => open_palette(app),
             "," => go(app, "settings"),
             "b" => toggle_sidebar(app),
-            "f" => return false,
+            "f" => return focus_page_search(app),
             digit if digit.len() == 1 && digit.as_bytes()[0].is_ascii_digit() && digit != "0" => {
                 if let Some(page) = PAGE_ORDER.get(digit.parse::<usize>().unwrap_or(1) - 1) {
                     go(app, page);

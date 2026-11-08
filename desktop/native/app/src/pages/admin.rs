@@ -82,7 +82,7 @@ pub fn view(app: &mut App) -> Vec<B> {
         let size = format_bytes(data["sizeBytes"].as_f64().unwrap_or(0.0));
         let when = data["uploadedAt"].as_str().and_then(time::parse).map(|date| format!(", {}", time::date_time(&date, fr))).unwrap_or_default();
         format!("{size}{when}")
-    }).unwrap_or_else(|| tr("Le jeu du site est servi tel quel.", "The site game is served as is."));
+    }).unwrap_or_else(|| tr("Le serveur utilise GitHub, puis sa copie de secours.", "The server uses GitHub, then its backup copy."));
     let upload = app.icon("upload");
     let mut cells = vec![stack(&if active { tr("Version manuelle active", "Manual version active") } else { tr("Version automatique", "Automatic version") }, &detail), btn("admin:upload", &tr("Envoyer un fichier HTML", "Upload an HTML file")).icon(upload)];
     if active {

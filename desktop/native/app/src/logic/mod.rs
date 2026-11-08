@@ -8,6 +8,7 @@ pub mod palette;
 pub mod productivity;
 pub mod settings;
 pub mod spotify;
+pub mod tft;
 pub mod time;
 pub mod weather;
 

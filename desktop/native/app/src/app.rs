@@ -496,11 +496,15 @@ impl App {
 
     pub fn close_drawer(&mut self) {
         self.drawer = None;
+        self.with_ui(|ui| ui.invoke_focus_root());
     }
 
     pub fn act(&mut self, id: &str, value: &str) {
         self.with_ui(|ui| ui.set_tip_text(SharedString::default()));
         pages::dispatch(self, id, value);
+        if [":section:", ":tab:", ":module:", ":pane:", ":home"].iter().any(|part| id.contains(part)) {
+            self.with_ui(|ui| ui.invoke_focus_root());
+        }
     }
 
     pub fn render(&mut self) {

@@ -168,7 +168,21 @@ mod tests {
         assert!(download_path(&modules[0], "..\\..\\x").is_err());
     }
 
-    async fn verify_real(id: &str) {
+#[test]
+    #[ignore]
+    fn published_files_verify() {
+        let dir = std::path::PathBuf::from(std::env::var("ETHONE_PUBLISH_DIR").expect("ETHONE_PUBLISH_DIR"));
+        let feed = crate::feed::parse_tauri(&std::fs::read_to_string(dir.join("latest.json")).expect("latest.json")).expect("flux");
+        let name = feed.url.as_deref().and_then(|url| url.rsplit('/').next()).expect("url").to_string();
+        let data = std::fs::read(dir.join(name)).expect("installeur");
+        let key = std::env::var("ETHONE_PUBLISH_PUB").expect("ETHONE_PUBLISH_PUB");
+        verify(&data, feed.signature.as_deref().expect("signature"), key.trim()).expect("signature valide");
+        let mut altered = data.clone();
+        altered[0] ^= 1;
+        assert!(verify(&altered, feed.signature.as_deref().expect("signature"), key.trim()).is_err());
+    }
+
+        async fn verify_real(id: &str) {
         let modules = load().unwrap();
         let module = modules.iter().find(|m| m.id == id).unwrap();
         let latest = feed::fetch(&module.feed).await.unwrap().unwrap();

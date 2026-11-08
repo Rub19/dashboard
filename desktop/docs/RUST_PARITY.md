@@ -147,6 +147,10 @@ cargo build -p ethone-native -p ethone-setup --release
 target/release/ethone-setup.exe --pack target/release/ethone-native.exe target/release/Ethone_0.1.1_x64-setup.exe
 ```
 
+## Préparer une version
+
+`node desktop/native/tools/release.mjs` construit l'app et l'installeur, signe avec la clé Tauri (`TAURI_SIGNING_PRIVATE_KEY`) et écrit `latest.json` dans `target/publish`. Rien n'est publié. Essayé avec une clé jetable : signature acceptée par le moteur, fichier modifié refusé. L'app native est en 0.2.0, au-dessus de la dernière version Tauri publiée (0.1.1).
+
 ## Mesures
 
 | | Tauri | Natif |

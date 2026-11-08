@@ -99,7 +99,7 @@ writeFileSync(join(app, "src", "icons_table.rs"), rust);
 
 const assets = join(app, "assets");
 mkdirSync(assets, { recursive: true });
-for (const file of readdirSync(join(src, "assets", "modules")).filter((name) => !["kairo.png", "hdv-tracker.png"].includes(name))) copyFileSync(join(src, "assets", "modules", file), join(assets, file));
+for (const file of readdirSync(join(src, "assets", "modules")).filter((name) => !["kairo.png", "hdv-tracker.png", "kairo-v2.png", "hdv-tracker-v2.png"].includes(name))) copyFileSync(join(src, "assets", "modules", file), join(assets, file));
 copyFileSync(join(src, "assets", "ethone-logo.png"), join(assets, "ethone-logo.png"));
 if (!existsSync(join(app, "assets", "icon.ico"))) copyFileSync(join(desktop, "src-tauri", "icons", "icon.ico"), join(assets, "icon.ico"));
 console.log(`${table.length} icônes`);

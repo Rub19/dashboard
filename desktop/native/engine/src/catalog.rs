@@ -27,6 +27,8 @@ pub enum Feed {
 pub struct Detect {
     pub uninstall_key: String,
     pub exe: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub legacy: Option<Box<Detect>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

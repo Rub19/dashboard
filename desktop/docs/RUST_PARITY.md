@@ -78,7 +78,8 @@ Tests : 85 pour le moteur, 125 pour l'app, 1 pour l'installeur.
 
 - [x] Accueil : salutation, Spotify, mails non lus, rangs VALORANT et League, météo, concentration, tâches, derniers mails, applications
 - [x] Applications : versions installées, mises à jour disponibles, boutons
-- [~] Installer, mettre à jour, ouvrir dans Ethone, HDV Tracker en arrière-plan
+- [x] HDV Tracker renommé Argus, nouveaux logos d'Argus et de Kairo. Argus est cherché dans `%LOCALAPPDATA%\\Argus\\argus.exe` (clé `Argus`), avec repli sur l'ancien `hdv-tracker.exe` tant qu'Argus n'est pas publié : repli vu sur la vraie installation 1.5.0
+- [~] Installer, mettre à jour, ouvrir dans Ethone, Argus en arrière-plan (`--background`, `--stop-background`)
 - [x] Productivité : tâches, calendrier, notes, mémo, capture rapide, habitudes, concentration, factures (affichage)
 - [~] Productivité : création, modification, suppression, sons d'ambiance
 - [x] Fichiers : liste, recherche, état vide

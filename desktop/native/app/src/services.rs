@@ -211,7 +211,7 @@ impl ModuleStatus {
 
 pub fn status(module: &Module, latest: Option<feed::Latest>, feed_error: Option<String>) -> ModuleStatus {
     let (installed, running) = match &module.detect {
-        Some(detect) => (system::read_installed(detect).map(|info| info.version), system::is_running(&detect.exe).unwrap_or(false)),
+        Some(detect) => (system::read_installed(detect).map(|info| info.version), system::app_running(detect).unwrap_or(false)),
         None => (None, false),
     };
     let action = decide(module, &Facts { installed: installed.as_deref(), latest: latest.as_ref().map(|item| item.version.as_str()), running, ethone: VERSION });

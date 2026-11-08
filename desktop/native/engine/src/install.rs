@@ -90,7 +90,7 @@ pub async fn run(module: &Module, ethone: &str, on: &(dyn Fn(Progress) + Send + 
     let detect = module.detect.as_ref().ok_or("Ce module ne s'installe pas")?;
     let latest = feed::fetch(&module.feed).await?.ok_or("Aucune version disponible")?;
     let before = system::read_installed(detect).map(|i| i.version);
-    let running = system::is_running(&detect.exe)?;
+    let running = system::app_running(detect)?;
     let facts = Facts { installed: before.as_deref(), latest: Some(&latest.version), running, ethone };
     let args = match decide(module, &facts) {
         Action::Install => module.install_args.clone(),
@@ -101,7 +101,7 @@ pub async fn run(module: &Module, ethone: &str, on: &(dyn Fn(Progress) + Send + 
 
     let path = fetch_and_verify(module, &latest, on).await?;
 
-    if system::is_running(&detect.exe)? {
+    if system::app_running(detect)? {
         let _ = std::fs::remove_file(&path);
         return Err(format!("{} vient de démarrer, installation annulée", module.name));
     }
@@ -212,7 +212,7 @@ mod tests {
             let outcome = run(module, "0.1.0", &silent).await.unwrap();
             let installed = system::read_installed(detect).unwrap();
             assert_eq!(installed.version, outcome.to);
-            assert!(installed.dir.unwrap().join(&detect.exe).is_file());
+            assert!(installed.dir.unwrap().join(&installed.exe).is_file());
             println!("{id} installé : {}", outcome.to);
             let again = run(module, "0.1.0", &silent).await;
             assert!(again.is_err(), "{id} : une seconde installation doit être refusée");

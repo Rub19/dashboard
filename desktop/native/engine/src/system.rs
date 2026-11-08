@@ -13,13 +13,41 @@ const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 pub struct Installed {
     pub version: String,
     pub dir: Option<PathBuf>,
+    pub exe: String,
 }
 
 fn unquote(text: &str) -> &str {
     text.trim().trim_matches('"')
 }
 
+pub fn variants(detect: &Detect) -> Vec<&Detect> {
+    let mut out = vec![detect];
+    let mut current = detect;
+    while let Some(next) = current.legacy.as_deref() {
+        out.push(next);
+        current = next;
+    }
+    out
+}
+
 pub fn read_installed(detect: &Detect) -> Option<Installed> {
+    variants(detect).into_iter().find_map(read_one)
+}
+
+pub fn active_exe(detect: &Detect) -> String {
+    read_installed(detect).map_or_else(|| detect.exe.clone(), |installed| installed.exe)
+}
+
+pub fn app_running(detect: &Detect) -> Result<bool, String> {
+    for variant in variants(detect) {
+        if is_running(&variant.exe)? {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn read_one(detect: &Detect) -> Option<Installed> {
     let path = format!(r"{UNINSTALL_ROOT}\{}", detect.uninstall_key);
     let path_32 = format!(r"{UNINSTALL_ROOT_32}\{}", detect.uninstall_key);
     let key = RegKey::predef(HKEY_CURRENT_USER)
@@ -37,7 +65,7 @@ pub fn read_installed(detect: &Detect) -> Option<Installed> {
         .get_value::<String, _>("DisplayIcon")
         .ok()
         .and_then(|text| Path::new(unquote(&text)).parent().map(Path::to_path_buf));
-    Some(Installed { version, dir: location.or(icon) })
+    Some(Installed { version, dir: location.or(icon), exe: detect.exe.clone() })
 }
 
 pub fn is_listed(output: &str, exe: &str) -> bool {
@@ -74,7 +102,7 @@ fn launch_error(error: &std::io::Error) -> String {
 pub fn launch_with(detect: &Detect, args: &[&str]) -> Result<(), String> {
     let installed = read_installed(detect).ok_or("Application introuvable dans Windows")?;
     let dir = installed.dir.ok_or("Dossier d'installation inconnu")?;
-    let exe = dir.join(&detect.exe);
+    let exe = dir.join(&installed.exe);
     if !exe.is_file() {
         return Err(format!("Fichier manquant : {}", exe.display()));
     }
@@ -121,7 +149,7 @@ mod tests {
 
     #[test]
     fn a_missing_key_means_not_installed() {
-        let detect = Detect { uninstall_key: "Ethone-Clé-Inexistante".into(), exe: "x.exe".into() };
+        let detect = Detect { uninstall_key: "Ethone-Clé-Inexistante".into(), exe: "x.exe".into(), legacy: None };
         assert_eq!(read_installed(&detect), None);
     }
 
@@ -131,5 +159,15 @@ mod tests {
         let name = exe.file_name().unwrap().to_str().unwrap();
         assert!(is_running(name).unwrap());
         assert!(!is_running("ethone-programme-absent.exe").unwrap());
+    }
+
+    #[test]
+    fn the_old_name_is_kept_as_a_variant() {
+        let modules = crate::catalog::load().unwrap();
+        let detect = modules.iter().find(|module| module.id == "hdv-tracker").and_then(|module| module.detect.as_ref()).unwrap();
+        let names: Vec<&str> = variants(detect).iter().map(|variant| variant.exe.as_str()).collect();
+        assert_eq!(names, ["argus.exe", "hdv-tracker.exe"]);
+        let absent = Detect { uninstall_key: "Ethone-Absent".into(), exe: "new.exe".into(), legacy: Some(Box::new(Detect { uninstall_key: "Ethone-Absent-2".into(), exe: "old.exe".into(), legacy: None })) };
+        assert_eq!(active_exe(&absent), "new.exe");
     }
 }

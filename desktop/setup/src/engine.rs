@@ -12,7 +12,7 @@ const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/payload.exe"));
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
 pub fn ethone() -> Detect {
-    Detect { uninstall_key: "Ethone".into(), exe: "ethone.exe".into() }
+    Detect { uninstall_key: "Ethone".into(), exe: "ethone.exe".into(), legacy: None }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

@@ -135,7 +135,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
                     prefs_now.hdv_background = on;
                     spawn(async move { crate::pages::modules::hdv_background(on) }, |app, result| match result {
                         Ok(state) => app.state.settings.hdv = Some(state),
-                        Err(_) => app.toast_bad(&tr("HDV Tracker n'a pas répondu", "HDV Tracker did not respond")),
+                        Err(_) => app.toast_bad(&tr("Argus n'a pas répondu", "Argus did not respond")),
                     });
                 }
                 _ => {}
@@ -356,15 +356,15 @@ fn windows(app: &mut App) -> Vec<B> {
     }
     let prefs_now: DesktopPrefs = background::read_prefs();
     let hdv_text = match app.state.settings.hdv.as_deref() {
-        Some("absent") => tr("HDV Tracker n'est pas installé.", "HDV Tracker is not installed."),
-        Some("needsUpdate") => tr("Mets à jour HDV Tracker en version 1.6 pour l'activer.", "Update HDV Tracker to version 1.6 to enable this."),
+        Some("absent") => tr("Argus n'est pas installé.", "Argus is not installed."),
+        Some("needsUpdate") => tr("Mets à jour Argus en version 1.6 pour l'activer.", "Update Argus to version 1.6 to enable this."),
         Some("running") => tr("Actif : les prix sont relevés tant qu'Ethone est ouvert.", "Active: prices are tracked while Ethone is open."),
         _ => tr("Relève les prix sans fenêtre tant qu'Ethone est ouvert.", "Tracks prices with no window while Ethone is open."),
     };
     let mut rows = vec![
         switch_row("settings:autostart", &tr("Lancer avec Windows", "Start with Windows"), &tr("Ethone démarre réduit dans la zone de notification.", "Ethone starts minimized to the notification area."), app.state.settings.autostart.unwrap_or(false)),
         switch_row("settings:pref:closeToTray", &tr("Réduire à la fermeture", "Minimize on close"), &tr("La croix garde Ethone actif dans la zone de notification.", "The close button keeps Ethone running in the notification area."), prefs_now.close_to_tray),
-        switch_row("settings:pref:hdvBackground", &tr("HDV Tracker en arrière-plan", "HDV Tracker in the background"), &hdv_text, prefs_now.hdv_background),
+        switch_row("settings:pref:hdvBackground", &tr("Argus en arrière-plan", "Argus in the background"), &hdv_text, prefs_now.hdv_background),
         switch_row("settings:pref:notifyMail", &tr("Notifier les nouveaux mails", "Notify new mail"), &tr("Vérifié toutes les 2 minutes tant qu'Ethone est ouvert.", "Checked every 2 minutes while Ethone is open."), prefs_now.notify_mail),
         switch_row("settings:pref:quiet", &tr("Ne pas déranger", "Do not disturb"), &tr("Aucune notification sur cette plage horaire.", "No notifications during these hours."), prefs_now.quiet),
     ];
@@ -497,7 +497,7 @@ fn journal(app: &mut App) -> Vec<B> {
         let label = if operation == "install" || operation == "open" { t(&format!("operation.{operation}")) } else { operation.to_string() };
         let stamp = value["time"].as_f64().map(|seconds| time::date_time(&time::from_ms(seconds * 1000.0), fr)).unwrap_or_default();
         let success = value["ok"] == true;
-        row(vec![icon(if success { ok.clone() } else { bad.clone() }).tone(if success { "ok" } else { "bad" }), stack(value["module"].as_str().unwrap_or_default(), &format!("{label} : {}", value["detail"].as_str().unwrap_or_default())), muted(&stamp)])
+        row(vec![icon(if success { ok.clone() } else { bad.clone() }).tone(if success { "ok" } else { "bad" }), stack(crate::services::svc().modules.iter().find(|module| Some(module.id.as_str()) == value["module"].as_str()).map_or(value["module"].as_str().unwrap_or_default(), |module| module.name.as_str()), &format!("{label} : {}", value["detail"].as_str().unwrap_or_default())), muted(&stamp)])
     }).collect()));
     out
 }

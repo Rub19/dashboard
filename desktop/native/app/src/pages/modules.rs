@@ -115,7 +115,8 @@ fn open_module(id: &str) -> Result<(), String> {
     let module = svc().modules.iter().find(|module| module.id == id).ok_or("Module inconnu")?;
     if let Some(detect) = &module.detect {
         embed::detach(id);
-        if system::is_running(&detect.exe).unwrap_or(false) && embed::bring_forward(&detect.exe) {
+        let exe = system::active_exe(detect);
+        if system::app_running(detect).unwrap_or(false) && embed::bring_forward(&exe) {
             return Ok(());
         }
         system::launch(detect)?;
@@ -160,7 +161,7 @@ pub fn hdv_background(enabled: bool) -> Result<String, String> {
     if version < semver_min() {
         return Ok("needsUpdate".into());
     }
-    let running = system::is_running(&detect.exe)?;
+    let running = system::app_running(detect)?;
     if enabled {
         if !running {
             system::launch_with(detect, &["--background"])?;
@@ -230,12 +231,13 @@ fn open_embedded(app: &mut App, id: &str) {
     });
     spawn(
         async move {
-            let mut found = embed::find_window(&detect.exe);
+            let exe = system::active_exe(&detect);
+            let mut found = embed::find_window(&exe);
             if found.is_none() {
                 system::launch(&detect)?;
                 for _ in 0..80 {
                     tokio::time::sleep(std::time::Duration::from_millis(250)).await;
-                    found = embed::find_window(&detect.exe);
+                    found = embed::find_window(&exe);
                     if found.is_some() {
                         break;
                     }

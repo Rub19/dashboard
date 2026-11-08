@@ -23,7 +23,7 @@
     },
     {
       "id": "hdv-tracker",
-      "name": "HDV Tracker",
+      "name": "Argus",
       "summary": {
         "fr": "Carnet de prix du /ah de Rinaorc SkyBlock.",
         "en": "Price notebook for the Rinaorc SkyBlock /ah."
@@ -31,7 +31,7 @@
       "repo": "Rub19/hdv-tracker",
       "feed": { "kind": "tauri", "url": "https://hdv.ethone.dev/updates/latest.json" },
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEyOTNGNUEwRTQyNzM3MzcKUldRM055ZmtvUFdUb29NQTVIb0REbURFR1ZOM2dNM05FZy9xRGZIQXFhREEyc1NyNURyMXRDOHEK",
-      "detect": { "uninstallKey": "HDV Tracker", "exe": "hdv-tracker.exe" },
+      "detect": { "uninstallKey": "Argus", "exe": "argus.exe", "legacy": { "uninstallKey": "HDV Tracker", "exe": "hdv-tracker.exe" } },
       "updatePolicy": "delegated",
       "installArgs": ["/S"],
       "updateArgs": ["/S"],

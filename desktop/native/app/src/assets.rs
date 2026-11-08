@@ -18,9 +18,12 @@ pub fn logo() -> Image {
 }
 
 pub fn app_icon(id: &str) -> Option<Image> {
+    match id {
+        "kairo" => return Image::load_from_svg_data(include_bytes!("../assets/kairo.svg")).ok(),
+        "hdv-tracker" => return Image::load_from_svg_data(include_bytes!("../assets/argus.svg")).ok(),
+        _ => {}
+    }
     let bytes: &[u8] = match id {
-        "kairo" => include_bytes!("../assets/kairo-v2.png"),
-        "hdv-tracker" => include_bytes!("../assets/hdv-tracker-v2.png"),
         "interior-studio" => include_bytes!("../assets/interior-studio.png"),
         "nova-pc-suite" => include_bytes!("../assets/nova-pc-suite.png"),
         _ => return None,

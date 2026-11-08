@@ -748,6 +748,9 @@ fn overview_facts(app: &mut App, spec: &Value, guild: &str, out: &mut Vec<B>) {
     for chunk in facts.chunks(4) {
         out.push(row(chunk.to_vec()));
     }
+    if !spec["configs"].is_array() && !spec["lists"].is_array() {
+        crate::pages::generic::json_fields(&data, 0, out);
+    }
 }
 
 fn module_view(app: &mut App, spec: &'static Value, guild: &str) -> Vec<B> {
@@ -772,13 +775,18 @@ fn module_view(app: &mut App, spec: &'static Value, guild: &str) -> Vec<B> {
         }
     }
     actions.extend(create_buttons(app, id));
-    let mut out = vec![head(spec["title"].as_str().unwrap_or_default(), "", actions)];
+    let crowded = actions.len() > 2;
+    let mut out = if crowded { vec![head(spec["title"].as_str().unwrap_or_default(), "", vec![]), row(actions)] } else { vec![head(spec["title"].as_str().unwrap_or_default(), "", actions)] };
     message_block(app, &mut out);
     overview_facts(app, spec, guild, &mut out);
     let mut panes: Vec<(String, String)> = spec["configs"].as_array().into_iter().flatten().enumerate().map(|(at, config)| (at.to_string(), config["title"].as_str().unwrap_or_default().to_string())).collect();
     panes.extend(spec["lists"].as_array().into_iter().flatten().enumerate().map(|(at, list)| (format!("l{at}"), list["title"].as_str().unwrap_or_default().to_string())));
     let active = panes.iter().find(|(pane, _)| *pane == app.state.discord.pane).or(panes.first()).map(|(pane, _)| pane.clone()).unwrap_or_default();
-    if panes.len() > 1 {
+    if panes.len() > 4 {
+        let options: Vec<(String, String)> = panes.clone();
+        let picker = app.select("discord:pane-select", &active, &options);
+        out.push(row(vec![muted(&tr("Section", "Section")), picker, gap()]));
+    } else if panes.len() > 1 {
         let items: Vec<(&str, &str)> = panes.iter().map(|(pane, title)| (pane.as_str(), title.as_str())).collect();
         out.push(tabs(&items, &active, "discord:pane:"));
     }
@@ -886,7 +894,7 @@ fn overview(app: &mut App, current: &Value) -> Vec<B> {
     let points = chart.data.as_ref().and_then(|data| data["timeSeries"].as_array().cloned()).unwrap_or_default();
     if !points.is_empty() {
         let value = |point: &Value| point["messages"].as_f64().unwrap_or(0.0) + point["commands"].as_f64().unwrap_or(0.0);
-        let total: f64 = points.iter().map(value).sum();
+        let total: f64 = points.iter().map(value).fold(0.0, |total, value| total + value);
         let peak = points.iter().map(value).fold(0.0, f64::max);
         out.push(h2x(&tr("Activité sur 7 jours", "Activity over 7 days"), &tr(&format!("{} messages et commandes", number_text(total)), &format!("{} messages and commands", number_text(total))), vec![]));
         if total == 0.0 {
@@ -1005,8 +1013,8 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             }
             app.state.discord.query.clear();
         }
-        "pane" => {
-            app.state.discord.pane = arg.into();
+        "pane" | "pane-select" => {
+            app.state.discord.pane = if verb == "pane" { arg.into() } else { value.into() };
             app.state.discord.confirm = None;
         }
         "refresh" => app.forget(&format!("discord:{current}:")),

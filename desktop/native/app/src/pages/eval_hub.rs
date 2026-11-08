@@ -337,9 +337,7 @@ fn hub_drawer(app: &mut App) -> Vec<B> {
             }
             out.push(h2(&tr("Apparences", "Skins")));
             let cells: Vec<C> = item["skins"].as_array().into_iter().flatten().filter(|skin| skin["displayIcon"].is_string()).map(|skin| C { kind: "variant", id: format!("eval:skin:{}", skin["uuid"].as_str().unwrap_or_default()), title: skin["displayName"].as_str().unwrap_or_default().into(), image: app.img(skin["displayIcon"].as_str().unwrap_or_default()), weight: 1.0, ..Default::default() }).collect();
-            for chunk in cells.chunks(3) {
-                out.push(row(chunk.to_vec()).gap(6.0));
-            }
+            out.extend(grid(cells, 3, 6.0));
         }
     }
     out
@@ -631,9 +629,7 @@ fn collection(app: &mut App, linked: bool) -> Vec<B> {
     let mut out = vec![head(&format!("{} ({})", tr("Mes skins", "My skins"), rows.len()), "", vec![]), row(vec![pick, input("eval:collection-query", &query, &tr("Chercher un skin", "Find a skin"))])];
     let needle = query.trim().to_lowercase();
     let cells: Vec<C> = rows.iter().filter(|row| (weapon.is_empty() || row.1 == weapon) && (needle.is_empty() || row.2.to_lowercase().contains(&needle))).map(|(id, _, name, icon_url)| C { kind: "variant", id: format!("eval:skin:{id}"), title: name.clone(), image: app.img(icon_url), weight: 1.0, ..Default::default() }).collect();
-    for chunk in cells.chunks(4) {
-        out.push(row(chunk.to_vec()).gap(6.0));
-    }
+    out.extend(grid(cells, 4, 6.0));
     out
 }
 
@@ -785,9 +781,7 @@ fn lineups(app: &mut App) -> Vec<B> {
         let thumb = item["images"][0].as_str().map(str::to_string).unwrap_or_else(|| if video.is_empty() { String::new() } else { format!("https://img.youtube.com/vi/{}/hqdefault.jpg", encode(video.split('?').next().unwrap_or_default())) });
         C { kind: "offer", id: format!("eval:lineup-open:{}", item["id"].as_str().unwrap_or_default()), title: item["name"].as_str().unwrap_or_default().into(), sub: format!("{}, {}", lineup_agent(item["agent"].as_i64().unwrap_or(0)), lineup_map(item["mapId"].as_i64().unwrap_or(0))), tip: item["description"].as_str().unwrap_or_default().into(), image: app.img(&thumb), weight: 1.0, ..Default::default() }
     }).collect();
-    for chunk in cells.chunks(3) {
-        out.push(row(chunk.to_vec()));
-    }
+    out.extend(grid(cells, 3, 0.0));
     out
 }
 

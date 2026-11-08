@@ -225,6 +225,19 @@ fn start_work(ui: &SetupWindow, mode: Mode, target: Rc<Target>, relaunch: bool, 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let exe_name = std::env::current_exe().ok().and_then(|path| path.file_name().map(|name| name.to_string_lossy().into_owned())).unwrap_or_default();
+    if args.first().map(String::as_str) == Some("--pack") {
+        let (Some(app), Some(out)) = (args.get(1), args.get(2)) else {
+            eprintln!("ethone-setup --pack <ethone-native.exe> <Ethone_x.y.z_x64-setup.exe>");
+            std::process::exit(2);
+        };
+        match engine::pack(std::path::Path::new(app), std::path::Path::new(out)) {
+            Ok(()) => std::process::exit(0),
+            Err(message) => {
+                eprintln!("{message}");
+                std::process::exit(1);
+            }
+        }
+    }
     let parsed = parse(&args, &exe_name);
     let target = Rc::new(Target::current());
     if parsed.silent {
@@ -244,6 +257,13 @@ fn main() {
         .select();
     let ui = SetupWindow::new().expect("fenêtre");
     fill_texts(&ui, parsed.mode, &target);
+    if parsed.mode == Mode::Install {
+        if let Err(message) = engine::own_payload() {
+            ui.set_heading(tr("Installeur incomplet", "Incomplete installer").into());
+            ui.set_error_text(message.into());
+            ui.set_screen("error".into());
+        }
+    }
     let weak = ui.as_weak();
     ui.on_close_window(move || {
         if let Some(ui) = weak.upgrade() {

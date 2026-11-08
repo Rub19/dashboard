@@ -365,9 +365,7 @@ pub fn skin_viewer(app: &mut App, id: &str, price: Option<i64>, equip: bool) -> 
             let swatch = app.img(item["swatch"].as_str().unwrap_or_default());
             C { kind: "variant", id: format!("eval:chroma:{at}"), title: chroma_label(item, at), image: swatch, on: at == chroma_at, weight: 1.0, ..Default::default() }
         }).collect();
-        for chunk in cells.chunks(4) {
-            out.push(row(chunk.to_vec()).gap(6.0));
-        }
+        out.extend(grid(cells, 4, 6.0));
     }
     if equip {
         let level_id = level["uuid"].as_str().unwrap_or_default().to_lowercase();
@@ -445,9 +443,7 @@ fn bundle_drawer(app: &mut App) -> Vec<B> {
         let image = app.img(item["image"].as_str().unwrap_or_default());
         C { kind: "offer", id: format!("eval:bundle-item:{at}"), title: item["name"].as_str().unwrap_or_default().into(), sub: item["kind"].as_str().unwrap_or_default().into(), value: if *price == 0 { tr("Offert", "Free") } else { money(*price) }, extra: if base > price { money(*base) } else { String::new() }, image, weight: 1.0, ..Default::default() }
     }).collect();
-    for chunk in cells.chunks(3) {
-        out.push(row(chunk.to_vec()));
-    }
+    out.extend(grid(cells, 3, 0.0));
     out
 }
 
@@ -475,9 +471,7 @@ fn picker_drawer(app: &mut App) -> Vec<B> {
             let art = app.img(item["smallArt"].as_str().unwrap_or_default());
             C { kind: "variant", id: format!("eval:pick:{uuid}"), title: item["displayName"].as_str().unwrap_or_default().into(), image: art, on: uuid.eq_ignore_ascii_case(&current), disabled: busy, weight: 1.0, ..Default::default() }
         }).collect();
-        for chunk in cells.chunks(4) {
-            out.push(row(chunk.to_vec()).gap(6.0));
-        }
+        out.extend(grid(cells, 4, 6.0));
     } else {
         out.extend(group(items.iter().filter(|item| item["titleText"].as_str().is_some_and(|text| !text.is_empty())).map(|item| {
             let uuid = item["uuid"].as_str().unwrap_or_default();
@@ -521,9 +515,7 @@ fn gun_drawer(app: &mut App) -> Vec<B> {
         let picture = app.img(level["displayIcon"].as_str().or(skin["displayIcon"].as_str()).unwrap_or_default());
         C { kind: "variant", id: format!("eval:gun-detail:{}", skin["uuid"].as_str().unwrap_or_default()), title: skin["displayName"].as_str().unwrap_or_default().into(), image: picture, on: *equipped, weight: 1.0, ..Default::default() }
     }).collect();
-    for chunk in cells.chunks(3) {
-        out.push(row(chunk.to_vec()).gap(6.0));
-    }
+    out.extend(grid(cells, 3, 6.0));
     out.push(note(&tr("Pour revenir à l'apparence de base, utilise le jeu.", "To go back to the base skin, use the game.")));
     out
 }
@@ -550,9 +542,7 @@ fn live_player_drawer(app: &mut App) -> Vec<B> {
         let picture = if app.image_failed.contains(&full) { app.img(&format!("{MEDIA}/weaponskinchromas/{chroma}/displayicon.png")) } else { app.img(&full) };
         C { kind: "variant", title: name, image: picture, weight: 1.0, ..Default::default() }
     }).collect();
-    for chunk in cells.chunks(3) {
-        out.push(row(chunk.to_vec()).gap(6.0));
-    }
+    out.extend(grid(cells, 3, 6.0));
     out
 }
 
@@ -606,9 +596,7 @@ pub fn game_view(app: &mut App, linked: bool) -> Vec<B> {
             let price = offer["Cost"][VP].as_i64().unwrap_or(0);
             C { kind: "offer", id: format!("eval:skin:{id}|{price}"), title: skin.as_ref().and_then(|skin| skin["displayName"].as_str()).map_or_else(|| tr("Chargement…", "Loading…"), str::to_string), sub: tier.map_or(String::new(), |(_, label)| label.to_string()), value: money(price), image: app.img(icon_url), color: tier.map(|(color, _)| hex(color)), weight: 1.0, ..Default::default() }
         }).collect();
-        for chunk in cells.chunks(2) {
-            out.push(row(chunk.to_vec()));
-        }
+        out.extend(grid(cells, 2, 0.0));
         let accessories = front["AccessoryStore"]["AccessoryStoreOffers"].as_array().cloned().unwrap_or_default();
         if !accessories.is_empty() {
             let left = front["AccessoryStore"]["AccessoryStoreRemainingDurationInSeconds"].as_i64();
@@ -621,9 +609,7 @@ pub fn game_view(app: &mut App, linked: bool) -> Vec<B> {
                 let image = item.as_ref().map(|item| app.img(item["image"].as_str().unwrap_or_default())).unwrap_or_default();
                 Some(C { kind: "offer", id: if item.is_some() { format!("eval:accessory:{}", offer["OfferID"].as_str().unwrap_or_default()) } else { String::new() }, title: item.as_ref().and_then(|item| item["name"].as_str()).unwrap_or(" ").into(), sub: item.as_ref().and_then(|item| item["kind"].as_str()).unwrap_or_default().into(), value: number_text(price as f64), image, weight: 1.0, ..Default::default() })
             }).collect();
-            for chunk in cells.chunks(4) {
-                out.push(row(chunk.to_vec()));
-            }
+            out.extend(grid(cells, 4, 0.0));
         }
     } else if store.loading {
         out.extend(skeletons(2, 150.0));
@@ -767,9 +753,7 @@ fn loadout(app: &mut App, out: &mut Vec<B>) {
         let picture = level_icon.or_else(|| skin.as_ref().and_then(|skin| skin["displayIcon"].as_str().map(str::to_string))).or_else(|| weapon.and_then(|weapon| weapon["displayIcon"].as_str().map(str::to_string))).unwrap_or_default();
         C { kind: "offer", id: if weapon.is_some() { format!("eval:gun:{id}") } else { String::new() }, title: skin.as_ref().and_then(|skin| skin["displayName"].as_str()).or(weapon.and_then(|weapon| weapon["displayName"].as_str())).unwrap_or_default().into(), sub: weapon.and_then(|weapon| weapon["displayName"].as_str()).unwrap_or_default().into(), image: app.img(&picture), weight: 1.0, ..Default::default() }
     }).collect();
-    for chunk in guns.chunks(3) {
-        out.push(row(chunk.to_vec()));
-    }
+    out.extend(grid(guns, 3, 0.0));
     out.push(h2(&tr("Profils d'apparences", "Appearance profiles")));
     let name = app.state.game.profile_name.clone();
     out.push(row(vec![input("eval:profile-name", &name, &tr("Nom du profil", "Profile name")), btn("eval:profile-save", &tr("Enregistrer l'équipement", "Save loadout")).off(name.trim().is_empty())]));

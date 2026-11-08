@@ -173,7 +173,7 @@ fn tiles(app: &mut App, out: &mut Vec<B>, shown: &dyn Fn(&str) -> bool) {
     if shown("focus") {
         let history: Vec<Value> = prefs::read_json("ethone-focus-history").unwrap_or_default();
         let today = time::day_key(&Local::now());
-        let seconds: f64 = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).sum();
+        let seconds: f64 = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).fold(0.0, |total, value| total + value);
         cells.push(tile("go:productivity", &tr("Concentration aujourd'hui", "Focus today"), &format!("{} min", (seconds / 60.0).round() as i64), ""));
     }
     for chunk in cells.chunks(3) {

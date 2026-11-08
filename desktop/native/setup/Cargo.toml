@@ -17,4 +17,3 @@ windows = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Com"
 [build-dependencies]
 slint-build = "=1.18.1"
 embed-resource = "3"
-flate2 = "1"

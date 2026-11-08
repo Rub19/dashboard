@@ -74,6 +74,7 @@ pub fn go(app: &mut App, next: &str) {
     if !navigation::page_exists(next) {
         return;
     }
+    app.with_ui(|ui| ui.set_tip_text(Default::default()));
     let current = app.page.clone();
     app.history.visit(&current, next);
     open(app, next);
@@ -404,6 +405,7 @@ pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bo
 
 pub fn render_chrome(app: &mut App, ui: &AppWindow) {
     let page = app.page.clone();
+    let compact = app.compact || ui.window().size().to_logical(ui.window().scale_factor()).width < 1100.0;
     let mut nav: Vec<Item> = Vec::new();
     let mut y = 0.0f32;
     let mut active: Option<f32> = None;
@@ -411,7 +413,7 @@ pub fn render_chrome(app: &mut App, ui: &AppWindow) {
     for (label, pages) in GROUPS {
         if let Some((fr, en)) = label {
             nav.push(Item { kind: "head".into(), label: tr(fr, en).into(), ..Default::default() });
-            y += if app.compact { 12.0 } else { 30.0 };
+            y += if compact { 12.0 } else { 30.0 };
         }
         for id in pages {
             if *id == page {
@@ -430,14 +432,18 @@ pub fn render_chrome(app: &mut App, ui: &AppWindow) {
             nav.push(Item { id: format!("pin:{id}").into(), label: name.into(), hint: id.into(), icon: image, kind: "pin".into(), dot: running, ..Default::default() });
         }
     }
-    ui.set_nav(ModelRc::new(VecModel::from(nav)));
+    if let Some(fresh) = crate::app::keep_rows(ui.get_nav(), nav) {
+        ui.set_nav(fresh);
+    }
     let settings_icon = app.icon("settings");
-    ui.set_foot(ModelRc::new(VecModel::from(vec![Item { id: "go:settings".into(), label: page_label("settings").into(), icon: settings_icon, on: page == "settings", ..Default::default() }])));
+    if let Some(fresh) = crate::app::keep_rows(ui.get_foot(), vec![Item { id: "go:settings".into(), label: page_label("settings").into(), icon: settings_icon, on: page == "settings", ..Default::default() }]) {
+        ui.set_foot(fresh);
+    }
     ui.set_has_active(active.is_some());
     ui.set_active_y(active.unwrap_or(0.0));
     ui.set_active_tint(hex(page_tint(&page)));
     ui.global::<crate::Theme>().set_tint(hex(page_tint(&page)));
-    ui.set_compact(app.compact);
+    ui.set_compact(compact);
     let (brand, name, mono) = match page.as_str() {
         "tracker" => (app.icon("valorant"), "E:VAL", true),
         "games" => (app.icon("league"), "E:LOL", true),

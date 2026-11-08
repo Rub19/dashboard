@@ -259,9 +259,7 @@ fn panel(app: &mut App) -> Vec<B> {
                 stat(&tr("Balises posées", "Wards placed"), &number_text(number("wardsPlaced")), ""),
                 stat(&tr("Contrôle infligé", "Crowd control"), &format!("{} s", number_text(number("timeCCingOthers"))), ""),
             ];
-            for chunk in cells.chunks(3) {
-                out.push(row(chunk.to_vec()));
-            }
+            out.extend(grid(cells, 3, 0.0));
         }
         return out;
     }
@@ -396,7 +394,7 @@ fn profile(app: &mut App, id: &str) -> (Vec<B>, Vec<B>) {
         let line = lol_line(item);
         crate::logic::keep_match(&result, &mode, &pick, line.won, line.remake, &mode_label(item["metadata"]["modeName"].as_str().unwrap_or_default(), fr), item["metadata"]["agentName"].as_str().unwrap_or_default())
     }).collect();
-    filters.push(muted(&tr(&format!("{} sur {}", shown.len(), matches.len()), &format!("{} of {}", shown.len(), matches.len()))));
+    filters.push(muted(&format!("{}/{}", shown.len(), matches.len())));
     main.push(row(filters));
     let table = assets(app);
     let mut day = String::new();
@@ -542,9 +540,7 @@ fn rotation(app: &mut App) -> Vec<B> {
         }
         out.push(h2(&title));
         let cells: Vec<C> = rows.iter().map(|champion| C { kind: "variant", title: format!("{}{}", champion["name"].as_str().unwrap_or_default(), champion["title"].as_str().map_or(String::new(), |title| format!(", {title}"))), image: app.img(champion["icon"].as_str().unwrap_or_default()), weight: 1.0, ..Default::default() }).collect();
-        for chunk in cells.chunks(6) {
-            out.push(row(chunk.to_vec()).gap(6.0));
-        }
+        out.extend(grid(cells, 6, 6.0));
     }
     out
 }

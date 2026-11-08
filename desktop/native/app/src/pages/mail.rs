@@ -70,8 +70,8 @@ fn side() -> Vec<(String, String, String, String)> {
         out.push((format!("mail:section:{folder}"), folder_label(folder), folder_icon(folder).into(), String::new()));
     }
     out.push((String::new(), tr("Gestion", "Manage"), String::new(), String::new()));
-    for id in ["contacts", "aliases", "labels", "rules", "templates", "signatures"] {
-        out.push((format!("mail:section:{id}"), manage_info(id).map(|info| info.0).unwrap_or_default(), String::new(), String::new()));
+    for (id, icon) in [("contacts", "users"), ("aliases", "mail-open"), ("labels", "tag"), ("rules", "workflow"), ("templates", "file-text"), ("signatures", "pen-line")] {
+        out.push((format!("mail:section:{id}"), manage_info(id).map(|info| info.0).unwrap_or_default(), icon.into(), String::new()));
     }
     out
 }

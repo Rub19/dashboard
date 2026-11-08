@@ -340,6 +340,14 @@ pub fn tabs(items: &[(&str, &str)], active: &str, prefix: &str) -> B {
 pub fn seg(items: &[(&str, &str)], active: &str, prefix: &str) -> B {
     B { kind: "seg", ..tabs(items, active, prefix) }
 }
+pub fn grid(cells: Vec<C>, columns: usize, gap: f32) -> Vec<B> {
+    cells.chunks(columns.max(1)).map(|chunk| {
+        let mut line = chunk.to_vec();
+        line.resize_with(columns.max(1), || C { kind: "spacer", weight: 1.0, ..Default::default() });
+        row(line).gap(gap)
+    }).collect()
+}
+
 pub fn group(rows: Vec<B>) -> Vec<B> {
     let last = rows.len().saturating_sub(1);
     rows.into_iter().enumerate().map(|(at, mut row)| {

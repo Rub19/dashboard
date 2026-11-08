@@ -194,6 +194,9 @@ pub fn dump_blocks(app: &mut App) -> String {
     }
     let page = view(app);
     let mut out = format!("PAGE {} stage={stage}\n", app.page);
+    for (id, label, _, _) in page.side.iter().filter(|(id, ..)| !id.is_empty()) {
+        out.push_str(&format!("SIDE {id} | {label}\n"));
+    }
     out.extend(page.main.iter().map(line));
     out.push_str("ASIDE\n");
     out.extend(page.aside.iter().map(line));

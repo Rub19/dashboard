@@ -1076,6 +1076,9 @@ export component CellView inherits HorizontalLayout {
             clicked => { Ui.act(cell.id, ""); }
         }
     }
+    if cell.kind == "spacer": Rectangle {
+        horizontal-stretch: 1;
+    }
     if cell.kind == "gap": Rectangle {
         horizontal-stretch: 1;
         min-width: cell.size;

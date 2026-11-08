@@ -71,23 +71,31 @@ component SideNav {
     in property <length> active-y;
     in property <bool> has-active;
     width: 196px;
+    function reveal() {
+        if (root.active-y + flick.content-y < 0px) {
+            flick.content-y = 8px - root.active-y;
+        } else if (root.active-y + 40px + flick.content-y > flick.height) {
+            flick.content-y = flick.height - root.active-y - 40px;
+        }
+    }
+    changed active-y => { root.reveal(); }
     Rectangle {
         background: Theme.sidebar;
         border-radius: 12px;
     }
-    Rectangle {
-        x: 8px;
-        y: root.active-y;
-        visible: root.has-active;
-        width: parent.width - 16px;
-        height: 32px;
-        border-radius: 8px;
-        background: Theme.control-hover;
-        animate y { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
-    }
-    Flickable {
+    flick := Flickable {
         content-height: col.preferred-height;
         interactive: false;
+        Rectangle {
+            x: 8px;
+            y: root.active-y;
+            visible: root.has-active;
+            width: root.width - 16px;
+            height: 32px;
+            border-radius: 8px;
+            background: Theme.control-hover;
+            animate y { duration: Theme.mid; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        }
         col := VerticalLayout {
             padding: 8px;
             for item in root.items: Rectangle {

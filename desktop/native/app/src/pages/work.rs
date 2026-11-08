@@ -624,7 +624,7 @@ fn focus(app: &mut App) -> Vec<B> {
     let history: Vec<Value> = prefs::read_json(FOCUS_KEY).unwrap_or_default();
     let today = time::day_key(&Local::now());
     let today_entries: Vec<&Value> = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).collect();
-    let seconds: f64 = today_entries.iter().map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).sum();
+    let seconds: f64 = today_entries.iter().map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).fold(0.0, |total, value| total + value);
     let (play, pause, reset) = (app.icon("play"), app.icon("pause"), app.icon("rotate-ccw"));
     let mut out = vec![head(&tr("Concentration", "Focus"), &tr("Les séances terminées sont gardées sur ce PC.", "Finished sessions are kept on this PC."), vec![])];
     out.push(B { kind: "ring", title: format!("{:02}:{:02}", left / 60, left % 60), path: ring_path(progress), height: 240.0, progress, ..Default::default() });
@@ -690,7 +690,7 @@ fn bills(app: &mut App) -> Vec<B> {
     let (label, amount, due, busy) = (state.bill_label.clone(), state.bill_amount.clone(), state.bill_due.clone(), state.saving);
     let mut list: Vec<Value> = res.data.as_deref().and_then(Value::as_array).cloned().unwrap_or_default();
     list.sort_by(|left, right| (left["data"]["paid"] == true).cmp(&(right["data"]["paid"] == true)).then_with(|| left["data"]["dueDate"].as_str().unwrap_or("").cmp(right["data"]["dueDate"].as_str().unwrap_or(""))));
-    let left: f64 = list.iter().filter(|bill| bill["data"]["paid"] != true).map(|bill| bill["data"]["amount"].as_f64().unwrap_or(0.0)).sum();
+    let left: f64 = list.iter().filter(|bill| bill["data"]["paid"] != true).map(|bill| bill["data"]["amount"].as_f64().unwrap_or(0.0)).fold(0.0, |total, value| total + value);
     let mut out = vec![head(&tr("Factures", "Bills"), &tr("Synchronisées avec ton compte Ethone.", "Synced with your Ethone account."), vec![])];
     out.push(row(vec![stat(&tr("Reste à payer", "Left to pay"), &money(left, fr), ""), stat(&tr("Factures", "Bills"), &list.len().to_string(), "")]));
     out.push(row(vec![input("work:bill-label", &label, &tr("Nom de la facture", "Bill name")), input("work:bill-amount", &amount, &tr("Montant", "Amount")), input("work:bill-due", &due, &tr("Échéance AAAA-MM-JJ", "Due YYYY-MM-DD")), primary("work:bill-add", &tr("Ajouter", "Add")).off(busy || label.trim().is_empty() || parse_amount(&amount).is_none())]));

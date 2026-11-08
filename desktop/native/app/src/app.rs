@@ -161,6 +161,18 @@ fn model<T: Clone + 'static>(items: Vec<T>) -> ModelRc<T> {
     ModelRc::new(VecModel::from(items))
 }
 
+pub fn keep_rows<T: Clone + PartialEq + 'static>(current: ModelRc<T>, next: Vec<T>) -> Option<ModelRc<T>> {
+    if current.row_count() != next.len() {
+        return Some(model(next));
+    }
+    for (at, item) in next.into_iter().enumerate() {
+        if current.row_data(at).as_ref() != Some(&item) {
+            current.set_row_data(at, item);
+        }
+    }
+    None
+}
+
 pub fn start(ui: &AppWindow, hidden: bool) {
     let runtime = tokio::runtime::Builder::new_multi_thread().worker_threads(2).enable_all().build().expect("runtime");
     services::init(runtime.handle().clone());
@@ -487,6 +499,7 @@ impl App {
     }
 
     pub fn act(&mut self, id: &str, value: &str) {
+        self.with_ui(|ui| ui.set_tip_text(SharedString::default()));
         pages::dispatch(self, id, value);
     }
 
@@ -510,7 +523,9 @@ impl App {
             let y = side_active.map_or(0.0, |at| items[..at].iter().map(|item| if item.kind == "head" { 28.0 } else { 32.0 }).sum::<f32>() + 8.0);
             ui.set_side_active(side_active.is_some());
             ui.set_side_y(y);
-            ui.set_side(model(items));
+            if let Some(fresh) = keep_rows(ui.get_side(), items) {
+                ui.set_side(fresh);
+            }
             self.main.apply(page.main);
             self.aside.apply(page.aside);
             ui.set_aside_width(if page.aside_width > 0.0 { page.aside_width } else { 340.0 });
@@ -602,5 +617,28 @@ pub fn pick_menu(app: &mut App, index: &str) {
     app.close_menu();
     if let Some(entry) = chosen {
         app.act(&entry.id, &entry.value);
+    }
+}
+
+#[cfg(test)]
+mod keep_rows_tests {
+    use super::*;
+
+    #[test]
+    fn rows_are_updated_in_place_when_the_count_is_the_same() {
+        let current = model(vec![1, 2, 3]);
+        assert!(keep_rows(current.clone(), vec![1, 9, 3]).is_none());
+        assert_eq!(current.row_data(1), Some(9));
+        let fresh = keep_rows(current, vec![1, 2]).expect("nouveau modèle");
+        assert_eq!(fresh.row_count(), 2);
+    }
+
+    #[test]
+    fn grids_keep_their_columns_on_the_last_row() {
+        let cells = vec![crate::vm::text("a"), crate::vm::text("b"), crate::vm::text("c")];
+        let rows = crate::vm::grid(cells, 2, 6.0);
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[1].cells.len(), 2);
+        assert_eq!(rows[1].cells[1].kind, "spacer");
     }
 }

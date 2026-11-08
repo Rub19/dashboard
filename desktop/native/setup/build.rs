@@ -1,4 +1,3 @@
-use std::io::Write;
 use std::path::PathBuf;
 
 fn app_version(root: &std::path::Path) -> String {
@@ -10,19 +9,11 @@ fn main() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let out = PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR"));
     slint_build::compile("ui/setup.slint").expect("slint");
-    let payload = std::env::var("ETHONE_PAYLOAD").map(PathBuf::from).unwrap_or_else(|_| root.join("../target/release/ethone-native.exe"));
-    println!("cargo:rerun-if-env-changed=ETHONE_PAYLOAD");
-    println!("cargo:rerun-if-changed={}", payload.display());
     println!("cargo:rerun-if-changed=../app/Cargo.toml");
     println!("cargo:rerun-if-changed=../app/assets/ethone.ico");
     println!("cargo:rerun-if-changed=../app/assets/ethone-logo.png");
-    let bytes = std::fs::read(&payload).unwrap_or_default();
-    let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::best());
-    encoder.write_all(&bytes).expect("compression");
-    std::fs::write(out.join("payload.bin"), encoder.finish().expect("compression")).expect("payload");
     let version = app_version(&root);
     println!("cargo:rustc-env=ETHONE_VERSION={version}");
-    println!("cargo:rustc-env=ETHONE_PAYLOAD_SIZE={}", bytes.len());
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }

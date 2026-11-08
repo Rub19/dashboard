@@ -86,6 +86,50 @@ fn run_line(line: &str) -> bool {
                 });
             }
         }
+        "move" | "wheel" | "rclick" | "mback" | "mforward" => {
+            let parts: Vec<f32> = rest.split_whitespace().filter_map(|part| part.parse().ok()).collect();
+            if parts.len() >= 2 {
+                let verb = verb.to_string();
+                on_ui(move |ui| {
+                    let position = LogicalPosition::new(parts[0], parts[1]);
+                    let window = ui.window();
+                    window.dispatch_event(WindowEvent::PointerMoved { position });
+                    let button = match verb.as_str() {
+                        "rclick" => Some(PointerEventButton::Right),
+                        "mback" => Some(PointerEventButton::Back),
+                        "mforward" => Some(PointerEventButton::Forward),
+                        _ => None,
+                    };
+                    if let Some(button) = button {
+                        window.dispatch_event(WindowEvent::PointerPressed { position, button });
+                        window.dispatch_event(WindowEvent::PointerReleased { position, button });
+                    }
+                    if verb == "wheel" {
+                        window.dispatch_event(WindowEvent::PointerScrolled { position, delta_x: 0.0, delta_y: parts.get(2).copied().unwrap_or(-120.0) });
+                    }
+                });
+            }
+        }
+        "state" => on_ui(move |ui| {
+            let line = with_app(|app| format!("{rest}: page={} palette={} menu={} drawer={} compact={} scroll={:.0} size={:?}\n", app.page, app.palette_open, app.menu_open.is_some(), app.drawer.is_some(), app.compact, ui.get_main_scroll().abs(), ui.window().size())).unwrap_or_default();
+            if let Some(path) = std::env::var_os("ETHONE_DRIVE_LOG") {
+                if let Ok(mut file) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                    let _ = file.write_all(line.as_bytes());
+                }
+            }
+        }),
+        "alt" => on_ui(move |ui| {
+            let modifier: SharedString = Key::Alt.into();
+            let code: SharedString = match rest.as_str() {
+                "left" => Key::LeftArrow.into(),
+                "right" => Key::RightArrow.into(),
+                other => other.into(),
+            };
+            ui.window().dispatch_event(WindowEvent::KeyPressed { text: modifier.clone() });
+            ui.window().dispatch_event(WindowEvent::KeyPressed { text: code.clone() });
+            ui.window().dispatch_event(WindowEvent::KeyReleased { text: code });
+            ui.window().dispatch_event(WindowEvent::KeyReleased { text: modifier });
+        }),
         "type" => on_ui(move |ui| {
             for character in rest.chars() {
                 let text = SharedString::from(character.to_string());

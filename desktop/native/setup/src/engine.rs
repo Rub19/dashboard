@@ -6,8 +6,8 @@ use winreg::enums::{HKEY_CURRENT_USER, KEY_READ, KEY_SET_VALUE};
 use winreg::RegKey;
 
 pub const VERSION: &str = env!("ETHONE_VERSION");
-const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/payload.bin"));
-const PAYLOAD_SIZE: &str = env!("ETHONE_PAYLOAD_SIZE");
+const MAGIC: &[u8; 8] = b"ETHONEPK";
+const TRAILER: usize = 24;
 const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
 const NO_WINDOW: u32 = 0x0800_0000;
 const DETACHED: u32 = 0x0000_0008;
@@ -80,13 +80,53 @@ pub fn stop_app(target: &Target) {
     std::thread::sleep(std::time::Duration::from_millis(600));
 }
 
-fn write_payload(target: &Path, progress: &dyn Fn(f32)) -> Result<(), String> {
-    let total: f64 = PAYLOAD_SIZE.parse().unwrap_or(0.0);
-    if PAYLOAD.is_empty() || total == 0.0 {
+pub struct Payload {
+    pub data: Vec<u8>,
+    pub size: u64,
+    pub program_len: usize,
+}
+
+pub fn split(bytes: &[u8]) -> (usize, Option<(usize, u64)>) {
+    if bytes.len() < TRAILER || &bytes[bytes.len() - 8..] != MAGIC {
+        return (bytes.len(), None);
+    }
+    let field = |at: usize| u64::from_le_bytes(bytes[at..at + 8].try_into().unwrap_or([0; 8]));
+    let size = field(bytes.len() - TRAILER);
+    let packed = field(bytes.len() - 16) as usize;
+    let Some(program_len) = bytes.len().checked_sub(TRAILER + packed) else { return (bytes.len(), None) };
+    (program_len, Some((packed, size)))
+}
+
+pub fn own_payload() -> Result<Payload, String> {
+    let bytes = std::fs::read(std::env::current_exe().map_err(|error| error.to_string())?).map_err(|error| error.to_string())?;
+    let (program_len, found) = split(&bytes);
+    let Some((packed, size)) = found else { return Err("Cet installeur ne contient pas l'application.".into()) };
+    Ok(Payload { data: bytes[program_len..program_len + packed].to_vec(), size, program_len })
+}
+
+pub fn pack(app: &Path, out: &Path) -> Result<(), String> {
+    let own = std::fs::read(std::env::current_exe().map_err(|error| error.to_string())?).map_err(|error| error.to_string())?;
+    let (program_len, _) = split(&own);
+    let app_bytes = std::fs::read(app).map_err(|error| format!("{}: {error}", app.display()))?;
+    let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::best());
+    encoder.write_all(&app_bytes).map_err(|error| error.to_string())?;
+    let packed = encoder.finish().map_err(|error| error.to_string())?;
+    let mut file = Vec::with_capacity(program_len + packed.len() + TRAILER);
+    file.extend_from_slice(&own[..program_len]);
+    file.extend_from_slice(&packed);
+    file.extend_from_slice(&(app_bytes.len() as u64).to_le_bytes());
+    file.extend_from_slice(&(packed.len() as u64).to_le_bytes());
+    file.extend_from_slice(MAGIC);
+    std::fs::write(out, file).map_err(|error| error.to_string())
+}
+
+fn write_payload(payload: &Payload, target: &Path, progress: &dyn Fn(f32)) -> Result<(), String> {
+    let total = payload.size as f64;
+    if total == 0.0 {
         return Err("Cet installeur ne contient pas l'application.".into());
     }
     let temp = target.with_extension("exe.new");
-    let mut decoder = flate2::read::DeflateDecoder::new(PAYLOAD);
+    let mut decoder = flate2::read::DeflateDecoder::new(payload.data.as_slice());
     let mut file = std::fs::File::create(&temp).map_err(|error| error.to_string())?;
     let mut buffer = vec![0u8; 256 * 1024];
     let mut written = 0usize;
@@ -144,21 +184,23 @@ pub fn install(target: &Target, choices: &Choices, step: &dyn Fn(&str, f32)) -> 
     step("stop", 0.02);
     stop_app(target);
     std::fs::create_dir_all(&target.dir).map_err(|error| error.to_string())?;
+    let payload = own_payload()?;
     step("copy", 0.05);
-    write_payload(&target.exe(), &|part| step("copy", 0.05 + part * 0.8))?;
+    write_payload(&payload, &target.exe(), &|part| step("copy", 0.05 + part * 0.8))?;
     step("register", 0.88);
     let own = std::env::current_exe().map_err(|error| error.to_string())?;
     let uninstaller = target.dir.join("uninstall.exe");
     if own != uninstaller {
+        let program = std::fs::read(&own).map_err(|error| error.to_string())?;
         let _ = std::fs::remove_file(&uninstaller);
-        std::fs::copy(&own, &uninstaller).map_err(|error| error.to_string())?;
+        std::fs::write(&uninstaller, &program[..payload.program_len]).map_err(|error| error.to_string())?;
     }
     let root = RegKey::predef(HKEY_CURRENT_USER);
     let (app, _) = root.create_subkey(&target.app_key).map_err(|error| error.to_string())?;
     app.set_value("", &target.dir.display().to_string()).map_err(|error| error.to_string())?;
     let (key, _) = root.create_subkey(&target.uninstall_key).map_err(|error| error.to_string())?;
     let exe = target.exe().display().to_string();
-    let size_kb = (PAYLOAD_SIZE.parse::<u64>().unwrap_or(0) / 1024) as u32;
+    let size_kb = (payload.size / 1024) as u32;
     for (name, value) in [
         ("DisplayName", "Ethone".to_string()),
         ("DisplayVersion", VERSION.to_string()),
@@ -232,19 +274,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn payload_round_trips() {
+    fn packed_files_round_trip() {
+        let program = b"MZprogram".to_vec();
+        assert_eq!(split(&program), (program.len(), None));
+        let app = b"application".repeat(1000);
+        let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::best());
+        encoder.write_all(&app).expect("compression");
+        let packed = encoder.finish().expect("compression");
+        let mut file = program.clone();
+        file.extend_from_slice(&packed);
+        file.extend_from_slice(&(app.len() as u64).to_le_bytes());
+        file.extend_from_slice(&(packed.len() as u64).to_le_bytes());
+        file.extend_from_slice(MAGIC);
+        let (program_len, found) = split(&file);
+        assert_eq!(program_len, program.len());
+        assert_eq!(found, Some((packed.len(), app.len() as u64)));
         let dir = std::env::temp_dir().join(format!("ethone-setup-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).expect("dossier");
         let target = dir.join("ethone.exe");
         let seen = std::cell::Cell::new(0.0f32);
-        let result = write_payload(&target, &|part| seen.set(part));
-        if PAYLOAD_SIZE == "0" {
-            assert!(result.is_err());
-        } else {
-            result.expect("copie");
-            assert_eq!(std::fs::metadata(&target).expect("taille").len().to_string(), PAYLOAD_SIZE);
-            assert!((seen.get() - 1.0).abs() < 1e-6);
-        }
+        write_payload(&Payload { data: packed, size: app.len() as u64, program_len }, &target, &|part| seen.set(part)).expect("copie");
+        assert_eq!(std::fs::read(&target).expect("lecture"), app);
+        assert!((seen.get() - 1.0).abs() < 1e-6);
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

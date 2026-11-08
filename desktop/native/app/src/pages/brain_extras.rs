@@ -88,7 +88,7 @@ fn briefing_data() -> Fut {
         }).collect();
         today_events.sort_by(|left, right| left.0.total_cmp(&right.0));
         let history: Vec<Value> = prefs::read_json("ethone-focus-history").unwrap_or_default();
-        let focus: f64 = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).sum();
+        let focus: f64 = history.iter().filter(|entry| entry["completedAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == today)).map(|entry| entry["seconds"].as_f64().unwrap_or(0.0)).fold(0.0, |total, value| total + value);
         let done_ids: Vec<&Value> = done.as_array().into_iter().flatten().map(|item| &item["habit_id"]).collect();
         Ok(json!({
             "events": today_events.into_iter().map(|(_, text)| text).collect::<Vec<_>>(),
@@ -113,7 +113,7 @@ pub fn briefing_text(data: &Value) -> String {
     if let Some(unread) = data["unread"].as_i64() {
         lines.push(format!("Mails non lus : {unread}."));
     }
-    lines.push(format!("Concentration aujourd'hui : {} min.", data["focus"]));
+    lines.push(format!("Concentration aujourd'hui : {} min.", data["focus"].as_f64().unwrap_or(0.0).round() as i64));
     lines.join("\n")
 }
 
@@ -404,7 +404,7 @@ fn briefing(app: &mut App) -> Vec<B> {
     if let Some(unread) = data["unread"].as_i64() {
         cells.push(muted(&tr(&format!("{unread} mail(s) non lu(s)"), &format!("{unread} unread email(s)"))));
     }
-    cells.push(muted(&tr(&format!("{} min de concentration", data["focus"]), &format!("{} min of focus", data["focus"]))));
+    cells.push(muted(&tr(&format!("{} min de concentration", data["focus"].as_f64().unwrap_or(0.0).round() as i64), &format!("{} min of focus", data["focus"].as_f64().unwrap_or(0.0).round() as i64))));
     cells.push(gap());
     cells.push(primary("brain:briefing-ask", &if app.state.extras.busy { tr("Brain réfléchit…", "Brain is thinking…") } else { tr("Demander à Brain", "Ask Brain") }).icon(sparkles).off(app.state.extras.busy));
     out.push(row(cells));

@@ -565,7 +565,7 @@ pub fn view(app: &mut App) -> Page {
         crate::logic::keep_match(&result, &mode, &pick, summary.as_ref().is_some_and(|summary| summary.won), summary.as_ref().is_some_and(|summary| summary.draw), &mode_name(item["mode"].as_str().unwrap_or_default()), summary.as_ref().map_or("", |summary| summary.me["agent"].as_str().unwrap_or_default()))
     }).collect();
     let mut row_filters = filters;
-    row_filters.push(muted(&tr(&format!("{} sur {}", shown.len(), matches.len()), &format!("{} of {}", shown.len(), matches.len()))));
+    row_filters.push(muted(&format!("{}/{}", shown.len(), matches.len())));
     main.push(row(row_filters));
     let images = map_images(app);
     let history: Vec<Value> = account["mmr"]["history"].as_array().cloned().unwrap_or_default();

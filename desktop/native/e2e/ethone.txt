@@ -1,0 +1,78 @@
+# Parcours d'Ethone par événements Slint, compte connecté, navigation seulement (rien n'est envoyé ni modifié)
+wait 5000
+expect Bonjour
+snap 01-accueil
+
+click Applications
+wait 1500
+snap 02-applications
+click Productivité
+wait 1500
+snap 03-productivite
+click Fichiers
+wait 1500
+snap 04-fichiers
+click Mail
+wait 2500
+snap 05-mail
+click Équipe
+wait 1500
+snap 06-equipe
+click E:VAL
+wait 2500
+snap 07-eval
+click E:LOL
+wait 2500
+snap 08-elol
+click Discord
+wait 2500
+snap 09-discord
+click Brain
+wait 1500
+snap 10-brain
+click Analyses
+wait 1500
+snap 11-analyses
+click Réglages
+wait 1500
+snap 12-reglages
+
+click Page précédente (Alt+←)
+wait 800
+click Page suivante (Alt+→)
+wait 800
+key Alt+Left
+wait 800
+key Alt+Right
+wait 800
+
+click Accueil
+wait 1500
+expect Bonjour
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|mail
+wait 600
+snap 13-palette
+expect Mail
+key Escape
+wait 600
+
+click Productivité
+wait 1500
+click Accueil
+wait 1500
+key Ctrl+k
+wait 600
+snap 14-palette-apres-navigation
+expect Récents
+key Escape
+wait 600
+absent Récents
+
+key Ctrl+b
+wait 800
+snap 15-barre-reduite
+key Ctrl+b
+wait 800
+expect Travail

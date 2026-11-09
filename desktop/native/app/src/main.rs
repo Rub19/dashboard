@@ -10,6 +10,8 @@ mod clipboard;
 mod dialogs;
 #[cfg(feature = "drive")]
 mod drive;
+#[cfg(feature = "e2e")]
+mod e2e;
 mod i18n;
 mod icons_table;
 mod logic;
@@ -52,6 +54,12 @@ fn main() {
     app::start(&ui, hidden);
     ui.show().expect("affichage");
     win::after_show(&ui, hidden);
+    #[cfg(feature = "e2e")]
+    e2e::start(&ui, "ETHONE", std::rc::Rc::new(|ui: &AppWindow, name: &str| {
+        if let Ok(dir) = std::env::var("ETHONE_E2E_SNAP") {
+            drive::snapshot(ui, &format!("{dir}/{name}.png"));
+        }
+    }));
     slint::run_event_loop_until_quit().expect("boucle");
     let _ = ui.hide();
 }

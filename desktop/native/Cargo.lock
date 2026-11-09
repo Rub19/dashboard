@@ -1314,6 +1314,7 @@ dependencies = [
  "embed-resource",
  "ethone-engine",
  "futures-util",
+ "i-slint-backend-testing",
  "image",
  "keyring",
  "notify-rust",

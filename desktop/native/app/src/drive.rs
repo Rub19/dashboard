@@ -15,7 +15,7 @@ fn on_ui(work: impl FnOnce(&AppWindow) + Send + 'static) {
     });
 }
 
-fn snapshot(ui: &AppWindow, path: &str) {
+pub fn snapshot(ui: &AppWindow, path: &str) {
     let Ok(buffer) = ui.window().take_snapshot() else { return };
     let (width, height) = (buffer.width(), buffer.height());
     let bytes: Vec<u8> = buffer.as_bytes().to_vec();

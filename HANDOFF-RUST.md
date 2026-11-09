@@ -64,7 +64,7 @@ Vérifié dans le vrai exe, hors écran, connecté au compte de Rub19 :
 
 ### Encore possible
 
-- Passe sur les animations et nouvelles fonctions utiles : à peine commencée (menus animés, Ctrl+Alt+E).
+- Passe sur les animations : revue avec la règle du skill animate. Déjà conformes : menus (fondu et échelle 0,96 depuis le coin), tiroir, toasts, indicateurs de la barre latérale, secousse d'erreur ; palette Ctrl+K instantanée, ce qui est voulu pour un raccourci clavier. Ajouté : appui sur les boutons (échelle 0,97, et 0,92 pour les boutons à icône, 120 ms), coupé avec la réduction des animations. Ressenti à vérifier par Rub19 avec la vraie souris. Nouvelles fonctions : Ctrl+Alt+E seulement.
 - L'installeur pèse 19,9 Mo contre 8,4 Mo avec NSIS, et le désinstalleur 9,2 Mo.
 - Mémoire Tauri non mesurée. Natif sur l'Accueil : 196 Mo de mémoire de travail.
 - Le journal montre des lancements de HDV Tracker bloqués le 3 novembre 2026 par Windows (virus ou logiciel indésirable signalé) : à regarder par Rub19, sans toucher à Defender.

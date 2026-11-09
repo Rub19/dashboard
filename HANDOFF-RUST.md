@@ -107,3 +107,8 @@ target/release/ethone-setup.exe --pack target/release/ethone-native.exe target/r
 ```
 
 Test de l'installeur sans toucher à l'Ethone installé : `ETHONE_SETUP_TEST=1`, plus `ETHONE_SETUP_OFFSCREEN=1` ou `ETHONE_SETUP_SNAP=<dossier>`.
+
+## Parcours de bout en bout (événements Slint)
+
+`powershell -File desktop/native/e2e/run.ps1` compile avec la fonction `e2e` (absente des builds installés) et rejoue `desktop/native/e2e/ethone.txt` hors écran : clics par libellé accessible ou texte affiché, frappe touche par touche, raccourcis, vérifications, capture à chaque échec. Journal et captures dans `%TEMP%`. 72 étapes avec le vrai compte, navigation seulement : toutes les sections, Alt+←/→, palette Ctrl+K avant et après navigation, Ctrl+B. Refuse de tourner si Ethone est ouvert.
+Limite : un élément coupé par le clip d'un parent compte encore comme visible.

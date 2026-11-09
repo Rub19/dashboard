@@ -104,13 +104,17 @@ pub fn own_payload() -> Result<Payload, String> {
     Ok(Payload { data: bytes[program_len..program_len + packed].to_vec(), size, program_len })
 }
 
+pub fn compress(bytes: &[u8]) -> Result<Vec<u8>, String> {
+    let mut encoder = xz2::write::XzEncoder::new(Vec::new(), 9 | 0x8000_0000);
+    encoder.write_all(bytes).map_err(|error| error.to_string())?;
+    encoder.finish().map_err(|error| error.to_string())
+}
+
 pub fn pack(app: &Path, out: &Path) -> Result<(), String> {
     let own = std::fs::read(std::env::current_exe().map_err(|error| error.to_string())?).map_err(|error| error.to_string())?;
     let (program_len, _) = split(&own);
     let app_bytes = std::fs::read(app).map_err(|error| format!("{}: {error}", app.display()))?;
-    let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::best());
-    encoder.write_all(&app_bytes).map_err(|error| error.to_string())?;
-    let packed = encoder.finish().map_err(|error| error.to_string())?;
+    let packed = compress(&app_bytes)?;
     let mut file = Vec::with_capacity(program_len + packed.len() + TRAILER);
     file.extend_from_slice(&own[..program_len]);
     file.extend_from_slice(&packed);
@@ -126,7 +130,7 @@ fn write_payload(payload: &Payload, target: &Path, progress: &dyn Fn(f32)) -> Re
         return Err("Cet installeur ne contient pas l'application.".into());
     }
     let temp = target.with_extension("exe.new");
-    let mut decoder = flate2::read::DeflateDecoder::new(payload.data.as_slice());
+    let mut decoder = xz2::read::XzDecoder::new(payload.data.as_slice());
     let mut file = std::fs::File::create(&temp).map_err(|error| error.to_string())?;
     let mut buffer = vec![0u8; 256 * 1024];
     let mut written = 0usize;
@@ -278,9 +282,7 @@ mod tests {
         let program = b"MZprogram".to_vec();
         assert_eq!(split(&program), (program.len(), None));
         let app = b"application".repeat(1000);
-        let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::best());
-        encoder.write_all(&app).expect("compression");
-        let packed = encoder.finish().expect("compression");
+        let packed = compress(&app).expect("compression");
         let mut file = program.clone();
         file.extend_from_slice(&packed);
         file.extend_from_slice(&(app.len() as u64).to_le_bytes());

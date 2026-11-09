@@ -82,7 +82,9 @@ export component Btn {
         border-width: focus.has-focus ? 2px : 0;
         border-color: Theme.accent;
         opacity: root.disabled ? 0.45 : 1;
+        transform-scale: touch.pressed && !root.disabled && !Theme.reduced ? 0.97 : 1;
         animate background { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
+        animate transform-scale { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
         layout := HorizontalLayout {
             padding-left: 12px;
             padding-right: 12px;
@@ -149,7 +151,9 @@ export component IconBtn {
         border-width: focus.has-focus ? 2px : 0;
         border-color: Theme.accent;
         opacity: root.disabled ? 0.35 : 1;
+        transform-scale: touch.pressed && !root.disabled && !Theme.reduced ? 0.92 : 1;
         animate background { duration: Theme.fast; }
+        animate transform-scale { duration: Theme.fast; easing: cubic-bezier(0.23, 1, 0.32, 1); }
         Ico {
             source: root.icon;
             size: root.ico;

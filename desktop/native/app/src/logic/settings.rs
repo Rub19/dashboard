@@ -43,6 +43,15 @@ pub const LOOKS: [Look; 9] = [
     Look { id: "windows", theme: "system", accent: "ocean", fr: "Windows", en: "Windows", text_fr: "Suit Windows, avec transparence", text_en: "Follows Windows, with transparency", colors: ["#2a2a2e", "#55555c", "#3a3a40"] },
 ];
 
+pub fn scheduled_look(chosen: &str, enabled: bool, hour: u32) -> &str {
+    match (enabled, (7..19).contains(&hour)) {
+        (false, _) => chosen,
+        (true, true) => "daylight",
+        (true, false) if chosen == "daylight" => "ethone",
+        (true, false) => chosen,
+    }
+}
+
 pub struct Surface {
     pub window: &'static str,
     pub sidebar: &'static str,
@@ -107,7 +116,7 @@ pub fn interface_json(preferences: &InterfacePreferences) -> Value {
     serde_json::json!({ "density": preferences.density, "motion": preferences.motion, "transparency": preferences.transparency, "textScale": preferences.text_scale })
 }
 
-pub const SETTINGS_KEYS: [&str; 19] = ["ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+pub const SETTINGS_KEYS: [&str; 20] = ["ethone-theme-schedule", "ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 pub fn parse_settings(text: &str) -> Result<Vec<(String, String)>, String> {
     let parsed: Value = serde_json::from_str(text).map_err(|_| "invalid".to_string())?;
@@ -126,6 +135,16 @@ pub fn export_settings(read: impl Fn(&str) -> Option<String>) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn theme_follows_the_hour_when_scheduled() {
+        assert_eq!(scheduled_look("neon", false, 12), "neon");
+        assert_eq!(scheduled_look("neon", true, 12), "daylight");
+        assert_eq!(scheduled_look("neon", true, 22), "neon");
+        assert_eq!(scheduled_look("daylight", true, 3), "ethone");
+        assert_eq!(scheduled_look("neon", true, 7), "daylight");
+        assert_eq!(scheduled_look("neon", true, 19), "neon");
+    }
     use serde_json::json;
 
     #[test]

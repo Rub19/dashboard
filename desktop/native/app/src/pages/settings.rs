@@ -150,6 +150,10 @@ pub fn act(app: &mut App, id: &str, value: &str) {
         }
         "export" => export(app),
         "import" => import(app),
+        "theme-schedule" => {
+            prefs::write("ethone-theme-schedule", if value == "true" { "on" } else { "off" });
+            app.with_ui(crate::theme::apply);
+        }
         "contrast" => {
             prefs::write("ethone-contrast", if value == "true" { "more" } else { "normal" });
             app.with_ui(crate::theme::apply);
@@ -319,6 +323,7 @@ fn appearance(app: &mut App) -> Vec<B> {
     for chunk in cards.chunks(3) {
         out.push(row(chunk.to_vec()));
     }
+    out.extend(group(vec![switch_row("settings:theme-schedule", &tr("Thème selon l'heure", "Theme by time of day"), &tr("Passe sur « Jour » de 7 h à 19 h, puis revient à ton thème le soir.", "Switches to Daylight from 7 am to 7 pm, then back to your theme in the evening."), crate::theme::schedule_on())]));
     let swatches: Vec<C> = ACCENTS.iter().map(|item| C { kind: "swatch", id: format!("settings:accent:{}", item.id), color: Some(hex(item.color)), color2: Some(hex(item.on)), icon: check.clone(), on: accent == item.id, tip: item.id.into(), ..Default::default() }).collect();
     let mut accent_row = vec![strong(&t("accent")).grow()];
     accent_row.extend(swatches);

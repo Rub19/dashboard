@@ -11,6 +11,15 @@ pub fn current_look() -> String {
     LOOKS.iter().find(|look| look.id == saved).map_or("ethone", |look| look.id).to_string()
 }
 
+pub fn schedule_on() -> bool {
+    prefs::read("ethone-theme-schedule").as_deref() == Some("on")
+}
+
+pub fn effective_look() -> String {
+    use chrono::Timelike;
+    settings::scheduled_look(&current_look(), schedule_on(), chrono::Local::now().hour()).to_string()
+}
+
 pub fn current_accent() -> String {
     let saved = prefs::read("ethone-accent-choice").unwrap_or_default();
     ACCENTS.iter().find(|accent| accent.id == saved).map_or("ocean", |accent| accent.id).to_string()
@@ -43,7 +52,7 @@ fn with_alpha(color: Color, alpha: u8) -> Color {
 }
 
 pub fn apply(ui: &AppWindow) {
-    let look_id = current_look();
+    let look_id = effective_look();
     let look = LOOKS.iter().find(|look| look.id == look_id).unwrap_or(&LOOKS[0]);
     let accent_id = if prefs::read("ethone-look").is_some() { current_accent() } else { look.accent.to_string() };
     let accent = ACCENTS.iter().find(|accent| accent.id == accent_id).unwrap_or(&ACCENTS[1]);

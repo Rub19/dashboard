@@ -190,7 +190,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [ ] 11. Export des notes en Markdown
 - [ ] 12. Recherche plein texte dans les notes et les tâches depuis Ctrl+K
 - [ ] 13. Résumé du matin à la première ouverture du jour
-- [ ] 14. Thème clair ou sombre selon l'heure
+- [~] 14. Thème clair ou sombre selon l'heure : réglage « Thème selon l'heure » dans Apparence : look « Jour » de 7 h à 19 h, ton look le soir, revérifié chaque minute ; test scheduled_look, e2e 147 étapes (réglage présent) ; bascule réelle pas vue (testé de nuit, réglage non touché)
 - [ ] 15. Temps passé dans chaque jeu (VALORANT, League, Minecraft) par semaine
 - [ ] 16. Lancer une app du hub au démarrage d'Ethone
 - [ ] 17. Mini lecteur Spotify toujours devant

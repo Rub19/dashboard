@@ -145,3 +145,14 @@ wait 800
 absent Favoris
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Apparence
+wait 600
+key Return
+wait 1500
+expect Thème selon l'heure
+snap 19-theme-selon-heure
+click Accueil
+wait 1200

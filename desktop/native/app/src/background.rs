@@ -167,6 +167,17 @@ pub fn start(_hidden: bool) {
     }
     svc().rt.spawn(serve_links());
     svc().rt.spawn(async {
+        let mut was = crate::theme::effective_look();
+        loop {
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+            let now = crate::theme::effective_look();
+            if now != was {
+                was = now;
+                post(|app| app.with_ui(crate::theme::apply));
+            }
+        }
+    });
+    svc().rt.spawn(async {
         let mut was = true;
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(5)).await;

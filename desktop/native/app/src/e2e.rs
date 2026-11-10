@@ -100,6 +100,24 @@ fn key_text(name: &str) -> Option<SharedString> {
     Some(key.into())
 }
 
+fn center(element: &ElementHandle) -> slint::LogicalPosition {
+    let (at, size) = (element.absolute_position(), element.size());
+    slint::LogicalPosition::new(at.x + size.width / 2.0, at.y + size.height / 2.0)
+}
+
+async fn click_on<T: ComponentHandle>(ui: &T, element: &ElementHandle, button: PointerEventButton, count: usize) {
+    let position = center(element);
+    for _ in 0..count {
+        element.single_click(button).await;
+        if !element.is_valid() {
+            ui.window().dispatch_event(WindowEvent::PointerMoved { position });
+            ui.window().dispatch_event(WindowEvent::PointerReleased { position, button });
+            break;
+        }
+        sleep(40).await;
+    }
+}
+
 async fn press<T: ComponentHandle>(ui: &T, spec: &str) -> Result<(), String> {
     let parts: Vec<&str> = spec.split('+').map(str::trim).collect();
     let texts: Vec<SharedString> = parts.iter().map(|part| key_text(part).ok_or_else(|| format!("touche inconnue : {part}"))).collect::<Result<_, _>>()?;
@@ -123,12 +141,9 @@ async fn step<T: ComponentHandle>(ui: &T, verb: &str, arg: &str, snap: &Snap<T>)
         "click" | "dclick" | "rclick" => {
             let element = find(ui, left).ok_or("introuvable à l'écran")?;
             let button = if verb == "rclick" { PointerEventButton::Right } else { PointerEventButton::Left };
-            if verb == "dclick" {
-                element.double_click(button).await;
-            } else {
-                element.single_click(button).await;
-            }
-            Ok(format!("« {} »", element.accessible_label().unwrap_or_default()))
+            let label = element.accessible_label().unwrap_or_default();
+            click_on(ui, &element, button, if verb == "dclick" { 2 } else { 1 }).await;
+            Ok(format!("« {label} »"))
         }
         "invoke" => {
             let element = find(ui, left).ok_or("introuvable à l'écran")?;
@@ -137,7 +152,7 @@ async fn step<T: ComponentHandle>(ui: &T, verb: &str, arg: &str, snap: &Snap<T>)
         }
         "type" => {
             let element = find_input(ui, left).ok_or("champ introuvable")?;
-            element.single_click(PointerEventButton::Left).await;
+            click_on(ui, &element, PointerEventButton::Left, 1).await;
             press(ui, "Ctrl+a").await?;
             press(ui, "Backspace").await?;
             for character in right.chars() {

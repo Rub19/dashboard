@@ -1,6 +1,6 @@
 # Parcours d'Ethone par événements Slint, compte connecté, navigation seulement (rien n'est envoyé ni modifié)
 wait 5000
-expect Bonjour
+expect Habitudes du jour
 snap 01-accueil
 
 click Applications
@@ -48,7 +48,7 @@ wait 800
 
 click Accueil
 wait 1500
-expect Bonjour
+expect Habitudes du jour
 key Ctrl+k
 wait 600
 type Rechercher une application, une action…|mail

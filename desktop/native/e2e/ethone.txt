@@ -70,6 +70,18 @@ key Escape
 wait 600
 absent Récents
 
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|12 * 3,5
+wait 600
+expect = 42
+snap 14b-palette-calcul
+type Rechercher une application, une action…|10 km en mi
+wait 600
+expect = 6,21371 mi
+key Escape
+wait 600
+
 key Ctrl+b
 wait 800
 snap 15-barre-reduite

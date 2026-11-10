@@ -261,6 +261,20 @@ fn close_palette(app: &mut App) {
     app.with_ui(|ui| ui.invoke_focus_root());
 }
 
+fn calc_answer(app: &App) -> Option<String> {
+    crate::logic::calc::answer(&app.palette_query)
+}
+
+fn copy_calc(app: &mut App) {
+    let Some(value) = calc_answer(app) else { return };
+    let number = value.split(' ').next().unwrap_or(&value).to_string();
+    close_palette(app);
+    match crate::clipboard::set(&number) {
+        Ok(()) => app.toast(&format!("{} {number}", tr("Copié :", "Copied:"))),
+        Err(_) => app.toast_bad(&tr("Copie impossible", "Copy failed")),
+    }
+}
+
 fn ranked_ids(app: &App) -> Vec<usize> {
     let recent: Vec<String> = prefs::read_json("ethone-palette-recent").unwrap_or_default();
     let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), |command| command.label.as_str());
@@ -271,6 +285,13 @@ pub fn render_palette(app: &mut App, ui: &AppWindow) {
     let recent: Vec<String> = prefs::read_json("ethone-palette-recent").unwrap_or_default();
     let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), |command| command.label.as_str());
     let mut items = Vec::new();
+    let offset = match calc_answer(app) {
+        Some(value) => {
+            items.push(Item { id: "calc".into(), label: format!("= {value}").into(), hint: tr("Entrée pour copier", "Enter to copy").into(), on: app.palette_index == 0, ..Default::default() });
+            1
+        }
+        None => 0,
+    };
     for (at, command) in ranked.list.iter().enumerate() {
         if ranked.recent_count > 0 && at == 0 {
             items.push(Item { kind: "head".into(), label: tr("Récents", "Recent").into(), ..Default::default() });
@@ -278,7 +299,7 @@ pub fn render_palette(app: &mut App, ui: &AppWindow) {
         if ranked.recent_count > 0 && at == ranked.recent_count {
             items.push(Item { kind: "head".into(), label: tr("Tout", "All").into(), ..Default::default() });
         }
-        items.push(Item { id: command.id.clone().into(), label: command.label.clone().into(), hint: command.hint.clone().into(), on: at == app.palette_index, ..Default::default() });
+        items.push(Item { id: command.id.clone().into(), label: command.label.clone().into(), hint: command.hint.clone().into(), on: at + offset == app.palette_index, ..Default::default() });
     }
     ui.set_palette_items(ModelRc::new(VecModel::from(items)));
     ui.set_palette_index(app.palette_index as i32);
@@ -286,14 +307,21 @@ pub fn render_palette(app: &mut App, ui: &AppWindow) {
 }
 
 fn pick_palette_index(app: &mut App) {
+    let offset = calc_answer(app).is_some() as usize;
+    if offset == 1 && app.palette_index == 0 {
+        return copy_calc(app);
+    }
     let list = ranked_ids(app);
-    if let Some(at) = list.get(app.palette_index) {
+    if let Some(at) = list.get(app.palette_index - offset) {
         let id = app.palette_commands[*at].id.clone();
         pick_palette(app, &id);
     }
 }
 
 fn pick_palette(app: &mut App, id: &str) {
+    if id == "calc" {
+        return copy_calc(app);
+    }
     let Some(command) = app.palette_commands.iter().find(|command| command.id == id) else { return };
     let (action, value) = (command.action.clone(), command.value.clone());
     let recent: Vec<String> = prefs::read_json("ethone-palette-recent").unwrap_or_default();
@@ -378,7 +406,7 @@ pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bo
         }
     }
     if app.palette_open {
-        let count = ranked_ids(app).len();
+        let count = ranked_ids(app).len() + calc_answer(app).is_some() as usize;
         match lower.as_str() {
             "esc" => close_palette(app),
             "down" => app.palette_index = (app.palette_index + 1).min(count.saturating_sub(1)),

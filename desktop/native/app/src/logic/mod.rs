@@ -1,3 +1,4 @@
+pub mod calc;
 pub mod eval;
 pub mod friends;
 pub mod home;

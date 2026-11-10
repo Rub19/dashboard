@@ -164,6 +164,12 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "fav-toggle") => {
+            let key = current_favorite(app);
+            toggle_favorite(app, &key);
+        }
+        ("shell", fav) if fav.starts_with("fav-remove:") => toggle_favorite(app, &fav["fav-remove:".len()..]),
+        ("shell", fav) if fav.starts_with("fav-open:") => open_favorite(app, &fav["fav-open:".len()..].to_string()),
         ("shell", "clip-clear") => {
             prefs::remove(crate::background::CLIPS_KEY);
             open_clips(app);
@@ -279,7 +285,54 @@ fn open_clips(app: &mut App) {
     });
 }
 
+const FAVORITES: &str = "ethone-favorites";
+
+fn favorite_rows() -> Vec<(String, String, String)> {
+    let list: Vec<String> = prefs::read_json(FAVORITES).unwrap_or_default();
+    let sections = section_commands();
+    list.into_iter()
+        .filter_map(|key| {
+            let (page, id) = key.split_once('|')?;
+            let label = if id.is_empty() {
+                navigation::page_exists(page).then(|| page_label(page))?
+            } else {
+                sections.iter().find(|(p, _, s, _, _)| *p == page && s == id).map(|(_, _, _, label, _)| label.clone())?
+            };
+            Some((key.clone(), page.to_string(), label))
+        })
+        .collect()
+}
+
+fn current_favorite(app: &App) -> String {
+    let sections = section_commands();
+    let current = sections.iter().find(|(p, _, _, _, _)| *p == app.page).map(|(_, key, _, _, _)| crate::pages::section(key, "")).unwrap_or_default();
+    let id = if sections.iter().any(|(p, _, s, _, _)| *p == app.page && *s == current) { current } else { String::new() };
+    format!("{}|{id}", app.page)
+}
+
+fn toggle_favorite(app: &mut App, key: &str) {
+    let list: Vec<String> = prefs::read_json(FAVORITES).unwrap_or_default();
+    let added = !list.iter().any(|item| item == key);
+    prefs::write_json(FAVORITES, &crate::logic::toggle_pinned(&list, key));
+    app.toast(&if added { tr("Ajouté aux favoris", "Added to favorites") } else { tr("Retiré des favoris", "Removed from favorites") });
+}
+
+fn open_favorite(app: &mut App, key: &str) {
+    let Some((page, id)) = key.split_once('|') else { return };
+    if !id.is_empty() {
+        if let Some((_, section_key, _, _, _)) = section_commands().into_iter().find(|(p, _, s, _, _)| *p == page && s == id) {
+            crate::pages::set_section(section_key, id);
+            app.forget_section(page);
+        }
+    }
+    go(app, page);
+}
+
 pub fn prepare_menu(app: &mut App, id: &str) {
+    if let Some(key) = id.strip_prefix("pin-menu:fav:") {
+        app.menu_for(id, vec![entry(&format!("shell:fav-remove:{key}"), &tr("Retirer des favoris", "Remove from favorites"))]);
+        return;
+    }
     if id == "account" {
         app.menu_for("account", vec![entry("account:manage", &t("manageAccount")), entry("account:sign-out", &t("signOut"))]);
     } else if let Some(module) = id.strip_prefix("pin-menu:") {
@@ -418,6 +471,9 @@ fn commands(app: &App) -> Vec<Command> {
     for (page, key, id, label, _) in section_commands() {
         out.push(Command { id: format!("section-{page}-{id}"), label, hint: String::new(), action: format!("section:{key}|{page}"), value: id });
     }
+    let favorite = current_favorite(app);
+    let is_favorite = prefs::read_json::<Vec<String>>(FAVORITES).unwrap_or_default().contains(&favorite);
+    out.push(Command { id: "fav-toggle".into(), label: if is_favorite { tr("Retirer cette page des favoris", "Remove this page from favorites") } else { tr("Ajouter cette page aux favoris", "Add this page to favorites") }, hint: String::new(), action: "shell:fav-toggle".into(), value: String::new() });
     out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new() });
     out.push(Command { id: "sidebar".into(), label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B".into(), action: "shell:sidebar".into(), value: String::new() });
     out.push(Command { id: "refresh".into(), label: tr("Actualiser les applications", "Refresh apps"), hint: String::new(), action: "shell:refresh".into(), value: String::new() });
@@ -506,6 +562,15 @@ pub fn render_chrome(app: &mut App, ui: &AppWindow) {
     let mut y = 0.0f32;
     let mut active: Option<f32> = None;
     let badge_mail = app.new_mail as i32;
+    let favorites = favorite_rows();
+    if !favorites.is_empty() {
+        nav.push(Item { kind: "head".into(), label: tr("Favoris", "Favorites").into(), ..Default::default() });
+        y += if compact { 12.0 } else { 30.0 };
+        for (key, page, label) in favorites {
+            nav.push(Item { id: format!("shell:fav-open:{key}").into(), label: label.into(), icon: app.icon(navigation::page_icon(&page)), hint: format!("fav:{key}").into(), kind: "fav".into(), ..Default::default() });
+            y += 34.0;
+        }
+    }
     for (label, pages) in GROUPS {
         if let Some((fr, en)) = label {
             nav.push(Item { kind: "head".into(), label: tr(fr, en).into(), ..Default::default() });

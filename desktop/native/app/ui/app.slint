@@ -311,7 +311,7 @@ component Sidebar {
                             if (event.kind == PointerEventKind.down) {
                                 if (event.button == PointerEventButton.left) {
                                     Ui.act(item.id, "");
-                                } else if (event.button == PointerEventButton.right && item.kind == "pin") {
+                                } else if (event.button == PointerEventButton.right && (item.kind == "pin" || item.kind == "fav")) {
                                     Ui.menu("pin-menu:" + item.hint, self.absolute-position.x + self.mouse-x, self.absolute-position.y + self.mouse-y, 0);
                                 }
                             }

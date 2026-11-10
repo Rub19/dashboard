@@ -111,3 +111,37 @@ expect Historique désactivé
 snap 17-presse-papiers
 key Escape
 wait 600
+
+click Productivité
+wait 1200
+absent Favoris
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|favoris
+wait 600
+key Return
+wait 800
+expect Favoris
+expect Ajouté aux favoris
+click Accueil
+wait 1200
+snap 18-favoris
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|favoris
+wait 600
+expect Ajouter cette page aux favoris
+key Escape
+wait 600
+click Productivité
+wait 1200
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|favoris
+wait 600
+expect Retirer cette page des favoris
+key Return
+wait 800
+absent Favoris
+click Accueil
+wait 1200

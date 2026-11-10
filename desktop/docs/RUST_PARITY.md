@@ -172,3 +172,28 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - Les raccourcis globaux, le glisser et le redimensionnement de la fenêtre, plusieurs écrans.
 - L'installation réelle sur Windows, hors du conteneur de Claude, et la mise à jour automatique depuis l'app Tauri (latest.json signé).
 - Le clavier et la souris physiques dans la vraie fenêtre affichée : tout a été joué par événements Slint, hors écran. Les boutons latéraux de la souris passent par winit et n'ont pas pu être joués ainsi.
+
+## 20 fonctionnalités en plus (demandées le 10 novembre 2026)
+
+`[ ]` à faire, `[x]` fait et vérifié (tests ou parcours e2e), avec la preuve dans « Fait ensuite » ou ici.
+
+- [ ] 1. Minuteur Pomodoro dans la barre de titre
+- [ ] 2. Mode Ne pas déranger (coupe toasts et notifications pour une durée)
+- [ ] 3. Historique du presse-papiers (texte, local, effaçable)
+- [ ] 4. Calculatrice et conversions dans Ctrl+K
+- [ ] 5. Pages favorites épinglées en haut de la barre latérale
+- [ ] 6. Raccourcis clavier personnalisables
+- [ ] 7. Rappels de tâches en notification Windows
+- [ ] 8. Tâches récurrentes (chaque jour, chaque semaine)
+- [ ] 9. Calendrier : vue semaine
+- [ ] 10. Glisser-déposer pour réordonner les tâches
+- [ ] 11. Export des notes en Markdown
+- [ ] 12. Recherche plein texte dans les notes et les tâches depuis Ctrl+K
+- [ ] 13. Résumé du matin à la première ouverture du jour
+- [ ] 14. Thème clair ou sombre selon l'heure
+- [ ] 15. Temps passé dans chaque jeu (VALORANT, League, Minecraft) par semaine
+- [ ] 16. Lancer une app du hub au démarrage d'Ethone
+- [ ] 17. Mini lecteur Spotify toujours devant
+- [ ] 18. Journal des actions faites dans Ethone, avec annulation quand c'est possible
+- [ ] 19. Mode concentration : bloque les toasts et lance un son d'ambiance
+- [ ] 20. Statistiques de concentration de la semaine

@@ -100,3 +100,14 @@ wait 800
 expect Ne pas déranger 1 h
 key Escape
 wait 600
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|presse-papiers
+wait 600
+key Return
+wait 800
+expect Historique désactivé
+snap 17-presse-papiers
+key Escape
+wait 600

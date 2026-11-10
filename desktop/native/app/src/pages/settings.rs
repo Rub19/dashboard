@@ -129,6 +129,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
                 "notifyMail" => prefs_now.notify_mail = on,
                 "notifyEvents" => prefs_now.notify_events = on,
                 "quiet" => prefs_now.quiet = on,
+                "clipHistory" => prefs_now.clip_history = on,
                 "quietFrom" => prefs_now.quiet_from = value.into(),
                 "quietTo" => prefs_now.quiet_to = value.into(),
                 "hdvBackground" => {
@@ -371,6 +372,7 @@ fn windows(app: &mut App) -> Vec<B> {
     if prefs_now.quiet {
         rows.push(row(vec![stack(&tr("Plage de silence (HH:MM)", "Quiet hours (HH:MM)"), &tr("Passe minuit si besoin.", "Can run past midnight.")), input("settings:pref:quietFrom", &prefs_now.quiet_from, "22:00"), input("settings:pref:quietTo", &prefs_now.quiet_to, "08:00")]));
     }
+    rows.push(switch_row("settings:pref:clipHistory", &tr("Historique du presse-papiers", "Clipboard history"), &tr("Garde les 25 derniers textes copiés sur ce PC, accessibles depuis Ctrl+K. Les mots de passe marqués privés par ton gestionnaire sont ignorés. Désactiver efface tout.", "Keeps the last 25 copied texts on this PC, available from Ctrl+K. Passwords marked private by your manager are skipped. Turning off clears everything."), prefs_now.clip_history));
     rows.push(switch_row("settings:pref:notifyEvents", &tr("Rappeler les événements", "Remind events"), &tr("Une notification 10 minutes avant le début.", "A notification 10 minutes before the start."), prefs_now.notify_events));
     rows.push(row(vec![stack(&tr("Tester les notifications", "Test notifications"), &tr("Envoie une notification Windows.", "Sends a Windows notification.")), btn("settings:notify-test", &tr("Tester", "Test"))]));
     rows.push(row(vec![stack(&tr("Sauvegarder les réglages", "Back up settings"), &tr("Exporte tes préférences dans Téléchargements, ou les restaure depuis un fichier.", "Exports your preferences to Downloads, or restores them from a file.")), btn("settings:export", &tr("Exporter", "Export")), btn("settings:import", &tr("Importer", "Import"))]));

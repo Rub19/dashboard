@@ -179,7 +179,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 
 - [ ] 1. Minuteur Pomodoro dans la barre de titre
 - [x] 2. « Ne pas déranger pendant 1 h » d'un clic depuis la cloche (la plage horaire des réglages existe déjà) : bouton dans le panneau de la cloche : silence 1 h (quiet_until dans les préférences, respecté par toutes les notifications Windows), « Silence jusqu'à HH:MM » + Réactiver ; e2e 94 étapes
-- [ ] 3. Historique du presse-papiers (texte, local, effaçable)
+- [~] 3. Historique du presse-papiers (texte, local, effaçable) : réglage « Historique du presse-papiers » (désactivé par défaut, le couper efface tout), 25 derniers textes, formats privés des gestionnaires de mots de passe ignorés, tiroir depuis Ctrl+K avec Copier et Tout effacer ; test clips, e2e 104 étapes (tiroir désactivé) ; la capture active n'a pas été essayée pour ne pas toucher à ton presse-papiers
 - [x] 4. Calculatrice et conversions dans Ctrl+K : logic/calc.rs : + − × ÷ %, parenthèses, virgule, km/mi kg/lb cm/in m/ft l/gal °C/°F ; Entrée copie le résultat ; tests et e2e (12 * 3,5 = 42)
 - [ ] 5. Pages favorites épinglées en haut de la barre latérale
 - [ ] 6. Raccourcis clavier personnalisables

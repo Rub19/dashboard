@@ -163,6 +163,20 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "sidebar") => toggle_sidebar(app),
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
+        ("shell", "clips") => open_clips(app),
+        ("shell", "clip-clear") => {
+            prefs::remove(crate::background::CLIPS_KEY);
+            open_clips(app);
+        }
+        ("shell", copy) if copy.starts_with("clip-copy:") => {
+            let list: Vec<String> = prefs::read_json(crate::background::CLIPS_KEY).unwrap_or_default();
+            if let Some(text) = copy["clip-copy:".len()..].parse::<usize>().ok().and_then(|at| list.get(at)) {
+                match crate::clipboard::set(text) {
+                    Ok(()) => app.toast(&tr("Copié", "Copied")),
+                    Err(_) => app.toast_bad(&tr("Copie impossible", "Copy failed")),
+                }
+            }
+        }
         ("shell", "dnd-hour") | ("shell", "dnd-off") => {
             let mut prefs = crate::background::read_prefs();
             prefs.quiet_until = if rest == "dnd-hour" { time::now_ms() + 3_600_000.0 } else { 0.0 };
@@ -245,6 +259,22 @@ fn open_log(app: &mut App) {
         let mut out = vec![dnd];
         out.extend(group(rows));
         out.push(row(vec![btn("shell:log-clear", &tr("Tout effacer", "Clear all"))]));
+        out
+    });
+}
+
+fn open_clips(app: &mut App) {
+    app.open_drawer(&tr("Presse-papiers", "Clipboard"), 420.0, |_app| {
+        if !crate::background::read_prefs().clip_history {
+            return vec![empty(&tr("Historique désactivé", "History is off"), &tr("Active « Historique du presse-papiers » dans Réglages › Windows et notifications.", "Turn on “Clipboard history” in Settings › Windows and notifications."))];
+        }
+        let list: Vec<String> = prefs::read_json(crate::background::CLIPS_KEY).unwrap_or_default();
+        if list.is_empty() {
+            return vec![empty(&tr("Rien de copié pour l'instant", "Nothing copied yet"), &tr("Les textes que tu copies apparaîtront ici.", "Texts you copy will show up here."))];
+        }
+        let rows = list.iter().enumerate().map(|(at, text)| row(vec![wrap(&crate::logic::clips::preview(text)), btn(&format!("shell:clip-copy:{at}"), &tr("Copier", "Copy"))])).collect();
+        let mut out = group(rows);
+        out.push(row(vec![btn("shell:clip-clear", &tr("Tout effacer", "Clear all"))]));
         out
     });
 }
@@ -388,6 +418,7 @@ fn commands(app: &App) -> Vec<Command> {
     for (page, key, id, label, _) in section_commands() {
         out.push(Command { id: format!("section-{page}-{id}"), label, hint: String::new(), action: format!("section:{key}|{page}"), value: id });
     }
+    out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new() });
     out.push(Command { id: "sidebar".into(), label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B".into(), action: "shell:sidebar".into(), value: String::new() });
     out.push(Command { id: "refresh".into(), label: tr("Actualiser les applications", "Refresh apps"), hint: String::new(), action: "shell:refresh".into(), value: String::new() });
     out.push(Command { id: "toast-log".into(), label: tr("Voir les dernières notifications", "See recent notifications"), hint: String::new(), action: "shell:log".into(), value: String::new() });

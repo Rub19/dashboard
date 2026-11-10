@@ -13,6 +13,8 @@ const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
 const RUN_VALUE: &str = "Ethone";
 const PIPE: &str = r"\\.\pipe\ethone-native-link";
 static CLOSE_TO_TRAY: AtomicBool = AtomicBool::new(false);
+static CLIP_HISTORY: AtomicBool = AtomicBool::new(false);
+pub const CLIPS_KEY: &str = "ethone-clipboard-history";
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase", default)]
@@ -25,11 +27,12 @@ pub struct DesktopPrefs {
     pub quiet_from: String,
     pub quiet_to: String,
     pub quiet_until: f64,
+    pub clip_history: bool,
 }
 
 impl Default for DesktopPrefs {
     fn default() -> Self {
-        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0 }
+        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0, clip_history: false }
     }
 }
 
@@ -40,6 +43,10 @@ pub fn read_prefs() -> DesktopPrefs {
 pub fn save_prefs(next: &DesktopPrefs) {
     prefs::write_json("ethone-desktop-prefs", next);
     CLOSE_TO_TRAY.store(next.close_to_tray, Ordering::SeqCst);
+    CLIP_HISTORY.store(next.clip_history, Ordering::SeqCst);
+    if !next.clip_history {
+        prefs::remove(CLIPS_KEY);
+    }
 }
 
 pub fn close_to_tray() -> bool {
@@ -152,6 +159,8 @@ thread_local! {
 
 pub fn start(_hidden: bool) {
     CLOSE_TO_TRAY.store(read_prefs().close_to_tray, Ordering::SeqCst);
+    CLIP_HISTORY.store(read_prefs().clip_history, Ordering::SeqCst);
+    start_clip_watch();
     TRAY.with(|cell| *cell.borrow_mut() = build_tray());
     if !crate::win::offscreen() {
         start_hotkey();
@@ -165,6 +174,29 @@ pub fn start(_hidden: bool) {
             if now != was {
                 was = now;
                 post(move |app| crate::pages::shell::online_changed(app, now));
+            }
+        }
+    });
+}
+
+fn start_clip_watch() {
+    std::thread::spawn(|| {
+        let mut seen = crate::clipboard::sequence();
+        loop {
+            std::thread::sleep(std::time::Duration::from_secs(1));
+            let now = crate::clipboard::sequence();
+            if now == seen {
+                continue;
+            }
+            seen = now;
+            if !CLIP_HISTORY.load(Ordering::SeqCst) {
+                continue;
+            }
+            if let Some(text) = crate::clipboard::shareable_text() {
+                post(move |_| {
+                    let list: Vec<String> = prefs::read_json(CLIPS_KEY).unwrap_or_default();
+                    prefs::write_json(CLIPS_KEY, &logic::clips::push(&list, &text));
+                });
             }
         }
     });

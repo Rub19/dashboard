@@ -178,7 +178,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 `[ ]` à faire, `[x]` fait et vérifié (tests ou parcours e2e), avec la preuve dans « Fait ensuite » ou ici.
 
 - [ ] 1. Minuteur Pomodoro dans la barre de titre
-- [ ] 2. Mode Ne pas déranger (coupe toasts et notifications pour une durée)
+- [ ] 2. « Ne pas déranger pendant 1 h » d'un clic depuis la cloche (la plage horaire des réglages existe déjà)
 - [ ] 3. Historique du presse-papiers (texte, local, effaçable)
 - [ ] 4. Calculatrice et conversions dans Ctrl+K
 - [ ] 5. Pages favorites épinglées en haut de la barre latérale
@@ -195,5 +195,5 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [ ] 16. Lancer une app du hub au démarrage d'Ethone
 - [ ] 17. Mini lecteur Spotify toujours devant
 - [ ] 18. Journal des actions faites dans Ethone, avec annulation quand c'est possible
-- [ ] 19. Mode concentration : bloque les toasts et lance un son d'ambiance
+- [ ] 19. Liste de lecture de liens à lire plus tard, gardée sur le PC (la concentration et les sons d'ambiance existent déjà)
 - [ ] 20. Statistiques de concentration de la semaine

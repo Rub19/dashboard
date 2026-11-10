@@ -24,11 +24,12 @@ pub struct DesktopPrefs {
     pub quiet: bool,
     pub quiet_from: String,
     pub quiet_to: String,
+    pub quiet_until: f64,
 }
 
 impl Default for DesktopPrefs {
     fn default() -> Self {
-        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into() }
+        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0 }
     }
 }
 
@@ -215,7 +216,7 @@ pub fn start_checks() {
 pub fn quiet_now(prefs: &DesktopPrefs) -> bool {
     use chrono::Timelike;
     let now = chrono::Local::now();
-    logic::home::in_quiet_hours(now.hour() * 60 + now.minute(), prefs.quiet, &prefs.quiet_from, &prefs.quiet_to)
+    logic::time::now_ms() < prefs.quiet_until || logic::home::in_quiet_hours(now.hour() * 60 + now.minute(), prefs.quiet, &prefs.quiet_from, &prefs.quiet_to)
 }
 
 fn events_checked(prefs: &DesktopPrefs, events: Value) {

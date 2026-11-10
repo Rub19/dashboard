@@ -163,6 +163,13 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "sidebar") => toggle_sidebar(app),
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
+        ("shell", "dnd-hour") | ("shell", "dnd-off") => {
+            let mut prefs = crate::background::read_prefs();
+            prefs.quiet_until = if rest == "dnd-hour" { time::now_ms() + 3_600_000.0 } else { 0.0 };
+            crate::background::save_prefs(&prefs);
+            app.toast(&if rest == "dnd-hour" { tr("Ne pas déranger pendant 1 h", "Do not disturb for 1 h") } else { tr("Notifications réactivées", "Notifications back on") });
+            open_log(app);
+        }
         ("shell", "refresh") => crate::pages::modules::load_modules(app, false),
         ("shell", "sign-out") => sign_out(app),
         ("palette", "close") => close_palette(app),
@@ -220,8 +227,14 @@ pub fn toggle_sidebar(app: &mut App) {
 
 fn open_log(app: &mut App) {
     app.open_drawer(&tr("Dernières notifications", "Recent notifications"), 420.0, |app| {
+        let until = crate::background::read_prefs().quiet_until;
+        let dnd = if until > time::now_ms() {
+            row(vec![wrap(&format!("{} {}", tr("Silence jusqu'à", "Quiet until"), time::clock(&time::from_ms(until)))), btn("shell:dnd-off", &tr("Réactiver", "Turn back on"))])
+        } else {
+            row(vec![wrap(&tr("Couper les notifications Windows d'Ethone", "Mute Ethone's Windows notifications")), btn("shell:dnd-hour", &tr("Ne pas déranger 1 h", "Do not disturb 1 h"))])
+        };
         if app.toast_log.is_empty() {
-            return vec![empty(&tr("Rien pour l'instant", "Nothing yet"), &tr("Les messages affichés depuis l'ouverture d'Ethone restent ici.", "Messages shown since Ethone opened stay here."))];
+            return vec![dnd, empty(&tr("Rien pour l'instant", "Nothing yet"), &tr("Les messages affichés depuis l'ouverture d'Ethone restent ici.", "Messages shown since Ethone opened stay here."))];
         }
         let ok = app.icon("circle-check");
         let alert = app.icon("alert-circle");
@@ -229,7 +242,8 @@ fn open_log(app: &mut App) {
             let (image, tone) = if item.tone == "bad" { (alert.clone(), "bad") } else { (ok.clone(), "ok") };
             row(vec![icon(image).tone(tone), wrap(&item.message), muted(&time::clock(&time::from_ms(item.at)))])
         }).collect();
-        let mut out = group(rows);
+        let mut out = vec![dnd];
+        out.extend(group(rows));
         out.push(row(vec![btn("shell:log-clear", &tr("Tout effacer", "Clear all"))]));
         out
     });

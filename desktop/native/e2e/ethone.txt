@@ -88,3 +88,15 @@ snap 15-barre-reduite
 key Ctrl+b
 wait 800
 expect Travail
+
+click Dernières notifications
+wait 800
+click Ne pas déranger 1 h
+wait 800
+expect Silence jusqu'à
+snap 16-ne-pas-deranger
+click Réactiver
+wait 800
+expect Ne pas déranger 1 h
+key Escape
+wait 600

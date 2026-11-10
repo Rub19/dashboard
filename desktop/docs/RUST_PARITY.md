@@ -178,7 +178,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 `[ ]` à faire, `[x]` fait et vérifié (tests ou parcours e2e), avec la preuve dans « Fait ensuite » ou ici.
 
 - [ ] 1. Minuteur Pomodoro dans la barre de titre
-- [ ] 2. « Ne pas déranger pendant 1 h » d'un clic depuis la cloche (la plage horaire des réglages existe déjà)
+- [x] 2. « Ne pas déranger pendant 1 h » d'un clic depuis la cloche (la plage horaire des réglages existe déjà) : bouton dans le panneau de la cloche : silence 1 h (quiet_until dans les préférences, respecté par toutes les notifications Windows), « Silence jusqu'à HH:MM » + Réactiver ; e2e 94 étapes
 - [ ] 3. Historique du presse-papiers (texte, local, effaçable)
 - [x] 4. Calculatrice et conversions dans Ctrl+K : logic/calc.rs : + − × ÷ %, parenthèses, virgule, km/mi kg/lb cm/in m/ft l/gal °C/°F ; Entrée copie le résultat ; tests et e2e (12 * 3,5 = 42)
 - [ ] 5. Pages favorites épinglées en haut de la barre latérale

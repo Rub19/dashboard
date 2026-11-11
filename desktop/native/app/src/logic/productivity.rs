@@ -69,6 +69,27 @@ pub fn task_priority(task: &Value) -> &'static str {
     }
 }
 
+pub fn task_reminder(tasks: &[Value], today: &str, fr: bool) -> Option<String> {
+    let open: Vec<&Value> = tasks.iter().filter(|task| task["done"] != true).collect();
+    let due_today: Vec<&str> = open.iter().filter(|task| task_due(task) == today).filter_map(|task| task["title"].as_str()).collect();
+    let late = open.iter().filter(|task| task_late(task, today)).count();
+    if due_today.is_empty() && late == 0 {
+        return None;
+    }
+    let mut parts = Vec::new();
+    match due_today.len() {
+        0 => {}
+        1 => parts.push(if fr { format!("Aujourd'hui : {}", due_today[0]) } else { format!("Today: {}", due_today[0]) }),
+        n => parts.push(if fr { format!("{n} tâches pour aujourd'hui") } else { format!("{n} tasks due today") }),
+    }
+    match late {
+        0 => {}
+        1 => parts.push(if fr { "1 en retard".into() } else { "1 late".into() }),
+        n => parts.push(if fr { format!("{n} en retard") } else { format!("{n} late") }),
+    }
+    Some(parts.join(", "))
+}
+
 pub fn task_late(task: &Value, today: &str) -> bool {
     let due = task_due(task);
     task["done"] != true && !due.is_empty() && due.as_str() < today
@@ -197,6 +218,16 @@ pub fn at_noon(date: NaiveDate) -> DateTime<Local> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn morning_task_reminder_counts_today_and_late() {
+        let task = |title: &str, due: &str, done: bool| serde_json::json!({"title": title, "done": done, "data": {"dueDate": due}});
+        let list = vec![task("Plombier", "2026-11-11", false), task("Vieux", "2026-11-01", false), task("Fait", "2026-11-11", true), task("Plus tard", "2026-12-01", false)];
+        assert_eq!(task_reminder(&list, "2026-11-11", true).as_deref(), Some("Aujourd'hui : Plombier, 1 en retard"));
+        assert_eq!(task_reminder(&list[2..], "2026-11-11", true), None);
+        let two = vec![task("A", "2026-11-11", false), task("B", "2026-11-11", false)];
+        assert_eq!(task_reminder(&two, "2026-11-11", true).as_deref(), Some("2 tâches pour aujourd'hui"));
+    }
 
     #[test]
     fn repeating_tasks_land_on_the_next_free_day() {

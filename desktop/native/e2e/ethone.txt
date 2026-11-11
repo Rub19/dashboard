@@ -234,3 +234,15 @@ wait 800
 absent Une seule fois
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Windows et notifications
+wait 600
+key Return
+wait 1500
+expect Rappeler les tâches du jour
+expect Historique du presse-papiers
+snap 25-reglages-notifications
+click Accueil
+wait 1200

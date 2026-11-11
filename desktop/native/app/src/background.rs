@@ -28,11 +28,12 @@ pub struct DesktopPrefs {
     pub quiet_to: String,
     pub quiet_until: f64,
     pub clip_history: bool,
+    pub notify_tasks: bool,
 }
 
 impl Default for DesktopPrefs {
     fn default() -> Self {
-        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0, clip_history: false }
+        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0, clip_history: false, notify_tasks: true }
     }
 }
 
@@ -251,9 +252,27 @@ pub fn start_checks() {
                     events_checked(&prefs, events);
                 }
             }
+            if prefs.notify_tasks {
+                tasks_check(&prefs).await;
+            }
             tokio::time::sleep(std::time::Duration::from_secs(120)).await;
         }
     });
+}
+
+async fn tasks_check(prefs: &DesktopPrefs) {
+    use chrono::Timelike;
+    let now = chrono::Local::now();
+    let today = logic::time::day_key(&now);
+    if now.hour() < 9 || crate::prefs::read_json::<String>("ethone-task-reminder-day").as_deref() == Some(today.as_str()) || quiet_now(prefs) {
+        return;
+    }
+    let Ok(answer) = crate::pages::daily::tasks_list().await else { return };
+    let list = crate::pages::first_array(&answer, None);
+    crate::prefs::write_json("ethone-task-reminder-day", &today);
+    if let Some(text) = logic::productivity::task_reminder(&list, &today, crate::i18n::fr()) {
+        let _ = notify(&crate::i18n::tr("Tes tâches", "Your tasks"), &text);
+    }
 }
 
 pub fn quiet_now(prefs: &DesktopPrefs) -> bool {

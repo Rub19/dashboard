@@ -183,7 +183,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [x] 4. Calculatrice et conversions dans Ctrl+K : logic/calc.rs : + − × ÷ %, parenthèses, virgule, km/mi kg/lb cm/in m/ft l/gal °C/°F ; Entrée copie le résultat ; tests et e2e (12 * 3,5 = 42)
 - [x] 5. Pages favorites épinglées en haut de la barre latérale : Ctrl+K « Ajouter cette page aux favoris » (page + onglet ouvert), groupe « Favoris » en haut de la barre latérale, clic droit « Retirer des favoris », inclus dans l'export des réglages ; e2e 137 étapes (ajout, affichage, retrait)
 - [ ] 6. Raccourcis clavier personnalisables
-- [ ] 7. Rappels de tâches en notification Windows
+- [~] 7. Rappels de tâches en notification Windows : réglage « Rappeler les tâches du jour » (actif par défaut) : une notification Windows par jour à partir de 9 h avec les tâches du jour et celles en retard, respecte Ne pas déranger ; test morning_task_reminder_counts_today_and_late ; notification réelle pas vue, e2e (réglage présent) à lancer après la partie
 - [~] 8. Tâches récurrentes (chaque jour, chaque semaine) : choix « Une seule fois / Chaque jour / Chaque semaine » dans l'éditeur de tâche (data.repeat, synchronisé) ; cocher une tâche récurrente crée la suivante à la prochaine date libre et l'annonce ; libellé dans la liste ; test repeating_tasks_land_on_the_next_free_day ; e2e écrit (éditeur sans rien créer), à lancer après la partie
 - [ ] 9. Calendrier : vue semaine
 - [ ] 10. Glisser-déposer pour réordonner les tâches

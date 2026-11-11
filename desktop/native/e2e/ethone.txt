@@ -325,3 +325,23 @@ expect Journal
 snap 30-journal
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Calendrier
+wait 600
+key Return
+wait 2500
+click Semaine
+wait 1200
+expect Cette semaine
+snap 31-calendrier-semaine
+click Semaine suivante
+wait 800
+click Cette semaine
+wait 800
+click Mois
+wait 1200
+absent Cette semaine
+click Accueil
+wait 1200

@@ -27,6 +27,7 @@ pub struct WorkState {
     pub error: Option<String>,
     pub day: Option<String>,
     pub month: Option<(i32, u32)>,
+    pub week_shift: i64,
     pub habit_name: String,
     pub habit_target: i64,
     pub bill_label: String,
@@ -353,6 +354,17 @@ pub fn act(app: &mut App, id: &str, value: &str) {
         }
         "filter" => prefs::write_json("ethone-task-filter", &arg.to_string()),
         "day" => app.state.work.day = if app.state.work.day.as_deref() == Some(arg) { None } else { Some(arg.to_string()) },
+        "calendar-view" => prefs::write_json("ethone-calendar-view", &arg.to_string()),
+        "week" => {
+            app.state.work.week_shift = match arg {
+                "previous" => app.state.work.week_shift - 1,
+                "next" => app.state.work.week_shift + 1,
+                _ => {
+                    app.state.work.day = None;
+                    0
+                }
+            };
+        }
         "month" => {
             let now = Local::now();
             let (year, month) = app.state.work.month.unwrap_or((now.year(), now.month()));
@@ -499,7 +511,13 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
         list = visible_tasks(&list, &filter, &today);
     }
     if kind == "events" {
-        out.extend(month_grid(app, &list));
+        let view = prefs::text("ethone-calendar-view", "month");
+        out.push(seg(&[("month", &tr("Mois", "Month")), ("week", &tr("Semaine", "Week"))], &view, "work:calendar-view:"));
+        if view == "week" {
+            out.extend(week_grid(app, &list));
+        } else {
+            out.extend(month_grid(app, &list));
+        }
         if let Some(day) = app.state.work.day.clone() {
             list.retain(|item| item["startAt"].as_str().and_then(time::parse).is_some_and(|date| time::day_key(&date) == day));
         }
@@ -551,6 +569,32 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
         row(cells)
     }).collect();
     out.extend(group(rows));
+    out
+}
+
+fn week_grid(app: &mut App, items: &[Value]) -> Vec<B> {
+    let now = Local::now();
+    let fr = fr();
+    let days = crate::logic::productivity::week_days(now.date_naive(), app.state.work.week_shift);
+    let today = time::day_key(&now);
+    let selected = app.state.work.day.clone();
+    let (left, right) = (app.icon("chevron-left"), app.icon("chevron-right"));
+    let (first, last) = (days[0], days[6]);
+    let title = format!("{} {} – {} {}", first.day(), time::month_name(first.month0() as usize, fr), last.day(), time::month_name(last.month0() as usize, fr));
+    let mut out = vec![h2x(&title, "", vec![ibtn("work:week:previous", left, &tr("Semaine précédente", "Previous week")), btn("work:week:today", &tr("Cette semaine", "This week")), ibtn("work:week:next", right, &tr("Semaine suivante", "Next week"))])];
+    let names = if fr { ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."] } else { ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] };
+    out.push(row(names.iter().map(|name| muted(name).center().grow()).collect()));
+    let cells = days.iter().map(|date| {
+        let key = logic::day_key_of(*date);
+        let mut events: Vec<(i64, String)> = items.iter().filter_map(|item| {
+            let start = item["startAt"].as_str().and_then(time::parse)?;
+            (time::day_key(&start) == key).then(|| (start.timestamp(), format!("{} {}", time::clock(&start), item["title"].as_str().unwrap_or_default())))
+        }).collect();
+        events.sort();
+        let lines = if events.is_empty() { String::new() } else { events.into_iter().map(|(_, text)| text).collect::<Vec<_>>().join("\n") };
+        C { kind: "day", id: format!("work:day:{key}"), title: date.day().to_string(), sub: lines, on: selected.as_deref() == Some(key.as_str()), tone: if key == today { "accent" } else { "" }, weight: 1.0, ..Default::default() }
+    }).collect();
+    out.push(row(cells).gap(4.0));
     out
 }
 

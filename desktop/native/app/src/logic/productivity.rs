@@ -219,6 +219,11 @@ pub fn focus_by_day(history: &[Value], days: &[String]) -> Vec<f64> {
         .collect()
 }
 
+pub fn week_days(day: NaiveDate, shift: i64) -> Vec<NaiveDate> {
+    let monday = day - chrono::Duration::days(i64::from(day.weekday().num_days_from_monday())) + chrono::Duration::days(7 * shift);
+    (0..7).map(|at| monday + chrono::Duration::days(at)).collect()
+}
+
 pub fn last_days(count: i64, today: DateTime<Local>) -> Vec<NaiveDate> {
     (0..count).map(|index| today.date_naive() - Duration::days(count - 1 - index)).collect()
 }
@@ -230,6 +235,16 @@ pub fn at_noon(date: NaiveDate) -> DateTime<Local> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn week_view_starts_on_monday() {
+        let day = NaiveDate::from_ymd_opt(2026, 11, 11).unwrap();
+        let week = week_days(day, 0);
+        assert_eq!(week[0], NaiveDate::from_ymd_opt(2026, 11, 9).unwrap());
+        assert_eq!(week[6], NaiveDate::from_ymd_opt(2026, 11, 15).unwrap());
+        assert_eq!(week_days(day, 1)[0], NaiveDate::from_ymd_opt(2026, 11, 16).unwrap());
+        assert_eq!(week_days(day, -1)[0], NaiveDate::from_ymd_opt(2026, 11, 2).unwrap());
+    }
 
     #[test]
     fn focus_minutes_add_up_per_day() {

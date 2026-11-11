@@ -86,7 +86,6 @@ pub fn view(app: &mut App) -> Page {
     if current == "ambience" {
         current = "focus".into();
     }
-    tick_focus(app);
     let main = match current.as_str() {
         "habits" => habits(app),
         "focus" => {
@@ -652,7 +651,15 @@ fn focus_minutes() -> i64 {
     prefs::read_json::<i64>("ethone-focus-minutes").unwrap_or(25)
 }
 
-fn tick_focus(app: &mut App) {
+pub fn focus_label(app: &App) -> String {
+    match (app.state.work.focus_end, app.state.work.focus_left) {
+        (Some(_), Some(left)) => format!("{:02}:{:02}", left / 60, left % 60),
+        (None, Some(left)) if left > 0 => format!("{} {:02}:{:02}", tr("Pause", "Paused"), left / 60, left % 60),
+        _ => String::new(),
+    }
+}
+
+pub fn tick_focus(app: &mut App) {
     let Some(end) = app.state.work.focus_end else { return };
     let left = ((end - time::now_ms()) / 1000.0).round().max(0.0) as i64;
     app.state.work.focus_left = Some(left);

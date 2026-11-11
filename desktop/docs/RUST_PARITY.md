@@ -177,7 +177,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 
 `[ ]` à faire, `[x]` fait et vérifié (tests ou parcours e2e), avec la preuve dans « Fait ensuite » ou ici.
 
-- [ ] 1. Minuteur Pomodoro dans la barre de titre
+- [~] 1. Minuteur Pomodoro dans la barre de titre : le minuteur de concentration existant (15/25/45/60 min) s'affiche dans la barre de titre quand il tourne ou est en pause, un clic ouvre le minuteur ; il avance désormais sur toutes les pages (avant, une séance finie ailleurs n'était enregistrée qu'au retour sur Productivité) ; e2e écrit (démarrer, voir, recommencer), à lancer après la partie
 - [x] 2. « Ne pas déranger pendant 1 h » d'un clic depuis la cloche (la plage horaire des réglages existe déjà) : bouton dans le panneau de la cloche : silence 1 h (quiet_until dans les préférences, respecté par toutes les notifications Windows), « Silence jusqu'à HH:MM » + Réactiver ; e2e 94 étapes
 - [~] 3. Historique du presse-papiers (texte, local, effaçable) : réglage « Historique du presse-papiers » (désactivé par défaut, le couper efface tout), 25 derniers textes, formats privés des gestionnaires de mots de passe ignorés, tiroir depuis Ctrl+K avec Copier et Tout effacer ; test clips, e2e 104 étapes (tiroir désactivé) ; la capture active n'a pas été essayée pour ne pas toucher à ton presse-papiers
 - [x] 4. Calculatrice et conversions dans Ctrl+K : logic/calc.rs : + − × ÷ %, parenthèses, virgule, km/mi kg/lb cm/in m/ft l/gal °C/°F ; Entrée copie le résultat ; tests et e2e (12 * 3,5 = 42)

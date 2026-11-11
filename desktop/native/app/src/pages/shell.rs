@@ -165,6 +165,11 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "focus-open") => {
+            crate::pages::set_section("ethone-section-productivity", "focus");
+            app.forget_section("productivity");
+            go(app, "productivity");
+        }
         ("shell", "later") => open_later(app),
         ("shell", "later-add") => {
             let list: Vec<String> = prefs::read_json(LATER).unwrap_or_default();
@@ -627,6 +632,9 @@ pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bo
 }
 
 pub fn render_chrome(app: &mut App, ui: &AppWindow) {
+    crate::pages::work::tick_focus(app);
+    ui.set_focus_label(crate::pages::work::focus_label(app).into());
+    ui.set_focus_tip(tr("Séance de concentration : ouvrir le minuteur", "Focus session: open the timer").into());
     let page = app.page.clone();
     let compact = app.compact || ui.window().size().to_logical(ui.window().scale_factor()).width < 1100.0;
     let mut nav: Vec<Item> = Vec::new();

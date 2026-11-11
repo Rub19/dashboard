@@ -905,6 +905,8 @@ export component AppWindow inherits Window {
     in property <string> back-label;
     in property <string> forward-label;
     in property <string> bell-label;
+    in property <string> focus-label;
+    in property <string> focus-tip;
     in property <bool> can-back;
     in property <bool> can-forward;
     in property <image> min-icon;
@@ -1208,6 +1210,30 @@ export component AppWindow inherits Window {
                             }
                             Rectangle {
                                 horizontal-stretch: 1;
+                            }
+                            if root.focus-label != "": VerticalLayout {
+                                alignment: center;
+                                padding-right: 6px;
+                                Rectangle {
+                                    width: focus-text.preferred-width + 20px;
+                                    height: 28px;
+                                    border-radius: 14px;
+                                    background: focus-touch.has-hover ? Theme.control-hover : Theme.control;
+                                    accessible-role: button;
+                                    accessible-label: root.focus-tip;
+                                    focus-text := Text {
+                                        text: root.focus-label;
+                                        color: Theme.fg;
+                                        font-size: Theme.f13;
+                                        font-weight: 600;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                    focus-touch := TouchArea {
+                                        mouse-cursor: pointer;
+                                        clicked => { Ui.act("shell:focus-open", ""); }
+                                    }
+                                }
                             }
                             VerticalLayout {
                                 alignment: center;

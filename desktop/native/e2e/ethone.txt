@@ -258,3 +258,23 @@ expect Jours actifs
 snap 26-concentration-semaine
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Concentration et ambiance
+wait 600
+key Return
+wait 1500
+click Démarrer
+wait 1200
+click Accueil
+wait 1500
+snap 27-minuteur-barre-de-titre
+click Séance de concentration : ouvrir le minuteur
+wait 1500
+expect Ces 7 derniers jours
+click Recommencer
+wait 1200
+absent Séance de concentration : ouvrir le minuteur
+click Accueil
+wait 1200

@@ -1,0 +1,39 @@
+# Raccourcis personnalisés seuls (extrait de ethone.txt)
+wait 5000
+expect Habitudes du jour
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Raccourcis
+wait 600
+key Return
+wait 1500
+expect Tes raccourcis (Ctrl+Maj+lettre)
+type G|q
+wait 400
+type Action, comme dans Ctrl+K|lire plus tard
+wait 600
+expect → À lire plus tard
+click Ajouter
+wait 800
+expect Raccourci enregistré : Ctrl+Maj+Q
+snap 33-raccourcis-perso
+click Accueil
+wait 1200
+absent À lire plus tard
+key Ctrl+Shift+q
+wait 1000
+expect À lire plus tard
+key Escape
+wait 800
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Raccourcis
+wait 600
+key Return
+wait 1500
+click Retirer
+wait 800
+absent Ctrl+Maj+Q
+click Accueil
+wait 1200

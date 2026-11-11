@@ -99,12 +99,14 @@ pub fn act(app: &mut App, id: &str, value: &str) {
         "shortcut-cmd" => app.state.settings.shortcut_cmd = value.to_string(),
         "shortcut-add" => {
             let letter = crate::logic::settings::shortcut_letter(&app.state.settings.shortcut_key);
-            match (letter, app.state.settings.shortcut_cmd.clone()) {
-                (Some(letter), command) if !command.is_empty() => {
+            let found = shortcut_match(app).map(|(id, _)| id);
+            match (letter, found) {
+                (Some(letter), Some(command)) => {
                     let mut map: std::collections::BTreeMap<String, String> = prefs::read_json(crate::pages::shell::SHORTCUTS).unwrap_or_default();
                     map.insert(letter.to_string(), command);
                     prefs::write_json(crate::pages::shell::SHORTCUTS, &map);
                     app.state.settings.shortcut_key.clear();
+                    app.state.settings.shortcut_cmd.clear();
                     app.toast(&format!("{} Ctrl+Maj+{}", tr("Raccourci enregistré :", "Shortcut saved:"), letter.to_ascii_uppercase()));
                 }
                 _ => app.toast_bad(&tr("Choisis une lettre de A à Z et une action", "Pick a letter from A to Z and an action")),
@@ -413,6 +415,15 @@ fn windows(app: &mut App) -> Vec<B> {
     out
 }
 
+fn shortcut_match(app: &App) -> Option<(String, String)> {
+    let query = app.state.settings.shortcut_cmd.trim();
+    if query.is_empty() {
+        return None;
+    }
+    let choices = crate::pages::shell::shortcut_choices(app);
+    crate::logic::palette::rank(&choices, query, &[], |choice| choice.0.as_str(), |choice| choice.1.as_str()).list.first().map(|choice| (*choice).clone())
+}
+
 fn shortcuts(app: &mut App) -> Vec<B> {
     let mut out = vec![head(&tr("Raccourcis", "Shortcuts"), &tr("Les raccourcis clavier de l'application.", "The app's keyboard shortcuts."), vec![])];
     let choices = crate::pages::shell::shortcut_choices(app);
@@ -422,12 +433,13 @@ fn shortcuts(app: &mut App) -> Vec<B> {
         let label = choices.iter().find(|(choice, _)| choice == id).map_or(id.clone(), |(_, label)| label.clone());
         row(vec![kbd(&format!("Ctrl+{}+{}", if fr() { "Maj" } else { "Shift" }, letter.to_ascii_uppercase())), text(&label).grow(), btn(&format!("settings:shortcut-remove:{letter}"), &tr("Retirer", "Remove"))])
     }).collect();
-    let current = app.state.settings.shortcut_cmd.clone();
-    let mut options = vec![(String::new(), tr("Choisir une action…", "Pick an action…"))];
-    options.extend(choices.iter().cloned());
-    let pick = app.select("settings:shortcut-cmd", &current, &options);
+    let query = app.state.settings.shortcut_cmd.clone();
     let key = app.state.settings.shortcut_key.clone();
-    mine.push(row(vec![input("settings:shortcut-key", &key, "G").tip(&tr("Lettre", "Letter")), pick, btn("settings:shortcut-add", &tr("Ajouter", "Add"))]));
+    let found = shortcut_match(app);
+    mine.push(row(vec![input("settings:shortcut-key", &key, "G").tip(&tr("Lettre", "Letter")), input("settings:shortcut-cmd", &query, &tr("Action, comme dans Ctrl+K", "Action, as in Ctrl+K")).grow(), btn("settings:shortcut-add", &tr("Ajouter", "Add")).off(found.is_none())]));
+    if !query.trim().is_empty() {
+        mine.push(row(vec![muted(&found.map_or_else(|| tr("Aucune action ne correspond", "No matching action"), |(_, label)| format!("→ {label}")))]));
+    }
     out.extend(group(mine));
     let groups = [
         (tr("Navigation", "Navigation"), vec![("Ctrl+K", tr("Rechercher une application ou une action", "Search an app or action")), ("Ctrl+1 à 9", tr("Ouvrir une page de la barre latérale", "Open a sidebar page")), ("Ctrl+,", tr("Ouvrir les réglages", "Open settings")), ("Alt+←", tr("Revenir en arrière", "Go back")), ("Alt+→", tr("Aller en avant", "Go forward"))]),

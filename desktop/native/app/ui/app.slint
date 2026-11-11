@@ -863,6 +863,66 @@ component Capsule {
     }
 }
 
+component MiniKey inherits Rectangle {
+    in property <image> icon;
+    in property <string> label;
+    in property <bool> big;
+    callback clicked;
+    width: root.big ? 40px : 32px;
+    height: self.width;
+    border-radius: self.width / 2;
+    background: root.big ? #ffffff : (touch.has-hover ? #ffffff1f : transparent);
+    accessible-role: button;
+    accessible-label: root.label;
+    accessible-action-default => { root.clicked(); }
+    Image {
+        width: root.big ? 18px : 16px;
+        height: self.width;
+        source: root.icon;
+        colorize: root.big ? #111317 : #f5f5f7;
+    }
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component MiniPlayer inherits Window {
+    in property <string> track;
+    in property <string> artist;
+    in property <bool> playing;
+    in property <image> prev-icon;
+    in property <image> next-icon;
+    in property <image> play-icon;
+    in property <image> pause-icon;
+    in property <string> prev-label;
+    in property <string> next-label;
+    in property <string> toggle-label;
+    callback act(string);
+    title: "Ethone · Spotify";
+    always-on-top: true;
+    width: 320px;
+    height: 76px;
+    background: #111317;
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 10px;
+        VerticalLayout {
+            alignment: center;
+            horizontal-stretch: 1;
+            Text { text: root.track; color: #f5f5f7; font-size: 14px; font-weight: 600; overflow: elide; }
+            Text { text: root.artist; color: #a1a1a6; font-size: 12px; overflow: elide; }
+        }
+        HorizontalLayout {
+            alignment: center;
+            spacing: 4px;
+            VerticalLayout { alignment: center; MiniKey { icon: root.prev-icon; label: root.prev-label; clicked => { root.act("music:previous"); } } }
+            VerticalLayout { alignment: center; MiniKey { icon: root.playing ? root.pause-icon : root.play-icon; label: root.toggle-label; big: true; clicked => { root.act("music:toggle"); } } }
+            VerticalLayout { alignment: center; MiniKey { icon: root.next-icon; label: root.next-label; clicked => { root.act("music:next"); } } }
+        }
+    }
+}
+
 export component AppWindow inherits Window {
     no-frame: true;
     title: "Ethone";

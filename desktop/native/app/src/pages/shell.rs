@@ -165,6 +165,7 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "mini-player") => toggle_mini(app),
         ("shell", "morning") => crate::pages::brain_extras::open_morning(app),
         ("shell", "focus-open") => {
             crate::pages::set_section("ethone-section-productivity", "focus");
@@ -536,6 +537,7 @@ fn commands(app: &App) -> Vec<Command> {
         out.insert(0, Command { id: "later-add".into(), label: format!("{} {}", tr("Garder pour plus tard :", "Save for later:"), crate::logic::clips::preview(&url)), hint: String::new(), action: "shell:later-add".into(), value: url.clone(), search: url });
     }
     out.push(Command { id: "morning".into(), label: tr("Ma journée : agenda, tâches, habitudes", "My day: calendar, tasks, habits"), hint: String::new(), action: "shell:morning".into(), value: String::new(), search: String::new() });
+    out.push(Command { id: "mini-player".into(), label: tr("Mini lecteur Spotify toujours devant", "Spotify mini player, always on top"), hint: String::new(), action: "shell:mini-player".into(), value: String::new(), search: String::new() });
     out.push(Command { id: "later".into(), label: tr("À lire plus tard", "Read later"), hint: String::new(), action: "shell:later".into(), value: String::new(), search: String::new() });
     let starting = prefs::read_json::<Vec<String>>(crate::pages::modules::START_APPS).unwrap_or_default();
     for status in app.modules.iter().filter(|status| status.module.detect.is_some() && status.installed.is_some()) {
@@ -649,7 +651,59 @@ fn morning_once(app: &mut App) {
     crate::pages::brain_extras::open_morning(app);
 }
 
+thread_local! {
+    static MINI: std::cell::RefCell<Option<crate::MiniPlayer>> = const { std::cell::RefCell::new(None) };
+}
+
+fn toggle_mini(app: &mut App) {
+    use slint::ComponentHandle;
+    let opened = MINI.with(|cell| {
+        let mut slot = cell.borrow_mut();
+        if let Some(window) = slot.take() {
+            let _ = window.hide();
+            return false;
+        }
+        let Ok(window) = crate::MiniPlayer::new() else { return false };
+        window.on_act(|id| {
+            crate::app::with_app(|app| app.act(&id, ""));
+            crate::app::request_render();
+        });
+        window.window().on_close_requested(|| {
+            let _ = slint::invoke_from_event_loop(|| MINI.with(|cell| drop(cell.borrow_mut().take())));
+            slint::CloseRequestResponse::HideWindow
+        });
+        if crate::win::offscreen() {
+            *slot = Some(window);
+            return true;
+        }
+        let _ = window.show();
+        *slot = Some(window);
+        true
+    });
+    app.toast(&if opened { tr("Mini lecteur ouvert, toujours devant", "Mini player open, always on top") } else { tr("Mini lecteur fermé", "Mini player closed") });
+    fill_mini(app);
+}
+
+fn fill_mini(app: &mut App) {
+    MINI.with(|cell| {
+        let slot = cell.borrow();
+        let Some(window) = slot.as_ref() else { return };
+        let track = app.spotify.track.as_ref();
+        window.set_track(track.map_or_else(|| tr("Rien en lecture", "Nothing playing"), |track| track.title.clone()).into());
+        window.set_artist(track.and_then(|track| track.artist.clone()).unwrap_or_else(|| if app.spotify.linked { "Spotify".into() } else { tr("Spotify n'est pas relié", "Spotify is not linked") }).into());
+        window.set_playing(app.spotify.playing);
+        window.set_prev_icon(app.icon("skip-back"));
+        window.set_next_icon(app.icon("skip-forward"));
+        window.set_play_icon(app.icon("play"));
+        window.set_pause_icon(app.icon("pause"));
+        window.set_prev_label(tr("Titre précédent", "Previous track").into());
+        window.set_next_label(tr("Titre suivant", "Next track").into());
+        window.set_toggle_label(if app.spotify.playing { tr("Pause", "Pause") } else { tr("Lecture", "Play") }.into());
+    });
+}
+
 pub fn render_chrome(app: &mut App, ui: &AppWindow) {
+    fill_mini(app);
     morning_once(app);
     crate::pages::work::tick_focus(app);
     ui.set_focus_label(crate::pages::work::focus_label(app).into());

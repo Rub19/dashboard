@@ -301,3 +301,18 @@ expect Temps de jeu, 7 derniers jours
 snap 29-temps-de-jeu
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|mini lecteur
+wait 600
+key Return
+wait 800
+expect Mini lecteur ouvert, toujours devant
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|mini lecteur
+wait 600
+key Return
+wait 800
+expect Mini lecteur fermé

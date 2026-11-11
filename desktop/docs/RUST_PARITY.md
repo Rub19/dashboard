@@ -192,7 +192,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [ ] 13. Résumé du matin à la première ouverture du jour
 - [~] 14. Thème clair ou sombre selon l'heure : réglage « Thème selon l'heure » dans Apparence : look « Jour » de 7 h à 19 h, ton look le soir, revérifié chaque minute ; test scheduled_look, e2e 147 étapes (réglage présent) ; bascule réelle pas vue (testé de nuit, réglage non touché)
 - [ ] 15. Temps passé dans chaque jeu (VALORANT, League, Minecraft) par semaine
-- [ ] 16. Lancer une app du hub au démarrage d'Ethone
+- [~] 16. Lancer une app du hub au démarrage d'Ethone : « Lancer avec Ethone : <app> » dans Ctrl+K et au clic droit d'une app épinglée ; au démarrage, Ethone lance les apps choisies installées et pas déjà ouvertes, sans les passer devant (jamais pendant les tests) ; test startup_targets, e2e 184 étapes (activé puis désactivé) ; lancement réel au démarrage pas essayé
 - [ ] 17. Mini lecteur Spotify toujours devant
 - [ ] 18. Journal des actions faites dans Ethone, avec annulation quand c'est possible
 - [ ] 19. Liste de lecture de liens à lire plus tard, gardée sur le PC (la concentration et les sons d'ambiance existent déjà)

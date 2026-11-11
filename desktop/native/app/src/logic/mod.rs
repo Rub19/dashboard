@@ -24,6 +24,10 @@ pub fn toggle_pinned(pinned: &[String], id: &str) -> Vec<String> {
     }
 }
 
+pub fn startup_targets(wanted: &[String], modules: &[(String, bool, bool)]) -> Vec<String> {
+    wanted.iter().filter(|id| modules.iter().any(|(other, installed, running)| other == *id && *installed && !*running)).cloned().collect()
+}
+
 pub fn resolve_pinned<'a, T>(pinned: &[String], modules: &'a [T], id_of: impl Fn(&T) -> &str) -> Vec<&'a T> {
     let mut found = Vec::new();
     for id in pinned {
@@ -81,6 +85,13 @@ mod tests {
         let modules = ["b", "x", "a"];
         let found = resolve_pinned(&list, &modules, |item| item);
         assert_eq!(found.into_iter().copied().collect::<Vec<_>>(), vec!["a", "b"]);
+    }
+
+    #[test]
+    fn only_installed_idle_apps_start_with_ethone() {
+        let modules = vec![("kairo".to_string(), true, false), ("argus".to_string(), true, true), ("nova".to_string(), false, false)];
+        let wanted = vec!["argus".to_string(), "kairo".to_string(), "nova".to_string(), "gone".to_string()];
+        assert_eq!(startup_targets(&wanted, &modules), vec!["kairo"]);
     }
 
     #[test]

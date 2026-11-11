@@ -180,3 +180,19 @@ key Escape
 wait 600
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|lancer avec ethone kairo
+waitfor Lancer avec Ethone : Kairo|8000
+key Return
+wait 800
+expect Kairo se lancera avec Ethone
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|ne plus lancer avec ethone kairo
+waitfor Ne plus lancer avec Ethone : Kairo|8000
+snap 22-lancer-avec-ethone
+key Return
+wait 800
+expect Kairo ne se lancera plus avec Ethone

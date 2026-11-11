@@ -165,6 +165,7 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", start) if start.starts_with("start-app:") => crate::pages::modules::toggle_start_app(app, &start["start-app:".len()..].to_string()),
         ("shell", "open-item") => {
             if let Some((kind, id)) = value.split_once('|') {
                 crate::pages::set_section("ethone-section-productivity", kind);
@@ -345,7 +346,8 @@ pub fn prepare_menu(app: &mut App, id: &str) {
     if id == "account" {
         app.menu_for("account", vec![entry("account:manage", &t("manageAccount")), entry("account:sign-out", &t("signOut"))]);
     } else if let Some(module) = id.strip_prefix("pin-menu:") {
-        app.menu_for(id, vec![entry(&format!("modules:pin:{module}"), &tr("Désépingler", "Unpin"))]);
+        let starts = prefs::read_json::<Vec<String>>(crate::pages::modules::START_APPS).unwrap_or_default().iter().any(|item| item == module);
+        app.menu_for(id, vec![entry(&format!("modules:pin:{module}"), &tr("Désépingler", "Unpin")), entry(&format!("shell:start-app:{module}"), &if starts { tr("Ne plus lancer avec Ethone", "Stop starting with Ethone") } else { tr("Lancer avec Ethone", "Start with Ethone") })]);
     }
 }
 
@@ -490,6 +492,12 @@ fn commands(app: &App) -> Vec<Command> {
     let is_favorite = prefs::read_json::<Vec<String>>(FAVORITES).unwrap_or_default().contains(&favorite);
     out.push(Command { id: "fav-toggle".into(), label: if is_favorite { tr("Retirer cette page des favoris", "Remove this page from favorites") } else { tr("Ajouter cette page aux favoris", "Add this page to favorites") }, hint: String::new(), action: "shell:fav-toggle".into(), value: String::new(), search: String::new() });
     out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new(), search: String::new() });
+    let starting = prefs::read_json::<Vec<String>>(crate::pages::modules::START_APPS).unwrap_or_default();
+    for status in app.modules.iter().filter(|status| status.module.detect.is_some() && status.installed.is_some()) {
+        let id = &status.module.id;
+        let label = if starting.contains(id) { format!("{} {}", tr("Ne plus lancer avec Ethone :", "Stop starting with Ethone:"), status.module.name) } else { format!("{} {}", tr("Lancer avec Ethone :", "Start with Ethone:"), status.module.name) };
+        out.push(Command { id: format!("start-app-{id}"), label, hint: String::new(), action: format!("shell:start-app:{id}"), value: String::new(), search: String::new() });
+    }
     for kind in ["notes", "tasks"] {
         let list = app.res.get(&format!("productivity:{kind}")).and_then(|res| res.data.clone()).and_then(|data| data.as_array().cloned()).unwrap_or_default();
         for item in list {

@@ -29,7 +29,10 @@ pub struct UpdateState {
 pub fn load_modules(app: &mut App, first: bool) {
     let offline = app.offline();
     if first {
-        spawn(services::modules_local(), |app, list| app.modules = list);
+        spawn(services::modules_local(), |app, list| {
+            app.modules = list;
+            launch_startup_apps(app);
+        });
     }
     if offline {
         return;
@@ -102,6 +105,29 @@ pub fn run(app: &mut App, id: &str) {
             }
         }
     }
+}
+
+pub const START_APPS: &str = "ethone-start-apps";
+
+fn launch_startup_apps(app: &mut App) {
+    if crate::win::offscreen() {
+        return;
+    }
+    let wanted: Vec<String> = crate::prefs::read_json(START_APPS).unwrap_or_default();
+    let found: Vec<(String, bool, bool)> = app.modules.iter().filter(|status| status.module.detect.is_some()).map(|status| (status.module.id.clone(), status.installed.is_some(), status.running)).collect();
+    for id in crate::logic::startup_targets(&wanted, &found) {
+        let Some(detect) = svc().modules.iter().find(|module| module.id == id).and_then(|module| module.detect.clone()) else { continue };
+        let result = system::launch(&detect);
+        services::record(&id, "open", result.is_ok(), result.as_ref().err().map_or("démarrage avec Ethone", String::as_str));
+    }
+}
+
+pub fn toggle_start_app(app: &mut App, id: &str) {
+    let list: Vec<String> = crate::prefs::read_json(START_APPS).unwrap_or_default();
+    let added = !list.iter().any(|item| item == id);
+    crate::prefs::write_json(START_APPS, &crate::logic::toggle_pinned(&list, id));
+    let name = app.modules.iter().find(|status| status.module.id == id).map_or(id.to_string(), |status| status.module.name.clone());
+    app.toast(&if added { format!("{name} {}", tr("se lancera avec Ethone", "will start with Ethone")) } else { format!("{name} {}", tr("ne se lancera plus avec Ethone", "will no longer start with Ethone")) });
 }
 
 fn fail(app: &mut App, id: &str, error: &str) {

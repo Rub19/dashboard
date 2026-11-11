@@ -12,6 +12,7 @@ use serde_json::{json, Value};
 
 const SECTION_KEY: &str = "ethone-section-productivity";
 const FOCUS_KEY: &str = "ethone-focus-history";
+const ORDER_KEY: &str = "ethone-task-order";
 
 #[derive(Default)]
 pub struct WorkState {
@@ -355,6 +356,16 @@ pub fn act(app: &mut App, id: &str, value: &str) {
         "filter" => prefs::write_json("ethone-task-filter", &arg.to_string()),
         "day" => app.state.work.day = if app.state.work.day.as_deref() == Some(arg) { None } else { Some(arg.to_string()) },
         "calendar-view" => prefs::write_json("ethone-calendar-view", &arg.to_string()),
+        "move-up" | "move-down" => {
+            let today = time::day_key(&Local::now());
+            let mut list: Vec<Value> = app.res.get(&items_key("tasks")).and_then(|res| res.data.clone()).and_then(|data| data.as_array().cloned()).unwrap_or_default();
+            logic::newest_items_first(&mut list);
+            let order: Vec<String> = prefs::read_json(ORDER_KEY).unwrap_or_default();
+            let mut shown = visible_tasks(&list, &prefs::text("ethone-task-filter", "open"), &today);
+            crate::logic::productivity::apply_order(&mut shown, &order);
+            let visible: Vec<String> = shown.iter().filter_map(|item| item["id"].as_str().map(str::to_string)).collect();
+            prefs::write_json(ORDER_KEY, &crate::logic::productivity::move_in_order(&visible, &order, arg, verb == "move-up"));
+        }
         "week" => {
             app.state.work.week_shift = match arg {
                 "previous" => app.state.work.week_shift - 1,
@@ -509,6 +520,7 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
         let items: Vec<(&str, &str)> = labels.iter().map(|(id, label)| (*id, label.as_str())).collect();
         out.push(seg(&items, &filter, "work:filter:"));
         list = visible_tasks(&list, &filter, &today);
+        crate::logic::productivity::apply_order(&mut list, &prefs::read_json::<Vec<String>>(ORDER_KEY).unwrap_or_default());
     }
     if kind == "events" {
         let view = prefs::text("ethone-calendar-view", "month");
@@ -529,6 +541,7 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
     }
     let (done_icon, open_icon, event_icon, note_icon, pencil, trash, undo) = (app.icon("circle-check"), app.icon("circle"), app.icon("calendar-days"), app.icon("notebook-pen"), app.icon("pencil"), app.icon("trash2"), app.icon("rotate-ccw"));
     let fr = fr();
+    let (up_icon, down_icon) = (app.icon("arrow-up"), app.icon("arrow-down"));
     let rows = list.iter().map(|item| {
         let id = item["id"].as_str().unwrap_or_default();
         let done = item["done"] == true;
@@ -562,6 +575,8 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
             cells.push(muted(&stamp));
         }
         if kind == "tasks" {
+            cells.push(ibtn(&format!("work:move-up:{id}"), up_icon.clone(), &tr("Monter", "Move up")).off(saving));
+            cells.push(ibtn(&format!("work:move-down:{id}"), down_icon.clone(), &tr("Descendre", "Move down")).off(saving));
             cells.push(btn(&format!("work:toggle:{id}"), &if done { t("reopen") } else { t("markDone") }).icon(if done { undo.clone() } else { done_icon.clone() }).off(saving));
         }
         cells.push(ibtn(&format!("work:edit:{id}"), pencil.clone(), &t("edit")).off(saving));

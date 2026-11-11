@@ -8,6 +8,7 @@ pub const ICONS: &[(&str, &[u8])] = &[
     ("arrow-left", include_bytes!("../icons/arrow-left.svg")),
     ("arrow-right", include_bytes!("../icons/arrow-right.svg")),
     ("arrow-up", include_bytes!("../icons/arrow-up.svg")),
+    ("arrow-down", include_bytes!("../icons/arrow-down.svg")),
     ("bar-chart3", include_bytes!("../icons/bar-chart3.svg")),
     ("bell", include_bytes!("../icons/bell.svg")),
     ("book-open", include_bytes!("../icons/book-open.svg")),

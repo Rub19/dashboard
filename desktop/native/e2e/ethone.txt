@@ -345,3 +345,15 @@ wait 1200
 absent Cette semaine
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Tâches
+wait 600
+key Return
+wait 2500
+expect Monter
+expect Descendre
+snap 32-taches-ordre
+click Accueil
+wait 1200

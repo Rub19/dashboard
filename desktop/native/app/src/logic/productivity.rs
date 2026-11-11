@@ -219,6 +219,22 @@ pub fn focus_by_day(history: &[Value], days: &[String]) -> Vec<f64> {
         .collect()
 }
 
+pub fn apply_order(list: &mut [Value], order: &[String]) {
+    list.sort_by_key(|item| order.iter().position(|id| item["id"] == id.as_str()).unwrap_or(usize::MAX));
+}
+
+pub fn move_in_order(visible: &[String], order: &[String], id: &str, up: bool) -> Vec<String> {
+    let mut next: Vec<String> = visible.to_vec();
+    if let Some(at) = next.iter().position(|item| item == id) {
+        let target = if up { at.checked_sub(1) } else { Some(at + 1).filter(|to| *to < next.len()) };
+        if let Some(target) = target {
+            next.swap(at, target);
+        }
+    }
+    next.extend(order.iter().filter(|item| !visible.contains(item)).cloned());
+    next
+}
+
 pub fn week_days(day: NaiveDate, shift: i64) -> Vec<NaiveDate> {
     let monday = day - chrono::Duration::days(i64::from(day.weekday().num_days_from_monday())) + chrono::Duration::days(7 * shift);
     (0..7).map(|at| monday + chrono::Duration::days(at)).collect()
@@ -235,6 +251,18 @@ pub fn at_noon(date: NaiveDate) -> DateTime<Local> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn tasks_move_up_and_down_and_keep_their_place() {
+        let ids = |list: &[&str]| list.iter().map(|id| id.to_string()).collect::<Vec<_>>();
+        let visible = ids(&["a", "b", "c"]);
+        assert_eq!(move_in_order(&visible, &[], "c", true), ids(&["a", "c", "b"]));
+        assert_eq!(move_in_order(&visible, &[], "a", true), visible);
+        assert_eq!(move_in_order(&visible, &ids(&["z", "a"]), "c", false), ids(&["a", "b", "c", "z"]));
+        let mut list = vec![serde_json::json!({"id": "a"}), serde_json::json!({"id": "b"}), serde_json::json!({"id": "c"})];
+        apply_order(&mut list, &ids(&["c", "a"]));
+        assert_eq!(list.iter().map(|item| item["id"].as_str().unwrap()).collect::<Vec<_>>(), vec!["c", "a", "b"]);
+    }
 
     #[test]
     fn week_view_starts_on_monday() {

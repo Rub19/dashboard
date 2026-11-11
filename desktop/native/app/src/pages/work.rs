@@ -705,6 +705,17 @@ fn focus(app: &mut App) -> Vec<B> {
     }
     out.push(row(controls).center());
     out.push(row(vec![stat(&tr("Séances aujourd'hui", "Sessions today"), &today_entries.len().to_string(), ""), stat(&tr("Temps aujourd'hui", "Time today"), &format!("{} min", (seconds / 60.0).round()), ""), stat(&tr("Total", "Total"), &history.len().to_string(), &tr("séances", "sessions"))]));
+    let week = crate::logic::productivity::last_days(7, Local::now());
+    let keys: Vec<String> = week.iter().map(|date| logic::day_key_of(*date)).collect();
+    let minutes = crate::logic::productivity::focus_by_day(&history, &keys);
+    let total: f64 = minutes.iter().sum();
+    let peak = minutes.iter().cloned().fold(0.0, f64::max);
+    let fr = fr();
+    out.push(h2(&tr("Ces 7 derniers jours", "Last 7 days")));
+    out.push(bars(90.0, week.iter().zip(&minutes).map(|(date, value)| C { progress: if peak > 0.0 { ((value / peak) as f32).max(if *value > 0.0 { 0.04 } else { 0.01 }) } else { 0.01 }, tip: format!("{} {} : {} min", date.day(), time::month_name(date.month0() as usize, fr), value.round()), ..Default::default() }).collect()));
+    let best = week.iter().zip(&minutes).filter(|(_, value)| **value > 0.0).max_by(|left, right| left.1.total_cmp(right.1)).map(|(date, value)| format!("{} {} ({} min)", date.day(), time::month_name(date.month0() as usize, fr), value.round())).unwrap_or_else(|| "—".into());
+    let active = minutes.iter().filter(|value| **value > 0.0).count();
+    out.push(row(vec![stat(&tr("Cette semaine", "This week"), &format!("{} min", total.round()), ""), stat(&tr("Jours actifs", "Active days"), &format!("{active}/7"), ""), stat(&tr("Meilleur jour", "Best day"), &best, "")]));
     out
 }
 

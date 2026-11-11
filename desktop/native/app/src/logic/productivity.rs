@@ -207,6 +207,18 @@ pub fn habit_streak(days: &std::collections::HashSet<String>, today: DateTime<Lo
     streak
 }
 
+pub fn focus_by_day(history: &[Value], days: &[String]) -> Vec<f64> {
+    days.iter()
+        .map(|day| {
+            history
+                .iter()
+                .filter(|entry| entry["completedAt"].as_str().and_then(crate::logic::time::parse).is_some_and(|date| crate::logic::time::day_key(&date) == *day))
+                .map(|entry| entry["seconds"].as_f64().unwrap_or(0.0) / 60.0)
+                .sum()
+        })
+        .collect()
+}
+
 pub fn last_days(count: i64, today: DateTime<Local>) -> Vec<NaiveDate> {
     (0..count).map(|index| today.date_naive() - Duration::days(count - 1 - index)).collect()
 }
@@ -218,6 +230,13 @@ pub fn at_noon(date: NaiveDate) -> DateTime<Local> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn focus_minutes_add_up_per_day() {
+        let at = |day: &str| crate::logic::time::iso(&crate::logic::time::parse(&format!("{day}T12:00:00")).unwrap());
+        let history = vec![serde_json::json!({"completedAt": at("2026-11-10"), "seconds": 1500}), serde_json::json!({"completedAt": at("2026-11-10"), "seconds": 900}), serde_json::json!({"completedAt": at("2026-11-11"), "seconds": 2700})];
+        assert_eq!(focus_by_day(&history, &["2026-11-09".into(), "2026-11-10".into(), "2026-11-11".into()]), vec![0.0, 40.0, 45.0]);
+    }
 
     #[test]
     fn morning_task_reminder_counts_today_and_late() {

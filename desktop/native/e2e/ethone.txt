@@ -246,3 +246,15 @@ expect Historique du presse-papiers
 snap 25-reglages-notifications
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Concentration et ambiance
+wait 600
+key Return
+wait 1500
+expect Ces 7 derniers jours
+expect Jours actifs
+snap 26-concentration-semaine
+click Accueil
+wait 1200

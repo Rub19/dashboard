@@ -196,4 +196,4 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [ ] 17. Mini lecteur Spotify toujours devant
 - [ ] 18. Journal des actions faites dans Ethone, avec annulation quand c'est possible
 - [~] 19. Liste de lecture de liens à lire plus tard, gardée sur le PC (la concentration et les sons d'ambiance existent déjà) : coller un lien http(s) dans Ctrl+K propose « Garder pour plus tard », tiroir « À lire plus tard » (Ouvrir, Retirer), 200 liens max sur ce PC, inclus dans l'export des réglages ; test only_real_links_are_kept_for_later ; étapes e2e écrites, à lancer après la partie VALORANT
-- [ ] 20. Statistiques de concentration de la semaine
+- [~] 20. Statistiques de concentration de la semaine : Concentration : barres des 7 derniers jours (minutes par jour au survol), total de la semaine, jours actifs, meilleur jour, depuis l'historique local des séances ; test focus_minutes_add_up_per_day ; e2e écrit, à lancer après la partie

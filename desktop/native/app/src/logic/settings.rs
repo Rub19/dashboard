@@ -116,7 +116,7 @@ pub fn interface_json(preferences: &InterfacePreferences) -> Value {
     serde_json::json!({ "density": preferences.density, "motion": preferences.motion, "transparency": preferences.transparency, "textScale": preferences.text_scale })
 }
 
-pub const SETTINGS_KEYS: [&str; 20] = ["ethone-theme-schedule", "ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+pub const SETTINGS_KEYS: [&str; 22] = ["ethone-read-later", "ethone-start-apps", "ethone-theme-schedule", "ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 pub fn parse_settings(text: &str) -> Result<Vec<(String, String)>, String> {
     let parsed: Value = serde_json::from_str(text).map_err(|_| "invalid".to_string())?;

@@ -195,5 +195,5 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [~] 16. Lancer une app du hub au démarrage d'Ethone : « Lancer avec Ethone : <app> » dans Ctrl+K et au clic droit d'une app épinglée ; au démarrage, Ethone lance les apps choisies installées et pas déjà ouvertes, sans les passer devant (jamais pendant les tests) ; test startup_targets, e2e 184 étapes (activé puis désactivé) ; lancement réel au démarrage pas essayé
 - [ ] 17. Mini lecteur Spotify toujours devant
 - [ ] 18. Journal des actions faites dans Ethone, avec annulation quand c'est possible
-- [ ] 19. Liste de lecture de liens à lire plus tard, gardée sur le PC (la concentration et les sons d'ambiance existent déjà)
+- [~] 19. Liste de lecture de liens à lire plus tard, gardée sur le PC (la concentration et les sons d'ambiance existent déjà) : coller un lien http(s) dans Ctrl+K propose « Garder pour plus tard », tiroir « À lire plus tard » (Ouvrir, Retirer), 200 liens max sur ce PC, inclus dans l'export des réglages ; test only_real_links_are_kept_for_later ; étapes e2e écrites, à lancer après la partie VALORANT
 - [ ] 20. Statistiques de concentration de la semaine

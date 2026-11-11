@@ -196,3 +196,24 @@ snap 22-lancer-avec-ethone
 key Return
 wait 800
 expect Kairo ne se lancera plus avec Ethone
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|https://ethone.dev/essai-e2e
+waitfor Garder pour plus tard : https://ethone.dev/essai-e2e|8000
+key Return
+wait 800
+expect Gardé pour plus tard
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|à lire plus tard
+wait 600
+key Return
+wait 800
+expect ethone.dev/essai-e2e
+snap 23-lire-plus-tard
+click Retirer
+wait 800
+absent ethone.dev/essai-e2e
+key Escape
+wait 600

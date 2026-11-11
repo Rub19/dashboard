@@ -165,6 +165,27 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "later") => open_later(app),
+        ("shell", "later-add") => {
+            let list: Vec<String> = prefs::read_json(LATER).unwrap_or_default();
+            prefs::write_json(LATER, &crate::logic::clips::keep_link(&list, value));
+            app.toast(&tr("Gardé pour plus tard", "Saved for later"));
+        }
+        ("shell", later) if later.starts_with("later-open:") || later.starts_with("later-del:") => {
+            let mut list: Vec<String> = prefs::read_json(LATER).unwrap_or_default();
+            let (verb, at) = later.split_once(':').unwrap_or_default();
+            if let Some(at) = at.parse::<usize>().ok().filter(|at| *at < list.len()) {
+                if verb == "later-open" {
+                    if crate::services::open_url(&list[at]).is_err() {
+                        app.toast_bad(&tr("Lien impossible à ouvrir", "Could not open the link"));
+                    }
+                } else {
+                    list.remove(at);
+                    prefs::write_json(LATER, &list);
+                }
+            }
+            open_later(app);
+        }
         ("shell", start) if start.starts_with("start-app:") => crate::pages::modules::toggle_start_app(app, &start["start-app:".len()..].to_string()),
         ("shell", "open-item") => {
             if let Some((kind, id)) = value.split_once('|') {
@@ -276,6 +297,19 @@ fn open_log(app: &mut App) {
         out.extend(group(rows));
         out.push(row(vec![btn("shell:log-clear", &tr("Tout effacer", "Clear all"))]));
         out
+    });
+}
+
+const LATER: &str = "ethone-read-later";
+
+fn open_later(app: &mut App) {
+    app.open_drawer(&tr("À lire plus tard", "Read later"), 460.0, |_app| {
+        let list: Vec<String> = prefs::read_json(LATER).unwrap_or_default();
+        if list.is_empty() {
+            return vec![empty(&tr("Aucun lien gardé", "No saved links"), &tr("Colle un lien dans Ctrl+K puis choisis « Garder pour plus tard ».", "Paste a link into Ctrl+K, then pick “Save for later”."))];
+        }
+        let rows = list.iter().enumerate().map(|(at, url)| row(vec![wrap(&crate::logic::clips::preview(url.trim_start_matches("https://").trim_start_matches("http://"))), btn(&format!("shell:later-open:{at}"), &tr("Ouvrir", "Open")), btn(&format!("shell:later-del:{at}"), &tr("Retirer", "Remove"))])).collect();
+        group(rows)
     });
 }
 
@@ -492,6 +526,10 @@ fn commands(app: &App) -> Vec<Command> {
     let is_favorite = prefs::read_json::<Vec<String>>(FAVORITES).unwrap_or_default().contains(&favorite);
     out.push(Command { id: "fav-toggle".into(), label: if is_favorite { tr("Retirer cette page des favoris", "Remove this page from favorites") } else { tr("Ajouter cette page aux favoris", "Add this page to favorites") }, hint: String::new(), action: "shell:fav-toggle".into(), value: String::new(), search: String::new() });
     out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new(), search: String::new() });
+    if let Some(url) = crate::logic::clips::link(&app.palette_query) {
+        out.insert(0, Command { id: "later-add".into(), label: format!("{} {}", tr("Garder pour plus tard :", "Save for later:"), crate::logic::clips::preview(&url)), hint: String::new(), action: "shell:later-add".into(), value: url.clone(), search: url });
+    }
+    out.push(Command { id: "later".into(), label: tr("À lire plus tard", "Read later"), hint: String::new(), action: "shell:later".into(), value: String::new(), search: String::new() });
     let starting = prefs::read_json::<Vec<String>>(crate::pages::modules::START_APPS).unwrap_or_default();
     for status in app.modules.iter().filter(|status| status.module.detect.is_some() && status.installed.is_some()) {
         let id = &status.module.id;

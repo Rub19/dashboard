@@ -111,6 +111,12 @@ fn empty_draft(app: &mut App) {
     state.priority = "medium".into();
 }
 
+pub fn warm(app: &mut App) {
+    for kind in ["notes", "tasks"] {
+        app.load(&items_key(kind), || load_items(kind));
+    }
+}
+
 pub fn notes_markdown(list: &[Value]) -> String {
     let mut out = String::from("# Notes Ethone\n");
     for item in list {

@@ -16,6 +16,7 @@ pub struct Command {
     pub hint: String,
     pub action: String,
     pub value: String,
+    pub search: String,
 }
 
 pub fn page_label(page: &str) -> String {
@@ -164,6 +165,14 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "open-item") => {
+            if let Some((kind, id)) = value.split_once('|') {
+                crate::pages::set_section("ethone-section-productivity", kind);
+                app.forget_section("productivity");
+                go(app, "productivity");
+                crate::pages::work::act(app, &format!("edit:{id}"), "");
+            }
+        }
         ("shell", "fav-toggle") => {
             let key = current_favorite(app);
             toggle_favorite(app, &key);
@@ -344,6 +353,7 @@ pub fn open_palette(app: &mut App) {
     app.palette_open = true;
     app.palette_query.clear();
     app.palette_index = 0;
+    crate::pages::work::warm(app);
     app.palette_commands = commands(app);
     let weak = app.ui.clone();
     let _ = slint::invoke_from_event_loop(move || {
@@ -372,15 +382,20 @@ fn copy_calc(app: &mut App) {
     }
 }
 
+fn haystack(command: &Command) -> &str {
+    if command.search.is_empty() { &command.label } else { &command.search }
+}
+
 fn ranked_ids(app: &App) -> Vec<usize> {
     let recent: Vec<String> = prefs::read_json("ethone-palette-recent").unwrap_or_default();
-    let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), |command| command.label.as_str());
+    let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), haystack);
     ranked.list.iter().map(|command| app.palette_commands.iter().position(|other| std::ptr::eq(other, *command)).unwrap_or(0)).collect()
 }
 
 pub fn render_palette(app: &mut App, ui: &AppWindow) {
+    app.palette_commands = commands(app);
     let recent: Vec<String> = prefs::read_json("ethone-palette-recent").unwrap_or_default();
-    let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), |command| command.label.as_str());
+    let ranked = rank(&app.palette_commands, &app.palette_query, &recent, |command| command.id.as_str(), haystack);
     let mut items = Vec::new();
     let offset = match calc_answer(app) {
         Some(value) => {
@@ -459,26 +474,36 @@ fn commands(app: &App) -> Vec<Command> {
     for status in &app.modules {
         let id = &status.module.id;
         if status.can_run() {
-            out.push(Command { id: format!("run-{id}"), label: format!("{} : {}", t(&format!("action.{}", status.action_name())), status.module.name), hint: String::new(), action: format!("modules:run:{id}"), value: String::new() });
+            out.push(Command { id: format!("run-{id}"), label: format!("{} : {}", t(&format!("action.{}", status.action_name())), status.module.name), hint: String::new(), action: format!("modules:run:{id}"), value: String::new(), search: String::new() });
         } else {
-            out.push(Command { id: format!("see-{id}"), label: format!("{} : {}", tr("Voir", "See"), status.module.name), hint: String::new(), action: "go:modules".into(), value: String::new() });
+            out.push(Command { id: format!("see-{id}"), label: format!("{} : {}", tr("Voir", "See"), status.module.name), hint: String::new(), action: "go:modules".into(), value: String::new(), search: String::new() });
         }
     }
     for page in MAIN_PAGES.iter().chain(FOOT_PAGES.iter()) {
         let hint = if PAGE_ORDER.contains(page) || *page == "settings" { shortcut(page).unwrap_or_default() } else { String::new() };
-        out.push(Command { id: format!("page-{page}"), label: page_label(page), hint, action: format!("go:{page}"), value: String::new() });
+        out.push(Command { id: format!("page-{page}"), label: page_label(page), hint, action: format!("go:{page}"), value: String::new(), search: String::new() });
     }
     for (page, key, id, label, _) in section_commands() {
-        out.push(Command { id: format!("section-{page}-{id}"), label, hint: String::new(), action: format!("section:{key}|{page}"), value: id });
+        out.push(Command { id: format!("section-{page}-{id}"), label, hint: String::new(), action: format!("section:{key}|{page}"), value: id, search: String::new() });
     }
     let favorite = current_favorite(app);
     let is_favorite = prefs::read_json::<Vec<String>>(FAVORITES).unwrap_or_default().contains(&favorite);
-    out.push(Command { id: "fav-toggle".into(), label: if is_favorite { tr("Retirer cette page des favoris", "Remove this page from favorites") } else { tr("Ajouter cette page aux favoris", "Add this page to favorites") }, hint: String::new(), action: "shell:fav-toggle".into(), value: String::new() });
-    out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new() });
-    out.push(Command { id: "sidebar".into(), label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B".into(), action: "shell:sidebar".into(), value: String::new() });
-    out.push(Command { id: "refresh".into(), label: tr("Actualiser les applications", "Refresh apps"), hint: String::new(), action: "shell:refresh".into(), value: String::new() });
-    out.push(Command { id: "toast-log".into(), label: tr("Voir les dernières notifications", "See recent notifications"), hint: String::new(), action: "shell:log".into(), value: String::new() });
-    out.push(Command { id: "signout".into(), label: t("signOut"), hint: String::new(), action: "shell:sign-out".into(), value: String::new() });
+    out.push(Command { id: "fav-toggle".into(), label: if is_favorite { tr("Retirer cette page des favoris", "Remove this page from favorites") } else { tr("Ajouter cette page aux favoris", "Add this page to favorites") }, hint: String::new(), action: "shell:fav-toggle".into(), value: String::new(), search: String::new() });
+    out.push(Command { id: "clips".into(), label: tr("Historique du presse-papiers", "Clipboard history"), hint: String::new(), action: "shell:clips".into(), value: String::new(), search: String::new() });
+    for kind in ["notes", "tasks"] {
+        let list = app.res.get(&format!("productivity:{kind}")).and_then(|res| res.data.clone()).and_then(|data| data.as_array().cloned()).unwrap_or_default();
+        for item in list {
+            let Some(id) = item["id"].as_str() else { continue };
+            let title = item["title"].as_str().unwrap_or_default();
+            let label = format!("{} : {}", if kind == "notes" { "Note".to_string() } else { tr("Tâche", "Task") }, if title.trim().is_empty() { tr("Sans titre", "Untitled") } else { title.to_string() });
+            let body: String = item["body"].as_str().unwrap_or_default().chars().take(2000).collect();
+            out.push(Command { id: format!("item-{kind}-{id}"), search: format!("{label} {body}"), label, hint: String::new(), action: "shell:open-item".into(), value: format!("{kind}|{id}") });
+        }
+    }
+    out.push(Command { id: "sidebar".into(), label: tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar"), hint: "Ctrl+B".into(), action: "shell:sidebar".into(), value: String::new(), search: String::new() });
+    out.push(Command { id: "refresh".into(), label: tr("Actualiser les applications", "Refresh apps"), hint: String::new(), action: "shell:refresh".into(), value: String::new(), search: String::new() });
+    out.push(Command { id: "toast-log".into(), label: tr("Voir les dernières notifications", "See recent notifications"), hint: String::new(), action: "shell:log".into(), value: String::new(), search: String::new() });
+    out.push(Command { id: "signout".into(), label: t("signOut"), hint: String::new(), action: "shell:sign-out".into(), value: String::new(), search: String::new() });
     out
 }
 

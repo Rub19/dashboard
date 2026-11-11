@@ -167,3 +167,16 @@ expect Exporter en Markdown
 snap 20-notes-export
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|plombier
+waitfor Tâche : appeler le plombier demain|8000
+snap 21-recherche-taches
+key Return
+wait 1500
+expect Productivité
+key Escape
+wait 600
+click Accueil
+wait 1200

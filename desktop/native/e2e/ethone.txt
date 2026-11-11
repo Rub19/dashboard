@@ -316,3 +316,12 @@ wait 600
 key Return
 wait 800
 expect Mini lecteur fermé
+
+click Réglages
+wait 1500
+click Journal
+wait 1500
+expect Journal
+snap 30-journal
+click Accueil
+wait 1200

@@ -225,6 +225,30 @@ fn mutate_item(kind: &'static str, verb: &'static str, id: Option<String>, input
     })
 }
 
+fn noted(kind: &str, what: &str, id: &str, title: &str) {
+    let singular = if kind == "tasks" { "task" } else if kind == "notes" { "note" } else { "event" };
+    crate::services::record("ethone", &format!("{singular}-{what}"), true, &format!("{id}|{title}"));
+}
+
+pub fn reopen_task(app: &mut App, id: &str) {
+    let Some(mut item) = find_item(app, "tasks", id) else {
+        app.toast_bad(&tr("Tâche introuvable : ouvre Productivité puis réessaie", "Task not found: open Productivity and try again"));
+        return;
+    };
+    item["done"] = json!(false);
+    let title = item["title"].as_str().unwrap_or_default().to_string();
+    let target = id.to_string();
+    spawn(mutate_item("tasks", "update", Some(target.clone()), item), move |app, result| {
+        if result.is_ok() {
+            noted("tasks", "reopened", &target, &title);
+            app.toast(&tr("Tâche rouverte", "Task reopened"));
+        } else {
+            app.toast_bad(&tr("Tâche non modifiée", "Task not changed"));
+        }
+        reload(app, "tasks");
+    });
+}
+
 fn done_after(kind: &'static str) -> impl FnOnce(&mut App, Result<Value, String>) + Send + 'static {
     move |app, result| {
         app.state.work.saving = false;
@@ -290,6 +314,9 @@ pub fn act(app: &mut App, id: &str, value: &str) {
         "toggle" => {
             if let Some(mut item) = find_item(app, kind, arg) {
                 item["done"] = json!(item["done"] != true);
+                if item["done"] == true {
+                    noted("tasks", "done", arg, item["title"].as_str().unwrap_or_default());
+                }
                 app.state.work.saving = true;
                 let today = time::day_key(&Local::now());
                 let next = (item["done"] == true).then(|| crate::logic::productivity::next_due(&task_due(&item), &today, crate::logic::productivity::task_repeat(&item))).flatten();
@@ -317,8 +344,9 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             let restore = target.clone();
             app.undoable(&message, mutate_item(kind, "delete", Some(target.clone()), Value::Null), Box::new(move |app: &mut App| app.state.work.hidden.retain(|id| *id != restore)), move |app, result| {
                 app.state.work.hidden.retain(|id| *id != target);
-                if let Err(error) = result {
-                    app.state.work.error = Some(crate::i18n::error_text(&error));
+                match result {
+                    Err(error) => app.state.work.error = Some(crate::i18n::error_text(&error)),
+                    Ok(_) => noted(kind, "deleted", "", &title),
                 }
                 reload(app, kind);
             });
@@ -398,6 +426,9 @@ fn save(app: &mut App, kind: &'static str) {
     app.state.work.saving = true;
     app.state.work.error = None;
     let (verb, id) = if editor == "new" { ("create", None) } else { ("update", Some(editor)) };
+    if verb == "create" {
+        noted(kind, "created", "", input["title"].as_str().unwrap_or_default());
+    }
     spawn(mutate_item(kind, verb, id, input), done_after(kind));
 }
 

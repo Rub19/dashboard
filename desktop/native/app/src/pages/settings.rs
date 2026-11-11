@@ -93,6 +93,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             app.state.settings.message = None;
         }
         "look" => app.with_ui(|ui| crate::theme::apply_look(ui, arg)),
+        "journal-reopen" => crate::pages::work::reopen_task(app, arg),
         "accent" => {
             prefs::write("ethone-accent-choice", arg);
             if prefs::read("ethone-look").is_none() {
@@ -505,10 +506,28 @@ fn journal(app: &mut App) -> Vec<B> {
     out.extend(group(entries.iter().map(|entry| {
         let value = serde_json::to_value(entry).unwrap_or(Value::Null);
         let operation = value["operation"].as_str().unwrap_or_default();
-        let label = if operation == "install" || operation == "open" { t(&format!("operation.{operation}")) } else { operation.to_string() };
+        let label = match operation {
+            "install" | "open" => t(&format!("operation.{operation}")),
+            "task-created" => tr("Tâche créée", "Task created"),
+            "task-done" => tr("Tâche terminée", "Task done"),
+            "task-reopened" => tr("Tâche rouverte", "Task reopened"),
+            "task-deleted" => tr("Tâche supprimée", "Task deleted"),
+            "note-created" => tr("Note créée", "Note created"),
+            "note-deleted" => tr("Note supprimée", "Note deleted"),
+            "event-created" => tr("Événement créé", "Event created"),
+            "event-deleted" => tr("Événement supprimé", "Event deleted"),
+            other => other.to_string(),
+        };
+        let raw = value["detail"].as_str().unwrap_or_default();
+        let (target, detail) = if value["module"] == "ethone" { raw.split_once('|').unwrap_or(("", raw)) } else { ("", raw) };
         let stamp = value["time"].as_f64().map(|seconds| time::date_time(&time::from_ms(seconds * 1000.0), fr)).unwrap_or_default();
         let success = value["ok"] == true;
-        row(vec![icon(if success { ok.clone() } else { bad.clone() }).tone(if success { "ok" } else { "bad" }), stack(crate::services::svc().modules.iter().find(|module| Some(module.id.as_str()) == value["module"].as_str()).map_or(value["module"].as_str().unwrap_or_default(), |module| module.name.as_str()), &format!("{label} : {}", value["detail"].as_str().unwrap_or_default())), muted(&stamp)])
+        let name = if value["module"] == "ethone" { "Ethone" } else { crate::services::svc().modules.iter().find(|module| Some(module.id.as_str()) == value["module"].as_str()).map_or(value["module"].as_str().unwrap_or_default(), |module| module.name.as_str()) };
+        let mut cells = vec![icon(if success { ok.clone() } else { bad.clone() }).tone(if success { "ok" } else { "bad" }), stack(name, &format!("{label} : {detail}")), muted(&stamp)];
+        if operation == "task-done" && !target.is_empty() {
+            cells.push(btn(&format!("settings:journal-reopen:{target}"), &tr("Rouvrir", "Reopen")));
+        }
+        row(cells)
     }).collect()));
     out
 }

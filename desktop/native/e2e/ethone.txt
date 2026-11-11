@@ -278,3 +278,15 @@ wait 1200
 absent Séance de concentration : ouvrir le minuteur
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|ma journée
+wait 600
+key Return
+waitfor Ta journée|10000
+expect Agenda
+expect Pour aujourd'hui
+snap 28-resume-du-matin
+key Escape
+wait 800

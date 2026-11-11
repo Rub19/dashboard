@@ -73,6 +73,36 @@ pub fn interaction_stats(events: &[Value]) -> Vec<(String, usize)> {
     counts
 }
 
+pub fn morning_lines(data: &Value, fr: bool) -> Vec<(String, String)> {
+    let list = |key: &str, none: &str| {
+        let items: Vec<&str> = data[key].as_array().into_iter().flatten().filter_map(Value::as_str).collect();
+        if items.is_empty() { none.to_string() } else { items.join(", ") }
+    };
+    let pick = |fr_text: &str, en_text: &str| if fr { fr_text.to_string() } else { en_text.to_string() };
+    let mut lines = vec![
+        (pick("Agenda", "Calendar"), list("events", &pick("Rien de prévu", "Nothing planned"))),
+        (pick("Pour aujourd'hui", "Due today"), list("today", &pick("Aucune tâche", "No tasks"))),
+    ];
+    if data["late"].as_array().is_some_and(|late| !late.is_empty()) {
+        lines.push((pick("En retard", "Late"), list("late", "")));
+    }
+    if data["habitsLeft"].as_array().is_some_and(|left| !left.is_empty()) {
+        lines.push((pick("Habitudes", "Habits"), list("habitsLeft", "")));
+    }
+    if let Some(unread) = data["unread"].as_i64().filter(|unread| *unread > 0) {
+        lines.push((pick("Mails non lus", "Unread mail"), unread.to_string()));
+    }
+    lines
+}
+
+pub fn open_morning(app: &mut App) {
+    spawn(briefing_data(), |app, result| {
+        let Ok(data) = result else { return };
+        let lines = morning_lines(&data, crate::i18n::fr());
+        app.open_drawer(&crate::i18n::tr("Ta journée", "Your day"), 440.0, move |_app| group(lines.iter().map(|(title, text)| row(vec![stack(title, text)])).collect()));
+    });
+}
+
 fn briefing_data() -> Fut {
     Box::pin(async {
         let today = time::day_key(&Local::now());
@@ -581,6 +611,16 @@ pub fn run_time_rules(app: &mut App, clock: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn morning_summary_skips_empty_extras() {
+        let data = json!({"events": ["09:00 Dentiste"], "today": [], "late": [], "habitsLeft": ["Lire"], "unread": 0});
+        let lines = morning_lines(&data, true);
+        assert_eq!(lines[0], ("Agenda".to_string(), "09:00 Dentiste".to_string()));
+        assert_eq!(lines[1], ("Pour aujourd'hui".to_string(), "Aucune tâche".to_string()));
+        assert_eq!(lines[2], ("Habitudes".to_string(), "Lire".to_string()));
+        assert_eq!(lines.len(), 3);
+    }
 
     #[test]
     fn site_themes_and_looks_round_trip() {

@@ -29,11 +29,12 @@ pub struct DesktopPrefs {
     pub quiet_until: f64,
     pub clip_history: bool,
     pub notify_tasks: bool,
+    pub morning: bool,
 }
 
 impl Default for DesktopPrefs {
     fn default() -> Self {
-        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0, clip_history: false, notify_tasks: true }
+        Self { close_to_tray: false, notify_mail: true, notify_events: true, hdv_background: true, quiet: false, quiet_from: "22:00".into(), quiet_to: "08:00".into(), quiet_until: 0.0, clip_history: false, notify_tasks: true, morning: true }
     }
 }
 

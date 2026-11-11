@@ -131,6 +131,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
                 "quiet" => prefs_now.quiet = on,
                 "clipHistory" => prefs_now.clip_history = on,
                 "notifyTasks" => prefs_now.notify_tasks = on,
+                "morning" => prefs_now.morning = on,
                 "quietFrom" => prefs_now.quiet_from = value.into(),
                 "quietTo" => prefs_now.quiet_to = value.into(),
                 "hdvBackground" => {
@@ -378,6 +379,7 @@ fn windows(app: &mut App) -> Vec<B> {
     if prefs_now.quiet {
         rows.push(row(vec![stack(&tr("Plage de silence (HH:MM)", "Quiet hours (HH:MM)"), &tr("Passe minuit si besoin.", "Can run past midnight.")), input("settings:pref:quietFrom", &prefs_now.quiet_from, "22:00"), input("settings:pref:quietTo", &prefs_now.quiet_to, "08:00")]));
     }
+    rows.push(switch_row("settings:pref:morning", &tr("Résumé du matin", "Morning summary"), &tr("À la première ouverture du jour, Ethone montre ton agenda, tes tâches et tes habitudes.", "On the first launch of the day, Ethone shows your calendar, tasks and habits."), prefs_now.morning));
     rows.push(switch_row("settings:pref:notifyTasks", &tr("Rappeler les tâches du jour", "Remind today's tasks"), &tr("Une notification vers 9 h avec les tâches du jour et celles en retard.", "One notification around 9 am with today's and late tasks."), prefs_now.notify_tasks));
     rows.push(switch_row("settings:pref:clipHistory", &tr("Historique du presse-papiers", "Clipboard history"), &tr("Garde les 25 derniers textes copiés sur ce PC, accessibles depuis Ctrl+K. Les mots de passe marqués privés par ton gestionnaire sont ignorés. Désactiver efface tout.", "Keeps the last 25 copied texts on this PC, available from Ctrl+K. Passwords marked private by your manager are skipped. Turning off clears everything."), prefs_now.clip_history));
     rows.push(switch_row("settings:pref:notifyEvents", &tr("Rappeler les événements", "Remind events"), &tr("Une notification 10 minutes avant le début.", "A notification 10 minutes before the start."), prefs_now.notify_events));

@@ -165,6 +165,7 @@ pub fn act(app: &mut App, scope: &str, rest: &str, value: &str) {
         ("shell", "log") => open_log(app),
         ("shell", "log-clear") => app.toast_log.clear(),
         ("shell", "clips") => open_clips(app),
+        ("shell", "morning") => crate::pages::brain_extras::open_morning(app),
         ("shell", "focus-open") => {
             crate::pages::set_section("ethone-section-productivity", "focus");
             app.forget_section("productivity");
@@ -534,6 +535,7 @@ fn commands(app: &App) -> Vec<Command> {
     if let Some(url) = crate::logic::clips::link(&app.palette_query) {
         out.insert(0, Command { id: "later-add".into(), label: format!("{} {}", tr("Garder pour plus tard :", "Save for later:"), crate::logic::clips::preview(&url)), hint: String::new(), action: "shell:later-add".into(), value: url.clone(), search: url });
     }
+    out.push(Command { id: "morning".into(), label: tr("Ma journée : agenda, tâches, habitudes", "My day: calendar, tasks, habits"), hint: String::new(), action: "shell:morning".into(), value: String::new(), search: String::new() });
     out.push(Command { id: "later".into(), label: tr("À lire plus tard", "Read later"), hint: String::new(), action: "shell:later".into(), value: String::new(), search: String::new() });
     let starting = prefs::read_json::<Vec<String>>(crate::pages::modules::START_APPS).unwrap_or_default();
     for status in app.modules.iter().filter(|status| status.module.detect.is_some() && status.installed.is_some()) {
@@ -631,7 +633,24 @@ pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bo
     false
 }
 
+static MORNING_CHECKED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn morning_once(app: &mut App) {
+    use chrono::Timelike;
+    if MORNING_CHECKED.swap(true, std::sync::atomic::Ordering::SeqCst) || crate::win::offscreen() || !crate::background::read_prefs().morning {
+        return;
+    }
+    let now = chrono::Local::now();
+    let today = time::day_key(&now);
+    if now.hour() < 5 || prefs::read_json::<String>("ethone-morning-day").as_deref() == Some(today.as_str()) {
+        return;
+    }
+    prefs::write_json("ethone-morning-day", &today);
+    crate::pages::brain_extras::open_morning(app);
+}
+
 pub fn render_chrome(app: &mut App, ui: &AppWindow) {
+    morning_once(app);
     crate::pages::work::tick_focus(app);
     ui.set_focus_label(crate::pages::work::focus_label(app).into());
     ui.set_focus_tip(tr("Séance de concentration : ouvrir le minuteur", "Focus session: open the timer").into());

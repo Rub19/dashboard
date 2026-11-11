@@ -25,7 +25,7 @@ if (!process.env.TAURI_SIGNING_PRIVATE_KEY && !process.env.TAURI_SIGNING_PRIVATE
   console.log("Définis TAURI_SIGNING_PRIVATE_KEY (et son mot de passe) pour produire la signature et latest.json.");
   process.exit(0);
 }
-run("npx", ["--yes", "@tauri-apps/cli@2", "signer", "sign", `"${installer}"`]);
+run("npx", ["--yes", "@tauri-apps/cli@2", "signer", "sign", `"${installer}"`], { env: { ...process.env, TAURI_SIGNING_PRIVATE_KEY_PASSWORD: process.env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD ?? "" } });
 const signature = readFileSync(`${installer}.sig`, "utf8").trim();
 const feed = {
   version,

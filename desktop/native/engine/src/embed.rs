@@ -39,7 +39,7 @@ pub fn is_helper_title(title: &str) -> bool {
     title.is_empty() || title.ends_with("-siw")
 }
 
-fn process_ids(exe: &str) -> Vec<u32> {
+pub fn process_ids(exe: &str) -> Vec<u32> {
     let mut ids = Vec::new();
     unsafe {
         let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);

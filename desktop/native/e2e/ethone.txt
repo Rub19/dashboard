@@ -290,3 +290,14 @@ expect Pour aujourd'hui
 snap 28-resume-du-matin
 key Escape
 wait 800
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Analyses › Activité
+wait 600
+key Return
+wait 2500
+expect Temps de jeu, 7 derniers jours
+snap 29-temps-de-jeu
+click Accueil
+wait 1200

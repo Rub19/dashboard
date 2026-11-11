@@ -135,6 +135,15 @@ fn activity(app: &mut App) -> Vec<B> {
     });
     let refresh = app.icon("refresh-cw");
     let mut out = vec![head(&tr("Activité", "Activity"), "", vec![btn("insights:refresh", &t("refresh")).icon(refresh).off(res.loading)])];
+    let log: crate::logic::playtime::Log = prefs::read_json("ethone-play-time").unwrap_or_default();
+    let days: Vec<String> = crate::logic::productivity::last_days(7, chrono::Local::now()).iter().map(|date| date.format("%Y-%m-%d").to_string()).collect();
+    let played = crate::logic::playtime::week(&log, &days);
+    out.push(h2(&tr("Temps de jeu, 7 derniers jours", "Play time, last 7 days")));
+    if played.is_empty() {
+        out.push(empty(&tr("Rien de mesuré pour l'instant", "Nothing measured yet"), &tr("Ethone compte le temps passé sur VALORANT, League of Legends et Minecraft tant qu'il est ouvert.", "Ethone counts time spent in VALORANT, League of Legends and Minecraft while it is open.")));
+    } else {
+        out.push(row(played.iter().map(|(name, seconds)| stat(name, &crate::logic::playtime::duration(*seconds), "")).collect()));
+    }
     if let Some(data) = dashboard.data {
         let numbers: Vec<C> = data.as_object().into_iter().flatten().filter(|(_, value)| value.is_number()).take(6).map(|(key, value)| stat(&humanize(key), &number_text(value.as_f64().unwrap_or(0.0)), "")).collect();
         for chunk in numbers.chunks(3) {

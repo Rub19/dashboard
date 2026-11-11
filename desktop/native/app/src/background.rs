@@ -168,6 +168,23 @@ pub fn start(_hidden: bool) {
         start_hotkey();
     }
     svc().rt.spawn(serve_links());
+    if !crate::win::offscreen() {
+        std::thread::spawn(|| loop {
+            std::thread::sleep(std::time::Duration::from_secs(60));
+            let playing: Vec<&str> = logic::playtime::GAMES.iter().filter(|(_, _, exe)| !ethone_engine::embed::process_ids(exe).is_empty()).map(|(id, _, _)| *id).collect();
+            if playing.is_empty() {
+                continue;
+            }
+            let day = logic::time::day_key(&chrono::Local::now());
+            post(move |_| {
+                let mut log: logic::playtime::Log = prefs::read_json("ethone-play-time").unwrap_or_default();
+                for game in &playing {
+                    logic::playtime::add(&mut log, &day, game, 60);
+                }
+                prefs::write_json("ethone-play-time", &log);
+            });
+        });
+    }
     svc().rt.spawn(async {
         let mut was = crate::theme::effective_look();
         loop {

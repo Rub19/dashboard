@@ -7,6 +7,7 @@ pub mod lol;
 pub mod mail;
 pub mod navigation;
 pub mod palette;
+pub mod playtime;
 pub mod productivity;
 pub mod settings;
 pub mod spotify;

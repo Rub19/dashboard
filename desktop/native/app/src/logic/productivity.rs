@@ -38,6 +38,29 @@ pub fn task_due(task: &Value) -> String {
     task["data"]["dueDate"].as_str().map_or(String::new(), |due| due.chars().take(10).collect())
 }
 
+pub fn task_repeat(task: &Value) -> &'static str {
+    match task["data"]["repeat"].as_str() {
+        Some("daily") => "daily",
+        Some("weekly") => "weekly",
+        _ => "",
+    }
+}
+
+pub fn next_due(due: &str, today: &str, repeat: &str) -> Option<String> {
+    let step = match repeat {
+        "daily" => 1,
+        "weekly" => 7,
+        _ => return None,
+    };
+    let parse = |text: &str| chrono::NaiveDate::parse_from_str(text, "%Y-%m-%d").ok();
+    let today = parse(today)?;
+    let mut next = parse(due).unwrap_or(today) + chrono::Duration::days(step);
+    while next <= today {
+        next += chrono::Duration::days(step);
+    }
+    Some(next.format("%Y-%m-%d").to_string())
+}
+
 pub fn task_priority(task: &Value) -> &'static str {
     match task["data"]["priority"].as_str() {
         Some("high" | "urgent") => "high",
@@ -174,6 +197,16 @@ pub fn at_noon(date: NaiveDate) -> DateTime<Local> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn repeating_tasks_land_on_the_next_free_day() {
+        assert_eq!(next_due("2026-11-10", "2026-11-11", "daily").as_deref(), Some("2026-11-12"));
+        assert_eq!(next_due("2026-11-11", "2026-11-11", "weekly").as_deref(), Some("2026-11-18"));
+        assert_eq!(next_due("2026-10-01", "2026-11-11", "weekly").as_deref(), Some("2026-11-12"));
+        assert_eq!(next_due("", "2026-11-11", "daily").as_deref(), Some("2026-11-12"));
+        assert_eq!(next_due("2026-11-11", "2026-11-11", ""), None);
+        assert_eq!(task_repeat(&serde_json::json!({"data": {"repeat": "weekly"}})), "weekly");
+    }
 
     #[test]
     fn month_grid_starts_monday_and_fills_weeks() {

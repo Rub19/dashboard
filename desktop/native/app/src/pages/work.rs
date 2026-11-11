@@ -22,6 +22,7 @@ pub struct WorkState {
     pub end: String,
     pub due: String,
     pub priority: String,
+    pub repeat: String,
     pub saving: bool,
     pub error: Option<String>,
     pub day: Option<String>,
@@ -109,6 +110,7 @@ fn empty_draft(app: &mut App) {
     state.end.clear();
     state.due.clear();
     state.priority = "medium".into();
+    state.repeat.clear();
 }
 
 pub fn warm(app: &mut App) {
@@ -162,6 +164,11 @@ fn input_for(app: &App, kind: &str, item: Option<&Value>) -> Value {
             data["dueDate"] = json!(state.due);
         }
         data["priority"] = json!(state.priority);
+        if state.repeat.is_empty() {
+            data.as_object_mut().map(|map| map.remove("repeat"));
+        } else {
+            data["repeat"] = json!(state.repeat);
+        }
     }
     let keep = |field: &str| item.map_or(Value::Null, |item| item[field].clone());
     json!({
@@ -264,6 +271,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
                 state.end = to_input(item["endAt"].as_str());
                 state.due = task_due(&item);
                 state.priority = task_priority(&item).into();
+                state.repeat = crate::logic::productivity::task_repeat(&item).into();
                 state.editor = Some(arg.to_string());
             }
         }
@@ -275,6 +283,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             "end" => app.state.work.end = value.into(),
             "due" => app.state.work.due = value.into(),
             "priority" => app.state.work.priority = value.into(),
+            "repeat" => app.state.work.repeat = value.into(),
             "title:submit" => save(app, kind),
             _ => {}
         },
@@ -283,6 +292,20 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             if let Some(mut item) = find_item(app, kind, arg) {
                 item["done"] = json!(item["done"] != true);
                 app.state.work.saving = true;
+                let today = time::day_key(&Local::now());
+                let next = (item["done"] == true).then(|| crate::logic::productivity::next_due(&task_due(&item), &today, crate::logic::productivity::task_repeat(&item))).flatten();
+                if let Some(due) = next {
+                    let mut data = item["data"].clone();
+                    data["dueDate"] = json!(due);
+                    let copy = json!({ "title": item["title"], "body": item["body"], "done": false, "startAt": null, "endAt": null, "data": data });
+                    let label = due.clone();
+                    spawn(mutate_item("tasks", "create", None, copy), move |app, result| {
+                        if result.is_ok() {
+                            app.toast(&format!("{} {label}", tr("Prochaine fois le", "Next one on")));
+                        }
+                        reload(app, "tasks");
+                    });
+                }
                 spawn(mutate_item("tasks", "update", Some(arg.to_string()), item), done_after("tasks"));
             }
         }
@@ -394,7 +417,9 @@ fn editor_blocks(app: &mut App, kind: &str) -> Vec<B> {
     if kind == "tasks" {
         let options = vec![("high".to_string(), tr("Haute", "High")), ("medium".to_string(), tr("Normale", "Normal")), ("low".to_string(), tr("Basse", "Low"))];
         let pick = app.select("work:field:priority", &priority, &options);
-        out.push(field(&tr("Échéance (AAAA-MM-JJ) et priorité", "Due (YYYY-MM-DD) and priority"), vec![input("work:field:due", &due, "2026-11-30"), pick]));
+        let repeat_options = vec![(String::new(), tr("Une seule fois", "Once")), ("daily".to_string(), tr("Chaque jour", "Every day")), ("weekly".to_string(), tr("Chaque semaine", "Every week"))];
+        let repeat = app.select("work:field:repeat", &app.state.work.repeat.clone(), &repeat_options);
+        out.push(field(&tr("Échéance (AAAA-MM-JJ), priorité et répétition", "Due (YYYY-MM-DD), priority and repeat"), vec![input("work:field:due", &due, "2026-11-30"), pick, repeat]));
     }
     out.push(row(vec![primary("work:save", &if saving { tr("Enregistrement…", "Saving…") } else { tr("Enregistrer", "Save") }).off(saving || title.trim().is_empty()), btn("work:cancel", &t("cancel"))]));
     out.push(divider());
@@ -468,6 +493,11 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
                 let date = chrono::NaiveDate::parse_from_str(&due, "%Y-%m-%d").ok().map(at_noon);
                 let label = date.map_or(due.clone(), |date| format!("{} {}", date.day(), time::month_name(date.month0() as usize, fr)));
                 meta.push(if task_late(item, &today) { format!("{}{label}", tr("En retard : ", "Late: ")) } else { format!("{}{label}", tr("Pour le ", "Due ")) });
+            }
+            match crate::logic::productivity::task_repeat(item) {
+                "daily" => meta.push(tr("Chaque jour", "Every day")),
+                "weekly" => meta.push(tr("Chaque semaine", "Every week")),
+                _ => {}
             }
             match task_priority(item) {
                 "high" => meta.push(tr("Priorité haute", "High priority")),

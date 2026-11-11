@@ -184,7 +184,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [x] 5. Pages favorites épinglées en haut de la barre latérale : Ctrl+K « Ajouter cette page aux favoris » (page + onglet ouvert), groupe « Favoris » en haut de la barre latérale, clic droit « Retirer des favoris », inclus dans l'export des réglages ; e2e 137 étapes (ajout, affichage, retrait)
 - [ ] 6. Raccourcis clavier personnalisables
 - [ ] 7. Rappels de tâches en notification Windows
-- [ ] 8. Tâches récurrentes (chaque jour, chaque semaine)
+- [~] 8. Tâches récurrentes (chaque jour, chaque semaine) : choix « Une seule fois / Chaque jour / Chaque semaine » dans l'éditeur de tâche (data.repeat, synchronisé) ; cocher une tâche récurrente crée la suivante à la prochaine date libre et l'annonce ; libellé dans la liste ; test repeating_tasks_land_on_the_next_free_day ; e2e écrit (éditeur sans rien créer), à lancer après la partie
 - [ ] 9. Calendrier : vue semaine
 - [ ] 10. Glisser-déposer pour réordonner les tâches
 - [~] 11. Export des notes en Markdown : bouton « Exporter en Markdown » sur Notes : un fichier ethone-notes-AAAA-MM-JJ.md dans Téléchargements (titre, date, texte, plus récentes d'abord) ; test notes_markdown, e2e 157 étapes (bouton présent) ; pas cliqué pour ne rien écrire dans tes Téléchargements

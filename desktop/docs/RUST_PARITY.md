@@ -187,7 +187,7 @@ La mémoire Tauri n'a pas été mesurée : lancer les deux apps à la suite aura
 - [ ] 8. Tâches récurrentes (chaque jour, chaque semaine)
 - [ ] 9. Calendrier : vue semaine
 - [ ] 10. Glisser-déposer pour réordonner les tâches
-- [ ] 11. Export des notes en Markdown
+- [~] 11. Export des notes en Markdown : bouton « Exporter en Markdown » sur Notes : un fichier ethone-notes-AAAA-MM-JJ.md dans Téléchargements (titre, date, texte, plus récentes d'abord) ; test notes_markdown, e2e 157 étapes (bouton présent) ; pas cliqué pour ne rien écrire dans tes Téléchargements
 - [ ] 12. Recherche plein texte dans les notes et les tâches depuis Ctrl+K
 - [ ] 13. Résumé du matin à la première ouverture du jour
 - [~] 14. Thème clair ou sombre selon l'heure : réglage « Thème selon l'heure » dans Apparence : look « Jour » de 7 h à 19 h, ton look le soir, revérifié chaque minute ; test scheduled_look, e2e 147 étapes (réglage présent) ; bascule réelle pas vue (testé de nuit, réglage non touché)

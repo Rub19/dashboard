@@ -156,3 +156,14 @@ expect Thème selon l'heure
 snap 19-theme-selon-heure
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Notes
+wait 600
+key Return
+wait 2500
+expect Exporter en Markdown
+snap 20-notes-export
+click Accueil
+wait 1200

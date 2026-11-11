@@ -111,6 +111,35 @@ fn empty_draft(app: &mut App) {
     state.priority = "medium".into();
 }
 
+pub fn notes_markdown(list: &[Value]) -> String {
+    let mut out = String::from("# Notes Ethone\n");
+    for item in list {
+        let title = item["title"].as_str().map(str::trim).filter(|title| !title.is_empty()).unwrap_or("Sans titre");
+        out.push_str(&format!("\n## {title}\n"));
+        if let Some(date) = item["updatedAt"].as_str().or(item["createdAt"].as_str()).and_then(time::parse) {
+            out.push_str(&format!("\n_{}_\n", date.format("%d/%m/%Y %H:%M")));
+        }
+        let body = item["body"].as_str().unwrap_or_default().trim();
+        if !body.is_empty() {
+            out.push_str(&format!("\n{body}\n"));
+        }
+    }
+    out
+}
+
+fn export_notes(app: &mut App) {
+    let Some(mut list) = app.res.get(&items_key("notes")).and_then(|res| res.data.clone()).and_then(|data| data.as_array().cloned()) else {
+        app.toast_bad(&tr("Notes pas encore chargées", "Notes not loaded yet"));
+        return;
+    };
+    logic::newest_items_first(&mut list);
+    let path = crate::dialogs::downloads().join(format!("ethone-notes-{}.md", Local::now().format("%Y-%m-%d")));
+    match std::fs::write(&path, notes_markdown(&list)) {
+        Ok(()) => app.toast(&format!("{} {}", tr("Notes enregistrées dans", "Notes saved to"), path.display())),
+        Err(_) => app.toast_bad(&tr("Export impossible", "Export failed")),
+    }
+}
+
 fn find_item(app: &App, kind: &str, id: &str) -> Option<Value> {
     app.res.get(&items_key(kind)).and_then(|res| res.data.clone()).and_then(|data| data.as_array().and_then(|list| list.iter().find(|item| item["id"] == id).cloned()))
 }
@@ -215,6 +244,7 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             });
         }
         "refresh" => reload(app, kind),
+        "export-md" => export_notes(app),
         "new" => {
             empty_draft(app);
             app.state.work.editor = Some("new".into());
@@ -372,7 +402,12 @@ fn items(app: &mut App, kind: &'static str) -> Vec<B> {
     let saving = app.state.work.saving;
     let title = match kind { "notes" => t("notes"), "tasks" => t("tasks"), _ => t("calendar") };
     let new_label = match kind { "notes" => t("newNote"), "tasks" => t("newTask"), _ => t("newEvent") };
-    let mut out = vec![head(&title, &t("productivityLine"), vec![btn("work:refresh", &t("refresh")).icon(refresh).off(res.loading || saving).tip("F5"), primary("work:new", &new_label).icon(plus).off(saving)])];
+    let mut actions = vec![btn("work:refresh", &t("refresh")).icon(refresh).off(res.loading || saving).tip("F5")];
+    if kind == "notes" {
+        actions.push(btn("work:export-md", &tr("Exporter en Markdown", "Export as Markdown")).off(res.data.is_none()));
+    }
+    actions.push(primary("work:new", &new_label).icon(plus).off(saving));
+    let mut out = vec![head(&title, &t("productivityLine"), actions)];
     let error = app.state.work.error.clone().or(res.error.clone());
     if let Some(error) = &error {
         out.push(error_retry(error));
@@ -775,6 +810,15 @@ fn error_retry(message: &str) -> B {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn notes_become_markdown_sections() {
+        let list = vec![serde_json::json!({"title": "Courses", "body": "- pain\n- lait"}), serde_json::json!({"title": " ", "body": ""})];
+        let text = notes_markdown(&list);
+        assert!(text.starts_with("# Notes Ethone\n"));
+        assert!(text.contains("\n## Courses\n\n- pain\n- lait\n"));
+        assert!(text.contains("\n## Sans titre\n"));
+    }
 
     #[test]
     fn amounts_accept_a_comma() {

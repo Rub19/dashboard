@@ -7,6 +7,7 @@ import { StatChannelSchema, StatsConfigSchema } from '../../modules/serverStats/
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleClientError } from '../utils/routeError.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module Server Stats.
@@ -25,7 +26,7 @@ export function createServerStatsRouter(client: Client) {
 
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const allowed = StatsConfigSchema.partial().omit({ guildId: true, updatedAt: true });
+    const allowed = partialPatch(StatsConfigSchema).omit({ guildId: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });
@@ -73,7 +74,7 @@ export function createServerStatsRouter(client: Client) {
   router.put('/channels/:channelId', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const channelId = String(req.params.channelId);
-    const allowed = StatChannelSchema.partial().omit({ guildId: true, channelId: true, lastValue: true, createdAt: true });
+    const allowed = partialPatch(StatChannelSchema).omit({ guildId: true, channelId: true, lastValue: true, createdAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success || !parsed.data.type) {
       res.status(400).json({ error: trq('Type de statistique requis'), details: parsed.success ? undefined : parsed.error.flatten() });

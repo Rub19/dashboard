@@ -10,6 +10,7 @@ import { AntiRaidConfigSchema } from '../../modules/antiRaid/types/antiRaid.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError, clientErrorMessage } from '../utils/routeError.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 export function createAntiRaidRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -44,14 +45,14 @@ export function createAntiRaidRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       // Validation Zod
-      const parsed = AntiRaidConfigSchema.partial().parse(req.body);
+      const parsed = partialPatch(AntiRaidConfigSchema).parse(req.body);
       const updated = raidConfigService.updateConfig(guildId, parsed);
       emitConfigUpdated('antiRaid', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       const errorMsg =
-        err?.errors && Array.isArray(err.errors)
-          ? err.errors.map((e: any) => `${e.path?.join('.') || 'paramètre'}: ${e.message}`).join(', ')
+        err?.issues && Array.isArray(err.issues)
+          ? err.issues.map((e: any) => `${e.path?.join('.') || 'paramètre'}: ${e.message}`).join(', ')
           : clientErrorMessage(err, 'Configuration Anti-Raid invalide');
       res.status(400).json({ error: errorMsg });
     }

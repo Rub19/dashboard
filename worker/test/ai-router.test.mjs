@@ -34,7 +34,7 @@ test("AI router uses Cloudflare Workers AI by default and returns usage metadata
   const ai = aiRun("Salut depuis Cloudflare");
   const env = testEnv({
     AI_PRIMARY_PROVIDER: "cloudflare",
-    AI_PRIMARY_MODEL: "@cf/meta/llama-3.3-70b-instruct-v1",
+    AI_PRIMARY_MODEL: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     AI_CLOUDFLARE_DAILY_BUDGET: "100",
     AI_NEURONS_PER_TOKEN: "0.1",
     AI: ai.binding,
@@ -61,7 +61,7 @@ test("AI router uses Cloudflare Workers AI by default and returns usage metadata
 test("AI router falls back to user provider when Cloudflare quota is exhausted", async () => {
   const env = testEnv({
     AI_PRIMARY_PROVIDER: "cloudflare",
-    AI_PRIMARY_MODEL: "@cf/meta/llama-3.3-70b-instruct-v1",
+    AI_PRIMARY_MODEL: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     AI_FALLBACK_PROVIDER: "groq",
     AI_CLOUDFLARE_DAILY_BUDGET: "1",
     AI_NEURONS_PER_TOKEN: "0.1",

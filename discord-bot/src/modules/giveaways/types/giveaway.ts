@@ -51,7 +51,7 @@ export const GiveawaySchema = z.object({
   endsAt: z.string(),
   hostedById: z.string(),
   hostedByTag: z.string(),
-  requirements: GiveawayRequirementsSchema.default({}),
+  requirements: GiveawayRequirementsSchema.prefault({}),
   participants: z.array(GiveawayParticipantSchema).default([]),
   winnerIds: z.array(z.string()).default([]),
   rerollHistory: z.array(GiveawayRerollEntrySchema).default([]),

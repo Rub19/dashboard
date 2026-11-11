@@ -6,6 +6,7 @@ import { StreamPlatformSchema, StreamerConfigSchema, StreamerPingModeSchema } fr
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES } from '../../utils/channelSend.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 export function createStreamerRouter(client: Client) {
   const router = express.Router({ mergeParams: true });
@@ -30,7 +31,7 @@ export function createStreamerRouter(client: Client) {
 
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const allowed = StreamerConfigSchema.partial().omit({
+    const allowed = partialPatch(StreamerConfigSchema).omit({
       guildId: true,
       updatedAt: true,
     });

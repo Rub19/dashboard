@@ -73,9 +73,9 @@ const SNOWFLAKE = z.string().regex(/^\d{15,25}$/, 'Identifiant Discord invalide.
 
 const actionSchema = z
   .object({
-    type: z.enum(ACTION_KEYS, { errorMap: () => ({ message: "Type d'action inconnu." }) }),
+    type: z.enum(ACTION_KEYS, { error: "Type d'action inconnu." }),
     channelId: SNOWFLAKE.optional(),
-    durationSeconds: z.number({ invalid_type_error: 'La durée doit être un nombre.' }).int().optional(),
+    durationSeconds: z.number({ error: 'La durée doit être un nombre.' }).int().optional(),
     customMessage: z.string().max(150, 'Le message personnalisé ne doit pas dépasser 150 caractères.').optional(),
   })
   .superRefine((a, ctx) => {
@@ -96,7 +96,7 @@ const keywordList = z
 export const ruleInputSchema = z
   .object({
     name: z.string().trim().min(1, 'Le nom de la règle est obligatoire.').max(100, 'Le nom ne doit pas dépasser 100 caractères.'),
-    triggerType: z.enum(TRIGGER_TYPES, { errorMap: () => ({ message: 'Type de déclencheur inconnu.' }) }),
+    triggerType: z.enum(TRIGGER_TYPES, { error: 'Type de déclencheur inconnu.' }),
     enabled: z.boolean().default(true),
     keywords: keywordList.default([]),
     regexPatterns: z
@@ -104,8 +104,8 @@ export const ruleInputSchema = z
       .max(10, 'Maximum 10 expressions régulières.')
       .default([]),
     allowList: z.array(z.string().trim().min(1).max(60, 'Une exception ne doit pas dépasser 60 caractères.')).max(100, 'Maximum 100 exceptions.').default([]),
-    presets: z.array(z.enum(PRESET_KEYS, { errorMap: () => ({ message: 'Liste prédéfinie inconnue.' }) })).max(3).default([]),
-    mentionTotalLimit: z.number({ invalid_type_error: 'La limite de mentions doit être un nombre.' }).int().min(1, 'La limite de mentions est comprise entre 1 et 50.').max(50, 'La limite de mentions est comprise entre 1 et 50.').optional(),
+    presets: z.array(z.enum(PRESET_KEYS, { error: 'Liste prédéfinie inconnue.' })).max(3).default([]),
+    mentionTotalLimit: z.number({ error: 'La limite de mentions doit être un nombre.' }).int().min(1, 'La limite de mentions est comprise entre 1 et 50.').max(50, 'La limite de mentions est comprise entre 1 et 50.').optional(),
     mentionRaidProtection: z.boolean().default(false),
     actions: z.array(actionSchema).max(4).default([]),
     exemptRoles: z.array(SNOWFLAKE).max(20, 'Maximum 20 rôles exemptés.').default([]),

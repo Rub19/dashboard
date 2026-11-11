@@ -5,6 +5,7 @@ import { stickyService } from '../../modules/stickyMessages/services/stickyServi
 import { StickyMessageSchema } from '../../modules/stickyMessages/types/sticky.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module Sticky Messages.
@@ -35,7 +36,7 @@ export function createStickyRouter(discordClient: Client) {
   router.put('/config/:channelId', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const channelId = String(req.params.channelId);
-    const allowed = StickyMessageSchema.partial().omit({
+    const allowed = partialPatch(StickyMessageSchema).omit({
       guildId: true,
       channelId: true,
       lastMessageId: true,

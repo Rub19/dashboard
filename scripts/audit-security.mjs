@@ -23,6 +23,7 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   // Nom de la variable d'environnement (aucune valeur) : config du bot, synchro télémétrie et sa migration.
   "discord-bot/src/config.ts",
   "discord-bot/src/modules/botControl/services/botTelemetrySyncService.ts",
+  "discord-bot/src/modules/riot/riotService.ts",
   "supabase/migrations/202609290001_bot_telemetry_sync.sql",
   "discord-bot/tests/test_security_isolation.ts",
   "worker/test/authorization-and-service-path.test.mjs"

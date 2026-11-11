@@ -7,6 +7,7 @@ import { DESTINATION_CHANNEL_TYPES, canBotSendTo, isSendableTarget, sendToConfig
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 import { handleRouteError } from '../utils/routeError.js';
 import { trq, trg } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -30,7 +31,7 @@ export function createStarboardRouter(discordClient: Client) {
   // Mise à jour de la configuration (patch partiel validé par zod)
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const allowed = StarboardConfigSchema.partial().omit({ guildId: true, createdAt: true, updatedAt: true });
+    const allowed = partialPatch(StarboardConfigSchema).omit({ guildId: true, createdAt: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });

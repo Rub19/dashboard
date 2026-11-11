@@ -6,7 +6,7 @@ import {
   getTrackerMatches,
 } from "../services/tracker-client.js";
 import { getValorantProfile, getValorantMatches, getValorantHistory, getValorantPlayerMmr, getValorantLeaderboard } from "../services/henrik-client.js";
-import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
+import { getLolLive, getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getLolRotation, getValorantFeaturedStore } from "../services/game-store-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
@@ -177,6 +177,16 @@ export async function trackerValorantLeaderboardRoute({ env, url, auth, request 
     loader
   );
   return routeResult(result.data, { source: "henrikdev", cached: result.cached });
+}
+
+export async function trackerLolLiveRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["name", "tag", "_t", "t", "force"]);
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
+  const riotId = `${name}#${tag}`;
+  const loader = async () => getLolLive(env, riotId, await ownKeyRiot(env, auth, request));
+  const result = await cachedLoad(`tracker:lol:live:${name.toLowerCase()}:${tag.toLowerCase()}`, 30, loader);
+  return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 
 export async function trackerLolMatchesRoute({ env, url, auth, request }) {

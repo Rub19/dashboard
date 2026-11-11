@@ -11,6 +11,7 @@ import {
   Track,
 } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
+import { partialPatch } from '../../../utils/partialPatch.js';
 
 export const DEFAULT_MUSIC_SETTINGS: MusicSettings = {
   maxQueueSize: 500,
@@ -254,7 +255,7 @@ class MusicPersistence {
     const current = this.getSettings(guildId);
     // Validation : avant, n'importe quelle valeur était enregistrée telle quelle (`djMode: "oui"` a
     // été stocké comme texte). On vérifie les types et bornes, et on ignore les clés inconnues.
-    const parsed = MusicSettingsSchema.partial().safeParse(patch);
+    const parsed = partialPatch(MusicSettingsSchema).safeParse(patch);
     if (!parsed.success) {
       const why = parsed.error.issues.map((i) => `${i.path.join('.') || 'valeur'} : ${i.message}`).join(' ; ');
       throw new Error(`Réglage invalide — ${why}`);

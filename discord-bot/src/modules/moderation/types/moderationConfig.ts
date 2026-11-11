@@ -12,7 +12,7 @@ export type WarningEscalation = z.infer<typeof WarningEscalationSchema>;
 export const ModerationConfigSchema = z.object({
   modLogChannelId: z.string().nullable().default(null),
   modRoleId: z.string().nullable().default(null),
-  warningEscalation: WarningEscalationSchema.default({}),
+  warningEscalation: WarningEscalationSchema.prefault({}),
 });
 
 export type ModerationConfig = z.infer<typeof ModerationConfigSchema>;

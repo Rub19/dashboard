@@ -10,6 +10,7 @@ import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddlew
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 export function createAutoModRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -70,7 +71,7 @@ export function createAutoModRouter(discordClient: Client) {
     async (req: Request, res: Response): Promise<void> => {
       const guildId = String(req.params.guildId);
       try {
-        const parsed = AutoModConfigSchema.partial().parse(req.body);
+        const parsed = partialPatch(AutoModConfigSchema).parse(req.body);
         const updated = autoModRepository.updateConfig(guildId, parsed);
         emitConfigUpdated('automod', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });

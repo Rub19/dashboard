@@ -4,6 +4,7 @@ import { afkStorage } from '../../modules/afk/storage/afkStorage.js';
 import { AfkConfigSchema } from '../../modules/afk/types/afk.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module AFK.
@@ -22,7 +23,7 @@ export function createAfkRouter(_client: Client) {
 
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const allowed = AfkConfigSchema.partial().omit({ guildId: true, updatedAt: true });
+    const allowed = partialPatch(AfkConfigSchema).omit({ guildId: true, updatedAt: true });
     const parsed = allowed.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: trq('Configuration invalide'), details: parsed.error.flatten() });

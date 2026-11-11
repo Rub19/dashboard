@@ -5,6 +5,7 @@ import { AntiNukeConfigSchema } from '../../modules/security/types/securityConfi
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { handleRouteError, handleClientError } from '../utils/routeError.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 const NUKE_INCIDENT_TYPES = ['MASS_BAN', 'MASS_CHANNEL_DELETE', 'MASS_ROLE_DELETE'];
 
@@ -47,7 +48,7 @@ export function createAntiNukeRouter(_discordClient: Client) {
   router.put('/config', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      const parsed = AntiNukeConfigSchema.partial().parse(req.body);
+      const parsed = partialPatch(AntiNukeConfigSchema).parse(req.body);
       const current = securityStorage.getConfig(guildId);
       const updated = securityStorage.updateConfig(guildId, {
         antiNuke: { ...current.antiNuke, ...parsed },

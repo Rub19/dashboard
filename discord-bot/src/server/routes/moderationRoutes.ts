@@ -14,6 +14,7 @@ import { handleClientError, handleRouteError } from '../utils/routeError.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { trq } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);
@@ -434,7 +435,7 @@ export function createModerationRouter(discordClient: Client) {
 
   router.put('/warning-escalation', rateLimit('CONFIG', { byGuild: true, actionName: 'moderation_warning_escalation' }), (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const parsed = WarningEscalationSchema.partial().safeParse(req.body);
+    const parsed = partialPatch(WarningEscalationSchema).safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: trq('Paramètres invalides') });
       return;

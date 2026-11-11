@@ -6,6 +6,7 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { DESTINATION_CHANNEL_TYPES, sendToConfiguredChannel } from '../../utils/channelSend.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { trq, trg } from '../../utils/tr.js';
+import { partialPatch } from '../../utils/partialPatch.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -24,7 +25,7 @@ export function createBirthdayRouter(client: Client) {
 
   router.put('/config', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
-    const allowed = BirthdayConfigSchema.partial().omit({
+    const allowed = partialPatch(BirthdayConfigSchema).omit({
       guildId: true,
       updatedAt: true,
       lastAnnouncedDate: true,

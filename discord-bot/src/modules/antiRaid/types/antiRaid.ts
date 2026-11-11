@@ -151,16 +151,16 @@ export type RaidAlertConfig = z.infer<typeof RaidAlertConfigSchema>;
 export const AntiRaidConfigSchema = z.object({
   enabled: z.boolean().default(true),
   adaptiveDetection: z.boolean().default(true),
-  joinRaid: JoinRaidConfigSchema.default({}),
-  messageRaid: MessageRaidConfigSchema.default({}),
-  mentionRaid: MentionRaidConfigSchema.default({}),
-  botRaid: BotRaidConfigSchema.default({}),
-  serverNuke: ServerNukeConfigSchema.default({}),
-  massMod: MassModConfigSchema.default({}),
-  accountAge: AccountAgeConfigSchema.default({}),
-  raidMode: RaidModeConfigSchema.default({}),
-  whitelist: TrustWhitelistSchema.default({}),
-  alerts: RaidAlertConfigSchema.default({}),
+  joinRaid: JoinRaidConfigSchema.prefault({}),
+  messageRaid: MessageRaidConfigSchema.prefault({}),
+  mentionRaid: MentionRaidConfigSchema.prefault({}),
+  botRaid: BotRaidConfigSchema.prefault({}),
+  serverNuke: ServerNukeConfigSchema.prefault({}),
+  massMod: MassModConfigSchema.prefault({}),
+  accountAge: AccountAgeConfigSchema.prefault({}),
+  raidMode: RaidModeConfigSchema.prefault({}),
+  whitelist: TrustWhitelistSchema.prefault({}),
+  alerts: RaidAlertConfigSchema.prefault({}),
 });
 export type AntiRaidConfig = z.infer<typeof AntiRaidConfigSchema>;
 

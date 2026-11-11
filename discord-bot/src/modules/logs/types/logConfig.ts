@@ -15,7 +15,7 @@ export const LogConfigSchema = z.object({
   retentionDays: z.number().default(30), // 7, 30, 90, 0 (0 = infini)
   categories: z
     .record(LogCategorySchema, CategoryConfigSchema)
-    .default({
+    .prefault({
       members: { enabled: true, channelId: null },
       messages: { enabled: true, channelId: null },
       roles: { enabled: true, channelId: null },

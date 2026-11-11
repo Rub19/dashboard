@@ -83,7 +83,7 @@ export const GuildConfigSchema = z.object({
       prefix: z.string().default('⌨️'),
       slash: z.string().default('⚡'),
     })
-    .default({}),
+    .prefault({}),
 
   // Commandes
   prefix: z
@@ -96,7 +96,7 @@ export const GuildConfigSchema = z.object({
   slashCommandsEnabled: z.boolean().default(true),
 
   // Modules activables
-  modules: GuildModulesSchema.default({}),
+  modules: GuildModulesSchema.prefault({}),
 
   // Général & Langue
   language: z.enum(['fr', 'en', 'es', 'de']).default('fr'),
@@ -109,7 +109,7 @@ export const GuildConfigSchema = z.object({
       userIds: z.array(z.string().regex(/^\d{5,25}$/)).max(10).default([]),
       roleIds: z.array(z.string().regex(/^\d{5,25}$/)).max(10).default([]),
     })
-    .default({}),
+    .prefault({}),
 
   // Confidentialité & Personnalisation
   responseVisibility: z.enum(['PUBLIC', 'EPHEMERAL']).default('PUBLIC'),
@@ -134,9 +134,9 @@ export const GuildConfigSchema = z.object({
   blacklist: z
     .array(z.object({ userId: z.string(), reason: z.string().default(''), addedBy: z.string().nullable().default(null), addedAt: z.string() }))
     .default([]),
-  commandRules: z.record(z.string(), CommandRuleSchema).default({}),
-  captcha: CaptchaConfigSchema.default({}),
-  supporters: SupportersConfigSchema.default({}),
+  commandRules: z.record(z.string(), CommandRuleSchema).prefault({}),
+  captcha: CaptchaConfigSchema.prefault({}),
+  supporters: SupportersConfigSchema.prefault({}),
   orbyxChannelId: z.string().nullable().default(null),
 });
 

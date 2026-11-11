@@ -562,8 +562,28 @@ fn commands(app: &App) -> Vec<Command> {
     out
 }
 
-pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, _shift: bool) -> bool {
+pub const SHORTCUTS: &str = "ethone-shortcuts";
+
+pub fn shortcut_choices(app: &App) -> Vec<(String, String)> {
+    commands(app).into_iter().filter(|command| !command.id.starts_with("item-") && !command.id.starts_with("start-app-") && command.id != "later-add" && command.id != "fav-toggle").map(|command| (command.id, command.label)).collect()
+}
+
+pub fn run_command(app: &mut App, id: &str) {
+    app.palette_commands = commands(app);
+    pick_palette(app, id);
+}
+
+pub fn key(app: &mut App, text: &str, ctrl: bool, alt: bool, shift: bool) -> bool {
     let lower = text.to_lowercase();
+    if ctrl && shift && !alt && !app.palette_open && app.menu_open.is_none() {
+        if let Some(letter) = crate::logic::settings::shortcut_letter(&lower) {
+            let map: std::collections::BTreeMap<String, String> = prefs::read_json(SHORTCUTS).unwrap_or_default();
+            if let Some(id) = map.get(&letter.to_string()).cloned() {
+                run_command(app, &id);
+                return true;
+            }
+        }
+    }
     if app.menu_open.is_some() {
         let count = app.menu_open.as_ref().and_then(|id| app.menus.get(id)).map_or(0, Vec::len) as i32;
         match lower.as_str() {

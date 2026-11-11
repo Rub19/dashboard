@@ -357,3 +357,40 @@ expect Descendre
 snap 32-taches-ordre
 click Accueil
 wait 1200
+
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Raccourcis
+wait 600
+key Return
+wait 1500
+expect Tes raccourcis (Ctrl+Maj+lettre)
+type G|q
+wait 400
+click Choisir une action…
+wait 600
+click Afficher ou réduire la barre latérale
+wait 600
+click Ajouter
+wait 800
+expect Raccourci enregistré : Ctrl+Maj+Q
+snap 33-raccourcis-perso
+click Accueil
+wait 1200
+key Ctrl+Shift+q
+wait 800
+absent Travail
+key Ctrl+Shift+q
+wait 800
+expect Travail
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Réglages › Raccourcis
+wait 600
+key Return
+wait 1500
+click Retirer
+wait 800
+absent Ctrl+Maj+Q
+click Accueil
+wait 1200

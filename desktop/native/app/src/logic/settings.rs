@@ -43,6 +43,12 @@ pub const LOOKS: [Look; 9] = [
     Look { id: "windows", theme: "system", accent: "ocean", fr: "Windows", en: "Windows", text_fr: "Suit Windows, avec transparence", text_en: "Follows Windows, with transparency", colors: ["#2a2a2e", "#55555c", "#3a3a40"] },
 ];
 
+pub fn shortcut_letter(text: &str) -> Option<char> {
+    let mut chars = text.trim().chars();
+    let letter = chars.next()?.to_ascii_lowercase();
+    (chars.next().is_none() && letter.is_ascii_lowercase()).then_some(letter)
+}
+
 pub fn scheduled_look(chosen: &str, enabled: bool, hour: u32) -> &str {
     match (enabled, (7..19).contains(&hour)) {
         (false, _) => chosen,
@@ -116,7 +122,7 @@ pub fn interface_json(preferences: &InterfacePreferences) -> Value {
     serde_json::json!({ "density": preferences.density, "motion": preferences.motion, "transparency": preferences.transparency, "textScale": preferences.text_scale })
 }
 
-pub const SETTINGS_KEYS: [&str; 22] = ["ethone-read-later", "ethone-start-apps", "ethone-theme-schedule", "ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
+pub const SETTINGS_KEYS: [&str; 23] = ["ethone-shortcuts", "ethone-read-later", "ethone-start-apps", "ethone-theme-schedule", "ethone-favorites", "ethone-weather-city", "ethone-weather-cities", "ethone-start-page", "ethone-contrast", "ethone-automations", "ethone-lol-lp", "ethone-ui-sound", "ethone-look", "ethone-theme", "ethone-accent-choice", "ethone-interface-preferences", "ethone-language", "ethone-home-hidden", "ethone-pinned-apps", "ethone-rss-feeds", "ethone-sidebar-compact", "ethone-focus-minutes", "ethone-desktop-prefs"];
 
 pub fn parse_settings(text: &str) -> Result<Vec<(String, String)>, String> {
     let parsed: Value = serde_json::from_str(text).map_err(|_| "invalid".to_string())?;
@@ -135,6 +141,15 @@ pub fn export_settings(read: impl Fn(&str) -> Option<String>) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn custom_shortcuts_take_one_letter() {
+        assert_eq!(shortcut_letter("g"), Some('g'));
+        assert_eq!(shortcut_letter(" M "), Some('m'));
+        assert_eq!(shortcut_letter("gg"), None);
+        assert_eq!(shortcut_letter("1"), None);
+        assert_eq!(shortcut_letter(""), None);
+    }
 
     #[test]
     fn theme_follows_the_hour_when_scheduled() {

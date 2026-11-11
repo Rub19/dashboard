@@ -17,6 +17,8 @@ const SECTION_KEY: &str = "ethone-section-settings";
 
 #[derive(Default)]
 pub struct SettingsState {
+    pub shortcut_key: String,
+    pub shortcut_cmd: String,
     pub autostart: Option<bool>,
     pub hdv: Option<String>,
     pub totp: Option<Value>,
@@ -54,7 +56,7 @@ pub fn view(app: &mut App) -> Page {
     let admin = app.load("settings:admin", || api_data("api/admin/stats")).data.is_some();
     let main = match current.as_str() {
         "windows" => windows(app),
-        "shortcuts" => shortcuts(),
+        "shortcuts" => shortcuts(app),
         "storage" => storage(app),
         "performance" => performance(app),
         "accessibility" => accessibility(app),
@@ -93,6 +95,26 @@ pub fn act(app: &mut App, id: &str, value: &str) {
             app.state.settings.message = None;
         }
         "look" => app.with_ui(|ui| crate::theme::apply_look(ui, arg)),
+        "shortcut-key" => app.state.settings.shortcut_key = value.chars().take(1).collect(),
+        "shortcut-cmd" => app.state.settings.shortcut_cmd = value.to_string(),
+        "shortcut-add" => {
+            let letter = crate::logic::settings::shortcut_letter(&app.state.settings.shortcut_key);
+            match (letter, app.state.settings.shortcut_cmd.clone()) {
+                (Some(letter), command) if !command.is_empty() => {
+                    let mut map: std::collections::BTreeMap<String, String> = prefs::read_json(crate::pages::shell::SHORTCUTS).unwrap_or_default();
+                    map.insert(letter.to_string(), command);
+                    prefs::write_json(crate::pages::shell::SHORTCUTS, &map);
+                    app.state.settings.shortcut_key.clear();
+                    app.toast(&format!("{} Ctrl+Maj+{}", tr("Raccourci enregistré :", "Shortcut saved:"), letter.to_ascii_uppercase()));
+                }
+                _ => app.toast_bad(&tr("Choisis une lettre de A à Z et une action", "Pick a letter from A to Z and an action")),
+            }
+        }
+        "shortcut-remove" => {
+            let mut map: std::collections::BTreeMap<String, String> = prefs::read_json(crate::pages::shell::SHORTCUTS).unwrap_or_default();
+            map.remove(arg);
+            prefs::write_json(crate::pages::shell::SHORTCUTS, &map);
+        }
         "journal-reopen" => crate::pages::work::reopen_task(app, arg),
         "accent" => {
             prefs::write("ethone-accent-choice", arg);
@@ -391,8 +413,22 @@ fn windows(app: &mut App) -> Vec<B> {
     out
 }
 
-fn shortcuts() -> Vec<B> {
+fn shortcuts(app: &mut App) -> Vec<B> {
     let mut out = vec![head(&tr("Raccourcis", "Shortcuts"), &tr("Les raccourcis clavier de l'application.", "The app's keyboard shortcuts."), vec![])];
+    let choices = crate::pages::shell::shortcut_choices(app);
+    let map: std::collections::BTreeMap<String, String> = prefs::read_json(crate::pages::shell::SHORTCUTS).unwrap_or_default();
+    out.push(h2(&tr("Tes raccourcis (Ctrl+Maj+lettre)", "Your shortcuts (Ctrl+Shift+letter)")));
+    let mut mine: Vec<B> = map.iter().map(|(letter, id)| {
+        let label = choices.iter().find(|(choice, _)| choice == id).map_or(id.clone(), |(_, label)| label.clone());
+        row(vec![kbd(&format!("Ctrl+{}+{}", if fr() { "Maj" } else { "Shift" }, letter.to_ascii_uppercase())), text(&label).grow(), btn(&format!("settings:shortcut-remove:{letter}"), &tr("Retirer", "Remove"))])
+    }).collect();
+    let current = app.state.settings.shortcut_cmd.clone();
+    let mut options = vec![(String::new(), tr("Choisir une action…", "Pick an action…"))];
+    options.extend(choices.iter().cloned());
+    let pick = app.select("settings:shortcut-cmd", &current, &options);
+    let key = app.state.settings.shortcut_key.clone();
+    mine.push(row(vec![input("settings:shortcut-key", &key, "G").tip(&tr("Lettre", "Letter")), pick, btn("settings:shortcut-add", &tr("Ajouter", "Add"))]));
+    out.extend(group(mine));
     let groups = [
         (tr("Navigation", "Navigation"), vec![("Ctrl+K", tr("Rechercher une application ou une action", "Search an app or action")), ("Ctrl+1 à 9", tr("Ouvrir une page de la barre latérale", "Open a sidebar page")), ("Ctrl+,", tr("Ouvrir les réglages", "Open settings")), ("Alt+←", tr("Revenir en arrière", "Go back")), ("Alt+→", tr("Aller en avant", "Go forward"))]),
         (tr("Fenêtre", "Window"), vec![("Ctrl+Alt+E", tr("Ouvrir Ethone et la recherche depuis n'importe où", "Open Ethone and search from anywhere")), ("Ctrl+F", tr("Aller au champ de recherche de la page", "Go to the page search field")), ("Ctrl+B", tr("Afficher ou réduire la barre latérale", "Show or collapse the sidebar")), ("F5", tr("Actualiser la page", "Refresh the page")), ("Échap", tr("Fermer un panneau", "Close a panel"))]),

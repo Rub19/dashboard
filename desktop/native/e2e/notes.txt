@@ -1,0 +1,11 @@
+# Export des notes seul
+waitfor Habitudes du jour|20000
+key Ctrl+k
+wait 600
+type Rechercher une application, une action…|Productivité › Notes
+wait 600
+key Return
+wait 2500
+click Exporter en Markdown
+wait 800
+expect Notes enregistrées dans

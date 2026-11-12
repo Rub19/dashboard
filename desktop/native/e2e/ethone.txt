@@ -165,6 +165,9 @@ key Return
 wait 2500
 expect Exporter en Markdown
 snap 20-notes-export
+click Exporter en Markdown
+wait 800
+expect Notes enregistrées dans
 click Accueil
 wait 1200
 

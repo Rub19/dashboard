@@ -13,8 +13,11 @@ $env:ETHONE_DRIVE_OFFSCREEN = "1"
 $env:ETHONE_E2E = Join-Path $PSScriptRoot $Script
 $env:ETHONE_E2E_LOG = "$out\journal.txt"
 $env:ETHONE_E2E_SNAP = "$out\captures"
+New-Item -ItemType Directory "$out\exports" | Out-Null
+$env:ETHONE_E2E_EXPORT = "$out\exports"
 $app = Start-Process "target\fast\ethone-native.exe" -PassThru -WindowStyle Hidden
 $app.PriorityClass = "BelowNormal"
 $app.WaitForExit()
 Get-Content "$out\journal.txt" -Encoding utf8
+Get-ChildItem "$out\exports" -ErrorAction SilentlyContinue | ForEach-Object { "export : {0} ({1} octets)" -f $_.Name, $_.Length }
 "Captures : $out\captures"

@@ -33,6 +33,10 @@ pub fn open_files(owner: Option<isize>, filter: &str, multiple: bool) -> Vec<Pat
 }
 
 pub fn downloads() -> PathBuf {
+    #[cfg(feature = "e2e")]
+    if let Some(dir) = std::env::var_os("ETHONE_E2E_EXPORT") {
+        return PathBuf::from(dir);
+    }
     std::env::var("USERPROFILE").map(PathBuf::from).unwrap_or_else(|_| std::env::temp_dir()).join("Downloads")
 }
 
